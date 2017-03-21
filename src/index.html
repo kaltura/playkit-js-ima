@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <script src="//imasdk.googleapis.com/js/sdkloader/ima3_debug.js"></script>
+  <script src="./imaPlugin.js" type="text/javascript"></script>
+</head>
+<body>
+<script>
+
+  var player = Playkit.playkit({plugins:{imaPlugin:{}}});
+//  player.play();
+</script>
+
+<input type="button" onclick="player.prepare()" value="prepare"/>
+<input type="button" onclick="player.play()" value="play"/>
+<input type="button" onclick="player.pause()" value="pause"/>
+<input type="button" onclick="player.skipAd()" value="skip"/>
+
+
+</body>
+</html>
