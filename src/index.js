@@ -20,13 +20,16 @@ class imaPlugin extends Playkit.BasePlugin  /*implements IPlayerDecoratorProvide
 
   adContainerDiv: HTMLDivElement;
   adDisplayContainer: any;
-  adDisplayContainerInitialized: boolean = false;
   adsLoader: any;
   adsManager: any;
-  adsRenderingSettings: any;
+  mediaLoaded:boolean = false;
+  target:HTMLDivElement;
+  playerLoaded:boolean = false;
   playOnceReady: boolean = false;
   adsActive: boolean = false;
+  canPlayMedia:boolean = false;
   initComplete:boolean = false;
+  allAdsCompleted:boolean
   contentPlayheadTracker: Object = {
     currentTime: 0 ,
     previousTime: 0 ,
@@ -46,14 +49,10 @@ class imaPlugin extends Playkit.BasePlugin  /*implements IPlayerDecoratorProvide
    * @param config Plugin config
    */
   constructor( name: string , player: Playkit.Player , config: Object ) {
-    // Step 1: call the super with the constructor params
     super( name , player , config );
-
+    this.target = window.document.getElementById(player._config.target);
+    this.config = config;
     this.logger.info( "in constructor" );
-
-
-    // Step 2: do any necessary setup actions
-    this._configure();
     this._setup();
     this._addBindings();
   }
@@ -61,11 +60,25 @@ class imaPlugin extends Playkit.BasePlugin  /*implements IPlayerDecoratorProvide
   getPlayerDecorator(): Playkit.PlayerDecoratorBase {
     let adsManager = this;
     class myDecorator extends Playkit.PlayerDecoratorBase {
-      prepare() {
-        adsManager._requestAds();
+      load() {
+        adsManager._initIMA();
+        if ( !adsManager._requestAds() ) {
+          super.load();
+          adsManager.mediaLoaded = true;
+          adsManager.canPlayMedia = true;
+        }
+        adsManager.playerLoaded = true;
       }
 
       play() {
+        if ( !adsManager.playerLoaded ){
+          this.load();
+
+          //if we dont have any ads - play the content
+          if (adsManager.canPlayMedia){
+            super.play();
+          }
+        }
         if ( !adsManager.initComplete ) {
           adsManager._initialUserAction();
         } else {
@@ -84,6 +97,11 @@ class imaPlugin extends Playkit.BasePlugin  /*implements IPlayerDecoratorProvide
         }
       }
 
+      playAdNow(adTagURL: String){
+          this.pause();
+          adsManager.playAdNow(adTagURL);
+      }
+
       pause(){
         if (adsManager.adsActive){
           adsManager.adsManager.pause();
@@ -100,16 +118,14 @@ class imaPlugin extends Playkit.BasePlugin  /*implements IPlayerDecoratorProvide
     this.adDisplayContainer.initialize();
     if ( this.adsManager ) {
       this.adsManager.start();
-      this.player.prepare();
+      if ( !this.mediaLoaded ) {
+        this.player.load();
+        this.mediaLoaded = true;
+      }
     } else {
       this.playOnceReady = true;
     }
     this.initComplete = true;
-  }
-
-  _configure(): void {
-    this.eventManager.listen( this.player , "EngineAdded" , this._initIMA.bind( this ) );
-
   }
 
   _updateCurrentTime(): void {
@@ -119,28 +135,42 @@ class imaPlugin extends Playkit.BasePlugin  /*implements IPlayerDecoratorProvide
   }
 
   _initIMA(): void {
-    this.adContainerDiv =
-      this.player.getVideoElement().parentNode.appendChild(
+    if ( !document.getElementById("adContainer") ) {
+      this.adContainerDiv = this.target.appendChild(
         document.createElement( 'div' ) );
-    this.adContainerDiv.style.position = "absolute";
-    this.adContainerDiv.style.zIndex = 2000;
-    this.adContainerDiv.style.top = 0;
-    this.adDisplayContainer =
-      new window.google.ima.AdDisplayContainer( this.adContainerDiv , this.player.getVideoElement() );
-    this.adsLoader = new window.google.ima.AdsLoader( this.adDisplayContainer );
-    this.adsManager = null;
+      this.adContainerDiv.id = "adContainer";
+      this.adContainerDiv.style.position = "absolute";
+      this.adContainerDiv.style.zIndex = 2000;
+      this.adContainerDiv.style.top = 0;
+      this.adDisplayContainer =
+        new window.google.ima.AdDisplayContainer( this.adContainerDiv , this.player.getVideoElement() );
+      this.adsLoader = new window.google.ima.AdsLoader( this.adDisplayContainer );
+      this.adsManager = null;
 
-    this.adsLoader.addEventListener(
-      window.google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED ,
-      this.onAdsManagerLoaded_ ,
-      false ,
-      this );
-    this.adsLoader.addEventListener(
-      window.google.ima.AdErrorEvent.Type.AD_ERROR ,
-      this.onAdError_ ,
-      false ,
-      this );
+      this.adsLoader.addEventListener(
+        window.google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED ,
+        this.onAdsManagerLoaded_ ,
+        false ,
+        this );
+      this.adsLoader.addEventListener(
+        window.google.ima.AdErrorEvent.Type.AD_ERROR ,
+        this.onAdError_ ,
+        false ,
+        this );
+    }
 
+  }
+
+  playAdNow(tag: String): void{
+    this.resetIMA();
+    this.config.adTagURL = tag;
+    if ( !this.playerLoaded ) {
+      this._initIMA();
+      this.playerLoaded = true;
+    }
+    this._requestAds();
+    this._initialUserAction();
+    this.adsManager.start();
   }
 
   showAdsContainer(): void {
@@ -149,6 +179,10 @@ class imaPlugin extends Playkit.BasePlugin  /*implements IPlayerDecoratorProvide
 
   hideAdsContainer(): void {
     this.adContainerDiv.style.display = "none";
+  }
+
+  onAdError_(params):void{
+    this.logger.error("Error occur while loading the adsLoader::"+params);
   }
 
   onAdsManagerLoaded_( adsManagerLoadedEvent: any ): void {
@@ -172,6 +206,8 @@ class imaPlugin extends Playkit.BasePlugin  /*implements IPlayerDecoratorProvide
       this.onContentResumeRequested ,
       false ,
       this );
+
+
     // Handle errors.
     adsManager.addEventListener(
       window.google.ima.AdErrorEvent.Type.AD_ERROR ,
@@ -195,15 +231,9 @@ class imaPlugin extends Playkit.BasePlugin  /*implements IPlayerDecoratorProvide
         this );
     }
 
-    let initWidth = parseInt(getComputedStyle(this.player.getVideoElement()).width,10);
-    let initHeight = parseInt(getComputedStyle(this.player.getVideoElement()).height,10);
-    // if ( this.application_.fullscreen ) {
-    //   initWidth = this.application_.fullscreenWidth;
-    //   initHeight = this.application_.fullscreenHeight;
-    // } else {
-    //   initWidth = this.videoPlayer_.width;
-    //   initHeight = this.videoPlayer_.height;
-    //}
+    let initWidth = parseInt(getComputedStyle(this.target).width,10);
+    let initHeight = parseInt(getComputedStyle(this.target).height,10);
+  // TODO: handle full screen
     adsManager.init(
       initWidth ,
       initHeight ,
@@ -225,39 +255,45 @@ class imaPlugin extends Playkit.BasePlugin  /*implements IPlayerDecoratorProvide
   }
   onContentResumeRequested(adEvent: any){
     this.logger.info("onContentResumeRequested:" + adEvent);
+    if ( !this.contentComplete ) {
+      this.hideAdsContainer();
+      this.player.play();
+      this.adsActive = false;
+    }
+  }
+
+  allAdsComplete(adEvent: any){
     this.hideAdsContainer();
-    this.player.play();
-    this.adsActive = false;
+    this.allAdsCompleted = true;
   }
   onAdEvent(adEvent: any){
     this.logger.info("onAdEvent:" + adEvent.type);
+    switch (adEvent.type){
+      case window.google.ima.AdEvent.Type.ALL_ADS_COMPLETED: this.allAdsComplete(adEvent);
+      break;
+
+    }
+
+
   }
 
-  _requestAds(): void{
+  _requestAds(): boolean{
     this.logger.info("requestAds");
-    // if (!this.adDisplayContainerInitialized) {
-    //   this.adDisplayContainer.initialize();
-    // }
+    this.resetIMA();
     let adsRequest = new window.google.ima.AdsRequest();
-    let adTagUrl = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=";
-
-    if (adTagUrl /*this.settings.adTagUrl*/) {
-      adsRequest.adTagUrl = adTagUrl;
+    if ( this.config.adTagURL ) {
+      adsRequest.adTagUrl = this.config.adTagURL;
     } else {
-      adsRequest.adsResponse = this.settings.adsResponse;
+      adsRequest.adsResponse = this.config.adsResponse;
     }
-    // if (this.settings.forceNonLinearFullSlot) {
-    //   adsRequest.forceNonLinearFullSlot = true;
-    // }
 
-    // adsRequest.linearAdSlotWidth = this.getPlayerWidth();
-    // adsRequest.linearAdSlotHeight = this.getPlayerHeight();
-    // adsRequest.nonLinearAdSlotWidth =
-    //   this.settings.nonLinearWidth || this.getPlayerWidth();
-    // adsRequest.nonLinearAdSlotHeight =
-    //   this.settings.nonLinearHeight || (this.getPlayerHeight() / 3);
-
+    if ( !adsRequest.adTagUrl && !adsRequest.adsResponse) {
+      this.logger.error("missing config for ima plugin");
+      return false;
+    }
+    //TODO:handle non-linear
     this.adsLoader.requestAds(adsRequest);
+    return true;
   }
 
   _setup(): void {
@@ -267,14 +303,39 @@ class imaPlugin extends Playkit.BasePlugin  /*implements IPlayerDecoratorProvide
   _addBindings(): void {
     // Register to the play event
     this.eventManager.listen(this.player, "timeupdate", this._updateCurrentTime.bind(this));
+    this.eventManager.listen(this.player, "ended", this._mediaEnded.bind(this));
     this.logger.info("in _addBindings");
   }
 
+  _mediaEnded():void{
+    if (this.adsLoader && !this.contentComplete) {
+      this.adsLoader.contentComplete();
+      this.contentComplete = true;
+    }
+  }
+  resetIMA():void {
+    this.adsActive = false;
+    this.hideAdsContainer();
+    if (this.adsManager) {
+      this.adsManager.destroy();
+      this.adsManager = null;
+    }
+    if (this.adsLoader && !this.contentComplete) {
+      this.adsLoader.contentComplete();
+    }
+    this.contentComplete = false;
+    this.allAdsCompleted = false;
+    this.playOnceReady = false;
+    this.canPlayMedia = false;
+
+  }
 
 
   // Your plugin must implement destroy method
   destroy(): void {
-    this.logger.info("in destroy", this._numbers, this._firstCellValue, this._lastCellValue, this._size);
+    this.logger.info("in destroy");
+    this.eventManager.removeAll();
+    this.resetIMA();
   }
 }
 
