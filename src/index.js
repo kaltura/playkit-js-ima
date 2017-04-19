@@ -344,3 +344,44 @@ Playkit.registerPlugin(pluginName, imaPlugin);
 
 window.Playkit = Playkit;
 
+//init demo
+let config = {};
+config.sources =  [
+  {
+    "mimetype": "video/mp4",
+    "src": "http://www.html5videoplayer.net/videos/toystory.mp4",
+    "id": "1_rsrdfext_10081,url"
+  },
+  {
+    "src": "https://cdnapisec.kaltura.com/p/1082342/sp/108234200/playManifest/entryId/1_rsrdfext/protocol/https/format/hdnetworkmanifest/falvorIds/1_ha0nqwz8,1_gw7u4nf1,1_rql6sqaa,1_sufd1yd9,1_9xvkk7a5,1_4typ4pat,1_n75294r4/ks/OGM0ZWM0Y2IwOWI5ZjM0MDcyZmQ3YmYxNzBiMGEwNGYxNWQ0ZTcyOXwxMDgyMzQyOzEwODIzNDI7MTQ5MDExNTg5MzswOzE0OTAwMjk0OTMuMTY3ODswO3ZpZXc6Kix3aWRnZXQ6MTs7/a.mp4",
+    "id": "1_rsrdfext_10101,hdnetworkmanifest"
+  },
+  {
+    "mimetype": "application/x-mpegURL",
+    "src": "https://cdnapisec.kaltura.com/p/1082342/sp/108234200/playManifest/entryId/1_rsrdfext/protocol/https/format/applehttp/falvorIds/1_ha0nqwz8,1_gw7u4nf1,1_rql6sqaa,1_sufd1yd9,1_9xvkk7a5,1_4typ4pat,1_n75294r4/ks/OGM0ZWM0Y2IwOWI5ZjM0MDcyZmQ3YmYxNzBiMGEwNGYxNWQ0ZTcyOXwxMDgyMzQyOzEwODIzNDI7MTQ5MDExNTg5MzswOzE0OTAwMjk0OTMuMTY3ODswO3ZpZXc6Kix3aWRnZXQ6MTs7/a.m3u8",
+    "id": "1_rsrdfext_10091,applehttp"
+  },
+  {
+    "mimetype": "application/dash+xml",
+    "src": "https://cdnapisec.kaltura.com/p/1082342/sp/108234200/playManifest/entryId/1_rsrdfext/protocol/https/format/mpegdash/falvorIds/1_ha0nqwz8,1_gw7u4nf1,1_rql6sqaa,1_sufd1yd9,1_9xvkk7a5,1_4typ4pat,1_n75294r4/ks/OGM0ZWM0Y2IwOWI5ZjM0MDcyZmQ3YmYxNzBiMGEwNGYxNWQ0ZTcyOXwxMDgyMzQyOzEwODIzNDI7MTQ5MDExNTg5MzswOzE0OTAwMjk0OTMuMTY3ODswO3ZpZXc6Kix3aWRnZXQ6MTs7/a.mpd",
+    "id": "1_rsrdfext_11611,mpegdash"
+  }
+];
+config.target = "video-element";
+config.plugins = {imaPlugin:{
+  adTagURL:"https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator="
+ // adTagURL:"https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpost&cmsid=496&vid=short_onecue&correlator="
+}};
+let player = Playkit.playkit(config);
+
+
+let loadingSpinner = new Playkit.playkit.controls.loadingSpinner(player);
+let playPauseControl = new Playkit.playkit.controls.playPauseControl(player);
+let seekBarControl = new Playkit.playkit.controls.seekBarControl(player);
+let volumeControl = new Playkit.playkit.controls.volumeControl(player);
+let fullscreenControl = new Playkit.playkit.controls.fullscreenControl();
+let keyboardControl = new Playkit.playkit.controls.keyboardControl(player);
+
+player.load();
+player.play();
+window.player = player;
