@@ -2,24 +2,30 @@
 
 const webpack = require("webpack");
 const path = require("path");
+const PROD = (process.env.NODE_ENV === 'production');
+
+let plugins = PROD ? [new webpack.optimize.UglifyJsPlugin({sourceMap: true})] : [];
 
 module.exports = {
   context: __dirname + "/src",
   entry: {
-    imaPlugin: "index.js"
+    "playkit-js-ima": "ima.js"
   },
   output: {
     path: path.join(__dirname, "dist"),
     filename: '[name].js'
   },
   devtool: 'source-map',
+  plugins: plugins,
   module: {
     rules: [{
       test: /\.js$/,
       use: [{
         loader: "babel-loader"
       }],
-      exclude: [/node_modules/]
+      exclude: [
+        /node_modules/
+      ]
     }, {
       test: /\.js$/,
       exclude: [
@@ -41,9 +47,9 @@ module.exports = {
     contentBase: __dirname + "/src"
   },
   resolve: {
-    modules: [path.resolve(__dirname, "src"), "node_modules"]
-  },
-  externals: {
-    playkit: 'PlayKit.js'
+    modules: [
+      path.resolve(__dirname, "src"),
+      "node_modules"
+    ]
   }
 };
