@@ -26,11 +26,12 @@ export default class ImaDecorator extends PlayerDecoratorBase {
 
   play(): void {
     if (!this._imaPlugin.playerLoaded) {
-      this.load();
-      // If we don't have any ads - play the content
-      if (this._imaPlugin.canPlayMedia) {
-        super.play();
-      }
+      return this.load().then(() => {
+        // If we don't have any ads - play the content
+        if (this._imaPlugin.canPlayMedia) {
+          super.play();
+        }
+      });
     }
     if (!this._imaPlugin.initComplete) {
       this._imaPlugin.initialUserAction();
