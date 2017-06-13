@@ -1,5 +1,5 @@
 import {registerPlugin, BasePlugin, PlayerDecoratorBase} from 'playkit-js'
-import ImaDecorator from './decorator'
+import ImaDecorator from './ima-decorator'
 
 const pluginName = "ima";
 
@@ -15,7 +15,7 @@ class ImaPlugin extends BasePlugin {
 
   static IMA_SDK_LIB_URL: string = "//imasdk.googleapis.com/js/sdkloader/ima3_debug.js";
 
-  imaLib: any;
+  sdk: any;
   imaPromise: Promise<*>;
   mediaLoaded: boolean;
   canPlayMedia: boolean;
@@ -36,7 +36,7 @@ class ImaPlugin extends BasePlugin {
 
   constructor(name: string, player: Player, config: Object) {
     super(name, player, config);
-    this.imaPromise = loadScript(ImaPlugin.IMA_SDK_LIB_URL);
+    this.imaPromise = this._loadScriptAsync(ImaPlugin.IMA_SDK_LIB_URL);
     this.mediaLoaded = false;
     this.canPlayMedia = false;
     this.playerLoaded = false;
@@ -72,59 +72,54 @@ class ImaPlugin extends BasePlugin {
   }
 
   _onAdError(params): void {
-    this.logger.error("Error occur while loading the adsLoader::" + params);
+    this.logger.error("Error occur while loading the adsLoader: " + params);
   }
 
   _onAdsManagerLoaded(adsManagerLoadedEvent: any): void {
     this.logger.debug('Ads loaded');
-    let adsRenderingSettings = new this.imaLib.AdsRenderingSettings();
+    let adsRenderingSettings = new this.sdk.AdsRenderingSettings();
     adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
     this.adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
-    this._processAdsManager(this.adsManager);
+    this._processAdsManager();
   }
 
-  _processAdsManager(adsManager: any): void {
+  _processAdsManager(): void {
     // Attach the pause/resume events
-    adsManager.addEventListener(this.imaLib.AdEvent.Type.CONTENT_PAUSE_REQUESTED, this._onContentPauseRequested, false, this);
-    adsManager.addEventListener(this.imaLib.AdEvent.Type.CONTENT_RESUME_REQUESTED, this._onContentResumeRequested, false, this);
+    this.adsManager.addEventListener(this.sdk.AdEvent.Type.CONTENT_PAUSE_REQUESTED, this._onContentPauseRequested.bind(this));
+    this.adsManager.addEventListener(this.sdk.AdEvent.Type.CONTENT_RESUME_REQUESTED, this._onContentResumeRequested.bind(this));
     // Handle errors
-    adsManager.addEventListener(this.imaLib.AdErrorEvent.Type.AD_ERROR, this._onAdError, false, this);
+    this.adsManager.addEventListener(this.sdk.AdErrorEvent.Type.AD_ERROR, this._onAdError.bind(this));
     let events = [
-      this.imaLib.AdEvent.Type.ALL_ADS_COMPLETED,
-      this.imaLib.AdEvent.Type.CLICK,
-      this.imaLib.AdEvent.Type.COMPLETE,
-      this.imaLib.AdEvent.Type.FIRST_QUARTILE,
-      this.imaLib.AdEvent.Type.LOADED,
-      this.imaLib.AdEvent.Type.MIDPOINT,
-      this.imaLib.AdEvent.Type.PAUSED,
-      this.imaLib.AdEvent.Type.STARTED,
-      this.imaLib.AdEvent.Type.THIRD_QUARTILE
+      this.sdk.AdEvent.Type.ALL_ADS_COMPLETED,
+      this.sdk.AdEvent.Type.CLICK,
+      this.sdk.AdEvent.Type.COMPLETE,
+      this.sdk.AdEvent.Type.FIRST_QUARTILE,
+      this.sdk.AdEvent.Type.LOADED,
+      this.sdk.AdEvent.Type.MIDPOINT,
+      this.sdk.AdEvent.Type.PAUSED,
+      this.sdk.AdEvent.Type.STARTED,
+      this.sdk.AdEvent.Type.THIRD_QUARTILE
     ];
-
     for (let index of events) {
-      adsManager.addEventListener(index, this._onAdEvent, false, this);
+      this.adsManager.addEventListener(index, this._onAdEvent.bind(this));
     }
-
     let initWidth = parseInt(getComputedStyle(this.player.getVideoElement()).width, 10);
     let initHeight = parseInt(getComputedStyle(this.player.getVideoElement()).height, 10);
-
     // TODO: Handle full screen
-
-    adsManager.init(initWidth, initHeight, this.imaLib.ViewMode.NORMAL);
-
+    this.adsManager.init(initWidth, initHeight, this.sdk.ViewMode.NORMAL);
     if (this._playOnceReady) {
-      adsManager.start();
+      this.adsManager.start();
     }
   }
 
   _onContentPauseRequested(adEvent: any) {
-    this.logger.debug("onContentPauseRequested");
+    this.logger.debug("onContentPauseRequested", adEvent);
     this._showAdsContainer();
     this.adsActive = true;
   }
 
   _onContentResumeRequested(adEvent: any) {
-    this.logger.debug("onContentResumeRequested");
+    this.logger.debug("onContentResumeRequested", adEvent);
     if (!this.contentComplete) {
       this._hideAdsContainer();
       this.player.play();
@@ -132,7 +127,8 @@ class ImaPlugin extends BasePlugin {
     }
   }
 
-  _allAdsComplete(adEvent: any) {
+  _onAllAdsComplete(adEvent: any) {
+    this.logger.debug("onAllAdsComplete", adEvent);
     this._hideAdsContainer();
     this._allAdsCompleted = true;
   }
@@ -140,8 +136,8 @@ class ImaPlugin extends BasePlugin {
   _onAdEvent(adEvent: any) {
     this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
     switch (adEvent.type) {
-      case window.google.ima.AdEvent.Type.ALL_ADS_COMPLETED:
-        this._allAdsComplete(adEvent);
+      case this.sdk.AdEvent.Type.ALL_ADS_COMPLETED:
+        this._onAllAdsComplete(adEvent);
         break;
     }
   }
@@ -169,22 +165,48 @@ class ImaPlugin extends BasePlugin {
     this.canPlayMedia = false;
   }
 
+  _loadScriptAsync(url: string): Promise<Object> {
+    if (Array.isArray(url)) {
+      let self = this, prom = [];
+      url.forEach(function (item) {
+        prom.push(self.script(item));
+      });
+      return Promise.all(prom);
+    }
+    return new Promise(function (resolve, reject) {
+      let r = false,
+        t = document.getElementsByTagName("script")[0],
+        s = document.createElement("script");
+      s.type = "text/javascript";
+      s.src = url;
+      s.async = true;
+      s.onload = s.onreadystatechange = function () {
+        if (!r && (!this.readyState || this.readyState == "complete")) {
+          r = true;
+          resolve(this);
+        }
+      };
+      s.onerror = s.onabort = reject;
+      t.parentNode.insertBefore(s, t);
+    });
+  }
+
   initIma(): void {
     if (!document.getElementById("adContainer")) {
+      this.adsManager = null;
       this._adContainerDiv = this.player.getVideoElement().parentNode.appendChild(document.createElement('div'));
       this._adContainerDiv.id = "adContainer";
       this._adContainerDiv.style.position = "absolute";
       this._adContainerDiv.style.zIndex = 2000;
       this._adContainerDiv.style.top = 0;
-      this._adDisplayContainer = new this.imaLib.AdDisplayContainer(this._adContainerDiv, this.player.getVideoElement());
-      this._adsLoader = new this.imaLib.AdsLoader(this._adDisplayContainer);
-      this.adsManager = null;
-      this._adsLoader.addEventListener(this.imaLib.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._onAdsManagerLoaded, false, this);
-      this._adsLoader.addEventListener(this.imaLib.AdErrorEvent.Type.AD_ERROR, this._onAdError, false, this);
+      this._adDisplayContainer = new this.sdk.AdDisplayContainer(this._adContainerDiv, this.player.getVideoElement());
+      this._adsLoader = new this.sdk.AdsLoader(this._adDisplayContainer);
+      this._adsLoader.addEventListener(this.sdk.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._onAdsManagerLoaded.bind(this));
+      this._adsLoader.addEventListener(this.sdk.AdErrorEvent.Type.AD_ERROR, this._onAdError.bind(this));
     }
   }
 
-  playAdNow(tag: String): void {
+  playAdNow(tag: string): void {
     this._resetIma();
     this.config.adTagURL = tag;
     if (!this.playerLoaded) {
@@ -218,7 +240,7 @@ class ImaPlugin extends BasePlugin {
   requestAds(): boolean {
     this.logger.debug("requestAds");
     this._resetIma();
-    let adsRequest = new this.imaLib.AdsRequest();
+    let adsRequest = new this.sdk.AdsRequest();
     if (this.config.adTagURL) {
       adsRequest.adTagUrl = this.config.adTagURL;
     } else {
@@ -235,35 +257,9 @@ class ImaPlugin extends BasePlugin {
 
   destroy(): void {
     this.logger.debug("destroy");
-    this.eventManager.removeAll();
+    this.eventManager.destroy();
     this._resetIma();
   }
 }
 
 registerPlugin(pluginName, ImaPlugin);
-
-function loadScript(url) {
-  if (Array.isArray(url)) {
-    let self = this, prom = [];
-    url.forEach(function (item) {
-      prom.push(self.script(item));
-    });
-    return Promise.all(prom);
-  }
-  return new Promise(function (resolve, reject) {
-    let r = false,
-      t = document.getElementsByTagName("script")[0],
-      s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = url;
-    s.async = true;
-    s.onload = s.onreadystatechange = function () {
-      if (!r && (!this.readyState || this.readyState == "complete")) {
-        r = true;
-        resolve(this);
-      }
-    };
-    s.onerror = s.onabort = reject;
-    t.parentNode.insertBefore(s, t);
-  });
-}
