@@ -166,7 +166,7 @@ class ImaPlugin extends BasePlugin {
     this.canPlayMedia = false;
   }
 
-  _loadScriptAsync(url: string): Promise<Object> {
+  _loadScriptAsync(url: string): Promise<*> {
     if (Array.isArray(url)) {
       let self = this, prom = [];
       url.forEach(function (item) {
@@ -188,7 +188,9 @@ class ImaPlugin extends BasePlugin {
         }
       };
       s.onerror = s.onabort = reject;
-      t.parentNode.insertBefore(s, t);
+      if (t && t.parentNode) {
+        t.parentNode.insertBefore(s, t);
+      }
     });
   }
 
