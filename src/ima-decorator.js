@@ -25,7 +25,7 @@ export default class ImaDecorator extends PlayerDecoratorBase {
   }
 
   play(): void {
-    let promise = new Promise((resolve, reject) => {
+    let promise = new Promise((resolve /*, reject */) => {
       if (!this._plugin.playerLoaded) {
         this.load().then(() => {
           // If we don't have any ads - play the content
@@ -57,7 +57,7 @@ export default class ImaDecorator extends PlayerDecoratorBase {
     }
   }
 
-  playAdNow(adTagURL: String): void {
+  playAdNow(adTagURL: string): void {
     this.pause();
     this._plugin.playAdNow(adTagURL);
   }

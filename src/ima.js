@@ -1,3 +1,4 @@
+//@flow
 import {registerPlugin, BasePlugin, PlayerDecoratorBase} from 'playkit-js'
 import ImaDecorator from './ima-decorator'
 

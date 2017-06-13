@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import {playkit} from 'playkit-js'
 import ima from '../../src/ima'
 
