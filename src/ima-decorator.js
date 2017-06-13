@@ -57,9 +57,9 @@ export default class ImaDecorator extends PlayerDecoratorBase {
     }
   }
 
-  playAdNow(adTagURL: string): void {
+  playAdNow(adTagUrl: string): void {
     this.pause();
-    this._plugin.playAdNow(adTagURL);
+    this._plugin.playAdNow(adTagUrl);
   }
 
   pause(): void {

@@ -5021,9 +5021,9 @@ var ImaDecorator = function (_PlayerDecoratorBase) {
     }
   }, {
     key: 'playAdNow',
-    value: function playAdNow(adTagURL) {
+    value: function playAdNow(adTagUrl) {
       this.pause();
-      this._plugin.playAdNow(adTagURL);
+      this._plugin.playAdNow(adTagUrl);
     }
   }, {
     key: 'pause',
@@ -5261,7 +5261,9 @@ var ImaPlugin = function (_BasePlugin) {
           }
         };
         s.onerror = s.onabort = reject;
-        t.parentNode.insertBefore(s, t);
+        if (t && t.parentNode) {
+          t.parentNode.insertBefore(s, t);
+        }
       });
     }
   }, {
@@ -5284,7 +5286,7 @@ var ImaPlugin = function (_BasePlugin) {
     key: 'playAdNow',
     value: function playAdNow(tag) {
       this._resetIma();
-      this.config.adTagURL = tag;
+      this.config.adTagUrl = tag;
       if (!this.playerLoaded) {
         this.initIma();
         this.playerLoaded = true;
@@ -5322,8 +5324,8 @@ var ImaPlugin = function (_BasePlugin) {
       this.logger.debug("requestAds");
       this._resetIma();
       var adsRequest = new this.sdk.AdsRequest();
-      if (this.config.adTagURL) {
-        adsRequest.adTagUrl = this.config.adTagURL;
+      if (this.config.adTagUrl) {
+        adsRequest.adTagUrl = this.config.adTagUrl;
       } else {
         adsRequest.adsResponse = this.config.adsResponse;
       }

@@ -211,7 +211,7 @@ class ImaPlugin extends BasePlugin {
 
   playAdNow(tag: string): void {
     this._resetIma();
-    this.config.adTagURL = tag;
+    this.config.adTagUrl = tag;
     if (!this.playerLoaded) {
       this.initIma();
       this.playerLoaded = true;
@@ -244,8 +244,8 @@ class ImaPlugin extends BasePlugin {
     this.logger.debug("requestAds");
     this._resetIma();
     let adsRequest = new this.sdk.AdsRequest();
-    if (this.config.adTagURL) {
-      adsRequest.adTagUrl = this.config.adTagURL;
+    if (this.config.adTagUrl) {
+      adsRequest.adTagUrl = this.config.adTagUrl;
     } else {
       adsRequest.adsResponse = this.config.adsResponse;
     }
