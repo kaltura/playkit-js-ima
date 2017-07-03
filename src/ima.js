@@ -15,11 +15,13 @@ export default class Ima extends BasePlugin {
     prerollTimeout: 100,
     adLabel: 'Advertisement',
     showControlsForJSAds: true,
-    enablePreloading: true,
-    useStyledLinearAds: true,
-    useStyledNonLinearAds: true,
-    bitrate: -1,
-    autoAlign: true
+    adsRenderingSettings: {
+      enablePreloading: true,
+      useStyledLinearAds: true,
+      useStyledNonLinearAds: true,
+      bitrate: -1,
+      autoAlign: true
+    }
   };
 
   static IMA_SDK_LIB_URL: string = "//imasdk.googleapis.com/js/sdkloader/ima3.js";
@@ -222,11 +224,11 @@ export default class Ima extends BasePlugin {
     this.logger.debug('Ads manager loaded');
     let adsRenderingSettings = new this._sdk.AdsRenderingSettings();
     adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
-    adsRenderingSettings.enablePreloading = this.config.enablePreloading;
-    adsRenderingSettings.useStyledLinearAds = this.config.useStyledLinearAds;
-    adsRenderingSettings.useStyledNonLinearAds = this.config.useStyledNonLinearAds;
-    adsRenderingSettings.bitrate = this.config.bitrate;
-    adsRenderingSettings.autoAlign = this.config.autoAlign;
+    adsRenderingSettings.enablePreloading = this.config.adsRenderingSettings.enablePreloading;
+    adsRenderingSettings.useStyledLinearAds = this.config.adsRenderingSettings.useStyledLinearAds;
+    adsRenderingSettings.useStyledNonLinearAds = this.config.adsRenderingSettings.useStyledNonLinearAds;
+    adsRenderingSettings.bitrate = this.config.adsRenderingSettings.bitrate;
+    adsRenderingSettings.autoAlign = this.config.adsRenderingSettings.autoAlign;
     this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_PAUSE_REQUESTED, this._fsm.adbreakstart);
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOADED, this._fsm.adsloaded);

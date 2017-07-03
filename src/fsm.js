@@ -91,7 +91,7 @@ export default class FiniteStateMachine {
         onadplaying: function (options) {
           let adEvent = options.args[0];
           this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
-          if (this.config.enablePreloading && !this._playerLoaded) {
+          if (this.config.adsRenderingSettings.enablePreloading && !this._playerLoaded) {
             this.logger.debug("Preloading media");
             this.player.load();
             this._playerLoaded = true;
