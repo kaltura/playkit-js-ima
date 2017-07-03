@@ -3699,7 +3699,15 @@ var FiniteStateMachine = function FiniteStateMachine(context) {
     }, {
       name: context.player.Event.AD_PLAYING,
       from: [_state2.default.LOADED, _state2.default.IDLE, _state2.default.PAUSED],
-      to: _state2.default.PLAYING
+      to: [_state2.default.PLAYING, _state2.default.IDLE],
+      condition: function condition(options) {
+        var adEvent = options.args[0];
+        var ad = adEvent.getAd();
+        if (!ad.isLinear()) {
+          return _state2.default.IDLE;
+        }
+        return _state2.default.PLAYING;
+      }
     }, {
       name: context.player.Event.AD_RESUMED,
       from: _state2.default.PAUSED, to: _state2.default.PLAYING
@@ -3726,7 +3734,8 @@ var FiniteStateMachine = function FiniteStateMachine(context) {
       from: [_state2.default.IDLE, _state2.default.LOADED]
     }, {
       name: context.player.Event.AD_BREAK_END,
-      from: _state2.default.IDLE
+      from: [_state2.default.IDLE, _state2.default.LOADED],
+      to: _state2.default.IDLE
     }, {
       name: context.player.Event.AD_FIRST_QUARTILE,
       from: _state2.default.PLAYING
@@ -3746,18 +3755,33 @@ var FiniteStateMachine = function FiniteStateMachine(context) {
       onadsloaded: function (options) {
         var adEvent = options.args[0];
         this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
+        var playerViewSize = this._getPlayerViewSize();
+        this._adsManager.resize(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
         this.dispatchEvent(options.name, adEvent);
       }.bind(context),
       // STARTED
       onadplaying: function (options) {
+        var _this = this;
+
         var adEvent = options.args[0];
+        var ad = adEvent.getAd();
         this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
-        if (this.config.adsRenderingSettings.enablePreloading && !this._playerLoaded) {
-          this.logger.debug("Preloading media");
-          this.player.load();
+        if (!ad.isLinear()) {
+          this.logger.debug("Playing media");
+          this.player.play();
           this._playerLoaded = true;
+        } else {
+          this._intervalTimer = setInterval(function () {
+            var remainingTime = _this._adsManager.getRemainingTime();
+            _this.logger.debug(remainingTime);
+          }, 300);
+          if (this.config.adsRenderingSettings.enablePreloading && !this._playerLoaded) {
+            this.logger.debug("Preloading media");
+            this.player.load();
+            this._playerLoaded = true;
+          }
         }
-        context.dispatchEvent(options.name, adEvent);
+        this.dispatchEvent(options.name, adEvent);
       }.bind(context),
       // PAUSED
       onadpaused: function (options) {
@@ -3790,7 +3814,12 @@ var FiniteStateMachine = function FiniteStateMachine(context) {
       // COMPLETE
       onadcompleted: function (options) {
         var adEvent = options.args[0];
+        var ad = adEvent.getAd();
         this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
+        if (ad.isLinear()) {
+          clearInterval(this._intervalTimer);
+          this._intervalTimer = null;
+        }
         this.dispatchEvent(options.name, adEvent);
       }.bind(context),
       // ALL_ADS_COMPLETED
@@ -3902,11 +3931,11 @@ var ImaMiddleware = function (_PlayerMiddlewareBase) {
       var _this2 = this;
 
       this.context.prepareIma.then(function () {
-        var stateMachine = _this2.context.getStateMachine();
-        if (stateMachine.is(_state2.default.LOADED)) {
+        var fsm = _this2.context.getStateMachine();
+        if (fsm.is(_state2.default.LOADED)) {
           _this2.context.initialize();
         } else {
-          if (stateMachine.current === _state2.default.PAUSED) {
+          if (fsm.is(_state2.default.PAUSED)) {
             _this2.context.resumeAd();
           } else {
             _get(ImaMiddleware.prototype.__proto__ || Object.getPrototypeOf(ImaMiddleware.prototype), 'play', _this2).call(_this2, next);
@@ -3920,8 +3949,8 @@ var ImaMiddleware = function (_PlayerMiddlewareBase) {
   }, {
     key: 'pause',
     value: function pause(next) {
-      var stateMachine = this.context.getStateMachine();
-      if (stateMachine.is(_state2.default.PLAYING)) {
+      var fsm = this.context.getStateMachine();
+      if (fsm.is(_state2.default.PLAYING)) {
         this.context.pauseAd();
       } else {
         _get(ImaMiddleware.prototype.__proto__ || Object.getPrototypeOf(ImaMiddleware.prototype), 'pause', this).call(this, next);
@@ -6714,7 +6743,7 @@ Promise$2.prototype = {
     The primary way of interacting with a promise is through its `then` method,
     which registers callbacks to receive either a promise's eventual value or the
     reason why the promise cannot be fulfilled.
-
+  
     ```js
     findUser().then(function(user){
       // user is available
@@ -6722,14 +6751,14 @@ Promise$2.prototype = {
       // user is unavailable, and you are given the reason why
     });
     ```
-
+  
     Chaining
     --------
-
+  
     The return value of `then` is itself a promise.  This second, 'downstream'
     promise is resolved with the return value of the first promise's fulfillment
     or rejection handler, or rejected if the handler throws an exception.
-
+  
     ```js
     findUser().then(function (user) {
       return user.name;
@@ -6739,7 +6768,7 @@ Promise$2.prototype = {
       // If `findUser` fulfilled, `userName` will be the user's name, otherwise it
       // will be `'default name'`
     });
-
+  
     findUser().then(function (user) {
       throw new Error('Found user, but still unhappy');
     }, function (reason) {
@@ -6752,7 +6781,7 @@ Promise$2.prototype = {
     });
     ```
     If the downstream promise does not specify a rejection handler, rejection reasons will be propagated further downstream.
-
+  
     ```js
     findUser().then(function (user) {
       throw new PedagogicalException('Upstream error');
@@ -6764,15 +6793,15 @@ Promise$2.prototype = {
       // The `PedgagocialException` is propagated all the way down to here
     });
     ```
-
+  
     Assimilation
     ------------
-
+  
     Sometimes the value you want to propagate to a downstream promise can only be
     retrieved asynchronously. This can be achieved by returning a promise in the
     fulfillment or rejection handler. The downstream promise will then be pending
     until the returned promise is settled. This is called *assimilation*.
-
+  
     ```js
     findUser().then(function (user) {
       return findCommentsByAuthor(user);
@@ -6780,9 +6809,9 @@ Promise$2.prototype = {
       // The user's comments are now available
     });
     ```
-
+  
     If the assimliated promise rejects, then the downstream promise will also reject.
-
+  
     ```js
     findUser().then(function (user) {
       return findCommentsByAuthor(user);
@@ -6792,15 +6821,15 @@ Promise$2.prototype = {
       // If `findCommentsByAuthor` rejects, we'll have the reason here
     });
     ```
-
+  
     Simple Example
     --------------
-
+  
     Synchronous Example
-
+  
     ```javascript
     let result;
-
+  
     try {
       result = findResult();
       // success
@@ -6808,9 +6837,9 @@ Promise$2.prototype = {
       // failure
     }
     ```
-
+  
     Errback Example
-
+  
     ```js
     findResult(function(result, err){
       if (err) {
@@ -6820,9 +6849,9 @@ Promise$2.prototype = {
       }
     });
     ```
-
+  
     Promise Example;
-
+  
     ```javascript
     findResult().then(function(result){
       // success
@@ -6830,15 +6859,15 @@ Promise$2.prototype = {
       // failure
     });
     ```
-
+  
     Advanced Example
     --------------
-
+  
     Synchronous Example
-
+  
     ```javascript
     let author, books;
-
+  
     try {
       author = findAuthor();
       books  = findBooksByAuthor(author);
@@ -6847,19 +6876,19 @@ Promise$2.prototype = {
       // failure
     }
     ```
-
+  
     Errback Example
-
+  
     ```js
-
+  
     function foundBooks(books) {
-
+  
     }
-
+  
     function failure(reason) {
-
+  
     }
-
+  
     findAuthor(function(author, err){
       if (err) {
         failure(err);
@@ -6884,9 +6913,9 @@ Promise$2.prototype = {
       }
     });
     ```
-
+  
     Promise Example;
-
+  
     ```javascript
     findAuthor().
       then(findBooksByAuthor).
@@ -6896,7 +6925,7 @@ Promise$2.prototype = {
       // something went wrong
     });
     ```
-
+  
     @method then
     @param {Function} onFulfilled
     @param {Function} onRejected
@@ -6908,25 +6937,25 @@ Promise$2.prototype = {
   /**
     `catch` is simply sugar for `then(undefined, onRejection)` which makes it the same
     as the catch block of a try/catch statement.
-
+  
     ```js
     function findAuthor(){
       throw new Error('couldn't find that author');
     }
-
+  
     // synchronous
     try {
       findAuthor();
     } catch(reason) {
       // something went wrong
     }
-
+  
     // async with promises
     findAuthor().catch(function(reason){
       // something went wrong
     });
     ```
-
+  
     @method catch
     @param {Function} onRejection
     Useful for tooling.
@@ -26651,10 +26680,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 // import {registerPlugin, BasePlugin} from 'playkit-js'
 
 
+// import {VERSION} from 'playkit-js'
 // import {PlayerMiddlewareBase} from 'playkit-js'
 
 var pluginName = "ima";
+
 var ADS_CONTAINER_ID = "ads-container";
+var PLAYER_NAME = "kaltura-player-js";
 
 var Ima = function (_BasePlugin) {
   _inherits(Ima, _BasePlugin);
@@ -26672,6 +26704,7 @@ var Ima = function (_BasePlugin) {
     var _this = _possibleConstructorReturn(this, (Ima.__proto__ || Object.getPrototypeOf(Ima)).call(this, name, player, config));
 
     _this._fsm = new _fsm2.default(_this);
+    _this._intervalTimer = null;
     _this._adsManager = null;
     _this._contentComplete = false;
     _this._playerLoaded = false;
@@ -26706,11 +26739,14 @@ var Ima = function (_BasePlugin) {
   }, {
     key: 'initialize',
     value: function initialize() {
-      var playerViewSize = this._getPlayerViewSize();
       try {
+        var playerViewSize = this._getPlayerViewSize();
+        // Initialize the container.
         this._adDisplayContainer.initialize();
-        // TODO: Handle full screen
+        // Initialize the ads manager. Ad rules playlist will start at this time.
         this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
+        // Call play to start showing the ad. Single video and overlay ads will
+        // start at this time; the call will be ignored for ad rules.
         this._adsManager.start();
       } catch (adError) {
         this.logger.error(adError);
@@ -26749,9 +26785,7 @@ var Ima = function (_BasePlugin) {
           _this2._sdk = window.google.ima;
           _this2.logger.debug("IMA SDK version: " + _this2._sdk.VERSION);
           try {
-            _this2._initAdsContainer();
-            _this2._initAdsLoader(resolve);
-            _this2._requestAds();
+            _this2._requestAds(resolve);
           } catch (e) {
             reject(e);
           }
@@ -26764,22 +26798,16 @@ var Ima = function (_BasePlugin) {
       this.logger.debug("Init ads container");
       var adsContainerDiv = document.getElementById(ADS_CONTAINER_ID);
       var playerView = this.player.getView();
-      if (!playerView) {
-        throw new Error("Cannot create ads container div");
+      if (!adsContainerDiv) {
+        this._adsContainerDiv = playerView.appendChild(document.createElement('div'));
+        this._adsContainerDiv.id = ADS_CONTAINER_ID;
+        this._adsContainerDiv.style.position = "absolute";
+        this._adsContainerDiv.style.zIndex = "2000";
+        this._adsContainerDiv.style.top = "8px";
       } else {
-        if (!adsContainerDiv) {
-          this._adsContainerDiv = playerView.appendChild(document.createElement('div'));
-          this._adsContainerDiv.id = ADS_CONTAINER_ID;
-          this._adsContainerDiv.style.position = "absolute";
-          this._adsContainerDiv.style.zIndex = "2000";
-          this._adsContainerDiv.style.top = "8px";
-        } else {
-          this._adsContainerDiv = adsContainerDiv;
-        }
-        this._adDisplayContainer = new this._sdk.AdDisplayContainer(this._adsContainerDiv, this.player.getVideoElement());
-        // TODO: Must be done as the result of a user action on mobile
-        this._adDisplayContainer.initialize();
+        this._adsContainerDiv = adsContainerDiv;
       }
+      this._adDisplayContainer = new this._sdk.AdDisplayContainer(this._adsContainerDiv, this.player.getVideoElement());
     }
   }, {
     key: '_initAdsLoader',
@@ -26791,14 +26819,20 @@ var Ima = function (_BasePlugin) {
     }
   }, {
     key: '_requestAds',
-    value: function _requestAds() {
+    value: function _requestAds(resolve) {
       this.logger.debug("Request ads");
       if (!this.config.adTagUrl && !this.config.adsResponse) {
         throw new Error("Missing ad tag url for ima plugin");
       } else {
-        this._reset();
-        var adsRequest = new this._sdk.AdsRequest();
+        this._sdk.settings.setPlayerType(PLAYER_NAME);
+        this._sdk.settings.setPlayerVersion(_playkit.VERSION);
+        // Create the ad display container.
+        this._initAdsContainer();
+        // Create ads loader.
+        this._initAdsLoader(resolve);
+        // Request video ads.
         var playerViewSize = this._getPlayerViewSize();
+        var adsRequest = new this._sdk.AdsRequest();
         if (this.config.adTagUrl) {
           adsRequest.adTagUrl = this.config.adTagUrl;
         } else {
@@ -26807,7 +26841,8 @@ var Ima = function (_BasePlugin) {
         adsRequest.linearAdSlotWidth = playerViewSize.width;
         adsRequest.linearAdSlotHeight = playerViewSize.height;
         adsRequest.nonLinearAdSlotWidth = playerViewSize.width;
-        adsRequest.nonLinearAdSlotHeight = playerViewSize.height;
+        adsRequest.nonLinearAdSlotHeight = playerViewSize.height <= 150 ? playerViewSize.height : 150;
+        adsRequest.setAdWillAutoPlay(this.player.config.playback.autoplay);
         this._adsLoader.requestAds(adsRequest);
       }
     }
@@ -26861,12 +26896,16 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_showAdsContainer',
     value: function _showAdsContainer() {
-      this._adsContainerDiv.style.display = "";
+      if (this._adsContainerDiv) {
+        this._adsContainerDiv.style.display = "";
+      }
     }
   }, {
     key: '_hideAdsContainer',
     value: function _hideAdsContainer() {
-      this._adsContainerDiv.style.display = "none";
+      if (this._adsContainerDiv) {
+        this._adsContainerDiv.style.display = "none";
+      }
     }
   }, {
     key: '_onAdsManagerLoaded',
@@ -26900,7 +26939,7 @@ var Ima = function (_BasePlugin) {
     }
   }, {
     key: '_reset',
-    value: function _resetIma() {
+    value: function _reset() {
       this._hideAdsContainer();
       if (this._adsManager) {
         this._adsManager.destroy();
@@ -26911,6 +26950,13 @@ var Ima = function (_BasePlugin) {
       }
       this._contentComplete = false;
       this._playerLoaded = false;
+      this._intervalTimer = null;
+      this._contentPlayheadTracker = {
+        currentTime: 0,
+        previousTime: 0,
+        seeking: false,
+        duration: 0
+      };
     }
   }, {
     key: '_loadIma',
