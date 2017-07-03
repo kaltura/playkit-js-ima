@@ -2,10 +2,13 @@
 // import {registerPlugin, BasePlugin} from 'playkit-js'
 import ImaMiddleware from './ima-middleware'
 import FiniteStateMachine from './fsm'
+// import {VERSION} from 'playkit-js'
 // import {PlayerMiddlewareBase} from 'playkit-js'
 
 const pluginName: string = "ima";
+
 const ADS_CONTAINER_ID: string = "ads-container";
+const PLAYER_NAME: string = "kaltura-player-js";
 
 export default class Ima extends BasePlugin {
 
@@ -38,6 +41,7 @@ export default class Ima extends BasePlugin {
   _contentPlayheadTracker: Object;
   _contentComplete: boolean;
   _playerLoaded: boolean;
+  _intervalTimer: ?number;
 
   static isValid() {
     return true;
@@ -46,6 +50,7 @@ export default class Ima extends BasePlugin {
   constructor(name: string, player: Player, config: Object) {
     super(name, player, config);
     this._fsm = new FiniteStateMachine(this);
+    this._intervalTimer = null;
     this._adsManager = null;
     this._contentComplete = false;
     this._playerLoaded = false;
@@ -70,14 +75,18 @@ export default class Ima extends BasePlugin {
   destroy(): void {
     this.logger.debug("destroy");
     this.eventManager.destroy();
-    this._resetIma();
+    this._reset();
   }
 
   initialize() {
     try {
       let playerViewSize = this._getPlayerViewSize();
+      // Initialize the container.
       this._adDisplayContainer.initialize();
+      // Initialize the ads manager. Ad rules playlist will start at this time.
       this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
+      // Call play to start showing the ad. Single video and overlay ads will
+      // start at this time; the call will be ignored for ad rules.
       this._adsManager.start();
     }
     catch (adError) {
@@ -111,9 +120,7 @@ export default class Ima extends BasePlugin {
         this._sdk = window.google.ima;
         this.logger.debug("IMA SDK version: " + this._sdk.VERSION);
         try {
-          this._initAdsContainer();
-          this._initAdsLoader(resolve);
-          this._requestAds();
+          this._requestAds(resolve);
         } catch (e) {
           reject(e);
         }
@@ -125,22 +132,16 @@ export default class Ima extends BasePlugin {
     this.logger.debug("Init ads container");
     let adsContainerDiv = document.getElementById(ADS_CONTAINER_ID);
     let playerView = this.player.getView();
-    if (!playerView) {
-      throw new Error("Cannot create ads container div");
+    if (!adsContainerDiv) {
+      this._adsContainerDiv = playerView.appendChild(document.createElement('div'));
+      this._adsContainerDiv.id = ADS_CONTAINER_ID;
+      this._adsContainerDiv.style.position = "absolute";
+      this._adsContainerDiv.style.zIndex = "2000";
+      this._adsContainerDiv.style.top = "8px";
     } else {
-      if (!adsContainerDiv) {
-        this._adsContainerDiv = playerView.appendChild(document.createElement('div'));
-        this._adsContainerDiv.id = ADS_CONTAINER_ID;
-        this._adsContainerDiv.style.position = "absolute";
-        this._adsContainerDiv.style.zIndex = "2000";
-        this._adsContainerDiv.style.top = "8px";
-      } else {
-        this._adsContainerDiv = adsContainerDiv;
-      }
-      this._adDisplayContainer = new this._sdk.AdDisplayContainer(this._adsContainerDiv, this.player.getVideoElement());
-      // TODO: Must be done as the result of a user action on mobile
-      this._adDisplayContainer.initialize();
+      this._adsContainerDiv = adsContainerDiv;
     }
+    this._adDisplayContainer = new this._sdk.AdDisplayContainer(this._adsContainerDiv, this.player.getVideoElement());
   }
 
   _initAdsLoader(resolve: Function): void {
@@ -150,14 +151,20 @@ export default class Ima extends BasePlugin {
     this._adsLoader.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, this._fsm.aderror);
   }
 
-  _requestAds(): void {
+  _requestAds(resolve: Function): void {
     this.logger.debug("Request ads");
     if (!this.config.adTagUrl && !this.config.adsResponse) {
       throw new Error("Missing ad tag url for ima plugin");
     } else {
-      this._resetIma();
-      let adsRequest = new this._sdk.AdsRequest();
+      this._sdk.settings.setPlayerType(PLAYER_NAME);
+      this._sdk.settings.setPlayerVersion(VERSION);
+      // Create the ad display container.
+      this._initAdsContainer();
+      // Create ads loader.
+      this._initAdsLoader(resolve);
+      // Request video ads.
       let playerViewSize = this._getPlayerViewSize();
+      let adsRequest = new this._sdk.AdsRequest();
       if (this.config.adTagUrl) {
         adsRequest.adTagUrl = this.config.adTagUrl;
       } else {
@@ -166,7 +173,7 @@ export default class Ima extends BasePlugin {
       adsRequest.linearAdSlotWidth = playerViewSize.width;
       adsRequest.linearAdSlotHeight = playerViewSize.height;
       adsRequest.nonLinearAdSlotWidth = playerViewSize.width;
-      adsRequest.nonLinearAdSlotHeight = playerViewSize.height;
+      adsRequest.nonLinearAdSlotHeight = playerViewSize.height <= 150 ? playerViewSize.height : 150;
       adsRequest.setAdWillAutoPlay(this.player.config.playback.autoplay);
       this._adsLoader.requestAds(adsRequest);
     }
@@ -213,11 +220,15 @@ export default class Ima extends BasePlugin {
   }
 
   _showAdsContainer(): void {
-    this._adsContainerDiv.style.display = "";
+    if (this._adsContainerDiv) {
+      this._adsContainerDiv.style.display = "";
+    }
   }
 
   _hideAdsContainer(): void {
-    this._adsContainerDiv.style.display = "none";
+    if (this._adsContainerDiv) {
+      this._adsContainerDiv.style.display = "none";
+    }
   }
 
   _onAdsManagerLoaded(resolve: Function, adsManagerLoadedEvent: any): void {
@@ -249,7 +260,7 @@ export default class Ima extends BasePlugin {
     });
   }
 
-  _resetIma(): void {
+  _reset(): void {
     this._hideAdsContainer();
     if (this._adsManager) {
       this._adsManager.destroy();
@@ -260,6 +271,13 @@ export default class Ima extends BasePlugin {
     }
     this._contentComplete = false;
     this._playerLoaded = false;
+    this._intervalTimer = null;
+    this._contentPlayheadTracker = {
+      currentTime: 0,
+      previousTime: 0,
+      seeking: false,
+      duration: 0
+    };
   }
 
   _loadIma(): Promise<*> {
@@ -288,6 +306,7 @@ export default class Ima extends BasePlugin {
 registerPlugin(pluginName, Ima);
 
 // TODO: Remove
+import {VERSION} from '../node_modules/playkit-js/src/playkit.js'
 import {registerPlugin, BasePlugin} from '../node_modules/playkit-js/src/playkit.js'
 import {PlayerMiddlewareBase} from '../node_modules/playkit-js/src/playkit.js'
 import * as Playkit from '../node_modules/playkit-js/src/playkit.js'

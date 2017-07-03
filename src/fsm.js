@@ -25,7 +25,15 @@ export default class FiniteStateMachine {
         {
           name: context.player.Event.AD_PLAYING,
           from: [State.LOADED, State.IDLE, State.PAUSED],
-          to: State.PLAYING
+          to: [State.PLAYING, State.IDLE],
+          condition: function (options) {
+            let adEvent = options.args[0];
+            let ad = adEvent.getAd();
+            if (!ad.isLinear()) {
+              return State.IDLE;
+            }
+            return State.PLAYING;
+          }
         },
         {
           name: context.player.Event.AD_RESUMED,
@@ -93,11 +101,22 @@ export default class FiniteStateMachine {
         // STARTED
         onadplaying: function (options) {
           let adEvent = options.args[0];
+          let ad = adEvent.getAd();
           this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
-          if (this.config.adsRenderingSettings.enablePreloading && !this._playerLoaded) {
-            this.logger.debug("Preloading media");
-            this.player.load();
+          if (!ad.isLinear()) {
+            this.logger.debug("Playing media");
+            this.player.play();
             this._playerLoaded = true;
+          } else {
+            this._intervalTimer = setInterval(() => {
+              let remainingTime = this._adsManager.getRemainingTime();
+              this.logger.debug(remainingTime);
+            }, 300);
+            if (this.config.adsRenderingSettings.enablePreloading && !this._playerLoaded) {
+              this.logger.debug("Preloading media");
+              this.player.load();
+              this._playerLoaded = true;
+            }
           }
           this.dispatchEvent(options.name, adEvent);
         }.bind(context),
@@ -132,7 +151,12 @@ export default class FiniteStateMachine {
         // COMPLETE
         onadcompleted: function (options) {
           let adEvent = options.args[0];
+          let ad = adEvent.getAd();
           this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
+          if (ad.isLinear()) {
+            clearInterval(this._intervalTimer);
+            this._intervalTimer = null;
+          }
           this.dispatchEvent(options.name, adEvent);
         }.bind(context),
         // ALL_ADS_COMPLETED
