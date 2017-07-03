@@ -8,22 +8,77 @@ export default class FiniteStateMachine {
       initial: State.STARTING,
       final: State.DONE,
       events: [
-        {name: 'loading', from: State.STARTING, to: State.LOADING},
-        {name: 'loaded', from: State.LOADING, to: State.LOADED},
-        {name: context.player.Event.ADS_LOADED, from: [State.IDLE, State.LOADED]},
-        {name: context.player.Event.AD_PLAYING, from: [State.LOADED, State.IDLE, State.PAUSED], to: State.PLAYING},
-        {name: context.player.Event.AD_RESUMED, from: State.PAUSED, to: State.PLAYING},
-        {name: context.player.Event.AD_PAUSED, from: State.PLAYING, to: State.PAUSED},
-        {name: context.player.Event.AD_CLICKED, from: [State.PLAYING, State.PAUSED]},
-        {name: context.player.Event.AD_SKIPPED, from: [State.PLAYING, State.PAUSED], to: State.IDLE},
-        {name: context.player.Event.AD_COMPLETED, from: State.PLAYING, to: State.IDLE},
-        {name: context.player.Event.ALL_ADS_COMPLETED, from: State.IDLE, to: State.DONE},
-        {name: context.player.Event.AD_BREAK_START, from: [State.IDLE, State.LOADED]},
-        {name: context.player.Event.AD_BREAK_END, from: State.IDLE},
-        {name: context.player.Event.AD_FIRST_QUARTILE, from: State.PLAYING},
-        {name: context.player.Event.AD_MIDPOINT, from: State.PLAYING},
-        {name: context.player.Event.AD_THIRD_QUARTILE, from: State.PLAYING},
-        {name: context.player.Event.AD_ERROR, from: [State.LOADED, State.PLAYING, State.PAUSED], to: State.IDLE},
+        {
+          name: 'loading',
+          from: State.STARTING,
+          to: State.LOADING
+        },
+        {
+          name: 'loaded',
+          from: State.LOADING,
+          to: State.LOADED
+        },
+        {
+          name: context.player.Event.ADS_LOADED,
+          from: [State.IDLE, State.LOADED]
+        },
+        {
+          name: context.player.Event.AD_PLAYING,
+          from: [State.LOADED, State.IDLE, State.PAUSED],
+          to: State.PLAYING
+        },
+        {
+          name: context.player.Event.AD_RESUMED,
+          from: State.PAUSED, to: State.PLAYING
+        },
+        {
+          name: context.player.Event.AD_PAUSED,
+          from: State.PLAYING, to: State.PAUSED
+        },
+        {
+          name: context.player.Event.AD_CLICKED,
+          from: [State.PLAYING, State.PAUSED]
+        },
+        {
+          name: context.player.Event.AD_SKIPPED,
+          from: [State.PLAYING, State.PAUSED],
+          to: State.IDLE
+        },
+        {
+          name: context.player.Event.AD_COMPLETED,
+          from: State.PLAYING,
+          to: State.IDLE
+        },
+        {
+          name: context.player.Event.ALL_ADS_COMPLETED,
+          from: State.IDLE,
+          to: State.DONE
+        },
+        {
+          name: context.player.Event.AD_BREAK_START,
+          from: [State.IDLE, State.LOADED]
+        },
+        {
+          name: context.player.Event.AD_BREAK_END,
+          from: State.IDLE
+        },
+        {
+          name: context.player.Event.AD_FIRST_QUARTILE,
+          from: State.PLAYING
+        },
+        {
+          name: context.player.Event.AD_MIDPOINT,
+          from: State.PLAYING
+        },
+        {
+          name: context.player.Event.AD_THIRD_QUARTILE,
+          from: State.PLAYING
+        },
+        {
+          name: context.player.Event.AD_ERROR,
+          from: [State.LOADED, State.PLAYING, State.PAUSED, State.LOADING],
+          to: State.IDLE
+        },
       ],
       callbacks: {
         // LOADED
@@ -36,7 +91,7 @@ export default class FiniteStateMachine {
         onadplaying: function (options) {
           let adEvent = options.args[0];
           this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
-          if (this.config.mediaPreloading && !this._playerLoaded) {
+          if (this.config.enablePreloading && !this._playerLoaded) {
             this.logger.debug("Preloading media");
             this.player.load();
             this._playerLoaded = true;
@@ -127,6 +182,7 @@ export default class FiniteStateMachine {
           this.logger.error(adError);
           this.destroy();
         }.bind(context),
+        // When entering any state
         onenter: function (options) {
           this.logger.debug("Change state: " + options.from + " --> " + options.to);
         }.bind(context),

@@ -16,7 +16,7 @@ export default class ImaMiddleware extends PlayerMiddlewareBase {
       .then(() => {
         let stateMachine = this.context.getStateMachine();
         if (stateMachine.is(State.LOADED)) {
-          this.context.start();
+          this.context.initialize();
         } else {
           if (stateMachine.current === State.PAUSED) {
             this.context.resumeAd();

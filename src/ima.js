@@ -15,7 +15,11 @@ export default class Ima extends BasePlugin {
     prerollTimeout: 100,
     adLabel: 'Advertisement',
     showControlsForJSAds: true,
-    mediaPreloading: true
+    enablePreloading: true,
+    useStyledLinearAds: true,
+    useStyledNonLinearAds: true,
+    bitrate: -1,
+    autoAlign: true
   };
 
   static IMA_SDK_LIB_URL: string = "//imasdk.googleapis.com/js/sdkloader/ima3.js";
@@ -67,19 +71,17 @@ export default class Ima extends BasePlugin {
     this._resetIma();
   }
 
-  start() {
+  initialize() {
     let playerViewSize = this._getPlayerViewSize();
-    if (playerViewSize) {
-      try {
-        this._adDisplayContainer.initialize();
-        // TODO: Handle full screen
-        this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
-        this._adsManager.start();
-      }
-      catch (adError) {
-        this.logger.error(adError);
-        this.destroy();
-      }
+    try {
+      this._adDisplayContainer.initialize();
+      // TODO: Handle full screen
+      this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
+      this._adsManager.start();
+    }
+    catch (adError) {
+      this.logger.error(adError);
+      this.destroy();
     }
   }
 
@@ -106,6 +108,7 @@ export default class Ima extends BasePlugin {
       let loadPromise = (window.google && window.google.ima) ? Promise.resolve() : this._loadIma();
       loadPromise.then(() => {
         this._sdk = window.google.ima;
+        this.logger.debug("IMA SDK version: " + this._sdk.VERSION);
         try {
           this._initAdsContainer();
           this._initAdsLoader(resolve);
@@ -121,15 +124,15 @@ export default class Ima extends BasePlugin {
     this.logger.debug("Init ads container");
     let adsContainerDiv = document.getElementById(ADS_CONTAINER_ID);
     let playerView = this.player.getView();
-    if (!playerView || !playerView.parentNode) {
+    if (!playerView) {
       throw new Error("Cannot create ads container div");
     } else {
       if (!adsContainerDiv) {
-        this._adsContainerDiv = playerView.parentNode.appendChild(document.createElement('div'));
+        this._adsContainerDiv = playerView.appendChild(document.createElement('div'));
         this._adsContainerDiv.id = ADS_CONTAINER_ID;
         this._adsContainerDiv.style.position = "absolute";
         this._adsContainerDiv.style.zIndex = "2000";
-        this._adsContainerDiv.style.top = "0";
+        this._adsContainerDiv.style.top = "8px";
       } else {
         this._adsContainerDiv = adsContainerDiv;
       }
@@ -148,36 +151,37 @@ export default class Ima extends BasePlugin {
 
   _requestAds(): void {
     this.logger.debug("Request ads");
-    this._resetIma();
-    let adsRequest = new this._sdk.AdsRequest();
-    if (this.config.adTagUrl) {
-      adsRequest.adTagUrl = this.config.adTagUrl;
-    } else {
-      adsRequest.adsResponse = this.config.adsResponse;
-    }
-    if (!adsRequest.adTagUrl && !adsRequest.adsResponse) {
+    if (!this.config.adTagUrl && !this.config.adsResponse) {
       throw new Error("Missing ad tag url for ima plugin");
+    } else {
+      this._resetIma();
+      let adsRequest = new this._sdk.AdsRequest();
+      let playerViewSize = this._getPlayerViewSize();
+      if (this.config.adTagUrl) {
+        adsRequest.adTagUrl = this.config.adTagUrl;
+      } else {
+        adsRequest.adsResponse = this.config.adsResponse;
+      }
+      adsRequest.linearAdSlotWidth = playerViewSize.width;
+      adsRequest.linearAdSlotHeight = playerViewSize.height;
+      adsRequest.nonLinearAdSlotWidth = playerViewSize.width;
+      adsRequest.nonLinearAdSlotHeight = playerViewSize.height;
+      this._adsLoader.requestAds(adsRequest);
     }
-    //TODO: Handle non-linear
-    this._adsLoader.requestAds(adsRequest);
   }
 
   _onResize() {
     if (this._sdk && this._adsManager) {
       let playerViewSize = this._getPlayerViewSize();
-      if (playerViewSize) {
-        this._adsManager.resize(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
-      }
+      this._adsManager.resize(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
     }
   }
 
-  _getPlayerViewSize(): ?Object {
+  _getPlayerViewSize(): Object {
     let playerView = this.player.getView();
-    if (playerView) {
-      let width = parseInt(getComputedStyle(playerView).width, 10);
-      let height = parseInt(getComputedStyle(playerView).height, 10);
-      return {width: width, height: height};
-    }
+    let width = playerView ? parseInt(getComputedStyle(playerView).width, 10) : 640;
+    let height = playerView ? parseInt(getComputedStyle(playerView).height, 10) : 360;
+    return {width: width, height: height};
   }
 
   _onLoadedMetadata(): void {
@@ -218,7 +222,11 @@ export default class Ima extends BasePlugin {
     this.logger.debug('Ads manager loaded');
     let adsRenderingSettings = new this._sdk.AdsRenderingSettings();
     adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
-    adsRenderingSettings.enablePreloading = true;
+    adsRenderingSettings.enablePreloading = this.config.enablePreloading;
+    adsRenderingSettings.useStyledLinearAds = this.config.useStyledLinearAds;
+    adsRenderingSettings.useStyledNonLinearAds = this.config.useStyledNonLinearAds;
+    adsRenderingSettings.bitrate = this.config.bitrate;
+    adsRenderingSettings.autoAlign = this.config.autoAlign;
     this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_PAUSE_REQUESTED, this._fsm.adbreakstart);
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOADED, this._fsm.adsloaded);
