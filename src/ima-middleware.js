@@ -14,11 +14,11 @@ export default class ImaMiddleware extends PlayerMiddlewareBase {
   play(next: Function): void {
     this.context.prepareIma
       .then(() => {
-        let stateMachine = this.context.getStateMachine();
-        if (stateMachine.is(State.LOADED)) {
+        let fsm = this.context.getStateMachine();
+        if (fsm.is(State.LOADED)) {
           this.context.initialize();
         } else {
-          if (stateMachine.current === State.PAUSED) {
+          if (fsm.is(State.PAUSED)) {
             this.context.resumeAd();
           } else {
             super.play(next);
@@ -32,8 +32,8 @@ export default class ImaMiddleware extends PlayerMiddlewareBase {
   }
 
   pause(next: Function): void {
-    let stateMachine = this.context.getStateMachine();
-    if (stateMachine.is(State.PLAYING)) {
+    let fsm = this.context.getStateMachine();
+    if (fsm.is(State.PLAYING)) {
       this.context.pauseAd();
     } else {
       super.pause(next);

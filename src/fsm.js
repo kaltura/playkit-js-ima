@@ -79,7 +79,7 @@ export default class FiniteStateMachine {
           name: context.player.Event.AD_ERROR,
           from: [State.LOADED, State.PLAYING, State.PAUSED, State.LOADING],
           to: State.IDLE
-        },
+        }
       ],
       callbacks: {
         // LOADED
@@ -99,7 +99,7 @@ export default class FiniteStateMachine {
             this.player.load();
             this._playerLoaded = true;
           }
-          context.dispatchEvent(options.name, adEvent);
+          this.dispatchEvent(options.name, adEvent);
         }.bind(context),
         // PAUSED
         onadpaused: function (options) {
@@ -188,7 +188,7 @@ export default class FiniteStateMachine {
         // When entering any state
         onenter: function (options) {
           this.logger.debug("Change state: " + options.from + " --> " + options.to);
-        }.bind(context),
+        }.bind(context)
       }
     });
   }
