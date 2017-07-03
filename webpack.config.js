@@ -4,19 +4,18 @@ const webpack = require("webpack");
 const path = require("path");
 const PROD = (process.env.NODE_ENV === 'production');
 
-let plugins = PROD ? [new webpack.optimize.UglifyJsPlugin({sourceMap: true})] : [];
-
 module.exports = {
   context: __dirname + "/src",
-  entry: {
-    "playkit-js-ima": "ima.js"
-  },
+  entry: PROD ? {"playkit-ima.min": "ima.js"} : {"playkit-ima": "ima.js"},
   output: {
-    path: path.join(__dirname, "dist"),
-    filename: '[name].js'
+    path: __dirname + "/dist",
+    filename: '[name].js',
+    library: "PlaykitJsIma",
+    libraryTarget: "umd",
+    devtoolModuleFilenameTemplate: "webpack:///ima/[resource-path]",
   },
   devtool: 'source-map',
-  plugins: plugins,
+  plugins: PROD ? [new webpack.optimize.UglifyJsPlugin({sourceMap: true})] : [],
   module: {
     rules: [{
       test: /\.js$/,
@@ -29,8 +28,7 @@ module.exports = {
     }, {
       test: /\.js$/,
       exclude: [
-        /node_modules/,
-        /Applications\/XAMPP\/xamppfiles\/htdocs\/repo\/playkit-js/,
+        /node_modules/
       ],
       enforce: 'pre',
       use: [{
@@ -41,6 +39,13 @@ module.exports = {
           }
         }
       }],
+    }, {
+      test: /\.css$/,
+      use: [{
+        loader: "style-loader"
+      }, {
+        loader: "css-loader"
+      }]
     }]
   },
   devServer: {
@@ -51,5 +56,13 @@ module.exports = {
       path.resolve(__dirname, "src"),
       "node_modules"
     ]
+  },
+  externals: {
+    "playkit-js": {
+      commonjs: "playkit-js",
+      commonjs2: "playkit-js",
+      amd: "playkit-js",
+      root: "Playkit"
+    }
   }
 };

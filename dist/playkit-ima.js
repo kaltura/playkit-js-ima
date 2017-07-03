@@ -286,18 +286,18 @@ var Ima = function (_BasePlugin) {
       if (videoElement) {
         if (!adsContainerDiv) {
           if (videoElement.parentNode) {
-            this._adContainerDiv = videoElement.parentNode.appendChild(document.createElement('div'));
-            this._adContainerDiv.id = "adContainer";
-            this._adContainerDiv.style.position = "absolute";
-            this._adContainerDiv.style.zIndex = "2000";
-            this._adContainerDiv.style.top = "0";
+            this._adsContainerDiv = videoElement.parentNode.appendChild(document.createElement('div'));
+            this._adsContainerDiv.id = "adContainer";
+            this._adsContainerDiv.style.position = "absolute";
+            this._adsContainerDiv.style.zIndex = "2000";
+            this._adsContainerDiv.style.top = "0";
           } else {
             return false;
           }
         } else {
-          this._adContainerDiv = adsContainerDiv;
+          this._adsContainerDiv = adsContainerDiv;
         }
-        this._adDisplayContainer = new this._sdk.AdDisplayContainer(this._adContainerDiv, videoElement);
+        this._adDisplayContainer = new this._sdk.AdDisplayContainer(this._adsContainerDiv, videoElement);
         this._adDisplayContainer.initialize();
         return true;
       }
@@ -364,12 +364,12 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_showAdsContainer',
     value: function _showAdsContainer() {
-      this._adContainerDiv.style.display = "";
+      this._adsContainerDiv.style.display = "";
     }
   }, {
     key: '_hideAdsContainer',
     value: function _hideAdsContainer() {
-      this._adContainerDiv.style.display = "none";
+      this._adsContainerDiv.style.display = "none";
     }
   }, {
     key: '_onAdsManagerLoaded',

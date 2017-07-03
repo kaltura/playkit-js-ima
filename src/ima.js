@@ -1,35 +1,37 @@
-//@flow
-import {registerPlugin, BasePlugin, PlayerDecoratorBase} from 'playkit-js'
-import ImaDecorator from './ima-decorator'
+// @flow
+// import {registerPlugin, BasePlugin} from 'playkit-js'
+import ImaMiddleware from './ima-middleware'
+import FiniteStateMachine from './fsm'
+// import {PlayerMiddlewareBase} from 'playkit-js'
 
-const pluginName = "ima";
+const pluginName: string = "ima";
+const ADS_CONTAINER_ID: string = "ads-container";
 
-class ImaPlugin extends BasePlugin {
+export default class Ima extends BasePlugin {
 
   static defaultConfig: Object = {
     debug: false,
     timeout: 5000,
     prerollTimeout: 100,
     adLabel: 'Advertisement',
-    showControlsForJSAds: true
+    showControlsForJSAds: true,
+    mediaPreloading: true
   };
 
-  static IMA_SDK_LIB_URL: string = "//imasdk.googleapis.com/js/sdkloader/ima3_debug.js";
+  static IMA_SDK_LIB_URL: string = "//imasdk.googleapis.com/js/sdkloader/ima3.js";
+  static IMA_SDK_DEBUG_LIB_URL: string = "//imasdk.googleapis.com/js/sdkloader/ima3_debug.js";
 
-  sdk: any;
-  imaPromise: Promise<*>;
-  mediaLoaded: boolean;
-  canPlayMedia: boolean;
-  playerLoaded: boolean;
-  initComplete: boolean;
-  adsActive: boolean;
-  adsManager: any;
-  _adContainerDiv: HTMLDivElement;
+  prepareIma: Promise<*>;
+
+  _fsm: any;
+  _sdk: any;
+  _adsContainerDiv: HTMLElement;
   _adDisplayContainer: any;
+  _adsManager: any;
   _adsLoader: any;
-  _playOnceReady: boolean;
-  _allAdsCompleted: boolean;
   _contentPlayheadTracker: Object;
+  _contentComplete: boolean;
+  _playerLoaded: boolean;
 
   static isValid() {
     return true;
@@ -37,13 +39,10 @@ class ImaPlugin extends BasePlugin {
 
   constructor(name: string, player: Player, config: Object) {
     super(name, player, config);
-    this.imaPromise = this._loadScriptAsync(ImaPlugin.IMA_SDK_LIB_URL);
-    this.mediaLoaded = false;
-    this.canPlayMedia = false;
-    this.playerLoaded = false;
-    this.initComplete = false;
-    this.adsActive = false;
-    this._playOnceReady = false;
+    this._fsm = new FiniteStateMachine(this);
+    this._adsManager = null;
+    this._contentComplete = false;
+    this._playerLoaded = false;
     this._contentPlayheadTracker = {
       currentTime: 0,
       previousTime: 0,
@@ -51,138 +50,219 @@ class ImaPlugin extends BasePlugin {
       duration: 0
     };
     this._addBindings();
+    this._init();
+  }
+
+  getStateMachine(): any {
+    return this._fsm;
+  }
+
+  getPlayerMiddleware(): PlayerMiddlewareBase {
+    return new ImaMiddleware(this);
+  }
+
+  destroy(): void {
+    this.logger.debug("destroy");
+    this.eventManager.destroy();
+    this._resetIma();
+  }
+
+  start() {
+    let playerViewSize = this._getPlayerViewSize();
+    if (playerViewSize) {
+      try {
+        this._adDisplayContainer.initialize();
+        // TODO: Handle full screen
+        this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
+        this._adsManager.start();
+      }
+      catch (adError) {
+        this.logger.error(adError);
+        this.destroy();
+      }
+    }
+  }
+
+  resumeAd(): void {
+    this._adsManager.resume();
+  }
+
+  pauseAd(): void {
+    this._adsManager.pause();
   }
 
   _addBindings(): void {
-    this.eventManager.listen(this.player, this.player.Event.TIME_UPDATE, this._updateCurrentTime.bind(this));
-    this.eventManager.listen(this.player, this.player.Event.ENDED, this._mediaEnded.bind(this));
+    this.eventManager.listen(window, 'resize', this._onResize.bind(this));
+    this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, this._onLoadedMetadata.bind(this));
+    this.eventManager.listen(this.player, this.player.Event.TIME_UPDATE, this._onMediaTimeUpdate.bind(this));
+    this.eventManager.listen(this.player, this.player.Event.SEEKING, this._onMediaSeeking.bind(this));
+    this.eventManager.listen(this.player, this.player.Event.SEEKED, this._onMediaSeeked.bind(this));
+    this.eventManager.listen(this.player, this.player.Event.ENDED, this._onMediaEnded.bind(this));
   }
 
-  _updateCurrentTime(): void {
+  _init(): void {
+    this._fsm.loading();
+    this.prepareIma = new Promise((resolve, reject) => {
+      let loadPromise = (window.google && window.google.ima) ? Promise.resolve() : this._loadIma();
+      loadPromise.then(() => {
+        this._sdk = window.google.ima;
+        try {
+          this._initAdsContainer();
+          this._initAdsLoader(resolve);
+          this._requestAds();
+        } catch (e) {
+          reject(e);
+        }
+      });
+    });
+  }
+
+  _initAdsContainer(): void {
+    this.logger.debug("Init ads container");
+    let adsContainerDiv = document.getElementById(ADS_CONTAINER_ID);
+    let playerView = this.player.getView();
+    if (!playerView || !playerView.parentNode) {
+      throw new Error("Cannot create ads container div");
+    } else {
+      if (!adsContainerDiv) {
+        this._adsContainerDiv = playerView.parentNode.appendChild(document.createElement('div'));
+        this._adsContainerDiv.id = ADS_CONTAINER_ID;
+        this._adsContainerDiv.style.position = "absolute";
+        this._adsContainerDiv.style.zIndex = "2000";
+        this._adsContainerDiv.style.top = "0";
+      } else {
+        this._adsContainerDiv = adsContainerDiv;
+      }
+      this._adDisplayContainer = new this._sdk.AdDisplayContainer(this._adsContainerDiv, this.player.getVideoElement());
+      // TODO: Must be done as the result of a user action on mobile
+      this._adDisplayContainer.initialize();
+    }
+  }
+
+  _initAdsLoader(resolve: Function): void {
+    this.logger.debug("Init ads loader");
+    this._adsLoader = new this._sdk.AdsLoader(this._adDisplayContainer);
+    this._adsLoader.addEventListener(this._sdk.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._onAdsManagerLoaded.bind(this, resolve));
+    this._adsLoader.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, this._fsm.aderror);
+  }
+
+  _requestAds(): void {
+    this.logger.debug("Request ads");
+    this._resetIma();
+    let adsRequest = new this._sdk.AdsRequest();
+    if (this.config.adTagUrl) {
+      adsRequest.adTagUrl = this.config.adTagUrl;
+    } else {
+      adsRequest.adsResponse = this.config.adsResponse;
+    }
+    if (!adsRequest.adTagUrl && !adsRequest.adsResponse) {
+      throw new Error("Missing ad tag url for ima plugin");
+    }
+    //TODO: Handle non-linear
+    this._adsLoader.requestAds(adsRequest);
+  }
+
+  _onResize() {
+    if (this._sdk && this._adsManager) {
+      let playerViewSize = this._getPlayerViewSize();
+      if (playerViewSize) {
+        this._adsManager.resize(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
+      }
+    }
+  }
+
+  _getPlayerViewSize(): ?Object {
+    let playerView = this.player.getView();
+    if (playerView) {
+      let width = parseInt(getComputedStyle(playerView).width, 10);
+      let height = parseInt(getComputedStyle(playerView).height, 10);
+      return {width: width, height: height};
+    }
+  }
+
+  _onLoadedMetadata(): void {
+    this._contentPlayheadTracker.duration = this.player.duration;
+  }
+
+  _onMediaTimeUpdate(): void {
     if (!this._contentPlayheadTracker.seeking) {
+      this._contentPlayheadTracker.previousTime = this._contentPlayheadTracker.currentTime;
       this._contentPlayheadTracker.currentTime = this.player.currentTime;
     }
   }
 
+  _onMediaSeeking(): void {
+    this._contentPlayheadTracker.seeking = true;
+  }
+
+  _onMediaSeeked(): void {
+    this._contentPlayheadTracker.seeking = false;
+  }
+
+  _onMediaEnded(): void {
+    if (this._adsLoader && !this._contentComplete) {
+      this._adsLoader.contentComplete();
+      this._contentComplete = true;
+    }
+  }
+
   _showAdsContainer(): void {
-    this._adContainerDiv.style.display = "";
+    this._adsContainerDiv.style.display = "";
   }
 
   _hideAdsContainer(): void {
-    this._adContainerDiv.style.display = "none";
+    this._adsContainerDiv.style.display = "none";
   }
 
-  _onAdError(params): void {
-    this.logger.error("Error occur while loading the adsLoader: " + params);
-  }
-
-  _onAdsManagerLoaded(adsManagerLoadedEvent: any): void {
-    this.logger.debug('Ads loaded');
-    let adsRenderingSettings = new this.sdk.AdsRenderingSettings();
+  _onAdsManagerLoaded(resolve: Function, adsManagerLoadedEvent: any): void {
+    this.logger.debug('Ads manager loaded');
+    let adsRenderingSettings = new this._sdk.AdsRenderingSettings();
     adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
-    this.adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
-    this._processAdsManager();
-  }
-
-  _processAdsManager(): void {
-    // Attach the pause/resume events
-    this.adsManager.addEventListener(this.sdk.AdEvent.Type.CONTENT_PAUSE_REQUESTED, this._onContentPauseRequested.bind(this));
-    this.adsManager.addEventListener(this.sdk.AdEvent.Type.CONTENT_RESUME_REQUESTED, this._onContentResumeRequested.bind(this));
-    // Handle errors
-    this.adsManager.addEventListener(this.sdk.AdErrorEvent.Type.AD_ERROR, this._onAdError.bind(this));
-    let events = [
-      this.sdk.AdEvent.Type.ALL_ADS_COMPLETED,
-      this.sdk.AdEvent.Type.CLICK,
-      this.sdk.AdEvent.Type.COMPLETE,
-      this.sdk.AdEvent.Type.FIRST_QUARTILE,
-      this.sdk.AdEvent.Type.LOADED,
-      this.sdk.AdEvent.Type.MIDPOINT,
-      this.sdk.AdEvent.Type.PAUSED,
-      this.sdk.AdEvent.Type.STARTED,
-      this.sdk.AdEvent.Type.THIRD_QUARTILE
-    ];
-    for (let index of events) {
-      this.adsManager.addEventListener(index, this._onAdEvent.bind(this));
-    }
-    let initWidth = parseInt(getComputedStyle(this.player.getVideoElement()).width, 10);
-    let initHeight = parseInt(getComputedStyle(this.player.getVideoElement()).height, 10);
-    // TODO: Handle full screen
-    this.adsManager.init(initWidth, initHeight, this.sdk.ViewMode.NORMAL);
-    if (this._playOnceReady) {
-      this.adsManager.start();
-    }
-  }
-
-  _onContentPauseRequested(adEvent: any) {
-    this.logger.debug("onContentPauseRequested", adEvent);
-    this._showAdsContainer();
-    this.adsActive = true;
-  }
-
-  _onContentResumeRequested(adEvent: any) {
-    this.logger.debug("onContentResumeRequested", adEvent);
-    if (!this.contentComplete) {
-      this._hideAdsContainer();
-      this.player.play();
-      this.adsActive = false;
-    }
-  }
-
-  _onAllAdsComplete(adEvent: any) {
-    this.logger.debug("onAllAdsComplete", adEvent);
-    this._hideAdsContainer();
-    this._allAdsCompleted = true;
-  }
-
-  _onAdEvent(adEvent: any) {
-    this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
-    switch (adEvent.type) {
-      case this.sdk.AdEvent.Type.ALL_ADS_COMPLETED:
-        this._onAllAdsComplete(adEvent);
-        break;
-    }
-  }
-
-  _mediaEnded(): void {
-    if (this._adsLoader && !this.contentComplete) {
-      this._adsLoader.contentComplete();
-      this.contentComplete = true;
-    }
+    adsRenderingSettings.enablePreloading = true;
+    this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_PAUSE_REQUESTED, this._fsm.adbreakstart);
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOADED, this._fsm.adsloaded);
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.STARTED, this._fsm.adplaying);
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.PAUSED, this._fsm.adpaused);
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.RESUMED, this._fsm.adresumed);
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.FIRST_QUARTILE, this._fsm.adfirstquartile);
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.MIDPOINT, this._fsm.admidpoint);
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.THIRD_QUARTILE, this._fsm.adthirdquartile);
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.CLICK, this._fsm.adclicked);
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.SKIPPED, this._fsm.adskipped);
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.COMPLETE, this._fsm.adcompleted);
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_RESUME_REQUESTED, this._fsm.adbreakend);
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.ALL_ADS_COMPLETED, this._fsm.alladscompleted);
+    this._adsManager.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, this._fsm.aderror);
+    this._fsm.loaded().then(() => {
+      resolve();
+    });
   }
 
   _resetIma(): void {
-    this.adsActive = false;
     this._hideAdsContainer();
-    if (this.adsManager) {
-      this.adsManager.destroy();
-      this.adsManager = null;
+    if (this._adsManager) {
+      this._adsManager.destroy();
+      this._adsManager = null;
     }
-    if (this._adsLoader && !this.contentComplete) {
+    if (this._adsLoader && !this._contentComplete) {
       this._adsLoader.contentComplete();
     }
-    this.contentComplete = false;
-    this._allAdsCompleted = false;
-    this._playOnceReady = false;
-    this.canPlayMedia = false;
+    this._contentComplete = false;
+    this._playerLoaded = false;
   }
 
-  _loadScriptAsync(url: string): Promise<*> {
-    if (Array.isArray(url)) {
-      let self = this, prom = [];
-      url.forEach(function (item) {
-        prom.push(self.script(item));
-      });
-      return Promise.all(prom);
-    }
-    return new Promise(function (resolve, reject) {
+  _loadIma(): Promise<*> {
+    return new Promise((resolve, reject) => {
       let r = false,
         t = document.getElementsByTagName("script")[0],
         s = document.createElement("script");
       s.type = "text/javascript";
-      s.src = url;
+      s.src = this.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL;
       s.async = true;
+      this.logger.debug("Loading lib: " + s.src);
       s.onload = s.onreadystatechange = function () {
-        if (!r && (!this.readyState || this.readyState == "complete")) {
+        if (!r && (!this.readyState || this.readyState === "complete")) {
           r = true;
           resolve(this);
         }
@@ -193,76 +273,12 @@ class ImaPlugin extends BasePlugin {
       }
     });
   }
-
-  initIma(): void {
-    if (!document.getElementById("adContainer")) {
-      this.adsManager = null;
-      this._adContainerDiv = this.player.getVideoElement().parentNode.appendChild(document.createElement('div'));
-      this._adContainerDiv.id = "adContainer";
-      this._adContainerDiv.style.position = "absolute";
-      this._adContainerDiv.style.zIndex = 2000;
-      this._adContainerDiv.style.top = 0;
-      this._adDisplayContainer = new this.sdk.AdDisplayContainer(this._adContainerDiv, this.player.getVideoElement());
-      this._adsLoader = new this.sdk.AdsLoader(this._adDisplayContainer);
-      this._adsLoader.addEventListener(this.sdk.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._onAdsManagerLoaded.bind(this));
-      this._adsLoader.addEventListener(this.sdk.AdErrorEvent.Type.AD_ERROR, this._onAdError.bind(this));
-    }
-  }
-
-  playAdNow(tag: string): void {
-    this._resetIma();
-    this.config.adTagUrl = tag;
-    if (!this.playerLoaded) {
-      this.initIma();
-      this.playerLoaded = true;
-    }
-    this.requestAds();
-    this.initialUserAction();
-    this.adsManager.start();
-  }
-
-  getPlayerDecorator(): PlayerDecoratorBase {
-    return new ImaDecorator(this);
-  }
-
-  initialUserAction(): void {
-    this._adDisplayContainer.initialize();
-    if (this.adsManager) {
-      this.adsManager.start();
-      if (!this.mediaLoaded) {
-        this.player.load().then(() => {
-          this.mediaLoaded = true;
-        });
-      }
-    } else {
-      this._playOnceReady = true;
-    }
-    this.initComplete = true;
-  }
-
-  requestAds(): boolean {
-    this.logger.debug("requestAds");
-    this._resetIma();
-    let adsRequest = new this.sdk.AdsRequest();
-    if (this.config.adTagUrl) {
-      adsRequest.adTagUrl = this.config.adTagUrl;
-    } else {
-      adsRequest.adsResponse = this.config.adsResponse;
-    }
-    if (!adsRequest.adTagUrl && !adsRequest.adsResponse) {
-      this.logger.error("missing config for ima plugin");
-      return false;
-    }
-    //TODO: Handle non-linear
-    this._adsLoader.requestAds(adsRequest);
-    return true;
-  }
-
-  destroy(): void {
-    this.logger.debug("destroy");
-    this.eventManager.destroy();
-    this._resetIma();
-  }
 }
 
-registerPlugin(pluginName, ImaPlugin);
+registerPlugin(pluginName, Ima);
+
+// TODO: Remove
+import {registerPlugin, BasePlugin} from '../node_modules/playkit-js/src/playkit.js'
+import {PlayerMiddlewareBase} from '../node_modules/playkit-js/src/playkit.js'
+import * as Playkit from '../node_modules/playkit-js/src/playkit.js'
+window.Playkit = Playkit;

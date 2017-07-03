@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars */
-import {playkit} from 'playkit-js'
+import * as Playkit from '../../node_modules/playkit-js/src/playkit.js'
 import ima from '../../src/ima'
 
 describe('ImaPlugin', function () {
   it('should play mp4 stream with ads', (done) => {
-    window.player = playkit({
+    window.player = Playkit.playkit({
       "sources": [{
         "mimetype": "video/mp4",
         "url": "http://www.html5videoplayer.net/videos/toystory.mp4"
@@ -18,8 +18,7 @@ describe('ImaPlugin', function () {
         }
       }
     });
-    window.player.load().then(() => {
-      window.player.play();
-    });
+    // window.player.load();
+    window.player.play();
   });
 });
