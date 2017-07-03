@@ -60,7 +60,8 @@ export default class FiniteStateMachine {
         },
         {
           name: context.player.Event.AD_BREAK_END,
-          from: State.IDLE
+          from: [State.IDLE, State.LOADED],
+          to: State.IDLE
         },
         {
           name: context.player.Event.AD_FIRST_QUARTILE,
@@ -85,6 +86,8 @@ export default class FiniteStateMachine {
         onadsloaded: function (options) {
           let adEvent = options.args[0];
           this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
+          let playerViewSize = this._getPlayerViewSize();
+          this._adsManager.resize(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
           this.dispatchEvent(options.name, adEvent);
         }.bind(context),
         // STARTED

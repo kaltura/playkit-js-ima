@@ -74,10 +74,9 @@ export default class Ima extends BasePlugin {
   }
 
   initialize() {
-    let playerViewSize = this._getPlayerViewSize();
     try {
+      let playerViewSize = this._getPlayerViewSize();
       this._adDisplayContainer.initialize();
-      // TODO: Handle full screen
       this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
       this._adsManager.start();
     }
@@ -168,6 +167,7 @@ export default class Ima extends BasePlugin {
       adsRequest.linearAdSlotHeight = playerViewSize.height;
       adsRequest.nonLinearAdSlotWidth = playerViewSize.width;
       adsRequest.nonLinearAdSlotHeight = playerViewSize.height;
+      adsRequest.setAdWillAutoPlay(this.player.config.playback.autoplay);
       this._adsLoader.requestAds(adsRequest);
     }
   }
