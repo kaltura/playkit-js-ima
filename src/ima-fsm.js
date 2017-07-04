@@ -2,81 +2,100 @@
 import StateMachine from 'fsm-as-promised/lib/index'
 import State from './state'
 
-export default class FiniteStateMachine {
+export default class ImaFSM {
   constructor(context: any) {
     return StateMachine({
       initial: State.LOADING,
       final: State.DONE,
-      events: [{
-        name: 'loaded',
-        from: State.LOADING,
-        to: State.LOADED
-      }, {
-        name: context.player.Event.ADS_LOADED,
-        from: [State.IDLE, State.LOADED]
-      }, {
-        name: context.player.Event.AD_STARTED,
-        from: [State.LOADED, State.IDLE, State.PAUSED],
-        to: [State.PLAYING, State.IDLE],
-        condition: function (options) {
-          let adEvent = options.args[0];
-          let ad = adEvent.getAd();
-          if (!ad.isLinear()) {
-            return State.IDLE;
+      events: [
+        {
+          name: 'loaded',
+          from: State.LOADING,
+          to: State.LOADED
+        },
+        {
+          name: context.player.Event.ADS_LOADED,
+          from: [State.IDLE, State.LOADED]
+        },
+        {
+          name: context.player.Event.AD_STARTED,
+          from: [State.LOADED, State.IDLE, State.PAUSED],
+          to: [State.PLAYING, State.IDLE],
+          condition: function (options) {
+            let adEvent = options.args[0];
+            let ad = adEvent.getAd();
+            if (!ad.isLinear()) {
+              return State.IDLE;
+            }
+            return State.PLAYING;
           }
-          return State.PLAYING;
+        },
+        {
+          name: context.player.Event.AD_RESUMED,
+          from: State.PAUSED, to: State.PLAYING
+        },
+        {
+          name: context.player.Event.AD_PAUSED,
+          from: State.PLAYING, to: State.PAUSED
+        },
+        {
+          name: context.player.Event.AD_CLICKED,
+          from: [State.PLAYING, State.PAUSED]
+        },
+        {
+          name: context.player.Event.AD_SKIPPED,
+          from: [State.PLAYING, State.PAUSED],
+          to: State.IDLE
+        },
+        {
+          name: context.player.Event.AD_COMPLETED,
+          from: State.PLAYING,
+          to: State.IDLE
+        },
+        {
+          name: context.player.Event.ALL_ADS_COMPLETED,
+          from: State.IDLE,
+          to: State.DONE
+        },
+        {
+          name: context.player.Event.AD_BREAK_START,
+          from: [State.IDLE, State.LOADED]
+        },
+        {
+          name: context.player.Event.AD_BREAK_END,
+          from: [State.IDLE, State.LOADED],
+          to: State.IDLE
+        },
+        {
+          name: context.player.Event.AD_FIRST_QUARTILE,
+          from: State.PLAYING
+        },
+        {
+          name: context.player.Event.AD_MIDPOINT,
+          from: State.PLAYING
+        },
+        {
+          name: context.player.Event.AD_THIRD_QUARTILE,
+          from: State.PLAYING
+        },
+        {
+          name: context.player.Event.AD_ERROR,
+          from: [State.LOADED, State.PLAYING, State.PAUSED, State.LOADING],
+          to: State.IDLE
+        },
+        {
+          name: context.player.Event.USER_CLOSED_AD,
+          from: [State.IDLE, State.PLAYING, State.PAUSED]
+        },
+        {
+          name: context.player.Event.AD_VOLUME_CHANGED,
+          from: [State.PLAYING, State.PAUSED, State.LOADED]
+        },
+        {
+          name: context.player.Event.AD_MUTED,
+          from: [State.PLAYING, State.PAUSED, State.LOADED]
         }
-      }, {
-        name: context.player.Event.AD_RESUMED,
-        from: State.PAUSED, to: State.PLAYING
-      }, {
-        name: context.player.Event.AD_PAUSED,
-        from: State.PLAYING, to: State.PAUSED
-      }, {
-        name: context.player.Event.AD_CLICKED,
-        from: [State.PLAYING, State.PAUSED]
-      }, {
-        name: context.player.Event.AD_SKIPPED,
-        from: [State.PLAYING, State.PAUSED],
-        to: State.IDLE
-      }, {
-        name: context.player.Event.AD_COMPLETED,
-        from: State.PLAYING,
-        to: State.IDLE
-      }, {
-        name: context.player.Event.ALL_ADS_COMPLETED,
-        from: State.IDLE,
-        to: State.DONE
-      }, {
-        name: context.player.Event.AD_BREAK_START,
-        from: [State.IDLE, State.LOADED]
-      }, {
-        name: context.player.Event.AD_BREAK_END,
-        from: [State.IDLE, State.LOADED],
-        to: State.IDLE
-      }, {
-        name: context.player.Event.AD_FIRST_QUARTILE,
-        from: State.PLAYING
-      }, {
-        name: context.player.Event.AD_MIDPOINT,
-        from: State.PLAYING
-      }, {
-        name: context.player.Event.AD_THIRD_QUARTILE,
-        from: State.PLAYING
-      }, {
-        name: context.player.Event.AD_ERROR,
-        from: [State.LOADED, State.PLAYING, State.PAUSED, State.LOADING],
-        to: State.IDLE
-      }, {
-        name: context.player.Event.USER_CLOSED_AD,
-        from: [State.IDLE, State.PLAYING, State.PAUSED]
-      }, {
-        name: context.player.Event.AD_VOLUME_CHANGED,
-        from: [State.PLAYING, State.PAUSED, State.LOADED]
-      }, {
-        name: context.player.Event.AD_MUTED,
-        from: [State.PLAYING, State.PAUSED, State.LOADED]
-      }],
+      ],
       callbacks: {
         onadsloaded: onAdsLoaded.bind(context),
         onadstarted: onAdStarted.bind(context),

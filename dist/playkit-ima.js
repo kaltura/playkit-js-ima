@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 53);
+/******/ 	return __webpack_require__(__webpack_require__.s = 54);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -90,7 +90,7 @@ exports.LOG_LEVEL = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _jsLogger = __webpack_require__(49);
+var _jsLogger = __webpack_require__(50);
 
 var JsLogger = _interopRequireWildcard(_jsLogger);
 
@@ -1225,7 +1225,7 @@ var _logger = __webpack_require__(0);
 
 var _logger2 = _interopRequireDefault(_logger);
 
-var _html = __webpack_require__(26);
+var _html = __webpack_require__(27);
 
 var _html2 = _interopRequireDefault(_html);
 
@@ -1233,11 +1233,11 @@ var _pluginManager = __webpack_require__(20);
 
 var _pluginManager2 = _interopRequireDefault(_pluginManager);
 
-var _stateManager = __webpack_require__(30);
+var _stateManager = __webpack_require__(31);
 
 var _stateManager2 = _interopRequireDefault(_stateManager);
 
-var _trackTypes = __webpack_require__(32);
+var _trackTypes = __webpack_require__(33);
 
 var _trackTypes2 = _interopRequireDefault(_trackTypes);
 
@@ -1257,15 +1257,19 @@ var _textTrack = __webpack_require__(6);
 
 var _textTrack2 = _interopRequireDefault(_textTrack);
 
-var _playerMiddleware = __webpack_require__(29);
+var _playerMiddleware = __webpack_require__(30);
 
 var _playerMiddleware2 = _interopRequireDefault(_playerMiddleware);
 
-var _playerConfig = __webpack_require__(51);
+var _playerConfig = __webpack_require__(52);
 
 var _playerConfig2 = _interopRequireDefault(_playerConfig);
 
-__webpack_require__(42);
+var _env = __webpack_require__(22);
+
+var _env2 = _interopRequireDefault(_env);
+
+__webpack_require__(43);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1401,9 +1405,9 @@ var Player = function (_FakeEventTarget) {
     key: 'configure',
     value: function configure(config) {
       var engine = this._engine;
-      this._maybeResetPlayer(config);
       this._config = (0, _util.mergeDeep)((0, _util.isEmptyObject)(this._config) ? Player._defaultConfig : this._config, config);
-      if (this._selectEngine()) {
+      this._maybeResetPlayer(config);
+      if ((0, _util.isEmptyObject)(this._engine) && this._selectEngine()) {
         this._appendEngineEl();
         this._attachMedia();
         this._maybeLoadPlugins(engine);
@@ -1665,7 +1669,7 @@ var Player = function (_FakeEventTarget) {
         if (this._config.playback.preload === "auto") {
           this.load();
         }
-        if (this._config.playback.autoplay) {
+        if (this._config.playback.autoplay && (!_env2.default.isMobileDevice() || this._config.playback.muted)) {
           this.play();
         }
       }
@@ -2649,7 +2653,7 @@ exports.default = PlayerError;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.VERSION = exports.Utils = exports.TextTrack = exports.AudioTrack = exports.VideoTrack = exports.Track = exports.PlayerMiddlewareBase = exports.BasePlugin = exports.registerPlugin = exports.BaseMediaSourceAdapter = exports.registerMediaSourceAdapter = undefined;
+exports.VERSION = exports.Env = exports.Utils = exports.TextTrack = exports.AudioTrack = exports.VideoTrack = exports.Track = exports.PlayerMiddlewareBase = exports.BasePlugin = exports.registerPlugin = exports.BaseMediaSourceAdapter = exports.registerMediaSourceAdapter = undefined;
 exports.loadPlayer = loadPlayer;
 
 var _player = __webpack_require__(9);
@@ -2660,7 +2664,7 @@ var _logger = __webpack_require__(0);
 
 var _logger2 = _interopRequireDefault(_logger);
 
-var _package = __webpack_require__(50);
+var _package = __webpack_require__(51);
 
 var packageData = _interopRequireWildcard(_package);
 
@@ -2700,13 +2704,16 @@ var _util = __webpack_require__(8);
 
 var Utils = _interopRequireWildcard(_util);
 
+var _env = __webpack_require__(22);
+
+var _env2 = _interopRequireDefault(_env);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // Playkit version
 var VERSION = packageData.version;
-
 
 _logger2.default.getLogger().log("%c Playkit " + VERSION, "color: yellow; font-size: large");
 _logger2.default.getLogger().log("%c For more details see https://github.com/kaltura/playkit-js", "color: yellow;");
@@ -2740,6 +2747,7 @@ exports.TextTrack = _textTrack2.default;
 // Export utils library
 
 exports.Utils = Utils;
+exports.Env = _env2.default;
 
 //export version
 
@@ -3023,7 +3031,7 @@ exports.registerMediaSourceAdapter = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _nativeAdapter = __webpack_require__(27);
+var _nativeAdapter = __webpack_require__(28);
 
 var _nativeAdapter2 = _interopRequireDefault(_nativeAdapter);
 
@@ -3591,6 +3599,352 @@ exports.default = PLAYER_STATE_TYPES;
 
 /***/ }),
 /* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Env = function () {
+  function Env() {
+    _classCallCheck(this, Env);
+  }
+
+  _createClass(Env, null, [{
+    key: 'isMobileDevice',
+    value: function isMobileDevice() {
+      return Env.isIphone() || Env.isIpod() || Env.isIpad() || Env.isAndroid() || Env.isWindowsPhone();
+    }
+  }, {
+    key: 'isIphone',
+    value: function isIphone() {
+      return Env.userAgent.indexOf('iPhone') !== -1 && !Env.isIpad() || Env.isIpod();
+    }
+  }, {
+    key: 'isIE',
+    value: function isIE() {
+      return (/msie/.test(Env.userAgent.toLowerCase()) || /trident/.test(Env.userAgent.toLowerCase())
+      );
+    }
+  }, {
+    key: 'isChromeCast',
+    value: function isChromeCast() {
+      return (/CrKey/.test(Env.userAgent)
+      );
+    }
+  }, {
+    key: 'isIE7',
+    value: function isIE7() {
+      return (/msie 7/.test(Env.userAgent.toLowerCase())
+      );
+    }
+  }, {
+    key: 'isIE8',
+    value: function isIE8() {
+      return document.documentMode === 8;
+    }
+  }, {
+    key: 'isIE9',
+    value: function isIE9() {
+      return document.documentMode === 9;
+    }
+  }, {
+    key: 'isIE11',
+    value: function isIE11() {
+      return (/trident\/7.0/.test(Env.userAgent.toLowerCase())
+      );
+    }
+  }, {
+    key: 'isEdge',
+    value: function isEdge() {
+      return (/edge/.test(Env.userAgent.toLowerCase())
+      );
+    }
+  }, {
+    key: 'isDesktopSafari',
+    value: function isDesktopSafari() {
+      return Env.isSafari() && !Env.isMobileDevice();
+    }
+  }, {
+    key: 'isSafari',
+    value: function isSafari() {
+      return (/safari/.test(Env.userAgent.toLowerCase()) && !Env.isChrome() && !Env.isEdge()
+      );
+    }
+  }, {
+    key: 'isIE9Comp',
+    value: function isIE9Comp() {
+      return (/msie 7/.test(Env.userAgent.toLowerCase()) && /trident\/5/.test(Env.userAgent.toLowerCase())
+      );
+    }
+  }, {
+    key: 'isIE10Comp',
+    value: function isIE10Comp() {
+      return (/msie 7/.test(Env.userAgent.toLowerCase()) && /trident\/6/.test(Env.userAgent.toLowerCase())
+      );
+    }
+  }, {
+    key: 'isIphone4',
+    value: function isIphone4() {
+      return Env.isIphone() && window.devicePixelRatio && window.devicePixelRatio >= 2;
+    }
+  }, {
+    key: 'isIpod',
+    value: function isIpod() {
+      return Env.userAgent.indexOf('iPod') !== -1;
+    }
+  }, {
+    key: 'isIpad',
+    value: function isIpad() {
+      return Env.userAgent.indexOf('iPad') !== -1;
+    }
+  }, {
+    key: 'isIpad2',
+    value: function isIpad2() {
+      return Env.isIpad() && window.devicePixelRatio && window.devicePixelRatio < 2;
+    }
+  }, {
+    key: 'isIpad3',
+    value: function isIpad3() {
+      return (/OS 3_/.test(Env.userAgent) && Env.isIpad()
+      );
+    }
+  }, {
+    key: 'isAndroid44',
+    value: function isAndroid44() {
+      return Env.userAgent.indexOf('Android 4.4') !== -1 && Env.userAgent.indexOf('Windows') === -1;
+    }
+  }, {
+    key: 'isAndroid43',
+    value: function isAndroid43() {
+      return Env.userAgent.indexOf('Android 4.3') !== -1 && Env.userAgent.indexOf('Windows') === -1;
+    }
+  }, {
+    key: 'isAndroid42',
+    value: function isAndroid42() {
+      return Env.userAgent.indexOf('Android 4.2') !== -1 && Env.userAgent.indexOf('Windows') === -1;
+    }
+  }, {
+    key: 'isAndroid41',
+    value: function isAndroid41() {
+      return Env.userAgent.indexOf('Android 4.1') !== -1 && Env.userAgent.indexOf('Windows') === -1;
+    }
+  }, {
+    key: 'isAndroid40',
+    value: function isAndroid40() {
+      return Env.userAgent.indexOf('Android 4.0') !== -1 && Env.userAgent.indexOf('Windows') === -1;
+    }
+  }, {
+    key: 'isAndroid2',
+    value: function isAndroid2() {
+      return Env.userAgent.indexOf('Android 2.') !== -1 && Env.userAgent.indexOf('Windows') === -1;
+    }
+  }, {
+    key: 'isAndroid',
+    value: function isAndroid() {
+      return Env.userAgent.indexOf('Android') !== -1 && Env.userAgent.indexOf('Windows') === -1;
+    }
+  }, {
+    key: 'isAndroid4andUp',
+    value: function isAndroid4andUp() {
+      var androidUAStringRegEx = /Android (\d+)\.\d+\.\d+/;
+      var res = androidUAStringRegEx.exec(Env.userAgent);
+      if (res === null) {
+        return false;
+      }
+      return res[1] > 4 && Env.userAgent.indexOf('Windows') === -1;
+    }
+  }, {
+    key: 'isSamsungStockBrowser',
+    value: function isSamsungStockBrowser() {
+      return Env.userAgent.indexOf('SamsungBrowser') !== -1;
+    }
+  }, {
+    key: 'isFirefox',
+    value: function isFirefox() {
+      return Env.userAgent.indexOf('Firefox') !== -1;
+    }
+  }, {
+    key: 'isChrome',
+    value: function isChrome() {
+      return Env.userAgent.indexOf('Chrome') !== -1 && !Env.isEdge();
+    }
+  }, {
+    key: 'isAndroidNativeBrowser',
+    value: function isAndroidNativeBrowser() {
+      return Env.isAndroid() && !Env.isFirefox() && !Env.isChrome();
+    }
+  }, {
+    key: 'isAndroidChromeNativeBrowser',
+    value: function isAndroidChromeNativeBrowser() {
+      return Env.isAndroid() && Env.isChrome();
+    }
+  }, {
+    key: 'isOldAndroidChromeNativeBrowser',
+    value: function isOldAndroidChromeNativeBrowser() {
+      var regExpResult = Env.userAgent.match(/Chrome\/([0-9][0-9])/);
+      if (regExpResult instanceof Array && regExpResult.length > 1) {
+        return Env.isAndroidChromeNativeBrowser() && parseInt(regExpResult[1]) < 30;
+      }
+      return false;
+    }
+  }, {
+    key: 'isMobileChrome',
+    value: function isMobileChrome() {
+      return Env.isAndroid4andUp() && Env.userAgent.indexOf('Chrome') !== -1;
+    }
+  }, {
+    key: 'isWindowsPhone',
+    value: function isWindowsPhone() {
+      return Env.userAgent.indexOf('Windows Phone') !== -1;
+    }
+  }, {
+    key: 'isIOS',
+    value: function isIOS() {
+      return Env.isIphone() || Env.isIpod() || Env.isIpad();
+    }
+  }, {
+    key: 'isIOS3',
+    value: function isIOS3() {
+      return (/OS 3_/.test(Env.userAgent) && Env.isIOS()
+      );
+    }
+  }, {
+    key: 'isIOS4',
+    value: function isIOS4() {
+      return (/OS 4_/.test(Env.userAgent) && Env.isIOS()
+      );
+    }
+  }, {
+    key: 'isIOS5',
+    value: function isIOS5() {
+      return (/OS 5_/.test(Env.userAgent) && Env.isIOS()
+      );
+    }
+  }, {
+    key: 'isIOS6',
+    value: function isIOS6() {
+      return (/OS 6_/.test(Env.userAgent) && Env.isIOS()
+      );
+    }
+  }, {
+    key: 'isIOS7',
+    value: function isIOS7() {
+      return (/OS 7_/.test(Env.userAgent) && Env.isIOS()
+      );
+    }
+  }, {
+    key: 'isIOS71',
+    value: function isIOS71() {
+      return (/OS 7_1/.test(Env.userAgent) && Env.isIOS()
+      );
+    }
+  }, {
+    key: 'isIOS8',
+    value: function isIOS8() {
+      // Known Limitation - It will return false for iOS8 Simulator
+      return (/OS 8_/.test(Env.userAgent) || /Version\/8/.test(Env.userAgent)) && Env.isIOS();
+    }
+  }, {
+    key: 'isIOS9',
+    value: function isIOS9() {
+      // Known Limitation - It will return false for iOS9 Simulator
+      return (/OS 9_/.test(Env.userAgent) || /Version\/9/.test(Env.userAgent)) && Env.isIOS();
+    }
+  }, {
+    key: 'isIOS10',
+    value: function isIOS10() {
+      // Known Limitation - It will return false for iOS10 Simulator
+      return (/OS 10_/.test(Env.userAgent) || /Version\/10/.test(Env.userAgent)) && Env.isIOS();
+    }
+  }, {
+    key: 'isIOSBelow9',
+    value: function isIOSBelow9() {
+      return Env.isIOS() && (Env.isIOS3() || Env.isIOS4() || Env.isIOS5() || Env.isIOS6() || Env.isIOS7() || Env.isIOS8());
+    }
+  }, {
+    key: 'isIOSBelow10',
+    value: function isIOSBelow10() {
+      return Env.isIOSBelow9() || Env.isIOS9();
+    }
+  }, {
+    key: 'isIOSAbove7',
+    value: function isIOSAbove7() {
+      return Env.isIOS8() || Env.isIOS9() || Env.isIOS10();
+    }
+  }, {
+    key: 'isSilk',
+    value: function isSilk() {
+      return (/\bSilk\b/.test(Env.userAgent)
+      );
+    }
+
+    // Does the client has native touch bindings?
+
+  }, {
+    key: 'hasNativeTouchBindings',
+    value: function hasNativeTouchBindings() {
+      return Env.isAndroid41() || Env.isAndroid42() || Env.isAndroid() && Env.isFirefox();
+    }
+
+    // Detect small mobile device (smartphones)
+
+  }, {
+    key: 'isDeviceLessThan480P',
+    value: function isDeviceLessThan480P() {
+      return matchMedia('only screen and (max-device-width: 480px)').matches;
+    }
+  }, {
+    key: 'hasMouseEvents',
+    value: function hasMouseEvents() {
+      return !Env.isMobileDevice();
+    }
+  }, {
+    key: 'isTouchDevice',
+    value: function isTouchDevice() {
+      return 'ontouchstart' in window;
+    }
+  }, {
+    key: 'isMacintosh',
+    value: function isMacintosh() {
+      return navigator.platform.indexOf('Mac') > -1;
+    }
+  }, {
+    key: 'isWindows',
+    value: function isWindows() {
+      return navigator.platform.indexOf('Win') > -1;
+    }
+  }, {
+    key: 'getUserOS',
+    value: function getUserOS() {
+      var os = "";
+      var clientStrings = [{ s: 'Windows 10', r: /(Windows 10.0|Windows NT 10.0)/ }, { s: 'Windows 8.1', r: /(Windows 8.1|Windows NT 6.3)/ }, { s: 'Windows 8', r: /(Windows 8|Windows NT 6.2)/ }, { s: 'Windows 7', r: /(Windows 7|Windows NT 6.1)/ }, { s: 'Android', r: /Android/ }, { s: 'Linux', r: /(Linux|X11)/ }, { s: 'iOS', r: /(iPhone|iPad|iPod)/ }, { s: 'Mac OS X', r: /Mac OS X/ }, { s: 'Mac OS', r: /(MacPPC|MacIntel|Mac_PowerPC|Macintosh)/ }];
+      for (var id in clientStrings) {
+        var cs = clientStrings[id];
+        if (cs.r.test(Env.userAgent)) {
+          os = cs.s;
+          break;
+        }
+      }
+      return os;
+    }
+  }]);
+
+  return Env;
+}();
+
+Env.userAgent = navigator.userAgent;
+exports.default = Env;
+
+/***/ }),
+/* 23 */
 /***/ (function(module, exports) {
 
 /**
@@ -3619,7 +3973,7 @@ module.exports = bytesToUuid;
 
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {// Unique ID creation requires a high quality random # generator.  In the
@@ -3659,7 +4013,7 @@ module.exports = rng;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3669,7 +4023,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _index = __webpack_require__(38);
+var _index = __webpack_require__(39);
 
 var _index2 = _interopRequireDefault(_index);
 
@@ -3752,10 +4106,10 @@ var FiniteStateMachine = function FiniteStateMachine(context) {
       from: [_state2.default.IDLE, _state2.default.PLAYING, _state2.default.PAUSED]
     }, {
       name: context.player.Event.AD_VOLUME_CHANGED,
-      from: [_state2.default.PLAYING, _state2.default.PAUSED]
+      from: [_state2.default.PLAYING, _state2.default.PAUSED, _state2.default.LOADED]
     }, {
       name: context.player.Event.AD_MUTED,
-      from: [_state2.default.PLAYING, _state2.default.PAUSED]
+      from: [_state2.default.PLAYING, _state2.default.PAUSED, _state2.default.LOADED]
     }],
     callbacks: {
       onadsloaded: onAdsLoaded.bind(context),
@@ -3784,27 +4138,9 @@ var FiniteStateMachine = function FiniteStateMachine(context) {
     this.logger.debug("onAdsLoaded: " + adEvent.type.toUpperCase());
     var playerViewSize = this._getPlayerViewSize();
     this._adsManager.resize(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
-    _syncPlayerVolume.call(this);
+    this._syncPlayerVolume();
     this.dispatchEvent(options.name, adEvent);
-    _maybePreloadContent.call(this);
-  }
-
-  function _syncPlayerVolume() {
-    if (this._playerLoaded) {
-      this._adsManager.setVolume(this.player.volume);
-    } else {
-      if (this.player.config.playback.muted) {
-        this._adsManager.setVolume(0);
-      }
-    }
-  }
-
-  function _maybePreloadContent() {
-    if (this.config.adsRenderingSettings.enablePreloading && !this._playerLoaded) {
-      this.logger.debug("Preloading content");
-      this.player.load();
-      this._playerLoaded = true;
-    }
+    this._maybePreloadContent();
   }
 
   function onAdStarted(options) {
@@ -3812,25 +4148,11 @@ var FiniteStateMachine = function FiniteStateMachine(context) {
     var ad = adEvent.getAd();
     this.logger.debug("onAdStarted: " + adEvent.type.toUpperCase());
     if (!ad.isLinear()) {
-      _startPlayContent.call(this);
+      this._startPlayContent();
     } else {
-      _startAdInterval.call(this);
+      this._startAdInterval();
     }
     this.dispatchEvent(options.name, adEvent);
-  }
-
-  function _startPlayContent() {
-    this.logger.debug("Playing content");
-    this.player.play();
-    this._playerLoaded = true;
-  }
-
-  function _startAdInterval() {
-    var _this = this;
-
-    this._intervalTimer = setInterval(function () {
-      var remainingTime = _this._adsManager.getRemainingTime();
-    }, 300);
   }
 
   function onAdClicked(options) {
@@ -3900,7 +4222,7 @@ var FiniteStateMachine = function FiniteStateMachine(context) {
 exports.default = FiniteStateMachine;
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3981,7 +4303,7 @@ var ImaMiddleware = function (_PlayerMiddlewareBase) {
 exports.default = ImaMiddleware;
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4808,7 +5130,7 @@ Html5.id = "html5";
 exports.default = Html5;
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5230,7 +5552,7 @@ NativeAdapter._logger = _baseMediaSourceAdapter2.default.getLogger(NativeAdapter
 exports.default = NativeAdapter;
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5312,7 +5634,7 @@ var Middleware = function () {
 exports.default = Middleware;
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5324,7 +5646,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _middleware = __webpack_require__(28);
+var _middleware = __webpack_require__(29);
 
 var _middleware2 = _interopRequireDefault(_middleware);
 
@@ -5370,7 +5692,7 @@ PlayerMiddleware.Actions = {
 exports.default = PlayerMiddleware;
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5390,7 +5712,7 @@ var _eventManager = __webpack_require__(3);
 
 var _eventManager2 = _interopRequireDefault(_eventManager);
 
-var _state = __webpack_require__(31);
+var _state = __webpack_require__(32);
 
 var _state2 = _interopRequireDefault(_state);
 
@@ -5670,7 +5992,7 @@ var StateManager = function () {
 exports.default = StateManager;
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5752,7 +6074,7 @@ var State = function () {
 exports.default = State;
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5770,10 +6092,10 @@ var TRACK_TYPES = {
 exports.default = TRACK_TYPES;
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(34)(undefined);
+exports = module.exports = __webpack_require__(35)(undefined);
 // imports
 
 
@@ -5784,7 +6106,7 @@ exports.push([module.i, ".playkit-container {\n  width: 100%;\n  height: 100%;\n
 
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports) {
 
 /*
@@ -5866,7 +6188,7 @@ function toComment(sourceMap) {
 
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(process, global) {var require;/*!
@@ -6006,7 +6328,7 @@ function flush() {
 function attemptVertx() {
   try {
     var r = require;
-    var vertx = __webpack_require__(52);
+    var vertx = __webpack_require__(53);
     vertxNext = vertx.runOnLoop || vertx.runOnContext;
     return useVertxTimer();
   } catch (e) {
@@ -6760,7 +7082,7 @@ Promise$2.prototype = {
     The primary way of interacting with a promise is through its `then` method,
     which registers callbacks to receive either a promise's eventual value or the
     reason why the promise cannot be fulfilled.
-  
+
     ```js
     findUser().then(function(user){
       // user is available
@@ -6768,14 +7090,14 @@ Promise$2.prototype = {
       // user is unavailable, and you are given the reason why
     });
     ```
-  
+
     Chaining
     --------
-  
+
     The return value of `then` is itself a promise.  This second, 'downstream'
     promise is resolved with the return value of the first promise's fulfillment
     or rejection handler, or rejected if the handler throws an exception.
-  
+
     ```js
     findUser().then(function (user) {
       return user.name;
@@ -6785,7 +7107,7 @@ Promise$2.prototype = {
       // If `findUser` fulfilled, `userName` will be the user's name, otherwise it
       // will be `'default name'`
     });
-  
+
     findUser().then(function (user) {
       throw new Error('Found user, but still unhappy');
     }, function (reason) {
@@ -6798,7 +7120,7 @@ Promise$2.prototype = {
     });
     ```
     If the downstream promise does not specify a rejection handler, rejection reasons will be propagated further downstream.
-  
+
     ```js
     findUser().then(function (user) {
       throw new PedagogicalException('Upstream error');
@@ -6810,15 +7132,15 @@ Promise$2.prototype = {
       // The `PedgagocialException` is propagated all the way down to here
     });
     ```
-  
+
     Assimilation
     ------------
-  
+
     Sometimes the value you want to propagate to a downstream promise can only be
     retrieved asynchronously. This can be achieved by returning a promise in the
     fulfillment or rejection handler. The downstream promise will then be pending
     until the returned promise is settled. This is called *assimilation*.
-  
+
     ```js
     findUser().then(function (user) {
       return findCommentsByAuthor(user);
@@ -6826,9 +7148,9 @@ Promise$2.prototype = {
       // The user's comments are now available
     });
     ```
-  
+
     If the assimliated promise rejects, then the downstream promise will also reject.
-  
+
     ```js
     findUser().then(function (user) {
       return findCommentsByAuthor(user);
@@ -6838,15 +7160,15 @@ Promise$2.prototype = {
       // If `findCommentsByAuthor` rejects, we'll have the reason here
     });
     ```
-  
+
     Simple Example
     --------------
-  
+
     Synchronous Example
-  
+
     ```javascript
     let result;
-  
+
     try {
       result = findResult();
       // success
@@ -6854,9 +7176,9 @@ Promise$2.prototype = {
       // failure
     }
     ```
-  
+
     Errback Example
-  
+
     ```js
     findResult(function(result, err){
       if (err) {
@@ -6866,9 +7188,9 @@ Promise$2.prototype = {
       }
     });
     ```
-  
+
     Promise Example;
-  
+
     ```javascript
     findResult().then(function(result){
       // success
@@ -6876,15 +7198,15 @@ Promise$2.prototype = {
       // failure
     });
     ```
-  
+
     Advanced Example
     --------------
-  
+
     Synchronous Example
-  
+
     ```javascript
     let author, books;
-  
+
     try {
       author = findAuthor();
       books  = findBooksByAuthor(author);
@@ -6893,19 +7215,19 @@ Promise$2.prototype = {
       // failure
     }
     ```
-  
+
     Errback Example
-  
+
     ```js
-  
+
     function foundBooks(books) {
-  
+
     }
-  
+
     function failure(reason) {
-  
+
     }
-  
+
     findAuthor(function(author, err){
       if (err) {
         failure(err);
@@ -6930,9 +7252,9 @@ Promise$2.prototype = {
       }
     });
     ```
-  
+
     Promise Example;
-  
+
     ```javascript
     findAuthor().
       then(findBooksByAuthor).
@@ -6942,7 +7264,7 @@ Promise$2.prototype = {
       // something went wrong
     });
     ```
-  
+
     @method then
     @param {Function} onFulfilled
     @param {Function} onRejected
@@ -6954,25 +7276,25 @@ Promise$2.prototype = {
   /**
     `catch` is simply sugar for `then(undefined, onRejection)` which makes it the same
     as the catch block of a try/catch statement.
-  
+
     ```js
     function findAuthor(){
       throw new Error('couldn't find that author');
     }
-  
+
     // synchronous
     try {
       findAuthor();
     } catch(reason) {
       // something went wrong
     }
-  
+
     // async with promises
     findAuthor().catch(function(reason){
       // something went wrong
     });
     ```
-  
+
     @method catch
     @param {Function} onRejection
     Useful for tooling.
@@ -7027,10 +7349,10 @@ return Promise$2;
 
 //# sourceMappingURL=es6-promise.map
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(40), __webpack_require__(10)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(41), __webpack_require__(10)))
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports) {
 
 // Copyright Joyent, Inc. and other Node contributors.
@@ -7338,7 +7660,7 @@ function isUndefined(arg) {
 
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports) {
 
 module.exports = FsmError;
@@ -7360,7 +7682,7 @@ FsmError.prototype.constructor = FsmError;
 
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7373,11 +7695,11 @@ FsmError.prototype.constructor = FsmError;
 
 
 
-var FsmError = __webpack_require__(37);
-var stampit = __webpack_require__(41);
-var _ = __webpack_require__(39);
-var EventEmitter = __webpack_require__(36).EventEmitter;
-var uuid = __webpack_require__(45);
+var FsmError = __webpack_require__(38);
+var stampit = __webpack_require__(42);
+var _ = __webpack_require__(40);
+var EventEmitter = __webpack_require__(37).EventEmitter;
+var uuid = __webpack_require__(46);
 
 var AssignFirstArgument = stampit({
   init: function init(opts) {
@@ -7399,7 +7721,7 @@ var StateMachine = stampit({
     current: 'none'
   },
   statics: {
-    Promise: global.Promise || __webpack_require__(35).Promise,
+    Promise: global.Promise || __webpack_require__(36).Promise,
     FsmError: FsmError,
     callbackPrefix: 'on',
     noChoiceFound: 'no-choice',
@@ -7810,7 +8132,7 @@ module.exports = StateMachine;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, module) {var __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -24899,10 +25221,10 @@ module.exports = StateMachine;
   }
 }.call(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10), __webpack_require__(48)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10), __webpack_require__(49)(module)))
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -25088,7 +25410,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -25584,13 +25906,13 @@ module.exports = exports['default'];
 
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(33);
+var content = __webpack_require__(34);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -25598,7 +25920,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(43)(content, options);
+var update = __webpack_require__(44)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -25615,7 +25937,7 @@ if(false) {
 }
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -25661,7 +25983,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(44);
+var	fixUrls = __webpack_require__(45);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -25974,7 +26296,7 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports) {
 
 
@@ -26069,11 +26391,11 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var v1 = __webpack_require__(46);
-var v4 = __webpack_require__(47);
+var v1 = __webpack_require__(47);
+var v4 = __webpack_require__(48);
 
 var uuid = v4;
 uuid.v1 = v1;
@@ -26083,14 +26405,14 @@ module.exports = uuid;
 
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Unique ID creation requires a high quality random # generator.  We feature
 // detect to determine the best RNG source, normalizing to a function that
 // returns 128-bits of randomness, since that's what's usually required
-var rng = __webpack_require__(23);
-var bytesToUuid = __webpack_require__(22);
+var rng = __webpack_require__(24);
+var bytesToUuid = __webpack_require__(23);
 
 // **`v1()` - Generate time-based UUID**
 //
@@ -26192,11 +26514,11 @@ module.exports = v1;
 
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var rng = __webpack_require__(23);
-var bytesToUuid = __webpack_require__(22);
+var rng = __webpack_require__(24);
+var bytesToUuid = __webpack_require__(23);
 
 function v4(options, buf, offset) {
   var i = buf && offset || 0;
@@ -26227,7 +26549,7 @@ module.exports = v4;
 
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -26255,7 +26577,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -26522,7 +26844,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -26623,7 +26945,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -26655,13 +26977,13 @@ module.exports = {
 };
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ (function(module, exports) {
 
 /* (ignored) */
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26673,11 +26995,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _imaMiddleware = __webpack_require__(25);
+var _imaMiddleware = __webpack_require__(26);
 
 var _imaMiddleware2 = _interopRequireDefault(_imaMiddleware);
 
-var _fsm = __webpack_require__(24);
+var _fsm = __webpack_require__(25);
 
 var _fsm2 = _interopRequireDefault(_fsm);
 
@@ -26724,7 +27046,6 @@ var Ima = function (_BasePlugin) {
     _this._intervalTimer = null;
     _this._adsManager = null;
     _this._contentComplete = false;
-    _this._playerLoaded = false;
     _this._contentPlayheadTracker = { currentTime: 0, previousTime: 0, seeking: false, duration: 0 };
     _this._addBindings();
     _this._init();
@@ -26791,7 +27112,7 @@ var Ima = function (_BasePlugin) {
     value: function _init() {
       var _this2 = this;
 
-      this.prepareIma = new Promise(function (resolve, reject) {
+      this.preparePromise = new Promise(function (resolve, reject) {
         var loadPromise = window.google && window.google.ima ? Promise.resolve() : _this2._loadIma();
         loadPromise.then(function () {
           _this2._sdk = window.google.ima;
@@ -26946,9 +27267,44 @@ var Ima = function (_BasePlugin) {
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_CHANGED, this._fsm.advolumechanged);
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_MUTED, this._fsm.admuted);
       this._adsManager.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, this._fsm.aderror);
+      this._syncPlayerVolume();
       this._fsm.loaded().then(function () {
         resolve();
       });
+    }
+  }, {
+    key: '_syncPlayerVolume',
+    value: function _syncPlayerVolume() {
+      if (this.player.src) {
+        this._adsManager.setVolume(this.player.volume);
+      } else {
+        if (this.player.config.playback.muted) {
+          this._adsManager.setVolume(0);
+        }
+      }
+    }
+  }, {
+    key: '_startAdInterval',
+    value: function _startAdInterval() {
+      var _this3 = this;
+
+      this._intervalTimer = setInterval(function () {
+        var remainingTime = _this3._adsManager.getRemainingTime();
+      }, 300);
+    }
+  }, {
+    key: '_startPlayContent',
+    value: function _startPlayContent() {
+      this.logger.debug("Playing content");
+      this.player.play();
+    }
+  }, {
+    key: '_maybePreloadContent',
+    value: function _maybePreloadContent() {
+      if (this.config.adsRenderingSettings.enablePreloading && !this.player.src) {
+        this.logger.debug("Preloading media");
+        this.player.load();
+      }
     }
   }, {
     key: '_reset',
@@ -26963,23 +27319,22 @@ var Ima = function (_BasePlugin) {
       }
       this._adsLoader = null;
       this._contentComplete = false;
-      this._playerLoaded = false;
       this._intervalTimer = null;
       this._contentPlayheadTracker = { currentTime: 0, previousTime: 0, seeking: false, duration: 0 };
     }
   }, {
     key: '_loadIma',
     value: function _loadIma() {
-      var _this3 = this;
+      var _this4 = this;
 
       return new Promise(function (resolve, reject) {
         var r = false,
             t = document.getElementsByTagName("script")[0],
             s = document.createElement("script");
         s.type = "text/javascript";
-        s.src = _this3.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL;
+        s.src = _this4.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL;
         s.async = true;
-        _this3.logger.debug("Loading lib: " + s.src);
+        _this4.logger.debug("Loading lib: " + s.src);
         s.onload = s.onreadystatechange = function () {
           if (!r && (!this.readyState || this.readyState === "complete")) {
             r = true;

@@ -1,9 +1,9 @@
 // @flow
-// import {registerPlugin, BasePlugin} from 'playkit-js'
+import {registerPlugin, BasePlugin} from 'playkit-js'
 import ImaMiddleware from './ima-middleware'
-import FiniteStateMachine from './fsm'
-// import {VERSION} from 'playkit-js'
-// import {PlayerMiddlewareBase} from 'playkit-js'
+import ImaFSM from './ima-fsm'
+import {VERSION} from 'playkit-js'
+import {PlayerMiddlewareBase} from 'playkit-js'
 
 const pluginName: string = "ima";
 
@@ -30,7 +30,7 @@ export default class Ima extends BasePlugin {
   static IMA_SDK_LIB_URL: string = "//imasdk.googleapis.com/js/sdkloader/ima3.js";
   static IMA_SDK_DEBUG_LIB_URL: string = "//imasdk.googleapis.com/js/sdkloader/ima3_debug.js";
 
-  prepareIma: Promise<*>;
+  preparePromise: Promise<*>;
 
   _fsm: any;
   _sdk: any;
@@ -48,7 +48,7 @@ export default class Ima extends BasePlugin {
 
   constructor(name: string, player: Player, config: Object) {
     super(name, player, config);
-    this._fsm = new FiniteStateMachine(this);
+    this._fsm = new ImaFSM(this);
     this._intervalTimer = null;
     this._adsManager = null;
     this._contentComplete = false;
@@ -107,7 +107,7 @@ export default class Ima extends BasePlugin {
   }
 
   _init(): void {
-    this.prepareIma = new Promise((resolve, reject) => {
+    this.preparePromise = new Promise((resolve, reject) => {
       let loadPromise = (window.google && window.google.ima) ? Promise.resolve() : this._loadIma();
       loadPromise.then(() => {
         this._sdk = window.google.ima;
@@ -267,7 +267,7 @@ export default class Ima extends BasePlugin {
 
   _startAdInterval(): void {
     this._intervalTimer = setInterval(() => {
-      let remainingTime = this._adsManager.getRemainingTime();
+      // let remainingTime = this._adsManager.getRemainingTime();
     }, 300);
   }
 
@@ -324,8 +324,8 @@ export default class Ima extends BasePlugin {
 registerPlugin(pluginName, Ima);
 
 // TODO: Remove
-import {VERSION} from '../node_modules/playkit-js/src/playkit.js'
-import {registerPlugin, BasePlugin} from '../node_modules/playkit-js/src/playkit.js'
-import {PlayerMiddlewareBase} from '../node_modules/playkit-js/src/playkit.js'
-import * as Playkit from '../node_modules/playkit-js/src/playkit.js'
-window.Playkit = Playkit;
+// import {VERSION} from '../node_modules/playkit-js/src/playkit.js'
+// import {registerPlugin, BasePlugin} from '../node_modules/playkit-js/src/playkit.js'
+// import {PlayerMiddlewareBase} from '../node_modules/playkit-js/src/playkit.js'
+// import * as Playkit from '../node_modules/playkit-js/src/playkit.js'
+// window.Playkit = Playkit;

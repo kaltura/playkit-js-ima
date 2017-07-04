@@ -1,6 +1,6 @@
 // @flow
-import {PlayerMiddlewareBase} from '../node_modules/playkit-js/src/playkit.js'
-// import {PlayerMiddlewareBase} from 'playkit-js'
+//import {PlayerMiddlewareBase} from '../node_modules/playkit-js/src/playkit.js'
+import {PlayerMiddlewareBase} from 'playkit-js'
 import State from './state'
 
 export default class ImaMiddleware extends PlayerMiddlewareBase {
@@ -12,23 +12,21 @@ export default class ImaMiddleware extends PlayerMiddlewareBase {
   }
 
   play(next: Function): void {
-    this.context.prepareIma
-      .then(() => {
-        let fsm = this.context.getStateMachine();
-        if (fsm.is(State.LOADED)) {
-          this.context.initialize();
+    this.context.preparePromise.then(() => {
+      let fsm = this.context.getStateMachine();
+      if (fsm.is(State.LOADED)) {
+        this.context.initialize();
+      } else {
+        if (fsm.is(State.PAUSED)) {
+          this.context.resumeAd();
         } else {
-          if (fsm.is(State.PAUSED)) {
-            this.context.resumeAd();
-          } else {
-            super.play(next);
-          }
+          super.play(next);
         }
-      })
-      .catch((e) => {
-        this.context.destroy();
-        this.context.logger.error(e);
-      });
+      }
+    }).catch((e) => {
+      this.context.destroy();
+      this.context.logger.error(e);
+    });
   }
 
   pause(next: Function): void {
