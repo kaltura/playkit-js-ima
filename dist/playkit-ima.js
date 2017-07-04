@@ -763,7 +763,7 @@ var CUSTOM_EVENTS = {
    * Ads events
    */
   ADS_LOADED: 'adsloaded',
-  AD_PLAYING: 'adplaying',
+  AD_STARTED: 'adstarted',
   AD_RESUMED: 'adresumed',
   AD_PAUSED: 'adpaused',
   AD_CLICKED: 'adclicked',
@@ -775,7 +775,10 @@ var CUSTOM_EVENTS = {
   AD_BREAK_END: 'adbreakend',
   AD_FIRST_QUARTILE: 'adfirstquartile',
   AD_MIDPOINT: 'admidpoint',
-  AD_THIRD_QUARTILE: 'adthirdquartile'
+  AD_THIRD_QUARTILE: 'adthirdquartile',
+  USER_CLOSED_AD: 'userclosedad',
+  AD_VOLUME_CHANGED: 'advolumechanged',
+  AD_MUTED: 'admuted'
 };
 
 var PLAYER_EVENTS = (0, _util.merge)([HTML5_EVENTS, CUSTOM_EVENTS]);
@@ -2754,7 +2757,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 var State = {
-  STARTING: "starting",
   LOADING: "loading",
   LOADED: "loaded",
   PLAYING: "playing",
@@ -3683,13 +3685,9 @@ var FiniteStateMachine = function FiniteStateMachine(context) {
   _classCallCheck(this, FiniteStateMachine);
 
   return (0, _index2.default)({
-    initial: _state2.default.STARTING,
+    initial: _state2.default.LOADING,
     final: _state2.default.DONE,
     events: [{
-      name: 'loading',
-      from: _state2.default.STARTING,
-      to: _state2.default.LOADING
-    }, {
       name: 'loaded',
       from: _state2.default.LOADING,
       to: _state2.default.LOADED
@@ -3697,7 +3695,7 @@ var FiniteStateMachine = function FiniteStateMachine(context) {
       name: context.player.Event.ADS_LOADED,
       from: [_state2.default.IDLE, _state2.default.LOADED]
     }, {
-      name: context.player.Event.AD_PLAYING,
+      name: context.player.Event.AD_STARTED,
       from: [_state2.default.LOADED, _state2.default.IDLE, _state2.default.PAUSED],
       to: [_state2.default.PLAYING, _state2.default.IDLE],
       condition: function condition(options) {
@@ -3749,135 +3747,154 @@ var FiniteStateMachine = function FiniteStateMachine(context) {
       name: context.player.Event.AD_ERROR,
       from: [_state2.default.LOADED, _state2.default.PLAYING, _state2.default.PAUSED, _state2.default.LOADING],
       to: _state2.default.IDLE
+    }, {
+      name: context.player.Event.USER_CLOSED_AD,
+      from: [_state2.default.IDLE, _state2.default.PLAYING, _state2.default.PAUSED]
+    }, {
+      name: context.player.Event.AD_VOLUME_CHANGED,
+      from: [_state2.default.PLAYING, _state2.default.PAUSED]
+    }, {
+      name: context.player.Event.AD_MUTED,
+      from: [_state2.default.PLAYING, _state2.default.PAUSED]
     }],
     callbacks: {
-      // LOADED
-      onadsloaded: function (options) {
-        var adEvent = options.args[0];
-        this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
-        var playerViewSize = this._getPlayerViewSize();
-        this._adsManager.resize(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
-        this.dispatchEvent(options.name, adEvent);
-      }.bind(context),
-      // STARTED
-      onadplaying: function (options) {
-        var _this = this;
-
-        var adEvent = options.args[0];
-        var ad = adEvent.getAd();
-        this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
-        if (!ad.isLinear()) {
-          this.logger.debug("Playing media");
-          this.player.play();
-          this._playerLoaded = true;
-        } else {
-          this._intervalTimer = setInterval(function () {
-            var remainingTime = _this._adsManager.getRemainingTime();
-            _this.logger.debug(remainingTime);
-          }, 300);
-          if (this.config.adsRenderingSettings.enablePreloading && !this._playerLoaded) {
-            this.logger.debug("Preloading media");
-            this.player.load();
-            this._playerLoaded = true;
-          }
-        }
-        this.dispatchEvent(options.name, adEvent);
-      }.bind(context),
-      // PAUSED
-      onadpaused: function (options) {
-        var adEvent = options.args[0];
-        this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
-        this.dispatchEvent(options.name, adEvent);
-      }.bind(context),
-      // RESUMED
-      onadresumed: function (options) {
-        var adEvent = options.args[0];
-        this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
-        this.dispatchEvent(options.name, adEvent);
-      }.bind(context),
-      // CLICKED
-      onadclicked: function (options) {
-        var adEvent = options.args[0];
-        this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
-        if (this._fsm.is(_state2.default.PLAYING)) {
-          this._adsManager.pause();
-        } else {
-          this._adsManager.resume();
-        }
-      }.bind(context),
-      // SKIPPED
-      onadskipped: function (options) {
-        var adEvent = options.args[0];
-        this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
-        this.dispatchEvent(options.name, adEvent);
-      }.bind(context),
-      // COMPLETE
-      onadcompleted: function (options) {
-        var adEvent = options.args[0];
-        var ad = adEvent.getAd();
-        this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
-        if (ad.isLinear()) {
-          clearInterval(this._intervalTimer);
-          this._intervalTimer = null;
-        }
-        this.dispatchEvent(options.name, adEvent);
-      }.bind(context),
-      // ALL_ADS_COMPLETED
-      onalladscompleted: function (options) {
-        var adEvent = options.args[0];
-        this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
-        this._hideAdsContainer();
-        this.dispatchEvent(options.name, adEvent);
-      }.bind(context),
-      // CONTENT_PAUSE_REQUESTED
-      onadbreakstart: function (options) {
-        var adEvent = options.args[0];
-        this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
-        this._showAdsContainer();
-        this.player.pause();
-        this.dispatchEvent(options.name, adEvent);
-      }.bind(context),
-      // CONTENT_RESUME_REQUESTED
-      onadbreakend: function (options) {
-        var adEvent = options.args[0];
-        this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
-        if (!this._contentComplete) {
-          this._hideAdsContainer();
-          this.player.play();
-        }
-      }.bind(context),
-      // FIRST_QUARTILE
-      onadfirstquartile: function (options) {
-        var adEvent = options.args[0];
-        this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
-        this.dispatchEvent(options.name, adEvent);
-      }.bind(context),
-      // MIDPOINT
-      onadmidpoint: function (options) {
-        var adEvent = options.args[0];
-        this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
-        this.dispatchEvent(options.name, adEvent);
-      }.bind(context),
-      // THIRD_QUARTILE
-      onadthirdquartile: function (options) {
-        var adEvent = options.args[0];
-        this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
-        this.dispatchEvent(options.name, adEvent);
-      }.bind(context),
-      // AD_ERROR
-      onaderror: function (options) {
-        var adEvent = options.args[0];
-        this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
-        var adError = adEvent.getError();
-        this.logger.error(adError);
-        this.destroy();
-      }.bind(context),
-      // When entering any state
-      onenter: function (options) {
-        this.logger.debug("Change state: " + options.from + " --> " + options.to);
-      }.bind(context)
+      onadsloaded: onAdsLoaded.bind(context),
+      onadstarted: onAdStarted.bind(context),
+      onadpaused: onAdEvent.bind(context),
+      onadresumed: onAdEvent.bind(context),
+      onadclicked: onAdClicked.bind(context),
+      onadskipped: onAdEvent.bind(context),
+      onadcompleted: onAdCompleted.bind(context),
+      onalladscompleted: onAllAdsCompleted.bind(context),
+      onadbreakstart: onAdBreakStart.bind(context),
+      onadbreakend: onAdBreakEnd.bind(context),
+      onadfirstquartile: onAdEvent.bind(context),
+      onadmidpoint: onAdEvent.bind(context),
+      onadthirdquartile: onAdEvent.bind(context),
+      onaderror: onAdError.bind(context),
+      onenter: onEnterState.bind(context),
+      onuserclosedad: onAdEvent.bind(context),
+      onadvolumechanged: onAdEvent.bind(context),
+      onadmuted: onAdEvent.bind(context)
     }
   });
+
+  function onAdsLoaded(options) {
+    var adEvent = options.args[0];
+    this.logger.debug("onAdsLoaded: " + adEvent.type.toUpperCase());
+    var playerViewSize = this._getPlayerViewSize();
+    this._adsManager.resize(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
+    _syncPlayerVolume.call(this);
+    this.dispatchEvent(options.name, adEvent);
+    _maybePreloadContent.call(this);
+  }
+
+  function _syncPlayerVolume() {
+    if (this._playerLoaded) {
+      this._adsManager.setVolume(this.player.volume);
+    } else {
+      if (this.player.config.playback.muted) {
+        this._adsManager.setVolume(0);
+      }
+    }
+  }
+
+  function _maybePreloadContent() {
+    if (this.config.adsRenderingSettings.enablePreloading && !this._playerLoaded) {
+      this.logger.debug("Preloading content");
+      this.player.load();
+      this._playerLoaded = true;
+    }
+  }
+
+  function onAdStarted(options) {
+    var adEvent = options.args[0];
+    var ad = adEvent.getAd();
+    this.logger.debug("onAdStarted: " + adEvent.type.toUpperCase());
+    if (!ad.isLinear()) {
+      _startPlayContent.call(this);
+    } else {
+      _startAdInterval.call(this);
+    }
+    this.dispatchEvent(options.name, adEvent);
+  }
+
+  function _startPlayContent() {
+    this.logger.debug("Playing content");
+    this.player.play();
+    this._playerLoaded = true;
+  }
+
+  function _startAdInterval() {
+    var _this = this;
+
+    this._intervalTimer = setInterval(function () {
+      var remainingTime = _this._adsManager.getRemainingTime();
+    }, 300);
+  }
+
+  function onAdClicked(options) {
+    var adEvent = options.args[0];
+    this.logger.debug("onAdClicked: " + adEvent.type.toUpperCase());
+    if (this._fsm.is(_state2.default.PLAYING)) {
+      this._adsManager.pause();
+    } else {
+      this._adsManager.resume();
+    }
+  }
+
+  function onAdCompleted(options) {
+    var adEvent = options.args[0];
+    var ad = adEvent.getAd();
+    this.logger.debug("onAdCompleted: " + adEvent.type.toUpperCase());
+    if (ad.isLinear()) {
+      clearInterval(this._intervalTimer);
+      this._intervalTimer = null;
+    }
+    this.dispatchEvent(options.name, adEvent);
+  }
+
+  function onAllAdsCompleted(options) {
+    var adEvent = options.args[0];
+    this.logger.debug("onAllAdsCompleted: " + adEvent.type.toUpperCase());
+    this._hideAdsContainer();
+    this.dispatchEvent(options.name, adEvent);
+  }
+
+  function onAdBreakStart(options) {
+    var adEvent = options.args[0];
+    this.logger.debug("onAdBreakStart: " + adEvent.type.toUpperCase());
+    this._showAdsContainer();
+    this.player.pause();
+    this.dispatchEvent(options.name, adEvent);
+  }
+
+  function onAdBreakEnd(options) {
+    var adEvent = options.args[0];
+    this.logger.debug("onAdBreakEnd: " + adEvent.type.toUpperCase());
+    if (!this._contentComplete) {
+      this._hideAdsContainer();
+      this.player.play();
+    }
+  }
+
+  function onAdError(options) {
+    var adEvent = options.args[0];
+    this.logger.debug("onAdError: " + adEvent.type.toUpperCase());
+    var adError = adEvent.getError();
+    this.logger.error(adError);
+    this.destroy();
+  }
+
+  function onAdEvent(options) {
+    var adEvent = options.args[0];
+    this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
+    this.dispatchEvent(options.name, adEvent);
+  }
+
+  function onEnterState(options) {
+    this.logger.debug("Change state: " + options.from + " --> " + options.to);
+  }
 };
 
 exports.default = FiniteStateMachine;
@@ -5279,7 +5296,7 @@ var Middleware = function () {
   }, {
     key: '_executeMiddleware',
     value: function _executeMiddleware(middlewares, callback) {
-      // eslint-disable-next-line no-unused-vars
+      /* eslint-disable-next-line no-unused-vars */
       var composition = middlewares.reduceRight(function (next, fn) {
         return function (v) {
           fn(next);
@@ -26708,12 +26725,7 @@ var Ima = function (_BasePlugin) {
     _this._adsManager = null;
     _this._contentComplete = false;
     _this._playerLoaded = false;
-    _this._contentPlayheadTracker = {
-      currentTime: 0,
-      previousTime: 0,
-      seeking: false,
-      duration: 0
-    };
+    _this._contentPlayheadTracker = { currentTime: 0, previousTime: 0, seeking: false, duration: 0 };
     _this._addBindings();
     _this._init();
     return _this;
@@ -26745,8 +26757,9 @@ var Ima = function (_BasePlugin) {
         this._adDisplayContainer.initialize();
         // Initialize the ads manager. Ad rules playlist will start at this time.
         this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
-        // Call play to start showing the ad. Single video and overlay ads will
-        // start at this time; the call will be ignored for ad rules.
+        // Call play to start showing the ad.
+        // Single video and overlay ads will start at this time.
+        // The call will be ignored for ad rules.
         this._adsManager.start();
       } catch (adError) {
         this.logger.error(adError);
@@ -26778,17 +26791,14 @@ var Ima = function (_BasePlugin) {
     value: function _init() {
       var _this2 = this;
 
-      this._fsm.loading();
       this.prepareIma = new Promise(function (resolve, reject) {
         var loadPromise = window.google && window.google.ima ? Promise.resolve() : _this2._loadIma();
         loadPromise.then(function () {
           _this2._sdk = window.google.ima;
           _this2.logger.debug("IMA SDK version: " + _this2._sdk.VERSION);
-          try {
-            _this2._requestAds(resolve);
-          } catch (e) {
-            reject(e);
-          }
+          _this2._requestAds(resolve);
+        }).catch(function (e) {
+          reject(e);
         });
       });
     }
@@ -26803,7 +26813,7 @@ var Ima = function (_BasePlugin) {
         this._adsContainerDiv.id = ADS_CONTAINER_ID;
         this._adsContainerDiv.style.position = "absolute";
         this._adsContainerDiv.style.zIndex = "2000";
-        this._adsContainerDiv.style.top = "8px";
+        this._adsContainerDiv.style.top = "0";
       } else {
         this._adsContainerDiv = adsContainerDiv;
       }
@@ -26831,17 +26841,17 @@ var Ima = function (_BasePlugin) {
         // Create ads loader.
         this._initAdsLoader(resolve);
         // Request video ads.
-        var playerViewSize = this._getPlayerViewSize();
         var adsRequest = new this._sdk.AdsRequest();
         if (this.config.adTagUrl) {
           adsRequest.adTagUrl = this.config.adTagUrl;
         } else {
           adsRequest.adsResponse = this.config.adsResponse;
         }
+        var playerViewSize = this._getPlayerViewSize();
         adsRequest.linearAdSlotWidth = playerViewSize.width;
         adsRequest.linearAdSlotHeight = playerViewSize.height;
         adsRequest.nonLinearAdSlotWidth = playerViewSize.width;
-        adsRequest.nonLinearAdSlotHeight = playerViewSize.height <= 150 ? playerViewSize.height : 150;
+        adsRequest.nonLinearAdSlotHeight = playerViewSize.height / 3;
         adsRequest.setAdWillAutoPlay(this.player.config.playback.autoplay);
         this._adsLoader.requestAds(adsRequest);
       }
@@ -26921,7 +26931,7 @@ var Ima = function (_BasePlugin) {
       this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_PAUSE_REQUESTED, this._fsm.adbreakstart);
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOADED, this._fsm.adsloaded);
-      this._adsManager.addEventListener(this._sdk.AdEvent.Type.STARTED, this._fsm.adplaying);
+      this._adsManager.addEventListener(this._sdk.AdEvent.Type.STARTED, this._fsm.adstarted);
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.PAUSED, this._fsm.adpaused);
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.RESUMED, this._fsm.adresumed);
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.FIRST_QUARTILE, this._fsm.adfirstquartile);
@@ -26932,6 +26942,9 @@ var Ima = function (_BasePlugin) {
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.COMPLETE, this._fsm.adcompleted);
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_RESUME_REQUESTED, this._fsm.adbreakend);
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.ALL_ADS_COMPLETED, this._fsm.alladscompleted);
+      this._adsManager.addEventListener(this._sdk.AdEvent.Type.USER_CLOSE, this._fsm.userclosedad);
+      this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_CHANGED, this._fsm.advolumechanged);
+      this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_MUTED, this._fsm.admuted);
       this._adsManager.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, this._fsm.aderror);
       this._fsm.loaded().then(function () {
         resolve();
@@ -26948,15 +26961,11 @@ var Ima = function (_BasePlugin) {
       if (this._adsLoader && !this._contentComplete) {
         this._adsLoader.contentComplete();
       }
+      this._adsLoader = null;
       this._contentComplete = false;
       this._playerLoaded = false;
       this._intervalTimer = null;
-      this._contentPlayheadTracker = {
-        currentTime: 0,
-        previousTime: 0,
-        seeking: false,
-        duration: 0
-      };
+      this._contentPlayheadTracker = { currentTime: 0, previousTime: 0, seeking: false, duration: 0 };
     }
   }, {
     key: '_loadIma',

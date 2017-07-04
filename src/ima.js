@@ -40,7 +40,6 @@ export default class Ima extends BasePlugin {
   _adsLoader: any;
   _contentPlayheadTracker: Object;
   _contentComplete: boolean;
-  _playerLoaded: boolean;
   _intervalTimer: ?number;
 
   static isValid() {
@@ -53,7 +52,6 @@ export default class Ima extends BasePlugin {
     this._intervalTimer = null;
     this._adsManager = null;
     this._contentComplete = false;
-    this._playerLoaded = false;
     this._contentPlayheadTracker = {currentTime: 0, previousTime: 0, seeking: false, duration: 0};
     this._addBindings();
     this._init();
@@ -251,9 +249,38 @@ export default class Ima extends BasePlugin {
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_CHANGED, this._fsm.advolumechanged);
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_MUTED, this._fsm.admuted);
     this._adsManager.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, this._fsm.aderror);
+    this._syncPlayerVolume();
     this._fsm.loaded().then(() => {
       resolve();
     });
+  }
+
+  _syncPlayerVolume(): void {
+    if (this.player.src) {
+      this._adsManager.setVolume(this.player.volume);
+    } else {
+      if (this.player.config.playback.muted) {
+        this._adsManager.setVolume(0);
+      }
+    }
+  }
+
+  _startAdInterval(): void {
+    this._intervalTimer = setInterval(() => {
+      let remainingTime = this._adsManager.getRemainingTime();
+    }, 300);
+  }
+
+  _startPlayContent(): void {
+    this.logger.debug("Playing content");
+    this.player.play();
+  }
+
+  _maybePreloadContent(): void {
+    if (this.config.adsRenderingSettings.enablePreloading && !this.player.src) {
+      this.logger.debug("Preloading media");
+      this.player.load();
+    }
   }
 
   _reset(): void {
@@ -267,7 +294,6 @@ export default class Ima extends BasePlugin {
     }
     this._adsLoader = null;
     this._contentComplete = false;
-    this._playerLoaded = false;
     this._intervalTimer = null;
     this._contentPlayheadTracker = {currentTime: 0, previousTime: 0, seeking: false, duration: 0};
   }

@@ -72,10 +72,10 @@ export default class FiniteStateMachine {
         from: [State.IDLE, State.PLAYING, State.PAUSED]
       }, {
         name: context.player.Event.AD_VOLUME_CHANGED,
-        from: [State.PLAYING, State.PAUSED]
+        from: [State.PLAYING, State.PAUSED, State.LOADED]
       }, {
         name: context.player.Event.AD_MUTED,
-        from: [State.PLAYING, State.PAUSED]
+        from: [State.PLAYING, State.PAUSED, State.LOADED]
       }],
       callbacks: {
         onadsloaded: onAdsLoaded.bind(context),
@@ -104,27 +104,9 @@ export default class FiniteStateMachine {
       this.logger.debug("onAdsLoaded: " + adEvent.type.toUpperCase());
       let playerViewSize = this._getPlayerViewSize();
       this._adsManager.resize(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
-      _syncPlayerVolume.call(this);
+      this._syncPlayerVolume();
       this.dispatchEvent(options.name, adEvent);
-      _maybePreloadContent.call(this);
-    }
-
-    function _syncPlayerVolume(): void {
-      if (this._playerLoaded) {
-        this._adsManager.setVolume(this.player.volume);
-      } else {
-        if (this.player.config.playback.muted) {
-          this._adsManager.setVolume(0);
-        }
-      }
-    }
-
-    function _maybePreloadContent(): void {
-      if (this.config.adsRenderingSettings.enablePreloading && !this._playerLoaded) {
-        this.logger.debug("Preloading content");
-        this.player.load();
-        this._playerLoaded = true;
-      }
+      this._maybePreloadContent();
     }
 
     function onAdStarted(options: Object): void {
@@ -132,23 +114,11 @@ export default class FiniteStateMachine {
       let ad = adEvent.getAd();
       this.logger.debug("onAdStarted: " + adEvent.type.toUpperCase());
       if (!ad.isLinear()) {
-        _startPlayContent.call(this);
+        this._startPlayContent();
       } else {
-        _startAdInterval.call(this);
+        this._startAdInterval();
       }
       this.dispatchEvent(options.name, adEvent);
-    }
-
-    function _startPlayContent(): void {
-      this.logger.debug("Playing content");
-      this.player.play();
-      this._playerLoaded = true;
-    }
-
-    function _startAdInterval(): void {
-      this._intervalTimer = setInterval(() => {
-        let remainingTime = this._adsManager.getRemainingTime();
-      }, 300);
     }
 
     function onAdClicked(options: Object): void {
