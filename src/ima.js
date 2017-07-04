@@ -54,12 +54,7 @@ export default class Ima extends BasePlugin {
     this._adsManager = null;
     this._contentComplete = false;
     this._playerLoaded = false;
-    this._contentPlayheadTracker = {
-      currentTime: 0,
-      previousTime: 0,
-      seeking: false,
-      duration: 0
-    };
+    this._contentPlayheadTracker = {currentTime: 0, previousTime: 0, seeking: false, duration: 0};
     this._addBindings();
     this._init();
   }
@@ -85,8 +80,9 @@ export default class Ima extends BasePlugin {
       this._adDisplayContainer.initialize();
       // Initialize the ads manager. Ad rules playlist will start at this time.
       this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
-      // Call play to start showing the ad. Single video and overlay ads will
-      // start at this time; the call will be ignored for ad rules.
+      // Call play to start showing the ad.
+      // Single video and overlay ads will start at this time.
+      // The call will be ignored for ad rules.
       this._adsManager.start();
     }
     catch (adError) {
@@ -113,17 +109,14 @@ export default class Ima extends BasePlugin {
   }
 
   _init(): void {
-    this._fsm.loading();
     this.prepareIma = new Promise((resolve, reject) => {
       let loadPromise = (window.google && window.google.ima) ? Promise.resolve() : this._loadIma();
       loadPromise.then(() => {
         this._sdk = window.google.ima;
         this.logger.debug("IMA SDK version: " + this._sdk.VERSION);
-        try {
-          this._requestAds(resolve);
-        } catch (e) {
-          reject(e);
-        }
+        this._requestAds(resolve);
+      }).catch((e) => {
+        reject(e);
       });
     });
   }
@@ -137,7 +130,7 @@ export default class Ima extends BasePlugin {
       this._adsContainerDiv.id = ADS_CONTAINER_ID;
       this._adsContainerDiv.style.position = "absolute";
       this._adsContainerDiv.style.zIndex = "2000";
-      this._adsContainerDiv.style.top = "8px";
+      this._adsContainerDiv.style.top = "0";
     } else {
       this._adsContainerDiv = adsContainerDiv;
     }
@@ -163,17 +156,17 @@ export default class Ima extends BasePlugin {
       // Create ads loader.
       this._initAdsLoader(resolve);
       // Request video ads.
-      let playerViewSize = this._getPlayerViewSize();
       let adsRequest = new this._sdk.AdsRequest();
       if (this.config.adTagUrl) {
         adsRequest.adTagUrl = this.config.adTagUrl;
       } else {
         adsRequest.adsResponse = this.config.adsResponse;
       }
+      let playerViewSize = this._getPlayerViewSize();
       adsRequest.linearAdSlotWidth = playerViewSize.width;
       adsRequest.linearAdSlotHeight = playerViewSize.height;
       adsRequest.nonLinearAdSlotWidth = playerViewSize.width;
-      adsRequest.nonLinearAdSlotHeight = playerViewSize.height <= 150 ? playerViewSize.height : 150;
+      adsRequest.nonLinearAdSlotHeight = playerViewSize.height / 3;
       adsRequest.setAdWillAutoPlay(this.player.config.playback.autoplay);
       this._adsLoader.requestAds(adsRequest);
     }
@@ -243,7 +236,7 @@ export default class Ima extends BasePlugin {
     this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_PAUSE_REQUESTED, this._fsm.adbreakstart);
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOADED, this._fsm.adsloaded);
-    this._adsManager.addEventListener(this._sdk.AdEvent.Type.STARTED, this._fsm.adplaying);
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.STARTED, this._fsm.adstarted);
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.PAUSED, this._fsm.adpaused);
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.RESUMED, this._fsm.adresumed);
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.FIRST_QUARTILE, this._fsm.adfirstquartile);
@@ -254,6 +247,9 @@ export default class Ima extends BasePlugin {
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.COMPLETE, this._fsm.adcompleted);
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_RESUME_REQUESTED, this._fsm.adbreakend);
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.ALL_ADS_COMPLETED, this._fsm.alladscompleted);
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.USER_CLOSE, this._fsm.userclosedad);
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_CHANGED, this._fsm.advolumechanged);
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_MUTED, this._fsm.admuted);
     this._adsManager.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, this._fsm.aderror);
     this._fsm.loaded().then(() => {
       resolve();
@@ -269,15 +265,11 @@ export default class Ima extends BasePlugin {
     if (this._adsLoader && !this._contentComplete) {
       this._adsLoader.contentComplete();
     }
+    this._adsLoader = null;
     this._contentComplete = false;
     this._playerLoaded = false;
     this._intervalTimer = null;
-    this._contentPlayheadTracker = {
-      currentTime: 0,
-      previousTime: 0,
-      seeking: false,
-      duration: 0
-    };
+    this._contentPlayheadTracker = {currentTime: 0, previousTime: 0, seeking: false, duration: 0};
   }
 
   _loadIma(): Promise<*> {
