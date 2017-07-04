@@ -1,17 +1,40 @@
 // @flow
-import {registerPlugin, BasePlugin} from 'playkit-js'
 import ImaMiddleware from './ima-middleware'
 import ImaFSM from './ima-fsm'
-import {VERSION} from 'playkit-js'
-import {PlayerMiddlewareBase} from 'playkit-js'
+// import {registerPlugin, BasePlugin} from 'playkit-js'
+// import {VERSION} from 'playkit-js'
+// import {PlayerMiddlewareBase} from 'playkit-js'
 
+/**
+ * The plugin name.
+ * @type {string}
+ * @const
+ */
 const pluginName: string = "ima";
-
+/**
+ * The ads container id.
+ * @type {string}
+ * @const
+ */
 const ADS_CONTAINER_ID: string = "ads-container";
+/**
+ * The player name.
+ * @type {string}
+ * @const
+ */
 const PLAYER_NAME: string = "kaltura-player-js";
 
+/**
+ * The ima plugin.
+ * @classdesc
+ */
 export default class Ima extends BasePlugin {
 
+  /**
+   * The default configuration of the plugin.
+   * @type {Object}
+   * @static
+   */
   static defaultConfig: Object = {
     debug: false,
     timeout: 5000,
@@ -27,19 +50,79 @@ export default class Ima extends BasePlugin {
     }
   };
 
+  /**
+   * The sdk lib url.
+   * @type {string}
+   * @static
+   */
   static IMA_SDK_LIB_URL: string = "//imasdk.googleapis.com/js/sdkloader/ima3.js";
+  /**
+   * The debug sdk lib url.
+   * @type {string}
+   * @static
+   */
   static IMA_SDK_DEBUG_LIB_URL: string = "//imasdk.googleapis.com/js/sdkloader/ima3_debug.js";
-
+  /**
+   * Promise for loading the plugin.
+   * Will be resolved after:
+   * 1) Ima script has been loaded in the page.
+   * 2) The ads manager has been loaded and ready to start.
+   * @type {Promise<*>}
+   * @member
+   * @public
+   */
   preparePromise: Promise<*>;
-
+  /**
+   * The finite state machine of the plugin.
+   * @member
+   * @private
+   */
   _fsm: any;
+  /**
+   * The sdk api.
+   * @member
+   * @private
+   */
   _sdk: any;
+  /**
+   * The ads container dom element.
+   * @member
+   * @private
+   */
   _adsContainerDiv: HTMLElement;
+  /**
+   * The ima ads container object.
+   */
   _adDisplayContainer: any;
+  /**
+   * The ima ads manager.
+   * @member
+   * @private
+   */
   _adsManager: any;
+  /**
+   * The ima ads loader.
+   * @member
+   * @private
+   */
   _adsLoader: any;
+  /**
+   * The content tracker.
+   * @member
+   * @private
+   */
   _contentPlayheadTracker: Object;
+  /**
+   * Flag to know when content complete.
+   * @member
+   * @private
+   */
   _contentComplete: boolean;
+  /**
+   * The ad interval timer.
+   * @member
+   * @private
+   */
   _intervalTimer: ?number;
 
   static isValid() {
@@ -324,8 +407,8 @@ export default class Ima extends BasePlugin {
 registerPlugin(pluginName, Ima);
 
 // TODO: Remove
-// import {VERSION} from '../node_modules/playkit-js/src/playkit.js'
-// import {registerPlugin, BasePlugin} from '../node_modules/playkit-js/src/playkit.js'
-// import {PlayerMiddlewareBase} from '../node_modules/playkit-js/src/playkit.js'
-// import * as Playkit from '../node_modules/playkit-js/src/playkit.js'
-// window.Playkit = Playkit;
+import {VERSION} from '../node_modules/playkit-js/src/playkit.js'
+import {registerPlugin, BasePlugin} from '../node_modules/playkit-js/src/playkit.js'
+import {PlayerMiddlewareBase} from '../node_modules/playkit-js/src/playkit.js'
+import * as Playkit from '../node_modules/playkit-js/src/playkit.js'
+window.Playkit = Playkit;

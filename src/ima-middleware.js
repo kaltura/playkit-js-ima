@@ -1,38 +1,61 @@
 // @flow
-//import {PlayerMiddlewareBase} from '../node_modules/playkit-js/src/playkit.js'
-import {PlayerMiddlewareBase} from 'playkit-js'
+import {PlayerMiddlewareBase} from '../node_modules/playkit-js/src/playkit.js'
+// import {PlayerMiddlewareBase} from 'playkit-js'
 import State from './state'
 
+/**
+ * Middleware implementation for ima plugin.
+ * @classdesc
+ */
 export default class ImaMiddleware extends PlayerMiddlewareBase {
-  context: any;
+  /**
+   * The plugin context.
+   * @member
+   * @private
+   */
+  _context: any;
 
-  constructor(pluginContext: any) {
+  /**
+   * @constructor
+   * @param {any} context - The plugin context.
+   */
+  constructor(context: any) {
     super();
-    this.context = pluginContext;
+    this._context = context;
   }
 
+  /**
+   * Play middleware handler.
+   * @param {Function} next - The next play handler in the middleware chain.
+   * @returns {void}
+   */
   play(next: Function): void {
-    this.context.preparePromise.then(() => {
-      let fsm = this.context.getStateMachine();
+    this._context.preparePromise.then(() => {
+      let fsm = this._context.getStateMachine();
       if (fsm.is(State.LOADED)) {
-        this.context.initialize();
+        this._context.initialize();
       } else {
         if (fsm.is(State.PAUSED)) {
-          this.context.resumeAd();
+          this._context.resumeAd();
         } else {
           super.play(next);
         }
       }
     }).catch((e) => {
-      this.context.destroy();
-      this.context.logger.error(e);
+      this._context.destroy();
+      this._context.logger.error(e);
     });
   }
 
+  /**
+   * Pause middleware handler.
+   * @param {Function} next - The next pause handler in the middleware chain.
+   * @returns {void}
+   */
   pause(next: Function): void {
-    let fsm = this.context.getStateMachine();
+    let fsm = this._context.getStateMachine();
     if (fsm.is(State.PLAYING)) {
-      this.context.pauseAd();
+      this._context.pauseAd();
     } else {
       super.pause(next);
     }

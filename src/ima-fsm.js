@@ -2,7 +2,15 @@
 import StateMachine from 'fsm-as-promised/lib/index'
 import State from './state'
 
+/**
+ * Finite state machine for ima plugin.
+ * @classdesc
+ */
 export default class ImaFSM {
+  /**
+   * @constructor
+   * @param {any} context - The plugin _context.
+   */
   constructor(context: any) {
     return StateMachine({
       initial: State.LOADING,
@@ -118,6 +126,11 @@ export default class ImaFSM {
       }
     });
 
+    /**
+     * LOADED event handler.
+     * @param {Object} options - fsm event data.
+     * @returns {void}
+     */
     function onAdsLoaded(options: Object): void {
       let adEvent = options.args[0];
       this.logger.debug("onAdsLoaded: " + adEvent.type.toUpperCase());
@@ -128,6 +141,11 @@ export default class ImaFSM {
       this._maybePreloadContent();
     }
 
+    /**
+     * STARTED event handler.
+     * @param {Object} options - fsm event data.
+     * @returns {void}
+     */
     function onAdStarted(options: Object): void {
       let adEvent = options.args[0];
       let ad = adEvent.getAd();
@@ -140,6 +158,11 @@ export default class ImaFSM {
       this.dispatchEvent(options.name, adEvent);
     }
 
+    /**
+     * CLICKED event handler.
+     * @param {Object} options - fsm event data.
+     * @returns {void}
+     */
     function onAdClicked(options: Object): void {
       let adEvent = options.args[0];
       this.logger.debug("onAdClicked: " + adEvent.type.toUpperCase());
@@ -150,6 +173,11 @@ export default class ImaFSM {
       }
     }
 
+    /**
+     * COMPLETE event handler.
+     * @param {Object} options - fsm event data.
+     * @returns {void}
+     */
     function onAdCompleted(options: Object): void {
       let adEvent = options.args[0];
       let ad = adEvent.getAd();
@@ -161,6 +189,11 @@ export default class ImaFSM {
       this.dispatchEvent(options.name, adEvent);
     }
 
+    /**
+     * ALL_ADS_COMPLETED event handler.
+     * @param {Object} options - fsm event data.
+     * @returns {void}
+     */
     function onAllAdsCompleted(options: Object): void {
       let adEvent = options.args[0];
       this.logger.debug("onAllAdsCompleted: " + adEvent.type.toUpperCase());
@@ -168,6 +201,11 @@ export default class ImaFSM {
       this.dispatchEvent(options.name, adEvent);
     }
 
+    /**
+     * CONTENT_PAUSED_REQUESTED event handler.
+     * @param {Object} options - fsm event data.
+     * @returns {void}
+     */
     function onAdBreakStart(options: Object): void {
       let adEvent = options.args[0];
       this.logger.debug("onAdBreakStart: " + adEvent.type.toUpperCase());
@@ -176,6 +214,11 @@ export default class ImaFSM {
       this.dispatchEvent(options.name, adEvent);
     }
 
+    /**
+     * CONTENT_RESUMED_REQUESTED event handler.
+     * @param {Object} options - fsm event data.
+     * @returns {void}
+     */
     function onAdBreakEnd(options: Object): void {
       let adEvent = options.args[0];
       this.logger.debug("onAdBreakEnd: " + adEvent.type.toUpperCase());
@@ -185,6 +228,11 @@ export default class ImaFSM {
       }
     }
 
+    /**
+     * ERROR event handler.
+     * @param {Object} options - fsm event data.
+     * @returns {void}
+     */
     function onAdError(options: Object): void {
       let adEvent = options.args[0];
       this.logger.debug("onAdError: " + adEvent.type.toUpperCase());
@@ -193,12 +241,22 @@ export default class ImaFSM {
       this.destroy();
     }
 
+    /**
+     * General event handler.
+     * @param {Object} options - fsm event data.
+     * @returns {void}
+     */
     function onAdEvent(options: Object): void {
       let adEvent = options.args[0];
       this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
       this.dispatchEvent(options.name, adEvent);
     }
 
+    /**
+     * Enter state handler.
+     * @param {Object} options - fsm event data.
+     * @returns {void}
+     */
     function onEnterState(options: Object): void {
       this.logger.debug("Change state: " + options.from + " --> " + options.to);
     }

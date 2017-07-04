@@ -1,13 +1,13 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory();
+		module.exports = factory(require("playkit-js"));
 	else if(typeof define === 'function' && define.amd)
-		define([], factory);
+		define(["playkit-js"], factory);
 	else if(typeof exports === 'object')
-		exports["PlaykitJsIma"] = factory();
+		exports["PlaykitJsIma"] = factory(require("playkit-js"));
 	else
-		root["PlaykitJsIma"] = factory();
-})(this, function() {
+		root["PlaykitJsIma"] = factory(root["Playkit"]);
+})(this, function(__WEBPACK_EXTERNAL_MODULE_1__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -16,9 +16,9 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	function __webpack_require__(moduleId) {
 /******/
 /******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId])
+/******/ 		if(installedModules[moduleId]) {
 /******/ 			return installedModules[moduleId].exports;
-/******/
+/******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			i: moduleId,
@@ -42,9 +42,6 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// identity function for calling harmony imports with the correct context
-/******/ 	__webpack_require__.i = function(value) { return value; };
 /******/
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
@@ -73,2127 +70,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 54);
+/******/ 	return __webpack_require__(__webpack_require__.s = 5);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.LOG_LEVEL = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _jsLogger = __webpack_require__(50);
-
-var JsLogger = _interopRequireWildcard(_jsLogger);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var LOG_LEVEL = {
-  "DEBUG": JsLogger.DEBUG,
-  "INFO": JsLogger.INFO,
-  "TIME": JsLogger.TIME,
-  "WARN": JsLogger.WARN,
-  "ERROR": JsLogger.ERROR,
-  "OFF": JsLogger.OFF
-};
-
-var LoggerFactory = function () {
-  function LoggerFactory(options) {
-    _classCallCheck(this, LoggerFactory);
-
-    JsLogger.useDefaults(options || {});
-  }
-
-  _createClass(LoggerFactory, [{
-    key: "getLogger",
-    value: function getLogger(name) {
-      if (!name) {
-        return JsLogger;
-      }
-      return JsLogger.get(name);
-    }
-  }]);
-
-  return LoggerFactory;
-}();
-
-var lf = new LoggerFactory({ defaultLevel: JsLogger.DEBUG });
-
-exports.default = lf;
-exports.LOG_LEVEL = LOG_LEVEL;
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * Create an Event work-alike object based on the dictionary.
- * The event should contain all of the same properties from the dict.
- * @param {string} type -
- * @param {Object=} opt_dict -
- * @constructor
- * @extends {Event}
- */
-var FakeEvent = function () {
-
-  /**
-   * Non-standard property read by FakeEventTarget to stop processing listeners.
-   * @type {boolean}
-   */
-
-
-  /** @type {EventTarget} */
-
-
-  /** @const {string} */
-
-
-  /** @const {boolean} */
-
-  /** @const {boolean} */
-  function FakeEvent(type, payload) {
-    _classCallCheck(this, FakeEvent);
-
-    // These Properties below cannot be set by dict.  They are all provided for
-    // compatibility with native events.
-
-    /** @const {boolean} */
-    this.bubbles = false;
-
-    /** @const {boolean} */
-    this.cancelable = false;
-
-    /** @const {boolean} */
-    this.defaultPrevented = false;
-
-    /**
-     * According to MDN, Chrome uses high-res timers instead of epoch time.
-     * Follow suit so that timeStamps on FakeEvents use the same base as
-     * on native Events.
-     * @const {number}
-     * @see https://developer.mozilla.org/en-US/docs/Web/API/Event/timeStamp
-     */
-    this.timeStamp = window.performance ? window.performance.now() : Date.now();
-
-    /** @const {string} */
-    this.type = type;
-
-    /** @const {boolean} */
-    this.isTrusted = false;
-
-    /** @type {EventTarget} */
-    this.currentTarget = null;
-
-    /** @type {EventTarget} */
-    this.target = null;
-
-    /**
-     * Non-standard property read by FakeEventTarget to stop processing listeners.
-     * @type {boolean}
-     */
-    this.stopped = false;
-
-    this.payload = payload;
-  }
-
-  /**
-   * Does nothing, since FakeEvents have no default.  Provided for compatibility
-   * with native Events.
-   * @override
-   */
-
-
-  /** @type {EventTarget} */
-
-
-  /** @const {boolean} */
-
-
-  /**
-   * According to MDN, Chrome uses high-res timers instead of epoch time.
-   * Follow suit so that timeStamps on FakeEvents use the same base as
-   * on native Events.
-   * @const {number}
-   * @see https://developer.mozilla.org/en-US/docs/Web/API/Event/timeStamp
-   */
-
-
-  /** @const {boolean} */
-
-
-  _createClass(FakeEvent, [{
-    key: "preventDefault",
-    value: function preventDefault() {}
-
-    /**
-     * Stops processing event listeners for this event.  Provided for compatibility
-     * with native Events.
-     * @override
-     */
-
-  }, {
-    key: "stopImmediatePropagation",
-    value: function stopImmediatePropagation() {
-      this.stopped = true;
-    }
-
-    /**
-     * Does nothing, since FakeEvents do not bubble.  Provided for compatibility
-     * with native Events.
-     * @override
-     */
-
-  }, {
-    key: "stopPropagation",
-    value: function stopPropagation() {}
-  }]);
-
-  return FakeEvent;
-}();
-
-exports.default = FakeEvent;
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * General track representation of the player.
- * @classdesc
- */
-var Track = function () {
-  _createClass(Track, [{
-    key: "id",
-
-
-    /**
-     * Getter for the track id.
-     * @public
-     * @returns {?string} - The track id.
-     */
-
-    /**
-     * The language of the track.
-     * @member
-     * @type {string}
-     * @private
-     */
-
-    /**
-     * The active mode of the track.
-     * @member
-     * @type {boolean}
-     * @private
-     */
-    get: function get() {
-      return this._id;
-    }
-
-    /**
-     * Getter for the active mode of the track.
-     * @public
-     * @returns {boolean} - The active mode of the track.
-     */
-
-    /**
-     * The index of the track.
-     * @member
-     * @type {number}
-     * @private
-     */
-
-    /**
-     * The label of the track.
-     * @member
-     * @type {string}
-     * @private
-     */
-
-    /**
-     * The id of the track.
-     * @member
-     * @type {string}
-     * @private
-     */
-
-  }, {
-    key: "active",
-    get: function get() {
-      return this._active;
-    }
-
-    /**
-     * Setter for the active mode of the track.
-     * @public
-     * @param {boolean} value - Whether the track is active or not.
-     */
-    ,
-    set: function set(value) {
-      this._active = value;
-    }
-
-    /**
-     * Getter for the label of the track.
-     * @public
-     * @returns {string} - The label of the track.
-     */
-
-  }, {
-    key: "label",
-    get: function get() {
-      return this._label;
-    }
-
-    /**
-     * Getter for the language of the track.
-     * @public
-     * @returns {string} - The language of the track.
-     */
-
-  }, {
-    key: "language",
-    get: function get() {
-      return this._language;
-    }
-
-    /**
-     * Getter for the index of the track.
-     * @public
-     * @returns {number} - The index of the track.
-     */
-
-  }, {
-    key: "index",
-    get: function get() {
-      return this._index;
-    }
-
-    /**
-     * @constructor
-     * @param {Object} settings - The track settings object.
-     */
-
-  }]);
-
-  function Track() {
-    var settings = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-    _classCallCheck(this, Track);
-
-    this._id = settings.id;
-    this._active = settings.active;
-    this._label = settings.label;
-    this._language = settings.language;
-    this._index = settings.index;
-  }
-
-  return Track;
-}();
-
-exports.default = Track;
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _multiMap = __webpack_require__(13);
-
-var _multiMap2 = _interopRequireDefault(_multiMap);
-
-var _fakeEvent = __webpack_require__(1);
-
-var _fakeEvent2 = _interopRequireDefault(_fakeEvent);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * Creates a new EventManager. An EventManager maintains a collection of "event
- * bindings" between event targets and event listeners.
- *
- * @struct
- * @constructor
- * @implements {IDestroyable}
- */
-var EventManager = function () {
-  function EventManager() {
-    _classCallCheck(this, EventManager);
-
-    /**
-     * Maps an event type to an array of event bindings.
-     * @private {MultiMap.<!EventManager.Binding_>}
-     */
-    this._bindingMap = new _multiMap2.default();
-  }
-
-  /**
-   * Detaches all event listeners.
-   * @override
-   */
-
-
-  _createClass(EventManager, [{
-    key: 'destroy',
-    value: function destroy() {
-      this.removeAll();
-      this._bindingMap = null;
-      return Promise.resolve();
-    }
-
-    /**
-     * Attaches an event listener to an event target.
-     * @param {EventTarget} target The event target.
-     * @param {string} type The event type.
-     * @param {EventManager.ListenerType} listener The event listener.
-     * @returns {void}
-     */
-
-  }, {
-    key: 'listen',
-    value: function listen(target, type, listener) {
-      var binding = new Binding_(target, type, listener);
-      if (this._bindingMap) {
-        this._bindingMap.push(type, binding);
-      }
-    }
-
-    /**
-     * Detaches an event listener from an event target.
-     * @param {EventTarget} target The event target.
-     * @param {string} type The event type.
-     * @returns {void}
-     */
-
-  }, {
-    key: 'unlisten',
-    value: function unlisten(target, type) {
-      if (this._bindingMap) {
-        var list = this._bindingMap.get(type);
-
-        for (var i = 0; i < list.length; ++i) {
-          var binding = list[i];
-
-          if (binding.target == target) {
-            binding.unlisten();
-            if (this._bindingMap) {
-              this._bindingMap.remove(type, binding);
-            }
-          }
-        }
-      }
-    }
-
-    /**
-     * Detaches all event listeners from all targets.
-     * @returns {void}
-     */
-
-  }, {
-    key: 'removeAll',
-    value: function removeAll() {
-      if (this._bindingMap) {
-        var listeners = this._bindingMap.getAll();
-
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
-
-        try {
-          for (var _iterator = listeners[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var listener = _step.value;
-
-            listener.unlisten();
-          }
-        } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion && _iterator.return) {
-              _iterator.return();
-            }
-          } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
-            }
-          }
-        }
-
-        if (this._bindingMap) {
-          this._bindingMap.clear();
-        }
-      }
-    }
-  }]);
-
-  return EventManager;
-}();
-
-/**
- * @typedef {function(!Event)}
- */
-
-
-/**
- * Creates a new Binding_ and attaches the event listener to the event target.
- * @param {EventTarget} target The event target.
- * @param {string} type The event type.
- * @param {EventManager.ListenerType} listener The event listener.
- * @constructor
- * @private
- */
-var Binding_ = function () {
-  function Binding_(target, type, listener) {
-    _classCallCheck(this, Binding_);
-
-    /** @type {EventTarget} */
-    this.target = target;
-
-    /** @type {string} */
-    this.type = type;
-
-    /** @type {?EventManager.ListenerType} */
-    this.listener = listener;
-
-    this.target.addEventListener(type, listener, false);
-  }
-
-  /**
-   * Detaches the event listener from the event target. This does nothing if the
-   * event listener is already detached.
-   * @returns {void}
-   */
-
-
-  _createClass(Binding_, [{
-    key: 'unlisten',
-    value: function unlisten() {
-      if (!this.target) return;
-
-      this.target.removeEventListener(this.type, this.listener, false);
-
-      this.target = null;
-      this.listener = null;
-    }
-  }]);
-
-  return Binding_;
-}();
-
-exports.default = EventManager;
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.CUSTOM_EVENTS = exports.HTML5_EVENTS = exports.PLAYER_EVENTS = undefined;
-
-var _util = __webpack_require__(8);
-
-var HTML5_EVENTS = {
-  /**
-   * Fires when the loading of an audio/video is aborted
-   */
-  ABORT: 'abort',
-  /**
-   * Fires when the browser can start playing the audio/video
-   */
-  CAN_PLAY: 'canplay',
-  /**
-   * Fires when the browser can play through the audio/video without stopping for buffering
-   */
-  CAN_PLAY_THROUGH: 'canplaythrough',
-  /**
-   * Fires when the duration of the audio/video is changed
-   */
-  DURATION_CHANGE: 'durationchange',
-  /**
-   * Fires when the current playlist is empty
-   */
-  EMPTIED: 'emptied',
-  /**
-   * Fires when the current playlist is ended
-   */
-  ENDED: 'ended',
-  /**
-   * Fires when an error occurred during the loading of an audio/video
-   */
-  ERROR: 'error',
-  /**
-   * Fires when the browser has loaded the current frame of the audio/video
-   */
-  LOADED_DATA: 'loadeddata',
-  /**
-   * Fires when the browser has loaded meta data for the audio/video
-   */
-  LOADED_METADATA: 'loadedmetadata',
-  /**
-   * Fires when the browser starts looking for the audio/video
-   */
-  LOAD_START: 'loadstart',
-  /**
-   * Fires when the audio/video has been paused
-   */
-  PAUSE: 'pause',
-  /**
-   * Fires when the audio/video has been started or is no longer paused
-   */
-  PLAY: 'play',
-  /**
-   * Fires when the audio/video is playing after having been paused or stopped for buffering
-   */
-  PLAYING: 'playing',
-  /**
-   * Fires when the browser is downloading the audio/video
-   */
-  PROGRESS: 'progress',
-  /**
-   * Fires when the playing speed of the audio/video is changed
-   */
-  RATE_CHANGE: 'ratechange',
-  /**
-   * Fires when the user is finished moving/skipping to a new position in the audio/video
-   */
-  SEEKED: 'seeked',
-  /**
-   * Fires when the user starts moving/skipping to a new position in the audio/video
-   */
-  SEEKING: 'seeking',
-  /**
-   * Fires when the browser is trying to get media data, but data is not available
-   */
-  STALLED: 'stalled',
-  /**
-   * Fires when the browser is intentionally not getting media data
-   */
-  SUSPEND: 'suspend',
-  /**
-   * Fires when the current playback position has changed
-   */
-  TIME_UPDATE: 'timeupdate',
-  /**
-   * Fires when the volume has been changed
-   */
-  VOLUME_CHANGE: 'volumechange',
-  /**
-   * Fires when the video stops because it needs to buffer the next frame
-   */
-  WAITING: 'waiting'
-};
-
-
-var CUSTOM_EVENTS = {
-  /**
-   * Fires when the active video track has been changed
-   */
-  VIDEO_TRACK_CHANGED: 'videotrackchanged',
-  /**
-   * Fires when the active audio track has been changed
-   */
-  AUDIO_TRACK_CHANGED: 'audiotrackchanged',
-  /**
-   * Fires when the active text track has been changed
-   */
-  TEXT_TRACK_CHANGED: 'texttrackchanged',
-  /**
-   * Fires when the player tracks have been changed
-   */
-  TRACKS_CHANGED: 'trackschanged',
-  /**
-   * Fires when the player state has been changed
-   */
-  PLAYER_STATE_CHANGED: 'playerstatechanged',
-  /**
-   * Fires on the first play
-   */
-  FIRST_PLAY: 'firstplay',
-  /**
-   * Fires when the player has selected the source to play
-   */
-  SOURCE_SELECTED: 'sourceselected',
-  /**
-   * Ads events
-   */
-  ADS_LOADED: 'adsloaded',
-  AD_STARTED: 'adstarted',
-  AD_RESUMED: 'adresumed',
-  AD_PAUSED: 'adpaused',
-  AD_CLICKED: 'adclicked',
-  AD_SKIPPED: 'adskipped',
-  AD_COMPLETED: 'adcompleted',
-  AD_ERROR: 'aderror',
-  ALL_ADS_COMPLETED: 'alladscompleted',
-  AD_BREAK_START: 'adbreakstart',
-  AD_BREAK_END: 'adbreakend',
-  AD_FIRST_QUARTILE: 'adfirstquartile',
-  AD_MIDPOINT: 'admidpoint',
-  AD_THIRD_QUARTILE: 'adthirdquartile',
-  USER_CLOSED_AD: 'userclosedad',
-  AD_VOLUME_CHANGED: 'advolumechanged',
-  AD_MUTED: 'admuted'
-};
-
-var PLAYER_EVENTS = (0, _util.merge)([HTML5_EVENTS, CUSTOM_EVENTS]);
-
-exports.PLAYER_EVENTS = PLAYER_EVENTS;
-exports.HTML5_EVENTS = HTML5_EVENTS;
-exports.CUSTOM_EVENTS = CUSTOM_EVENTS;
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _track = __webpack_require__(2);
-
-var _track2 = _interopRequireDefault(_track);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/**
- * Audio track representation of the player.
- * @classdesc
- */
-var AudioTrack = function (_Track) {
-  _inherits(AudioTrack, _Track);
-
-  function AudioTrack() {
-    _classCallCheck(this, AudioTrack);
-
-    return _possibleConstructorReturn(this, (AudioTrack.__proto__ || Object.getPrototypeOf(AudioTrack)).apply(this, arguments));
-  }
-
-  return AudioTrack;
-}(_track2.default);
-
-exports.default = AudioTrack;
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _track = __webpack_require__(2);
-
-var _track2 = _interopRequireDefault(_track);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/**
- * Text track representation of the player.
- * @classdesc
- */
-var TextTrack = function (_Track) {
-  _inherits(TextTrack, _Track);
-
-  _createClass(TextTrack, [{
-    key: 'kind',
-
-
-    /**
-     * Getter for the kind of the text track.
-     * @public
-     * @returns {string} - The kind of the text track.
-     */
-    get: function get() {
-      return this._kind;
-    }
-
-    /**
-     * @constructor
-     * @param {Object} settings - The track settings object.
-     */
-
-    /**
-     * The kind of the text track:
-     * subtitles/captions/metadata.
-     * @member
-     * @type {string}
-     * @private
-     */
-
-  }]);
-
-  function TextTrack() {
-    var settings = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-    _classCallCheck(this, TextTrack);
-
-    var _this = _possibleConstructorReturn(this, (TextTrack.__proto__ || Object.getPrototypeOf(TextTrack)).call(this, settings));
-
-    _this._kind = settings.kind;
-    return _this;
-  }
-
-  return TextTrack;
-}(_track2.default);
-
-exports.default = TextTrack;
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _track = __webpack_require__(2);
-
-var _track2 = _interopRequireDefault(_track);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/**
- * Video track representation of the player.
- * @classdesc
- */
-var VideoTrack = function (_Track) {
-  _inherits(VideoTrack, _Track);
-
-  _createClass(VideoTrack, [{
-    key: 'bandwidth',
-
-
-    /**
-     * Getter for the kind of the text track.
-     * @public
-     * @returns {string} - The kind of the text track.
-     */
-    get: function get() {
-      return this._bandwidth;
-    }
-
-    /**
-     * @constructor
-     * @param {Object} settings - The track settings object.
-     */
-
-    /**
-     * The kind of the text track:
-     * subtitles/captions/metadata.
-     * @member
-     * @type {string}
-     * @private
-     */
-
-  }]);
-
-  function VideoTrack() {
-    var settings = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-    _classCallCheck(this, VideoTrack);
-
-    var _this = _possibleConstructorReturn(this, (VideoTrack.__proto__ || Object.getPrototypeOf(VideoTrack)).call(this, settings));
-
-    _this._bandwidth = settings.bandwidth;
-    return _this;
-  }
-
-  return VideoTrack;
-}(_track2.default);
-
-exports.default = VideoTrack;
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-/**
- * @param {number} n - A certain number
- * @returns {boolean} - If the input is a number
- */
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function isNumber(n) {
-  return Number(n) === n;
-}
-
-/**
- * @param {number} n - A certain number
- * @returns {boolean} - If the input is an integer
- */
-function isInt(n) {
-  return isNumber(n) && n % 1 === 0;
-}
-
-/**
- * @param {number} n - A certain number
- * @returns {boolean} - If the input is a float
- */
-function isFloat(n) {
-  return isNumber(n) && n % 1 !== 0;
-}
-
-/**
- * @param {Array<Object>} objects - The objects to merge
- * @returns {Object} - The merged object.
- */
-function merge(objects) {
-  var target = {};
-  var _iteratorNormalCompletion = true;
-  var _didIteratorError = false;
-  var _iteratorError = undefined;
-
-  try {
-    for (var _iterator = objects[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-      var obj = _step.value;
-
-      Object.assign(target, obj);
-    }
-  } catch (err) {
-    _didIteratorError = true;
-    _iteratorError = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion && _iterator.return) {
-        _iterator.return();
-      }
-    } finally {
-      if (_didIteratorError) {
-        throw _iteratorError;
-      }
-    }
-  }
-
-  return target;
-}
-
-/**
- * @param {any} item - The item to check.
- * @returns {boolean} - Whether the item is an object.
- */
-function isObject(item) {
-  return item && (typeof item === "undefined" ? "undefined" : _typeof(item)) === 'object' && !Array.isArray(item);
-}
-
-/**
- * @param {any} target - The target object.
- * @param {any} sources - The objects to merge.
- * @returns {Object} - The merged object.
- */
-function mergeDeep(target) {
-  for (var _len = arguments.length, sources = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-    sources[_key - 1] = arguments[_key];
-  }
-
-  if (!sources.length) {
-    return target;
-  }
-  var source = sources.shift();
-  if (isObject(target) && isObject(source)) {
-    for (var key in source) {
-      if (isObject(source[key])) {
-        if (!target[key]) Object.assign(target, _defineProperty({}, key, {}));
-        mergeDeep(target[key], source[key]);
-      } else {
-        Object.assign(target, _defineProperty({}, key, source[key]));
-      }
-    }
-  }
-  return mergeDeep.apply(undefined, [target].concat(_toConsumableArray(sources)));
-}
-
-/**
- * @param {any} data - The data to copy.
- * @returns {any} - The copied data.
- */
-function copyDeep(data) {
-  var node = void 0;
-  if (Array.isArray(data)) {
-    node = data.length > 0 ? data.slice(0) : [];
-    node.forEach(function (e, i) {
-      if ((typeof e === "undefined" ? "undefined" : _typeof(e)) === "object" && e !== {} || Array.isArray(e) && e.length > 0) {
-        node[i] = copyDeep(e);
-      }
-    });
-  } else if ((typeof data === "undefined" ? "undefined" : _typeof(data)) === "object") {
-    node = Object.assign({}, data);
-    Object.keys(node).forEach(function (key) {
-      if (_typeof(node[key]) === "object" && node[key] !== {} || Array.isArray(node[key]) && node[key].length > 0) {
-        node[key] = copyDeep(node[key]);
-      }
-    });
-  } else {
-    node = data;
-  }
-  return node;
-}
-
-/**
- * Generates unique id.
- * @param {number} length - The length of the id.
- * @returns {string} - The generated id.
- */
-function uniqueId(length) {
-  var from = 2;
-  var to = from + (!length || length < 0 ? 0 : length - 2);
-  return '_' + Math.random().toString(36).substr(from, to);
-}
-
-/**
- * Checks if an object is an empy object.
- * @param {Object} obj - The object to check
- * @returns {boolean} - Whether the object is empty.
- */
-function isEmptyObject(obj) {
-  for (var key in obj) {
-    if (obj.hasOwnProperty(key)) return false;
-  }
-  return true;
-}
-
-/**
- * Checks for nested object properties.
- * @param {Object} obj - The object to check.
- * @param {string} propertyPath - The path to check.
- * @returns {boolean} - The value in this path.
- */
-function getPropertyPath(obj, propertyPath) {
-  return propertyPath.split(".").reduce(function (o, x) {
-    return typeof o === "undefined" || o === null ? o : o[x];
-  }, obj);
-}
-
-/**
- * Checks for nested object properties.
- * @param {Object} obj - The object to check.
- * @param {string} propertyPath - The path to check.
- * @returns {boolean} - Whether the path exists in the object.
- */
-function hasPropertyPath(obj, propertyPath) {
-  if (!propertyPath) {
-    return false;
-  }
-  var properties = propertyPath.split('.');
-  for (var i = 0; i < properties.length; i++) {
-    var prop = properties[i];
-    if (!obj || !obj.hasOwnProperty(prop)) {
-      return false;
-    } else {
-      obj = obj[prop];
-    }
-  }
-  return true;
-}
-
-exports.isNumber = isNumber;
-exports.isInt = isInt;
-exports.isFloat = isFloat;
-exports.isObject = isObject;
-exports.merge = merge;
-exports.mergeDeep = mergeDeep;
-exports.copyDeep = copyDeep;
-exports.uniqueId = uniqueId;
-exports.isEmptyObject = isEmptyObject;
-exports.getPropertyPath = getPropertyPath;
-exports.hasPropertyPath = hasPropertyPath;
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _eventManager = __webpack_require__(3);
-
-var _eventManager2 = _interopRequireDefault(_eventManager);
-
-var _fakeEvent = __webpack_require__(1);
-
-var _fakeEvent2 = _interopRequireDefault(_fakeEvent);
-
-var _fakeEventTarget = __webpack_require__(11);
-
-var _fakeEventTarget2 = _interopRequireDefault(_fakeEventTarget);
-
-var _events = __webpack_require__(4);
-
-var _stateTypes = __webpack_require__(21);
-
-var _stateTypes2 = _interopRequireDefault(_stateTypes);
-
-var _util = __webpack_require__(8);
-
-var _logger = __webpack_require__(0);
-
-var _logger2 = _interopRequireDefault(_logger);
-
-var _html = __webpack_require__(27);
-
-var _html2 = _interopRequireDefault(_html);
-
-var _pluginManager = __webpack_require__(20);
-
-var _pluginManager2 = _interopRequireDefault(_pluginManager);
-
-var _stateManager = __webpack_require__(31);
-
-var _stateManager2 = _interopRequireDefault(_stateManager);
-
-var _trackTypes = __webpack_require__(33);
-
-var _trackTypes2 = _interopRequireDefault(_trackTypes);
-
-var _track = __webpack_require__(2);
-
-var _track2 = _interopRequireDefault(_track);
-
-var _videoTrack = __webpack_require__(7);
-
-var _videoTrack2 = _interopRequireDefault(_videoTrack);
-
-var _audioTrack = __webpack_require__(5);
-
-var _audioTrack2 = _interopRequireDefault(_audioTrack);
-
-var _textTrack = __webpack_require__(6);
-
-var _textTrack2 = _interopRequireDefault(_textTrack);
-
-var _playerMiddleware = __webpack_require__(30);
-
-var _playerMiddleware2 = _interopRequireDefault(_playerMiddleware);
-
-var _playerConfig = __webpack_require__(52);
-
-var _playerConfig2 = _interopRequireDefault(_playerConfig);
-
-var _env = __webpack_require__(22);
-
-var _env2 = _interopRequireDefault(_env);
-
-__webpack_require__(43);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/**
- * The player container class name.
- * @type {string}
- * @const
- */
-var CONTAINER_CLASS_NAME = 'playkit-container';
-
-/**
- * The HTML5 player class.
- * @classdesc
- */
-
-var Player = function (_FakeEventTarget) {
-  _inherits(Player, _FakeEventTarget);
-
-  _createClass(Player, [{
-    key: 'getView',
-
-    /**
-     * The plugin manager of the player.
-     * @type {PluginManager}
-     * @private
-     */
-
-    /**
-     * The event manager of the player.
-     * @type {EventManager}
-     * @private
-     */
-
-    /**
-     * The runtime configuration of the player.
-     * @type {Object}
-     * @private
-     */
-
-    /**
-     * The playback engine.
-     * @type {IEngine}
-     * @private
-     */
-
-    /**
-     * The state manager of the player.
-     * @type {StateManager}
-     * @private
-     */
-
-    /**
-     * The tracks of the player.
-     * @type {Array<Track>}
-     * @private
-     */
-
-    /**
-     * The player ready promise
-     * @type {Promise<*>}
-     * @private
-     */
-
-    /**
-     * Whether the play is the first or not
-     * @type {boolean}
-     * @private
-     */
-
-    /**
-     * The player DOM element container.
-     * @type {HTMLElement}
-     * @private
-     */
-
-    /**
-     * The player class logger.
-     * @type {any}
-     * @static
-     * @private
-     */
-    value: function getView() {
-      return this._el;
-    }
-
-    /**
-     * @param {string} targetId - The target div id to append the player.
-     * @param {Object} config - The configuration for the player instance.
-     * @constructor
-     */
-
-    /**
-     * The available engines of the player.
-     * @type {Array<typeof IEngine>}
-     * @private
-     * @static
-     */
-
-  }]);
-
-  function Player(targetId, config) {
-    _classCallCheck(this, Player);
-
-    var _this = _possibleConstructorReturn(this, (Player.__proto__ || Object.getPrototypeOf(Player)).call(this));
-
-    _this._tracks = [];
-    _this._config = {};
-    _this._firstPlay = true;
-    _this._stateManager = new _stateManager2.default(_this);
-    _this._pluginManager = new _pluginManager2.default();
-    _this._eventManager = new _eventManager2.default();
-    _this._playerMiddleware = new _playerMiddleware2.default();
-    _this._createReadyPromise();
-    _this._appendPlayerContainer(targetId);
-    _this.configure(config);
-    return _this;
-  }
-
-  /**
-   * Configures the player according to a given configuration.
-   * @param {Object} config - The configuration for the player instance.
-   * @returns {void}
-   */
-
-
-  _createClass(Player, [{
-    key: 'configure',
-    value: function configure(config) {
-      var engine = this._engine;
-      this._config = (0, _util.mergeDeep)((0, _util.isEmptyObject)(this._config) ? Player._defaultConfig : this._config, config);
-      this._maybeResetPlayer(config);
-      if ((0, _util.isEmptyObject)(this._engine) && this._selectEngine()) {
-        this._appendEngineEl();
-        this._attachMedia();
-        this._maybeLoadPlugins(engine);
-        this._handlePlaybackConfig();
-      }
-    }
-
-    /**
-     * Resets the player in case of new sources with existing engine.
-     * @param {Object} config - The player configuration.
-     * @private
-     * @returns {void}
-     */
-
-  }, {
-    key: '_maybeResetPlayer',
-    value: function _maybeResetPlayer(config) {
-      if (this._engine && config.sources) {
-        Player._logger.debug('New sources on existing engine: reset engine to change media');
-        this._reset();
-      }
-    }
-
-    /**
-     * Loads the plugins in case engine created for the first time.
-     * @param {?IEngine} engine - The engine before the enter to configure method.
-     * @private
-     * @returns {void}
-     */
-
-  }, {
-    key: '_maybeLoadPlugins',
-    value: function _maybeLoadPlugins(engine) {
-      if (this._engine && !engine) {
-        Player._logger.debug('Engine created for the first time: load plugins');
-        this._loadPlugins();
-      }
-    }
-
-    /**
-     * Reset the necessary components before change media.
-     * @private
-     * @returns {void}
-     */
-
-  }, {
-    key: '_reset',
-    value: function _reset() {
-      if (this._engine) {
-        this._engine.destroy();
-      }
-      this._config = {};
-      this._tracks = [];
-      this._firstPlay = true;
-      this._eventManager.removeAll();
-      this._createReadyPromise();
-    }
-
-    /**
-     * Creates the ready promise.
-     * @private
-     * @returns {void}
-     */
-
-  }, {
-    key: '_createReadyPromise',
-    value: function _createReadyPromise() {
-      var _this2 = this;
-
-      this._readyPromise = new Promise(function (resolve, reject) {
-        _this2._eventManager.listen(_this2, _events.CUSTOM_EVENTS.TRACKS_CHANGED, function () {
-          resolve();
-        });
-        _this2._eventManager.listen(_this2, _events.HTML5_EVENTS.ERROR, reject);
-      });
-    }
-
-    /**
-     * Destroys the player.
-     * @returns {void}
-     * @public
-     */
-
-  }, {
-    key: 'destroy',
-    value: function destroy() {
-      if (this._engine) {
-        this._engine.destroy();
-      }
-      this._eventManager.destroy();
-      this._pluginManager.destroy();
-      this._stateManager.destroy();
-      this._config = {};
-      this._tracks = [];
-      this._readyPromise = null;
-      this._firstPlay = true;
-    }
-
-    /**
-     * @returns {Object} - The default configuration of the player.
-     * @private
-     * @static
-     */
-
-  }, {
-    key: '_loadPlugins',
-
-
-    /**
-     * Loads the configured plugins.
-     * @private
-     * @returns {void}
-     */
-    value: function _loadPlugins() {
-      var plugins = this._config.plugins;
-      for (var name in plugins) {
-        this._pluginManager.load(name, this, plugins[name]);
-        var plugin = this._pluginManager.get(name);
-        if (plugin && typeof plugin.getPlayerMiddleware === "function") {
-          this._playerMiddleware.use(plugin.getPlayerMiddleware());
-        }
-      }
-    }
-
-    /**
-     * Selects the engine to create based on a given configuration.
-     * @private
-     * @returns {boolean} - Whether a proper engine was found.
-     */
-
-  }, {
-    key: '_selectEngine',
-    value: function _selectEngine() {
-      if (this._config.sources && this._config.playback && this._config.playback.streamPriority) {
-        return this._selectEngineByPriority();
-      }
-      return false;
-    }
-
-    /**
-     * Selects an engine to play a source according to a given stream priority.
-     * @return {boolean} - Whether a proper engine was found to play the given sources
-     * according to the priority.
-     * @private
-     */
-
-  }, {
-    key: '_selectEngineByPriority',
-    value: function _selectEngineByPriority() {
-      var _this3 = this;
-
-      var streamPriority = this._config.playback.streamPriority;
-      var sources = this._config.sources;
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
-
-      try {
-        var _loop = function _loop() {
-          var priority = _step.value;
-
-          var engineId = typeof priority.engine === 'string' ? priority.engine.toLowerCase() : '';
-          var format = typeof priority.format === 'string' ? priority.format.toLowerCase() : '';
-          var engine = Player._engines.find(function (engine) {
-            return engine.id === engineId;
-          });
-          if (engine) {
-            var formatSources = sources[format];
-            if (formatSources && formatSources.length > 0) {
-              var source = formatSources[0];
-              if (engine.canPlayType(source.mimetype)) {
-                _this3._loadEngine(engine, source);
-                return {
-                  v: true
-                };
-              }
-            }
-          }
-        };
-
-        for (var _iterator = streamPriority[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var _ret = _loop();
-
-          if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
-        }
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator.return) {
-            _iterator.return();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
-        }
-      }
-
-      Player._logger.warn("No playable engines was found to play the given sources");
-      return false;
-    }
-
-    /**
-     * Loads the selected engine.
-     * @param {IEngine} engine - The selected engine.
-     * @param {Source} source - The selected source object.
-     * @private
-     * @returns {void}
-     */
-
-  }, {
-    key: '_loadEngine',
-    value: function _loadEngine(engine, source) {
-      this.dispatchEvent(new _fakeEvent2.default(_events.CUSTOM_EVENTS.SOURCE_SELECTED, { selectedSource: source }));
-      this._engine = engine.createEngine(source, this._config);
-    }
-
-    /**
-     * Listen to all HTML5 defined events and trigger them on the player
-     * @private
-     * @returns {void}
-     */
-
-  }, {
-    key: '_attachMedia',
-    value: function _attachMedia() {
-      var _this4 = this;
-
-      if (this._engine) {
-        for (var playerEvent in _events.HTML5_EVENTS) {
-          this._eventManager.listen(this._engine, _events.HTML5_EVENTS[playerEvent], function (event) {
-            return _this4.dispatchEvent(event);
-          });
-        }
-        this._eventManager.listen(this._engine, _events.CUSTOM_EVENTS.VIDEO_TRACK_CHANGED, function (event) {
-          _this4._markActiveTrack(event.payload.selectedVideoTrack);
-          return _this4.dispatchEvent(event);
-        });
-        this._eventManager.listen(this._engine, _events.CUSTOM_EVENTS.AUDIO_TRACK_CHANGED, function (event) {
-          _this4._markActiveTrack(event.payload.selectedAudioTrack);
-          return _this4.dispatchEvent(event);
-        });
-        this._eventManager.listen(this._engine, _events.CUSTOM_EVENTS.TEXT_TRACK_CHANGED, function (event) {
-          _this4._markActiveTrack(event.payload.selectedTextTrack);
-          return _this4.dispatchEvent(event);
-        });
-        this._eventManager.listen(this, _events.HTML5_EVENTS.PLAY, this._onPlay.bind(this));
-      }
-    }
-  }, {
-    key: '_handlePlaybackConfig',
-    value: function _handlePlaybackConfig() {
-      if (this._config.playback) {
-        if (this._config.playback.muted) {
-          this.muted = true;
-        }
-        if (this._config.playback.preload === "auto") {
-          this.load();
-        }
-        if (this._config.playback.autoplay && (!_env2.default.isMobileDevice() || this._config.playback.muted)) {
-          this.play();
-        }
-      }
-    }
-
-    /**
-     * Creates the player container
-     * @param {string} targetId - The target div id to append the player.
-     * @private
-     * @returns {void}
-     */
-
-  }, {
-    key: '_appendPlayerContainer',
-    value: function _appendPlayerContainer(targetId) {
-      if (targetId) {
-        if (this._el === undefined) {
-          this._createPlayerContainer();
-          var parentNode = document.getElementById(targetId);
-          if (parentNode != null && this._el != null) {
-            parentNode.appendChild(this._el);
-          }
-        }
-      } else {
-        throw new Error("targetId is not found, it must be pass on initialization");
-      }
-    }
-
-    /**
-     * Creates the player container.
-     * @private
-     * @returns {void}
-     */
-
-  }, {
-    key: '_createPlayerContainer',
-    value: function _createPlayerContainer() {
-      this._el = document.createElement("div");
-      this._el.id = (0, _util.uniqueId)(5);
-      this._el.className = CONTAINER_CLASS_NAME;
-      this._el.setAttribute('tabindex', '-1');
-    }
-
-    /**
-     * Appends the engine's video element to the player's div container.
-     * @private
-     * @returns {void}
-     */
-
-  }, {
-    key: '_appendEngineEl',
-    value: function _appendEngineEl() {
-      if (this._el != null && this._engine != null) {
-        this._el.appendChild(this._engine.getVideoElement());
-      }
-    }
-
-    /**
-     * Returns the tracks according to the filter. if no filter given returns the all tracks.
-     * @function getTracks
-     * @param {string} [type] - a tracks filter, should be 'video', 'audio' or 'text'.
-     * @returns {Array<Track>} - The parsed tracks.
-     * @public
-     */
-
-  }, {
-    key: 'getTracks',
-    value: function getTracks(type) {
-      return this._getTracksByType(type);
-    }
-
-    /**
-     * Returns the tracks according to the filter. if no filter given returns the all tracks.
-     * @function _getTracksByType
-     * @param {string} [type] - a tracks filter, should be 'video', 'audio' or 'text'.
-     * @returns {Array<Track>} - The parsed tracks.
-     * @private
-     */
-
-  }, {
-    key: '_getTracksByType',
-    value: function _getTracksByType(type) {
-      return !type ? this._tracks : this._tracks.filter(function (track) {
-        if (type === _trackTypes2.default.VIDEO) {
-          return track instanceof _videoTrack2.default;
-        } else if (type === _trackTypes2.default.AUDIO) {
-          return track instanceof _audioTrack2.default;
-        } else if (type === _trackTypes2.default.TEXT) {
-          return track instanceof _textTrack2.default;
-        } else {
-          return true;
-        }
-      });
-    }
-
-    /**
-     * Select a track
-     * @function selectTrack
-     * @param {Track} track - the track to select
-     * @returns {void}
-     * @public
-     */
-
-  }, {
-    key: 'selectTrack',
-    value: function selectTrack(track) {
-      if (this._engine) {
-        if (track instanceof _videoTrack2.default) {
-          this._engine.selectVideoTrack(track);
-        } else if (track instanceof _audioTrack2.default) {
-          this._engine.selectAudioTrack(track);
-        } else if (track instanceof _textTrack2.default) {
-          this._engine.selectTextTrack(track);
-        }
-      }
-    }
-
-    /**
-     * Hide the text track
-     * @function hideTextTrack
-     * @returns {void}
-     * @public
-     */
-
-  }, {
-    key: 'hideTextTrack',
-    value: function hideTextTrack() {
-      if (this._engine) {
-        this._engine.hideTextTrack();
-        this._getTracksByType(_trackTypes2.default.TEXT).map(function (track) {
-          return track.active = false;
-        });
-      }
-    }
-
-    /**
-     * Enables adaptive bitrate switching.
-     * @function enableAdaptiveBitrate
-     * @returns {void}
-     * @public
-     */
-
-  }, {
-    key: 'enableAdaptiveBitrate',
-    value: function enableAdaptiveBitrate() {
-      if (this._engine) {
-        this._engine.enableAdaptiveBitrate();
-      }
-    }
-
-    /**
-     * Mark the selected track as active
-     * @function _markActiveTrack
-     * @param {Track} track - the track to mark
-     * @returns {void}
-     * @private
-     */
-
-  }, {
-    key: '_markActiveTrack',
-    value: function _markActiveTrack(track) {
-      var type = void 0;
-      if (track instanceof _videoTrack2.default) {
-        type = _trackTypes2.default.VIDEO;
-      } else if (track instanceof _audioTrack2.default) {
-        type = _trackTypes2.default.AUDIO;
-      } else if (track instanceof _textTrack2.default) {
-        type = _trackTypes2.default.TEXT;
-      }
-      if (type) {
-        var tracks = this.getTracks(type);
-        for (var i = 0; i < tracks.length; i++) {
-          tracks[i].active = track.index === i;
-        }
-      }
-    }
-
-    /**
-     * @function _onPlay
-     * @return {void}
-     * @private
-     */
-
-  }, {
-    key: '_onPlay',
-    value: function _onPlay() {
-      if (this._firstPlay) {
-        this._firstPlay = false;
-        this.dispatchEvent(new _fakeEvent2.default(_events.CUSTOM_EVENTS.FIRST_PLAY));
-      }
-    }
-
-    /**
-     * Get the player config.
-     * @returns {Object} - The player configuration.
-     * @public
-     */
-
-  }, {
-    key: 'ready',
-
-
-    //  <editor-fold desc="Playback Interface">
-    /**
-     * The player readiness
-     * @public
-     * @returns {Promise<*>} - The ready promise
-     */
-    value: function ready() {
-      return this._readyPromise ? this._readyPromise : Promise.resolve();
-    }
-
-    /**
-     * Load media
-     * @public
-     * @returns {void}
-     */
-
-  }, {
-    key: 'load',
-    value: function load() {
-      var _this5 = this;
-
-      this._engine.load().then(function (data) {
-        _this5._tracks = data.tracks;
-        _this5.dispatchEvent(new _fakeEvent2.default(_events.CUSTOM_EVENTS.TRACKS_CHANGED, { tracks: _this5._tracks }));
-      }).catch(function (error) {
-        _this5.dispatchEvent(new _fakeEvent2.default(_events.HTML5_EVENTS.ERROR, error));
-      });
-    }
-
-    /**
-     * Start/resume playback.
-     * @returns {void}
-     * @public
-     */
-
-  }, {
-    key: 'play',
-    value: function play() {
-      if (this._engine) {
-        this._playerMiddleware.play(this._play.bind(this));
-      }
-    }
-  }, {
-    key: '_play',
-    value: function _play() {
-      var _this6 = this;
-
-      if (this._engine.src) {
-        this._engine.play();
-      } else {
-        this.load();
-        this.ready().then(function () {
-          _this6._engine.play();
-        });
-      }
-    }
-
-    /**
-     * Pause playback.
-     * @returns {void}
-     * @public
-     */
-
-  }, {
-    key: 'pause',
-    value: function pause() {
-      if (this._engine) {
-        this._playerMiddleware.pause(this._pause.bind(this));
-      }
-    }
-  }, {
-    key: '_pause',
-    value: function _pause() {
-      this._engine.pause();
-    }
-
-    /**
-     * @returns {HTMLVideoElement} - The video element.
-     * @public
-     */
-
-  }, {
-    key: 'getVideoElement',
-    value: function getVideoElement() {
-      if (this._engine) {
-        return this._engine.getVideoElement();
-      }
-    }
-
-    /**
-     * Set the current time in seconds.
-     * @param {Number} to - The number to set in seconds.
-     * @public
-     */
-
-  }, {
-    key: 'buffered',
-    value: function buffered() {}
-
-    /**
-     * Set player muted state.
-     * @param {boolean} mute - The mute value.
-     * @returns {void}
-     * @public
-     */
-
-  }, {
-    key: 'config',
-    get: function get() {
-      return this._config;
-    }
-
-    /**
-     * Set player session id
-     * @param {string} sessionId - the player session id to set
-     * @returns {void}
-     * @public
-     */
-
-  }, {
-    key: 'sessionId',
-    set: function set(sessionId) {
-      this._config.session = this._config.session || {};
-      this._config.session.id = sessionId;
-    }
-  }, {
-    key: 'currentTime',
-    set: function set(to) {
-      if (this._engine) {
-        if ((0, _util.isNumber)(to)) {
-          var boundedTo = to;
-          if (to < 0) {
-            boundedTo = 0;
-          }
-          if (boundedTo > this._engine.duration) {
-            boundedTo = this._engine.duration;
-          }
-          this._engine.currentTime = boundedTo;
-        }
-      }
-    }
-
-    /**
-     * Get the current time in seconds.
-     * @returns {?Number} - The playback current time.
-     * @public
-     */
-    ,
-    get: function get() {
-      if (this._engine) {
-        return this._engine.currentTime;
-      }
-    }
-
-    /**
-     * Get the duration in seconds.
-     * @returns {?Number} - The playback duration.
-     * @public
-     */
-
-  }, {
-    key: 'duration',
-    get: function get() {
-      if (this._engine) {
-        return this._engine.duration;
-      }
-    }
-
-    /**
-     * Set playback volume.
-     * @param {Number} vol - The volume to set.
-     * @returns {void}
-     * @public
-     */
-
-  }, {
-    key: 'volume',
-    set: function set(vol) {
-      if (this._engine) {
-        if ((0, _util.isFloat)(vol)) {
-          var boundedVol = vol;
-          if (boundedVol < 0) {
-            boundedVol = 0;
-          }
-          if (boundedVol > 1) {
-            boundedVol = 1;
-          }
-          this._engine.volume = boundedVol;
-        }
-      }
-    }
-
-    /**
-     * Get playback volume.
-     * @returns {?Number} - The playback volume.
-     * @public
-     */
-    ,
-    get: function get() {
-      if (this._engine) {
-        return this._engine.volume;
-      }
-    }
-
-    // </editor-fold>
-
-    // <editor-fold desc="State">
-    /**
-     * Get paused state.
-     * @returns {?boolean} - Whether the video is paused or not.
-     * @public
-     */
-
-  }, {
-    key: 'paused',
-    get: function get() {
-      if (this._engine) {
-        return this._engine.paused;
-      }
-    }
-
-    /**
-     * Get seeking state.
-     * @returns {?boolean} - Whether the video is seeking or not.
-     * @public
-     */
-
-  }, {
-    key: 'seeking',
-    get: function get() {
-      if (this._engine) {
-        return this._engine.seeking;
-      }
-    }
-  }, {
-    key: 'muted',
-    set: function set(mute) {
-      if (this._engine) {
-        this._engine.muted = mute;
-      }
-    }
-
-    /**
-     * Get player muted state.
-     * @returns {?boolean} - Whether the video is muted or not.
-     * @public
-     */
-    ,
-    get: function get() {
-      if (this._engine) {
-        return this._engine.muted;
-      }
-    }
-
-    /**
-     * Get the player source.
-     * @returns {?string} - The current source of the player.
-     * @public
-     */
-
-  }, {
-    key: 'src',
-    get: function get() {
-      if (this._engine) {
-        return this._engine.src;
-      }
-    }
-
-    /**
-     * Get the player events.
-     * @returns {Object} - The events of the player.
-     * @public
-     */
-
-  }, {
-    key: 'Event',
-    get: function get() {
-      return _events.PLAYER_EVENTS;
-    }
-
-    /**
-     * Get the player states.
-     * @returns {Object} - The states of the player.
-     * @public
-     */
-
-  }, {
-    key: 'State',
-    get: function get() {
-      return _stateTypes2.default;
-    }
-
-    /**
-     * Get the player tracks types.
-     * @returns {Object} - The tracks types of the player.
-     * @public
-     */
-
-  }, {
-    key: 'Track',
-    get: function get() {
-      return _trackTypes2.default;
-    }
-
-    // </editor-fold>
-
-  }], [{
-    key: '_defaultConfig',
-    get: function get() {
-      return (0, _util.copyDeep)(_playerConfig2.default);
-    }
-  }]);
-
-  return Player;
-}(_fakeEventTarget2.default);
-
-Player._logger = _logger2.default.getLogger('Player');
-Player._engines = [_html2.default];
-exports.default = Player;
-
-/***/ }),
-/* 10 */
 /***/ (function(module, exports) {
 
 var g;
@@ -2220,542 +101,13 @@ module.exports = g;
 
 
 /***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
+/* 1 */
+/***/ (function(module, exports) {
 
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _fakeEvent = __webpack_require__(1);
-
-var _fakeEvent2 = _interopRequireDefault(_fakeEvent);
-
-var _multiMap = __webpack_require__(13);
-
-var _multiMap2 = _interopRequireDefault(_multiMap);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * A work-alike for EventTarget.  Only DOM elements may be true EventTargets,
- * but this can be used as a base class to provide event dispatch to non-DOM
- * classes.  Only FakeEvents should be dispatched.
- *
- * @struct
- * @constructor
- * @implements {EventTarget}
- * @export
- */
-var FakeEventTarget = function () {
-  function FakeEventTarget() {
-    _classCallCheck(this, FakeEventTarget);
-
-    /**
-     * @private {!MultiMap.<FakeEventTarget.ListenerType>}
-     */
-    this._listeners = new _multiMap2.default();
-
-    /**
-     * The target of all dispatched events.  Defaults to |this|.
-     * @type {EventTarget}
-     */
-    this.dispatchTarget = this;
-  }
-
-  /**
-   * Add an event listener to this object.
-   *
-   * @param {string} type The event type to listen for.
-   * @param {FakeEventTarget.ListenerType} listener The callback or
-   *   listener object to invoke.
-   * @param {boolean=} opt_capturing Ignored.  FakeEventTargets do not have
-   *   parents, so events neither capture nor bubble.
-   * @override
-   * @export
-   */
-
-
-  _createClass(FakeEventTarget, [{
-    key: 'addEventListener',
-    value: function addEventListener(type, listener) {
-      this._listeners.push(type, listener);
-    }
-
-    /**
-     * Remove an event listener from this object.
-     *
-     * @param {string} type The event type for which you wish to remove a listener.
-     * @param {FakeEventTarget.ListenerType} listener The callback or
-     *   listener object to remove.
-     * @param {boolean=} opt_capturing Ignored.  FakeEventTargets do not have
-     *   parents, so events neither capture nor bubble.
-     * @override
-     * @export
-     */
-
-  }, {
-    key: 'removeEventListener',
-    value: function removeEventListener(type, listener) {
-      this._listeners.remove(type, listener);
-    }
-
-    /**
-     * Dispatch an event from this object.
-     *
-     * @param {!Event} event The event to be dispatched from this object.
-     * @return {boolean} True if the default action was prevented.
-     * @override
-     * @export
-     */
-
-  }, {
-    key: 'dispatchEvent',
-    value: function dispatchEvent(event) {
-      // In many browsers, it is complex to overwrite properties of actual Events.
-      // Here we expect only to dispatch FakeEvents, which are simpler.
-      //goog.asserts.assert(event instanceof FakeEvent,
-      //    'FakeEventTarget can only dispatch FakeEvents!');
-
-      var list = this._listeners.get(event.type) || [];
-
-      for (var i = 0; i < list.length; ++i) {
-        // Do this every time, since events can be re-dispatched from handlers.
-        event.target = this.dispatchTarget;
-        event.currentTarget = this.dispatchTarget;
-
-        var listener = list[i];
-        try {
-          if (listener.handleEvent) {
-            listener.handleEvent(event);
-          } else {
-            listener.call(this, event);
-          }
-        } catch (exception) {
-          // Exceptions during event handlers should not affect the caller,
-          // but should appear on the console as uncaught, according to MDN:
-          // http://goo.gl/N6Ff27
-          // TODO: add log
-        }
-
-        if (event.stopped) {
-          break;
-        }
-      }
-
-      return event.defaultPrevented;
-    }
-  }]);
-
-  return FakeEventTarget;
-}();
-
-/**
- * These are the listener types defined in the closure extern for EventTarget.
- * @typedef {EventListener|function(!Event):(boolean|undefined)}
- */
-
-
-exports.default = FakeEventTarget;
+module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
 
 /***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var PlayerMiddlewareBase = function () {
-  function PlayerMiddlewareBase() {
-    _classCallCheck(this, PlayerMiddlewareBase);
-  }
-
-  _createClass(PlayerMiddlewareBase, [{
-    key: "play",
-    value: function play(next) {
-      if (next) {
-        next();
-      }
-    }
-  }, {
-    key: "pause",
-    value: function pause(next) {
-      if (next) {
-        next();
-      }
-    }
-  }]);
-
-  return PlayerMiddlewareBase;
-}();
-
-exports.default = PlayerMiddlewareBase;
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * A simple multimap template.
- * @constructor
- * @struct
- * @template T
- */
-var MultiMap = function () {
-  function MultiMap() {
-    _classCallCheck(this, MultiMap);
-
-    /** @private {!Object.<string, !Array.<T>>} */
-    this._map = new Map();
-  }
-
-  /**
-   * Add a key, value pair to the map.
-   * @param {string} key -
-   * @param {T} value  -
-   * @returns {void}
-   */
-
-
-  _createClass(MultiMap, [{
-    key: "push",
-    value: function push(key, value) {
-      if (this._map.has(key)) {
-        var list = this._map.get(key);
-        if (Array.isArray(list)) {
-          list.push(value);
-          this._map.set(key, list);
-        }
-      } else {
-        this._map.set(key, [value]);
-      }
-    }
-
-    /**
-     * Set an array of values for the key, overwriting any previous data.
-     * @param {string} key -
-     * @param {!Array.<T>} values -
-     * @returns {void}
-     */
-
-  }, {
-    key: "set",
-    value: function set(key, values) {
-      this._map.set(key, values);
-    }
-
-    /**
-     * Check for a key.
-     * @param {string} key -
-     * @return {boolean} true if the key exists.
-     */
-
-  }, {
-    key: "has",
-    value: function has(key) {
-      return this._map.has(key);
-    }
-
-    /**
-     * Get a list of values by key.
-     * @param {string} key -
-     * @return {Array.<T>} or null if no suZch key exists.
-     */
-
-  }, {
-    key: "get",
-    value: function get(key) {
-      var list = this._map.get(key);
-      // slice() clones the list so that it and the map can each be modified
-      // without affecting the other.
-      return list ? list.slice() : [];
-    }
-
-    /**
-     * Get a list of all values.
-     * @returns {!Array.<T>} -
-     */
-
-  }, {
-    key: "getAll",
-    value: function getAll() {
-      var list = [];
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
-
-      try {
-        for (var _iterator = this._map.values()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var value = _step.value;
-
-          list = list.concat(value);
-        }
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator.return) {
-            _iterator.return();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
-        }
-      }
-
-      return list;
-    }
-
-    /**
-     * Remove a specific value, if it exists.
-     * @param {string} key -
-     * @param {T} value -
-     * @returns {void}
-     */
-
-  }, {
-    key: "remove",
-    value: function remove(key, value) {
-      if (!this._map.has(key)) return;
-      var list = this._map.get(key);
-      if (Array.isArray(list)) {
-        for (var i = 0; i < list.length; ++i) {
-          if (list[i] == value) {
-            list.splice(i, 1);
-            --i;
-          }
-        }
-      }
-    }
-
-    /**
-     * Get all keys from the multimap.
-     * @return {!Array.<string>}
-     */
-    // eslint-disable-next-line no-undef
-
-  }, {
-    key: "keys",
-    value: function keys() {
-      return this._map.keys();
-    }
-
-    /**
-     * Clear all keys and values from the multimap.
-     * @returns {void}
-     */
-
-  }, {
-    key: "clear",
-    value: function clear() {
-      this._map.clear();
-    }
-  }]);
-
-  return MultiMap;
-}();
-
-exports.default = MultiMap;
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var PlayerError = function () {
-  function PlayerError(error, param) {
-    _classCallCheck(this, PlayerError);
-
-    this.name = error.name;
-    this.message = error.message(param);
-  }
-
-  _createClass(PlayerError, [{
-    key: "getError",
-    value: function getError() {
-      return {
-        name: this.name,
-        message: this.message
-      };
-    }
-  }]);
-
-  return PlayerError;
-}();
-
-PlayerError.TYPE = {
-  NOT_REGISTERED_PLUGIN: {
-    name: "PluginNotRegisteredException",
-    message: function message(name) {
-      return "Cannot load " + name + " plugin. Name not found in the registry";
-    }
-  },
-  NOT_VALID_HANDLER: {
-    name: "PluginHandlerIsNotValidException",
-    message: function message() {
-      return "To activate plugin you must provide a class derived from BasePlugin";
-    }
-  },
-  NOT_IMPLEMENTED_METHOD: {
-    name: "NotImplementedException",
-    message: function message(method) {
-      return method + " method not implemented";
-    }
-  }
-};
-exports.default = PlayerError;
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.VERSION = exports.Env = exports.Utils = exports.TextTrack = exports.AudioTrack = exports.VideoTrack = exports.Track = exports.PlayerMiddlewareBase = exports.BasePlugin = exports.registerPlugin = exports.BaseMediaSourceAdapter = exports.registerMediaSourceAdapter = undefined;
-exports.loadPlayer = loadPlayer;
-
-var _player = __webpack_require__(9);
-
-var _player2 = _interopRequireDefault(_player);
-
-var _logger = __webpack_require__(0);
-
-var _logger2 = _interopRequireDefault(_logger);
-
-var _package = __webpack_require__(51);
-
-var packageData = _interopRequireWildcard(_package);
-
-var _baseMediaSourceAdapter = __webpack_require__(17);
-
-var _baseMediaSourceAdapter2 = _interopRequireDefault(_baseMediaSourceAdapter);
-
-var _mediaSourceProvider = __webpack_require__(18);
-
-var _pluginManager = __webpack_require__(20);
-
-var _playerMiddlewareBase = __webpack_require__(12);
-
-var _playerMiddlewareBase2 = _interopRequireDefault(_playerMiddlewareBase);
-
-var _basePlugin = __webpack_require__(19);
-
-var _basePlugin2 = _interopRequireDefault(_basePlugin);
-
-var _track = __webpack_require__(2);
-
-var _track2 = _interopRequireDefault(_track);
-
-var _videoTrack = __webpack_require__(7);
-
-var _videoTrack2 = _interopRequireDefault(_videoTrack);
-
-var _audioTrack = __webpack_require__(5);
-
-var _audioTrack2 = _interopRequireDefault(_audioTrack);
-
-var _textTrack = __webpack_require__(6);
-
-var _textTrack2 = _interopRequireDefault(_textTrack);
-
-var _util = __webpack_require__(8);
-
-var Utils = _interopRequireWildcard(_util);
-
-var _env = __webpack_require__(22);
-
-var _env2 = _interopRequireDefault(_env);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-// Playkit version
-var VERSION = packageData.version;
-
-_logger2.default.getLogger().log("%c Playkit " + VERSION, "color: yellow; font-size: large");
-_logger2.default.getLogger().log("%c For more details see https://github.com/kaltura/playkit-js", "color: yellow;");
-
-/**
- * @param {string} targetId - The target div id to append the player.
- * @param {Object} config - The configuration of the player
- * @returns {Player} - The player instance
- */
-function loadPlayer(targetId, config) {
-  return new _player2.default(targetId, config || {});
-}
-
-// Export the media source adapters necessary utils
-exports.registerMediaSourceAdapter = _mediaSourceProvider.registerMediaSourceAdapter;
-exports.BaseMediaSourceAdapter = _baseMediaSourceAdapter2.default;
-
-// Export the plugin framework
-
-exports.registerPlugin = _pluginManager.registerPlugin;
-exports.BasePlugin = _basePlugin2.default;
-exports.PlayerMiddlewareBase = _playerMiddlewareBase2.default;
-
-// Export the tracks classes
-
-exports.Track = _track2.default;
-exports.VideoTrack = _videoTrack2.default;
-exports.AudioTrack = _audioTrack2.default;
-exports.TextTrack = _textTrack2.default;
-
-// Export utils library
-
-exports.Utils = Utils;
-exports.Env = _env2.default;
-
-//export version
-
-exports.VERSION = VERSION;
-exports.default = loadPlayer;
-
-/***/ }),
-/* 16 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2776,1180 +128,52 @@ var State = {
 exports.default = State;
 
 /***/ }),
-/* 17 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+/* WEBPACK VAR INJECTION */(function(global) {// Unique ID creation requires a high quality random # generator.  In the
+// browser this is a little complicated due to unknown quality of Math.random()
+// and inconsistent support for the `crypto` API.  We do the best we can via
+// feature-detection
+var rng;
 
+var crypto = global.crypto || global.msCrypto; // for IE 11
+if (crypto && crypto.getRandomValues) {
+  // WHATWG crypto RNG - http://wiki.whatwg.org/wiki/Crypto
+  var rnds8 = new Uint8Array(16); // eslint-disable-line no-undef
+  rng = function whatwgRNG() {
+    crypto.getRandomValues(rnds8);
+    return rnds8;
+  };
+}
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _fakeEvent = __webpack_require__(1);
-
-var _fakeEvent2 = _interopRequireDefault(_fakeEvent);
-
-var _fakeEventTarget = __webpack_require__(11);
-
-var _fakeEventTarget2 = _interopRequireDefault(_fakeEventTarget);
-
-var _playerError = __webpack_require__(14);
-
-var _playerError2 = _interopRequireDefault(_playerError);
-
-var _events = __webpack_require__(4);
-
-var _logger = __webpack_require__(0);
-
-var _logger2 = _interopRequireDefault(_logger);
-
-var _track = __webpack_require__(2);
-
-var _track2 = _interopRequireDefault(_track);
-
-var _videoTrack = __webpack_require__(7);
-
-var _videoTrack2 = _interopRequireDefault(_videoTrack);
-
-var _audioTrack = __webpack_require__(5);
-
-var _audioTrack2 = _interopRequireDefault(_audioTrack);
-
-var _textTrack = __webpack_require__(6);
-
-var _textTrack2 = _interopRequireDefault(_textTrack);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-/* eslint-disable no-unused-vars */
-
-
-var BaseMediaSourceAdapter = function (_FakeEventTarget) {
-  _inherits(BaseMediaSourceAdapter, _FakeEventTarget);
-
-  _createClass(BaseMediaSourceAdapter, null, [{
-    key: 'isSupported',
-
-
-    /**
-     * Checks if the media source adapter is supported.
-     * @function isSupported
-     * @returns {boolean} - Whether the media source adapter is supported.
-     * @static
-     */
-
-
-    /**
-     * The adapter config.
-     * @member {Object} _config
-     * @private
-     */
-
-
-    /**
-     * The source object.
-     * @member {Source} _sourceObj
-     * @private
-     */
-
-
-    /**
-     * The dom video element.
-     * @member {HTMLVideoElement} _videoElement
-     * @private
-     */
-
-    /**
-     * Passing the custom events to the actual media source adapter.
-     * @static
-     */
-    value: function isSupported() {
-      return true;
+if (!rng) {
+  // Math.random()-based (RNG)
+  //
+  // If all else fails, use Math.random().  It's fast, but is of unspecified
+  // quality.
+  var rnds = new Array(16);
+  rng = function() {
+    for (var i = 0, r; i < 16; i++) {
+      if ((i & 0x03) === 0) r = Math.random() * 0x100000000;
+      rnds[i] = r >>> ((i & 0x03) << 3) & 0xff;
     }
 
-    /**
-     * Factory method to create media source adapter.
-     * @function createAdapter
-     * @param {HTMLVideoElement} videoElement - The video element that the media source adapter work with.
-     * @param {Object} source - The source Object.
-     * @param {Object} config - The player configuration.
-     * @returns {IMediaSourceAdapter} - New instance of the run time media source adapter.
-     * @static
-     */
+    return rnds;
+  };
+}
 
+module.exports = rng;
 
-    /**
-     * Passing the getLogger function to the actual media source adapter.
-     * @type {Function}
-     * @static
-     */
-
-  }, {
-    key: 'createAdapter',
-    value: function createAdapter(videoElement, source, config) {
-      return new this(videoElement, source, config);
-    }
-
-    /**
-     * @constructor
-     * @param {HTMLVideoElement} videoElement - The video element which bind to media source adapter.
-     * @param {Source} source - The source object.
-     * @param {Object} config - The media source adapter configuration.
-     */
-
-  }]);
-
-  function BaseMediaSourceAdapter(videoElement, source) {
-    var config = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-    _classCallCheck(this, BaseMediaSourceAdapter);
-
-    var _this = _possibleConstructorReturn(this, (BaseMediaSourceAdapter.__proto__ || Object.getPrototypeOf(BaseMediaSourceAdapter)).call(this));
-
-    _this._videoElement = videoElement;
-    _this._sourceObj = source;
-    _this._config = config;
-    return _this;
-  }
-
-  /**
-   * Destroys the media source adapter.
-   * @function destroy
-   * @returns {void}
-   */
-
-
-  _createClass(BaseMediaSourceAdapter, [{
-    key: 'destroy',
-    value: function destroy() {
-      this._sourceObj = null;
-      this._config = null;
-    }
-
-    /**
-     * Triggers the appropriate track changed event.
-     * @param {Track} track - The selected track.
-     * @private
-     * @returns {void}
-     */
-
-  }, {
-    key: '_onTrackChanged',
-    value: function _onTrackChanged(track) {
-      if (track instanceof _videoTrack2.default) {
-        this._trigger(BaseMediaSourceAdapter.CustomEvents.VIDEO_TRACK_CHANGED, { selectedVideoTrack: track });
-      } else if (track instanceof _audioTrack2.default) {
-        this._trigger(BaseMediaSourceAdapter.CustomEvents.AUDIO_TRACK_CHANGED, { selectedAudioTrack: track });
-      } else if (track instanceof _textTrack2.default) {
-        this._trigger(BaseMediaSourceAdapter.CustomEvents.TEXT_TRACK_CHANGED, { selectedTextTrack: track });
-      }
-    }
-
-    /**
-     * Dispatch an adapter event forward.
-     * @param {string} name - The name of the event.
-     * @param {Object} payload - The event payload.
-     * @returns {void}
-     */
-
-  }, {
-    key: '_trigger',
-    value: function _trigger(name, payload) {
-      this.dispatchEvent(new _fakeEvent2.default(name, payload));
-    }
-
-    /** Must implemented methods by the derived media source adapter **/
-
-  }, {
-    key: 'load',
-    value: function load() {
-      throw new _playerError2.default(_playerError2.default.TYPE.NOT_IMPLEMENTED_METHOD, 'load').getError();
-    }
-  }, {
-    key: 'selectVideoTrack',
-    value: function selectVideoTrack(videoTrack) {
-      throw new _playerError2.default(_playerError2.default.TYPE.NOT_IMPLEMENTED_METHOD, 'selectVideoTrack').getError();
-    }
-  }, {
-    key: 'selectAudioTrack',
-    value: function selectAudioTrack(audioTrack) {
-      throw new _playerError2.default(_playerError2.default.TYPE.NOT_IMPLEMENTED_METHOD, 'selectAudioTrack').getError();
-    }
-  }, {
-    key: 'selectTextTrack',
-    value: function selectTextTrack(textTrack) {
-      throw new _playerError2.default(_playerError2.default.TYPE.NOT_IMPLEMENTED_METHOD, 'selectTextTrack').getError();
-    }
-  }, {
-    key: 'hideTextTrack',
-    value: function hideTextTrack() {
-      throw new _playerError2.default(_playerError2.default.TYPE.NOT_IMPLEMENTED_METHOD, 'hideTextTrack').getError();
-    }
-  }, {
-    key: 'enableAdaptiveBitrate',
-    value: function enableAdaptiveBitrate() {
-      throw new _playerError2.default(_playerError2.default.TYPE.NOT_IMPLEMENTED_METHOD, 'enableAdaptiveBitrate').getError();
-    }
-  }, {
-    key: 'src',
-    get: function get() {
-      throw new _playerError2.default(_playerError2.default.TYPE.NOT_IMPLEMENTED_METHOD, 'get src').getError();
-    }
-  }], [{
-    key: 'canPlayType',
-    value: function canPlayType(mimeType) {
-      throw new _playerError2.default(_playerError2.default.TYPE.NOT_IMPLEMENTED_METHOD, 'static canPlayType').getError();
-    }
-  }]);
-
-  return BaseMediaSourceAdapter;
-}(_fakeEventTarget2.default);
-
-BaseMediaSourceAdapter.CustomEvents = _events.CUSTOM_EVENTS;
-BaseMediaSourceAdapter.getLogger = _logger2.default.getLogger;
-exports.default = BaseMediaSourceAdapter;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.registerMediaSourceAdapter = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _nativeAdapter = __webpack_require__(28);
-
-var _nativeAdapter2 = _interopRequireDefault(_nativeAdapter);
-
-var _logger = __webpack_require__(0);
-
-var _logger2 = _interopRequireDefault(_logger);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * Media source provider
- * @classdesc
- */
-var MediaSourceProvider = function () {
-  function MediaSourceProvider() {
-    _classCallCheck(this, MediaSourceProvider);
-  }
-
-  _createClass(MediaSourceProvider, null, [{
-    key: 'register',
-
-
-    /**
-     * Add a media source adapter to the registry.
-     * @function register
-     * @param {IMediaSourceAdapter} mediaSourceAdapter - The media source adapter to register.
-     * @static
-     * @returns {void}
-     */
-
-    /**
-     * The media source adapter registry.
-     * @member {Array<IMediaSourceAdapter>} _mediaSourceAdapters
-     * @static
-     * @private
-     */
-    value: function register(mediaSourceAdapter) {
-      if (mediaSourceAdapter) {
-        if (!MediaSourceProvider._mediaSourceAdapters.includes(mediaSourceAdapter)) {
-          MediaSourceProvider._logger.debug('Adapter <' + mediaSourceAdapter.id + '> has been registered successfully');
-          MediaSourceProvider._mediaSourceAdapters.push(mediaSourceAdapter);
-        } else {
-          MediaSourceProvider._logger.debug('Adapter <' + mediaSourceAdapter.id + '> is already registered, do not register again');
-        }
-      }
-    }
-
-    /**
-     * Remove a media source adapter from the registry.
-     * @function unRegister
-     * @param {IMediaSourceAdapter} mediaSourceAdapter - The media source adapter to unRegister.
-     * @static
-     * @returns {void}
-     */
-
-    /**
-     * The selected adapter for playback.
-     * @type {null|IMediaSourceAdapter}
-     * @static
-     * @private
-     */
-
-    /**
-     * The logger of the media source provider.
-     * @member {any} _logger
-     * @static
-     * @private
-     */
-
-  }, {
-    key: 'unRegister',
-    value: function unRegister(mediaSourceAdapter) {
-      var index = MediaSourceProvider._mediaSourceAdapters.indexOf(mediaSourceAdapter);
-      if (index > -1) {
-        MediaSourceProvider._logger.debug('Unregistered <' + mediaSourceAdapter.id + '> adapter');
-        MediaSourceProvider._mediaSourceAdapters.splice(index, 1);
-      }
-    }
-
-    /**
-     * Checks if one of the registered media source adapters can play a given mime type.
-     * @function canPlayType
-     * @param {string} mimeType - The mime type to check.
-     * @static
-     * @returns {boolean} - If one of the adapters can play the specific mime type.
-     */
-
-  }, {
-    key: 'canPlayType',
-    value: function canPlayType(mimeType) {
-      var mediaSourceAdapters = MediaSourceProvider._mediaSourceAdapters;
-      for (var i = 0; i < mediaSourceAdapters.length; i++) {
-        if (mediaSourceAdapters[i].canPlayType(mimeType)) {
-          MediaSourceProvider._selectedAdapter = mediaSourceAdapters[i];
-          MediaSourceProvider._logger.debug('Selected adapter is <' + MediaSourceProvider._selectedAdapter.id + '>');
-          return true;
-        }
-      }
-      return false;
-    }
-
-    /**
-     * Get the appropriate media source adapter to the video source.
-     * @function getMediaSourceAdapter
-     * @param {HTMLVideoElement} videoElement - The video element which requires adapter for a given mimeType.
-     * @param {Source} source - The selected source object.
-     * @param {Object} config - The player configuration.
-     * @returns {IMediaSourceAdapter|null} - The selected media source adapter, or null if such doesn't exists.
-     * @static
-     */
-
-  }, {
-    key: 'getMediaSourceAdapter',
-    value: function getMediaSourceAdapter(videoElement, source, config) {
-      if (videoElement && source && config) {
-        if (!MediaSourceProvider._selectedAdapter) {
-          MediaSourceProvider.canPlayType(source.mimetype);
-        }
-        return MediaSourceProvider._selectedAdapter ? MediaSourceProvider._selectedAdapter.createAdapter(videoElement, source, config) : null;
-      }
-      return null;
-    }
-
-    /**
-     * Destroys the media source adapter provider necessary props.
-     * @static
-     * @returns {void}
-     */
-
-  }, {
-    key: 'destroy',
-    value: function destroy() {
-      MediaSourceProvider._selectedAdapter = null;
-    }
-  }]);
-
-  return MediaSourceProvider;
-}();
-
-MediaSourceProvider._logger = _logger2.default.getLogger('MediaSourceProvider');
-MediaSourceProvider._mediaSourceAdapters = [_nativeAdapter2.default];
-MediaSourceProvider._selectedAdapter = null;
-exports.default = MediaSourceProvider;
-
-
-var registerMediaSourceAdapter = MediaSourceProvider.register;
-exports.registerMediaSourceAdapter = registerMediaSourceAdapter;
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _player = __webpack_require__(9);
-
-var _player2 = _interopRequireDefault(_player);
-
-var _logger = __webpack_require__(0);
-
-var _logger2 = _interopRequireDefault(_logger);
-
-var _util = __webpack_require__(8);
-
-var _eventManager = __webpack_require__(3);
-
-var _eventManager2 = _interopRequireDefault(_eventManager);
-
-var _playerError = __webpack_require__(14);
-
-var _playerError2 = _interopRequireDefault(_playerError);
-
-var _fakeEvent = __webpack_require__(1);
-
-var _fakeEvent2 = _interopRequireDefault(_fakeEvent);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/** The BasePlugin responsible to implement the plugin interface.
- * Contains several default implementations.
- * Other plugins should extend this class.
- * @classdesc
- */
-var BasePlugin = function () {
-  _createClass(BasePlugin, null, [{
-    key: 'createPlugin',
-
-
-    /**
-     * Factory method to create the actual plugin.
-     * @param {string} name - The plugin name
-     * @param {Player} player - The player reference
-     * @param {Object} config - The plugin configuration
-     * @returns {BasePlugin} - New runtime plugin instance
-     * @static
-     * @public
-     */
-
-    /**
-     * The event manager of the plugin.
-     * @member
-     */
-
-    /**
-     * The logger of the plugin.
-     * @member
-     */
-
-    /**
-     * The runtime configuration of the plugin.
-     * @member
-     */
-    value: function createPlugin(name, player) {
-      var config = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-      return new this(name, player, config);
-    }
-
-    /**
-     * Returns under what conditions the plugin is valid.
-     * Plugin must implement this method.
-     * @returns {boolean} - Whether the plugin is valid and can be initiated. Default implementation is true
-     * @static
-     * @public
-     * @abstract
-     */
-
-    /**
-     * The default configuration of the plugin.
-     * Inherited plugins should override this property.
-     * @type {Object}
-     * @static
-     * @member
-     */
-
-    /**
-     * Reference to the actual player.
-     * @member
-     */
-
-    /**
-     * The name of the plugin.
-     * @member
-     */
-
-  }, {
-    key: 'isValid',
-    value: function isValid() {
-      throw new _playerError2.default(_playerError2.default.TYPE.NOT_IMPLEMENTED_METHOD, 'isValid()').getError();
-    }
-
-    /**
-     * constructor
-     * @param {string} name - The plugin name
-     * @param {Player} player - The player reference
-     * @param {Object} config - The plugin configuration
-     * @constructor
-     * @private
-     */
-
-  }]);
-
-  function BasePlugin(name, player, config) {
-    _classCallCheck(this, BasePlugin);
-
-    this.name = name;
-    this.player = player;
-    this.eventManager = new _eventManager2.default();
-    this.logger = _logger2.default.getLogger(this.name);
-    this.config = (0, _util.merge)([this.constructor.defaultConfig, config]);
-  }
-
-  /**
-   * Getter for the configuration of the plugin.
-   * @param {string} attr - The key in the plugin configuration (optional).
-   * @returns {*} - If attribute is provided, returns its value. Else, Returns the config of the plugin.
-   * @public
-   */
-
-
-  _createClass(BasePlugin, [{
-    key: 'getConfig',
-    value: function getConfig(attr) {
-      if (attr) {
-        return this.config[attr];
-      }
-      return this.config;
-    }
-
-    /**
-     * Updates the config of the plugin.
-     * @param {Object} update - The updated configuration.
-     * @public
-     * @returns {void}
-     */
-
-  }, {
-    key: 'updateConfig',
-    value: function updateConfig(update) {
-      this.config = (0, _util.merge)([this.config, update]);
-    }
-
-    /**
-     * Runs the destroy logic of the plugin.
-     * plugin must implement this method.
-     * @public
-     * @abstract
-     * @returns {void}
-     */
-
-  }, {
-    key: 'destroy',
-    value: function destroy() {
-      throw new _playerError2.default(_playerError2.default.TYPE.NOT_IMPLEMENTED_METHOD, 'destroy()').getError();
-    }
-
-    /**
-     * Getter for the plugin's name.
-     * @returns {string} - The name of the plugin.
-     * @public
-     */
-
-  }, {
-    key: 'getName',
-    value: function getName() {
-      return this.name;
-    }
-  }, {
-    key: 'dispatchEvent',
-    value: function dispatchEvent(name, payload) {
-      this.logger.debug("Fire event: " + name, payload);
-      this.player.dispatchEvent(new _fakeEvent2.default(name, payload));
-    }
-  }]);
-
-  return BasePlugin;
-}();
-
-BasePlugin.defaultConfig = {};
-exports.default = BasePlugin;
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.registerPlugin = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _basePlugin = __webpack_require__(19);
-
-var _basePlugin2 = _interopRequireDefault(_basePlugin);
-
-var _playerError = __webpack_require__(14);
-
-var _playerError2 = _interopRequireDefault(_playerError);
-
-var _player = __webpack_require__(9);
-
-var _player2 = _interopRequireDefault(_player);
-
-var _logger = __webpack_require__(0);
-
-var _logger2 = _interopRequireDefault(_logger);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * The logger of the PluginManager class.
- * @private
- * @const
- */
-var logger = _logger2.default.getLogger("PluginManager");
-
-/** The PluginManager responsible for register plugins definitions and store plugins instances.
- * @classdesc
- */
-
-var PluginManager = function () {
-  function PluginManager() {
-    _classCallCheck(this, PluginManager);
-
-    this._plugins = new Map();
-  }
-  /**
-   * The registry of the plugins.
-   * Maps plugin's name to his class.
-   * @type {Map}
-   * @static
-   * @private
-   */
-
-  /**
-   * The active plugins in the player.
-   * Maps plugin's name to his instance.
-   * @type {Map}
-   * @private
-   */
-
-
-  _createClass(PluginManager, [{
-    key: 'load',
-
-
-    /**
-     * Creates and store new instance of the plugin in case isValid() of the plugin returns true.
-     * @param {string} name - The plugin name
-     * @param {Player} player - The player reference
-     * @param {Object} [config={}] - The plugin configuration
-     * @returns {boolean} - Whether the plugin load was successful
-     * @public
-     */
-    value: function load(name, player) {
-      var config = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-      if (!PluginManager._registry.has(name)) {
-        throw new _playerError2.default(_playerError2.default.TYPE.NOT_REGISTERED_PLUGIN, name).getError();
-      }
-      var pluginClass = PluginManager._registry.get(name);
-      if (pluginClass != null && pluginClass.isValid()) {
-        this._plugins.set(name, pluginClass.createPlugin(name, player, config));
-        logger.debug('Plugin <' + name + '> has been loaded');
-        return true;
-      }
-      logger.debug('Plugin <' + name + '> isn\'t loaded, isValid()=false');
-      return false;
-    }
-
-    /**
-     * Iterates over all the plugins and calls private _destroy.
-     * @public
-     * @returns {void}
-     */
-
-  }, {
-    key: 'destroy',
-    value: function destroy() {
-      this._plugins.forEach(this._destroy.bind(this));
-    }
-
-    /**
-     * Calls destroy() method of the plugin's impl.
-     * @param {BasePlugin} plugin - The plugin instance
-     * @param {string} name - The plugin name
-     * @private
-     * @returns {void}
-     */
-
-  }, {
-    key: '_destroy',
-    value: function _destroy(plugin, name) {
-      plugin.destroy();
-      this._plugins.delete(name);
-    }
-
-    /**
-     * Returns the plugin's instance.
-     * @param {string} name - The plugin name
-     * @returns {BasePlugin} - The plugin instance
-     * @public
-     */
-
-  }, {
-    key: 'get',
-    value: function get(name) {
-      return this._plugins.get(name);
-    }
-  }], [{
-    key: 'register',
-
-
-    /**
-     * Writes the plugin in the registry.
-     * Maps: plugin name -> plugin class.
-     * @param {string} name - The plugin name
-     * @param {Function} handler - The plugin class
-     * @returns {boolean} - If the registration request succeeded
-     * @static
-     * @public
-     */
-    value: function register(name, handler) {
-      if (typeof handler !== 'function' || handler.prototype instanceof _basePlugin2.default === false) {
-        throw new _playerError2.default(_playerError2.default.TYPE.NOT_VALID_HANDLER).getError();
-      }
-      if (!PluginManager._registry.has(name)) {
-        PluginManager._registry.set(name, handler);
-        logger.debug('Plugin <' + name + '> has been registered successfully');
-        return true;
-      }
-      logger.debug('Plugin <' + name + '> is already registered, do not register again');
-      return false;
-    }
-
-    /**
-     * Removes the plugin from the registry.
-     * @param {string} name - The plugin name
-     * @static
-     * @public
-     * @returns {void}
-     */
-
-  }, {
-    key: 'unRegister',
-    value: function unRegister(name) {
-      if (PluginManager._registry.has(name)) {
-        PluginManager._registry.delete(name);
-        logger.debug('Unregistered <' + name + '> plugin.');
-      }
-    }
-  }]);
-
-  return PluginManager;
-}();
-
-/**
- * Export the register method.
- * @type {function}
- * @constant
- */
-
-
-PluginManager._registry = new Map();
-exports.default = PluginManager;
-var registerPlugin = PluginManager.register;
-exports.registerPlugin = registerPlugin;
-
-/***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var PLAYER_STATE_TYPES = {
-  IDLE: "idle",
-  LOADING: "loading",
-  PLAYING: "playing",
-  PAUSED: "paused",
-  BUFFERING: "buffering"
-};
-
-exports.default = PLAYER_STATE_TYPES;
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Env = function () {
-  function Env() {
-    _classCallCheck(this, Env);
-  }
-
-  _createClass(Env, null, [{
-    key: 'isMobileDevice',
-    value: function isMobileDevice() {
-      return Env.isIphone() || Env.isIpod() || Env.isIpad() || Env.isAndroid() || Env.isWindowsPhone();
-    }
-  }, {
-    key: 'isIphone',
-    value: function isIphone() {
-      return Env.userAgent.indexOf('iPhone') !== -1 && !Env.isIpad() || Env.isIpod();
-    }
-  }, {
-    key: 'isIE',
-    value: function isIE() {
-      return (/msie/.test(Env.userAgent.toLowerCase()) || /trident/.test(Env.userAgent.toLowerCase())
-      );
-    }
-  }, {
-    key: 'isChromeCast',
-    value: function isChromeCast() {
-      return (/CrKey/.test(Env.userAgent)
-      );
-    }
-  }, {
-    key: 'isIE7',
-    value: function isIE7() {
-      return (/msie 7/.test(Env.userAgent.toLowerCase())
-      );
-    }
-  }, {
-    key: 'isIE8',
-    value: function isIE8() {
-      return document.documentMode === 8;
-    }
-  }, {
-    key: 'isIE9',
-    value: function isIE9() {
-      return document.documentMode === 9;
-    }
-  }, {
-    key: 'isIE11',
-    value: function isIE11() {
-      return (/trident\/7.0/.test(Env.userAgent.toLowerCase())
-      );
-    }
-  }, {
-    key: 'isEdge',
-    value: function isEdge() {
-      return (/edge/.test(Env.userAgent.toLowerCase())
-      );
-    }
-  }, {
-    key: 'isDesktopSafari',
-    value: function isDesktopSafari() {
-      return Env.isSafari() && !Env.isMobileDevice();
-    }
-  }, {
-    key: 'isSafari',
-    value: function isSafari() {
-      return (/safari/.test(Env.userAgent.toLowerCase()) && !Env.isChrome() && !Env.isEdge()
-      );
-    }
-  }, {
-    key: 'isIE9Comp',
-    value: function isIE9Comp() {
-      return (/msie 7/.test(Env.userAgent.toLowerCase()) && /trident\/5/.test(Env.userAgent.toLowerCase())
-      );
-    }
-  }, {
-    key: 'isIE10Comp',
-    value: function isIE10Comp() {
-      return (/msie 7/.test(Env.userAgent.toLowerCase()) && /trident\/6/.test(Env.userAgent.toLowerCase())
-      );
-    }
-  }, {
-    key: 'isIphone4',
-    value: function isIphone4() {
-      return Env.isIphone() && window.devicePixelRatio && window.devicePixelRatio >= 2;
-    }
-  }, {
-    key: 'isIpod',
-    value: function isIpod() {
-      return Env.userAgent.indexOf('iPod') !== -1;
-    }
-  }, {
-    key: 'isIpad',
-    value: function isIpad() {
-      return Env.userAgent.indexOf('iPad') !== -1;
-    }
-  }, {
-    key: 'isIpad2',
-    value: function isIpad2() {
-      return Env.isIpad() && window.devicePixelRatio && window.devicePixelRatio < 2;
-    }
-  }, {
-    key: 'isIpad3',
-    value: function isIpad3() {
-      return (/OS 3_/.test(Env.userAgent) && Env.isIpad()
-      );
-    }
-  }, {
-    key: 'isAndroid44',
-    value: function isAndroid44() {
-      return Env.userAgent.indexOf('Android 4.4') !== -1 && Env.userAgent.indexOf('Windows') === -1;
-    }
-  }, {
-    key: 'isAndroid43',
-    value: function isAndroid43() {
-      return Env.userAgent.indexOf('Android 4.3') !== -1 && Env.userAgent.indexOf('Windows') === -1;
-    }
-  }, {
-    key: 'isAndroid42',
-    value: function isAndroid42() {
-      return Env.userAgent.indexOf('Android 4.2') !== -1 && Env.userAgent.indexOf('Windows') === -1;
-    }
-  }, {
-    key: 'isAndroid41',
-    value: function isAndroid41() {
-      return Env.userAgent.indexOf('Android 4.1') !== -1 && Env.userAgent.indexOf('Windows') === -1;
-    }
-  }, {
-    key: 'isAndroid40',
-    value: function isAndroid40() {
-      return Env.userAgent.indexOf('Android 4.0') !== -1 && Env.userAgent.indexOf('Windows') === -1;
-    }
-  }, {
-    key: 'isAndroid2',
-    value: function isAndroid2() {
-      return Env.userAgent.indexOf('Android 2.') !== -1 && Env.userAgent.indexOf('Windows') === -1;
-    }
-  }, {
-    key: 'isAndroid',
-    value: function isAndroid() {
-      return Env.userAgent.indexOf('Android') !== -1 && Env.userAgent.indexOf('Windows') === -1;
-    }
-  }, {
-    key: 'isAndroid4andUp',
-    value: function isAndroid4andUp() {
-      var androidUAStringRegEx = /Android (\d+)\.\d+\.\d+/;
-      var res = androidUAStringRegEx.exec(Env.userAgent);
-      if (res === null) {
-        return false;
-      }
-      return res[1] > 4 && Env.userAgent.indexOf('Windows') === -1;
-    }
-  }, {
-    key: 'isSamsungStockBrowser',
-    value: function isSamsungStockBrowser() {
-      return Env.userAgent.indexOf('SamsungBrowser') !== -1;
-    }
-  }, {
-    key: 'isFirefox',
-    value: function isFirefox() {
-      return Env.userAgent.indexOf('Firefox') !== -1;
-    }
-  }, {
-    key: 'isChrome',
-    value: function isChrome() {
-      return Env.userAgent.indexOf('Chrome') !== -1 && !Env.isEdge();
-    }
-  }, {
-    key: 'isAndroidNativeBrowser',
-    value: function isAndroidNativeBrowser() {
-      return Env.isAndroid() && !Env.isFirefox() && !Env.isChrome();
-    }
-  }, {
-    key: 'isAndroidChromeNativeBrowser',
-    value: function isAndroidChromeNativeBrowser() {
-      return Env.isAndroid() && Env.isChrome();
-    }
-  }, {
-    key: 'isOldAndroidChromeNativeBrowser',
-    value: function isOldAndroidChromeNativeBrowser() {
-      var regExpResult = Env.userAgent.match(/Chrome\/([0-9][0-9])/);
-      if (regExpResult instanceof Array && regExpResult.length > 1) {
-        return Env.isAndroidChromeNativeBrowser() && parseInt(regExpResult[1]) < 30;
-      }
-      return false;
-    }
-  }, {
-    key: 'isMobileChrome',
-    value: function isMobileChrome() {
-      return Env.isAndroid4andUp() && Env.userAgent.indexOf('Chrome') !== -1;
-    }
-  }, {
-    key: 'isWindowsPhone',
-    value: function isWindowsPhone() {
-      return Env.userAgent.indexOf('Windows Phone') !== -1;
-    }
-  }, {
-    key: 'isIOS',
-    value: function isIOS() {
-      return Env.isIphone() || Env.isIpod() || Env.isIpad();
-    }
-  }, {
-    key: 'isIOS3',
-    value: function isIOS3() {
-      return (/OS 3_/.test(Env.userAgent) && Env.isIOS()
-      );
-    }
-  }, {
-    key: 'isIOS4',
-    value: function isIOS4() {
-      return (/OS 4_/.test(Env.userAgent) && Env.isIOS()
-      );
-    }
-  }, {
-    key: 'isIOS5',
-    value: function isIOS5() {
-      return (/OS 5_/.test(Env.userAgent) && Env.isIOS()
-      );
-    }
-  }, {
-    key: 'isIOS6',
-    value: function isIOS6() {
-      return (/OS 6_/.test(Env.userAgent) && Env.isIOS()
-      );
-    }
-  }, {
-    key: 'isIOS7',
-    value: function isIOS7() {
-      return (/OS 7_/.test(Env.userAgent) && Env.isIOS()
-      );
-    }
-  }, {
-    key: 'isIOS71',
-    value: function isIOS71() {
-      return (/OS 7_1/.test(Env.userAgent) && Env.isIOS()
-      );
-    }
-  }, {
-    key: 'isIOS8',
-    value: function isIOS8() {
-      // Known Limitation - It will return false for iOS8 Simulator
-      return (/OS 8_/.test(Env.userAgent) || /Version\/8/.test(Env.userAgent)) && Env.isIOS();
-    }
-  }, {
-    key: 'isIOS9',
-    value: function isIOS9() {
-      // Known Limitation - It will return false for iOS9 Simulator
-      return (/OS 9_/.test(Env.userAgent) || /Version\/9/.test(Env.userAgent)) && Env.isIOS();
-    }
-  }, {
-    key: 'isIOS10',
-    value: function isIOS10() {
-      // Known Limitation - It will return false for iOS10 Simulator
-      return (/OS 10_/.test(Env.userAgent) || /Version\/10/.test(Env.userAgent)) && Env.isIOS();
-    }
-  }, {
-    key: 'isIOSBelow9',
-    value: function isIOSBelow9() {
-      return Env.isIOS() && (Env.isIOS3() || Env.isIOS4() || Env.isIOS5() || Env.isIOS6() || Env.isIOS7() || Env.isIOS8());
-    }
-  }, {
-    key: 'isIOSBelow10',
-    value: function isIOSBelow10() {
-      return Env.isIOSBelow9() || Env.isIOS9();
-    }
-  }, {
-    key: 'isIOSAbove7',
-    value: function isIOSAbove7() {
-      return Env.isIOS8() || Env.isIOS9() || Env.isIOS10();
-    }
-  }, {
-    key: 'isSilk',
-    value: function isSilk() {
-      return (/\bSilk\b/.test(Env.userAgent)
-      );
-    }
-
-    // Does the client has native touch bindings?
-
-  }, {
-    key: 'hasNativeTouchBindings',
-    value: function hasNativeTouchBindings() {
-      return Env.isAndroid41() || Env.isAndroid42() || Env.isAndroid() && Env.isFirefox();
-    }
-
-    // Detect small mobile device (smartphones)
-
-  }, {
-    key: 'isDeviceLessThan480P',
-    value: function isDeviceLessThan480P() {
-      return matchMedia('only screen and (max-device-width: 480px)').matches;
-    }
-  }, {
-    key: 'hasMouseEvents',
-    value: function hasMouseEvents() {
-      return !Env.isMobileDevice();
-    }
-  }, {
-    key: 'isTouchDevice',
-    value: function isTouchDevice() {
-      return 'ontouchstart' in window;
-    }
-  }, {
-    key: 'isMacintosh',
-    value: function isMacintosh() {
-      return navigator.platform.indexOf('Mac') > -1;
-    }
-  }, {
-    key: 'isWindows',
-    value: function isWindows() {
-      return navigator.platform.indexOf('Win') > -1;
-    }
-  }, {
-    key: 'getUserOS',
-    value: function getUserOS() {
-      var os = "";
-      var clientStrings = [{ s: 'Windows 10', r: /(Windows 10.0|Windows NT 10.0)/ }, { s: 'Windows 8.1', r: /(Windows 8.1|Windows NT 6.3)/ }, { s: 'Windows 8', r: /(Windows 8|Windows NT 6.2)/ }, { s: 'Windows 7', r: /(Windows 7|Windows NT 6.1)/ }, { s: 'Android', r: /Android/ }, { s: 'Linux', r: /(Linux|X11)/ }, { s: 'iOS', r: /(iPhone|iPad|iPod)/ }, { s: 'Mac OS X', r: /Mac OS X/ }, { s: 'Mac OS', r: /(MacPPC|MacIntel|Mac_PowerPC|Macintosh)/ }];
-      for (var id in clientStrings) {
-        var cs = clientStrings[id];
-        if (cs.r.test(Env.userAgent)) {
-          os = cs.s;
-          break;
-        }
-      }
-      return os;
-    }
-  }]);
-
-  return Env;
-}();
-
-Env.userAgent = navigator.userAgent;
-exports.default = Env;
-
-/***/ }),
-/* 23 */
+/* 4 */
 /***/ (function(module, exports) {
 
 /**
  * Convert array of 16 byte values to UUID string format of the form:
- * XXXXXXXX-XXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+ * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
  */
 var byteToHex = [];
 for (var i = 0; i < 256; ++i) {
@@ -3959,7 +183,7 @@ for (var i = 0; i < 256; ++i) {
 function bytesToUuid(buf, offset) {
   var i = offset || 0;
   var bth = byteToHex;
-  return  bth[buf[i++]] + bth[buf[i++]] +
+  return bth[buf[i++]] + bth[buf[i++]] +
           bth[buf[i++]] + bth[buf[i++]] + '-' +
           bth[buf[i++]] + bth[buf[i++]] + '-' +
           bth[buf[i++]] + bth[buf[i++]] + '-' +
@@ -3973,47 +197,7 @@ module.exports = bytesToUuid;
 
 
 /***/ }),
-/* 24 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(global) {// Unique ID creation requires a high quality random # generator.  In the
-// browser this is a little complicated due to unknown quality of Math.random()
-// and inconsistent support for the `crypto` API.  We do the best we can via
-// feature-detection
-var rng;
-
-var crypto = global.crypto || global.msCrypto; // for IE 11
-if (crypto && crypto.getRandomValues) {
-  // WHATWG crypto RNG - http://wiki.whatwg.org/wiki/Crypto
-  var rnds8 = new Uint8Array(16);
-  rng = function whatwgRNG() {
-    crypto.getRandomValues(rnds8);
-    return rnds8;
-  };
-}
-
-if (!rng) {
-  // Math.random()-based (RNG)
-  //
-  // If all else fails, use Math.random().  It's fast, but is of unspecified
-  // quality.
-  var  rnds = new Array(16);
-  rng = function() {
-    for (var i = 0, r; i < 16; i++) {
-      if ((i & 0x03) === 0) r = Math.random() * 0x100000000;
-      rnds[i] = r >>> ((i & 0x03) << 3) & 0xff;
-    }
-
-    return rnds;
-  };
-}
-
-module.exports = rng;
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
-
-/***/ }),
-/* 25 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4023,11 +207,400 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _index = __webpack_require__(39);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _index2 = _interopRequireDefault(_index);
+var _playkitJs = __webpack_require__(1);
 
-var _state = __webpack_require__(16);
+var _imaMiddleware = __webpack_require__(6);
+
+var _imaMiddleware2 = _interopRequireDefault(_imaMiddleware);
+
+var _imaFsm = __webpack_require__(7);
+
+var _imaFsm2 = _interopRequireDefault(_imaFsm);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var pluginName = "ima";
+
+var ADS_CONTAINER_ID = "ads-container";
+var PLAYER_NAME = "kaltura-player-js";
+
+var Ima = function (_BasePlugin) {
+  _inherits(Ima, _BasePlugin);
+
+  _createClass(Ima, null, [{
+    key: 'isValid',
+    value: function isValid() {
+      return true;
+    }
+  }]);
+
+  function Ima(name, player, config) {
+    _classCallCheck(this, Ima);
+
+    var _this = _possibleConstructorReturn(this, (Ima.__proto__ || Object.getPrototypeOf(Ima)).call(this, name, player, config));
+
+    _this._fsm = new _imaFsm2.default(_this);
+    _this._intervalTimer = null;
+    _this._adsManager = null;
+    _this._contentComplete = false;
+    _this._contentPlayheadTracker = { currentTime: 0, previousTime: 0, seeking: false, duration: 0 };
+    _this._addBindings();
+    _this._init();
+    return _this;
+  }
+
+  _createClass(Ima, [{
+    key: 'getStateMachine',
+    value: function getStateMachine() {
+      return this._fsm;
+    }
+  }, {
+    key: 'getPlayerMiddleware',
+    value: function getPlayerMiddleware() {
+      return new _imaMiddleware2.default(this);
+    }
+  }, {
+    key: 'destroy',
+    value: function destroy() {
+      this.logger.debug("destroy");
+      this.eventManager.destroy();
+      this._reset();
+    }
+  }, {
+    key: 'initialize',
+    value: function initialize() {
+      try {
+        var playerViewSize = this._getPlayerViewSize();
+        // Initialize the container.
+        this._adDisplayContainer.initialize();
+        // Initialize the ads manager. Ad rules playlist will start at this time.
+        this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
+        // Call play to start showing the ad.
+        // Single video and overlay ads will start at this time.
+        // The call will be ignored for ad rules.
+        this._adsManager.start();
+      } catch (adError) {
+        this.logger.error(adError);
+        this.destroy();
+      }
+    }
+  }, {
+    key: 'resumeAd',
+    value: function resumeAd() {
+      this._adsManager.resume();
+    }
+  }, {
+    key: 'pauseAd',
+    value: function pauseAd() {
+      this._adsManager.pause();
+    }
+  }, {
+    key: '_addBindings',
+    value: function _addBindings() {
+      this.eventManager.listen(window, 'resize', this._onResize.bind(this));
+      this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, this._onLoadedMetadata.bind(this));
+      this.eventManager.listen(this.player, this.player.Event.TIME_UPDATE, this._onMediaTimeUpdate.bind(this));
+      this.eventManager.listen(this.player, this.player.Event.SEEKING, this._onMediaSeeking.bind(this));
+      this.eventManager.listen(this.player, this.player.Event.SEEKED, this._onMediaSeeked.bind(this));
+      this.eventManager.listen(this.player, this.player.Event.ENDED, this._onMediaEnded.bind(this));
+    }
+  }, {
+    key: '_init',
+    value: function _init() {
+      var _this2 = this;
+
+      this.preparePromise = new Promise(function (resolve, reject) {
+        var loadPromise = window.google && window.google.ima ? Promise.resolve() : _this2._loadIma();
+        loadPromise.then(function () {
+          _this2._sdk = window.google.ima;
+          _this2.logger.debug("IMA SDK version: " + _this2._sdk.VERSION);
+          _this2._requestAds(resolve);
+        }).catch(function (e) {
+          reject(e);
+        });
+      });
+    }
+  }, {
+    key: '_initAdsContainer',
+    value: function _initAdsContainer() {
+      this.logger.debug("Init ads container");
+      var adsContainerDiv = document.getElementById(ADS_CONTAINER_ID);
+      var playerView = this.player.getView();
+      if (!adsContainerDiv) {
+        this._adsContainerDiv = playerView.appendChild(document.createElement('div'));
+        this._adsContainerDiv.id = ADS_CONTAINER_ID;
+        this._adsContainerDiv.style.position = "absolute";
+        this._adsContainerDiv.style.zIndex = "2000";
+        this._adsContainerDiv.style.top = "0";
+      } else {
+        this._adsContainerDiv = adsContainerDiv;
+      }
+      this._adDisplayContainer = new this._sdk.AdDisplayContainer(this._adsContainerDiv, this.player.getVideoElement());
+    }
+  }, {
+    key: '_initAdsLoader',
+    value: function _initAdsLoader(resolve) {
+      this.logger.debug("Init ads loader");
+      this._adsLoader = new this._sdk.AdsLoader(this._adDisplayContainer);
+      this._adsLoader.addEventListener(this._sdk.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._onAdsManagerLoaded.bind(this, resolve));
+      this._adsLoader.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, this._fsm.aderror);
+    }
+  }, {
+    key: '_requestAds',
+    value: function _requestAds(resolve) {
+      this.logger.debug("Request ads");
+      if (!this.config.adTagUrl && !this.config.adsResponse) {
+        throw new Error("Missing ad tag url for ima plugin");
+      } else {
+        this._sdk.settings.setPlayerType(PLAYER_NAME);
+        this._sdk.settings.setPlayerVersion(_playkitJs.VERSION);
+        // Create the ad display container.
+        this._initAdsContainer();
+        // Create ads loader.
+        this._initAdsLoader(resolve);
+        // Request video ads.
+        var adsRequest = new this._sdk.AdsRequest();
+        if (this.config.adTagUrl) {
+          adsRequest.adTagUrl = this.config.adTagUrl;
+        } else {
+          adsRequest.adsResponse = this.config.adsResponse;
+        }
+        var playerViewSize = this._getPlayerViewSize();
+        adsRequest.linearAdSlotWidth = playerViewSize.width;
+        adsRequest.linearAdSlotHeight = playerViewSize.height;
+        adsRequest.nonLinearAdSlotWidth = playerViewSize.width;
+        adsRequest.nonLinearAdSlotHeight = playerViewSize.height / 3;
+        adsRequest.setAdWillAutoPlay(this.player.config.playback.autoplay);
+        this._adsLoader.requestAds(adsRequest);
+      }
+    }
+  }, {
+    key: '_onResize',
+    value: function _onResize() {
+      if (this._sdk && this._adsManager) {
+        var playerViewSize = this._getPlayerViewSize();
+        this._adsManager.resize(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
+      }
+    }
+  }, {
+    key: '_getPlayerViewSize',
+    value: function _getPlayerViewSize() {
+      var playerView = this.player.getView();
+      var width = playerView ? parseInt(getComputedStyle(playerView).width, 10) : 640;
+      var height = playerView ? parseInt(getComputedStyle(playerView).height, 10) : 360;
+      return { width: width, height: height };
+    }
+  }, {
+    key: '_onLoadedMetadata',
+    value: function _onLoadedMetadata() {
+      this._contentPlayheadTracker.duration = this.player.duration;
+    }
+  }, {
+    key: '_onMediaTimeUpdate',
+    value: function _onMediaTimeUpdate() {
+      if (!this._contentPlayheadTracker.seeking) {
+        this._contentPlayheadTracker.previousTime = this._contentPlayheadTracker.currentTime;
+        this._contentPlayheadTracker.currentTime = this.player.currentTime;
+      }
+    }
+  }, {
+    key: '_onMediaSeeking',
+    value: function _onMediaSeeking() {
+      this._contentPlayheadTracker.seeking = true;
+    }
+  }, {
+    key: '_onMediaSeeked',
+    value: function _onMediaSeeked() {
+      this._contentPlayheadTracker.seeking = false;
+    }
+  }, {
+    key: '_onMediaEnded',
+    value: function _onMediaEnded() {
+      if (this._adsLoader && !this._contentComplete) {
+        this._adsLoader.contentComplete();
+        this._contentComplete = true;
+      }
+    }
+  }, {
+    key: '_showAdsContainer',
+    value: function _showAdsContainer() {
+      if (this._adsContainerDiv) {
+        this._adsContainerDiv.style.display = "";
+      }
+    }
+  }, {
+    key: '_hideAdsContainer',
+    value: function _hideAdsContainer() {
+      if (this._adsContainerDiv) {
+        this._adsContainerDiv.style.display = "none";
+      }
+    }
+  }, {
+    key: '_onAdsManagerLoaded',
+    value: function _onAdsManagerLoaded(resolve, adsManagerLoadedEvent) {
+      this.logger.debug('Ads manager loaded');
+      var adsRenderingSettings = new this._sdk.AdsRenderingSettings();
+      adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
+      adsRenderingSettings.enablePreloading = this.config.adsRenderingSettings.enablePreloading;
+      adsRenderingSettings.useStyledLinearAds = this.config.adsRenderingSettings.useStyledLinearAds;
+      adsRenderingSettings.useStyledNonLinearAds = this.config.adsRenderingSettings.useStyledNonLinearAds;
+      adsRenderingSettings.bitrate = this.config.adsRenderingSettings.bitrate;
+      adsRenderingSettings.autoAlign = this.config.adsRenderingSettings.autoAlign;
+      this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
+      this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_PAUSE_REQUESTED, this._fsm.adbreakstart);
+      this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOADED, this._fsm.adsloaded);
+      this._adsManager.addEventListener(this._sdk.AdEvent.Type.STARTED, this._fsm.adstarted);
+      this._adsManager.addEventListener(this._sdk.AdEvent.Type.PAUSED, this._fsm.adpaused);
+      this._adsManager.addEventListener(this._sdk.AdEvent.Type.RESUMED, this._fsm.adresumed);
+      this._adsManager.addEventListener(this._sdk.AdEvent.Type.FIRST_QUARTILE, this._fsm.adfirstquartile);
+      this._adsManager.addEventListener(this._sdk.AdEvent.Type.MIDPOINT, this._fsm.admidpoint);
+      this._adsManager.addEventListener(this._sdk.AdEvent.Type.THIRD_QUARTILE, this._fsm.adthirdquartile);
+      this._adsManager.addEventListener(this._sdk.AdEvent.Type.CLICK, this._fsm.adclicked);
+      this._adsManager.addEventListener(this._sdk.AdEvent.Type.SKIPPED, this._fsm.adskipped);
+      this._adsManager.addEventListener(this._sdk.AdEvent.Type.COMPLETE, this._fsm.adcompleted);
+      this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_RESUME_REQUESTED, this._fsm.adbreakend);
+      this._adsManager.addEventListener(this._sdk.AdEvent.Type.ALL_ADS_COMPLETED, this._fsm.alladscompleted);
+      this._adsManager.addEventListener(this._sdk.AdEvent.Type.USER_CLOSE, this._fsm.userclosedad);
+      this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_CHANGED, this._fsm.advolumechanged);
+      this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_MUTED, this._fsm.admuted);
+      this._adsManager.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, this._fsm.aderror);
+      this._syncPlayerVolume();
+      this._fsm.loaded().then(function () {
+        resolve();
+      });
+    }
+  }, {
+    key: '_syncPlayerVolume',
+    value: function _syncPlayerVolume() {
+      if (this.player.src) {
+        this._adsManager.setVolume(this.player.volume);
+      } else {
+        if (this.player.config.playback.muted) {
+          this._adsManager.setVolume(0);
+        }
+      }
+    }
+  }, {
+    key: '_startAdInterval',
+    value: function _startAdInterval() {
+      this._intervalTimer = setInterval(function () {
+        // let remainingTime = this._adsManager.getRemainingTime();
+      }, 300);
+    }
+  }, {
+    key: '_startPlayContent',
+    value: function _startPlayContent() {
+      this.logger.debug("Playing content");
+      this.player.play();
+    }
+  }, {
+    key: '_maybePreloadContent',
+    value: function _maybePreloadContent() {
+      if (this.config.adsRenderingSettings.enablePreloading && !this.player.src) {
+        this.logger.debug("Preloading media");
+        this.player.load();
+      }
+    }
+  }, {
+    key: '_reset',
+    value: function _reset() {
+      this._hideAdsContainer();
+      if (this._adsManager) {
+        this._adsManager.destroy();
+        this._adsManager = null;
+      }
+      if (this._adsLoader && !this._contentComplete) {
+        this._adsLoader.contentComplete();
+      }
+      this._adsLoader = null;
+      this._contentComplete = false;
+      this._intervalTimer = null;
+      this._contentPlayheadTracker = { currentTime: 0, previousTime: 0, seeking: false, duration: 0 };
+    }
+  }, {
+    key: '_loadIma',
+    value: function _loadIma() {
+      var _this3 = this;
+
+      return new Promise(function (resolve, reject) {
+        var r = false,
+            t = document.getElementsByTagName("script")[0],
+            s = document.createElement("script");
+        s.type = "text/javascript";
+        s.src = _this3.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL;
+        s.async = true;
+        _this3.logger.debug("Loading lib: " + s.src);
+        s.onload = s.onreadystatechange = function () {
+          if (!r && (!this.readyState || this.readyState === "complete")) {
+            r = true;
+            resolve(this);
+          }
+        };
+        s.onerror = s.onabort = reject;
+        if (t && t.parentNode) {
+          t.parentNode.insertBefore(s, t);
+        }
+      });
+    }
+  }]);
+
+  return Ima;
+}(_playkitJs.BasePlugin);
+
+Ima.defaultConfig = {
+  debug: false,
+  timeout: 5000,
+  prerollTimeout: 100,
+  adLabel: 'Advertisement',
+  showControlsForJSAds: true,
+  adsRenderingSettings: {
+    enablePreloading: true,
+    useStyledLinearAds: true,
+    useStyledNonLinearAds: true,
+    bitrate: -1,
+    autoAlign: true
+  }
+};
+Ima.IMA_SDK_LIB_URL = "//imasdk.googleapis.com/js/sdkloader/ima3.js";
+Ima.IMA_SDK_DEBUG_LIB_URL = "//imasdk.googleapis.com/js/sdkloader/ima3_debug.js";
+exports.default = Ima;
+
+
+(0, _playkitJs.registerPlugin)(pluginName, Ima);
+
+// TODO: Remove
+// import {VERSION} from '../node_modules/playkit-js/src/playkit.js'
+// import {registerPlugin, BasePlugin} from '../node_modules/playkit-js/src/playkit.js'
+// import {PlayerMiddlewareBase} from '../node_modules/playkit-js/src/playkit.js'
+// import * as Playkit from '../node_modules/playkit-js/src/playkit.js'
+// window.Playkit = Playkit;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _playkitJs = __webpack_require__(1);
+
+var _state = __webpack_require__(2);
 
 var _state2 = _interopRequireDefault(_state);
 
@@ -4035,8 +608,87 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var FiniteStateMachine = function FiniteStateMachine(context) {
-  _classCallCheck(this, FiniteStateMachine);
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+//import {PlayerMiddlewareBase} from '../node_modules/playkit-js/src/playkit.js'
+
+
+var ImaMiddleware = function (_PlayerMiddlewareBase) {
+  _inherits(ImaMiddleware, _PlayerMiddlewareBase);
+
+  function ImaMiddleware(pluginContext) {
+    _classCallCheck(this, ImaMiddleware);
+
+    var _this = _possibleConstructorReturn(this, (ImaMiddleware.__proto__ || Object.getPrototypeOf(ImaMiddleware)).call(this));
+
+    _this.context = pluginContext;
+    return _this;
+  }
+
+  _createClass(ImaMiddleware, [{
+    key: 'play',
+    value: function play(next) {
+      var _this2 = this;
+
+      this._context.preparePromise.then(function () {
+        var fsm = _this2.context.getStateMachine();
+        if (fsm.is(_state2.default.LOADED)) {
+          _this2.context.initialize();
+        } else {
+          if (fsm.is(_state2.default.PAUSED)) {
+            _this2.context.resumeAd();
+          } else {
+            _get(ImaMiddleware.prototype.__proto__ || Object.getPrototypeOf(ImaMiddleware.prototype), 'play', _this2).call(_this2, next);
+          }
+        }
+      }).catch(function (e) {
+        _this2.context.destroy();
+        _this2.context.logger.error(e);
+      });
+    }
+  }, {
+    key: 'pause',
+    value: function pause(next) {
+      var fsm = this._context.getStateMachine();
+      if (fsm.is(_state2.default.PLAYING)) {
+        this._context.pauseAd();
+      } else {
+        _get(ImaMiddleware.prototype.__proto__ || Object.getPrototypeOf(ImaMiddleware.prototype), 'pause', this).call(this, next);
+      }
+    }
+  }]);
+
+  return ImaMiddleware;
+}(_playkitJs.PlayerMiddlewareBase);
+
+exports.default = ImaMiddleware;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _index = __webpack_require__(8);
+
+var _index2 = _interopRequireDefault(_index);
+
+var _state = __webpack_require__(2);
+
+var _state2 = _interopRequireDefault(_state);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var ImaFSM = function ImaFSM(context) {
+  _classCallCheck(this, ImaFSM);
 
   return (0, _index2.default)({
     initial: _state2.default.LOADING,
@@ -4219,3470 +871,10 @@ var FiniteStateMachine = function FiniteStateMachine(context) {
   }
 };
 
-exports.default = FiniteStateMachine;
+exports.default = ImaFSM;
 
 /***/ }),
-/* 26 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _playkit = __webpack_require__(15);
-
-var _state = __webpack_require__(16);
-
-var _state2 = _interopRequireDefault(_state);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-// import {PlayerMiddlewareBase} from 'playkit-js'
-
-
-var ImaMiddleware = function (_PlayerMiddlewareBase) {
-  _inherits(ImaMiddleware, _PlayerMiddlewareBase);
-
-  function ImaMiddleware(pluginContext) {
-    _classCallCheck(this, ImaMiddleware);
-
-    var _this = _possibleConstructorReturn(this, (ImaMiddleware.__proto__ || Object.getPrototypeOf(ImaMiddleware)).call(this));
-
-    _this.context = pluginContext;
-    return _this;
-  }
-
-  _createClass(ImaMiddleware, [{
-    key: 'play',
-    value: function play(next) {
-      var _this2 = this;
-
-      this.context.prepareIma.then(function () {
-        var fsm = _this2.context.getStateMachine();
-        if (fsm.is(_state2.default.LOADED)) {
-          _this2.context.initialize();
-        } else {
-          if (fsm.is(_state2.default.PAUSED)) {
-            _this2.context.resumeAd();
-          } else {
-            _get(ImaMiddleware.prototype.__proto__ || Object.getPrototypeOf(ImaMiddleware.prototype), 'play', _this2).call(_this2, next);
-          }
-        }
-      }).catch(function (e) {
-        _this2.context.destroy();
-        _this2.context.logger.error(e);
-      });
-    }
-  }, {
-    key: 'pause',
-    value: function pause(next) {
-      var fsm = this.context.getStateMachine();
-      if (fsm.is(_state2.default.PLAYING)) {
-        this.context.pauseAd();
-      } else {
-        _get(ImaMiddleware.prototype.__proto__ || Object.getPrototypeOf(ImaMiddleware.prototype), 'pause', this).call(this, next);
-      }
-    }
-  }]);
-
-  return ImaMiddleware;
-}(_playkit.PlayerMiddlewareBase);
-
-exports.default = ImaMiddleware;
-
-/***/ }),
-/* 27 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _fakeEventTarget = __webpack_require__(11);
-
-var _fakeEventTarget2 = _interopRequireDefault(_fakeEventTarget);
-
-var _fakeEvent = __webpack_require__(1);
-
-var _fakeEvent2 = _interopRequireDefault(_fakeEvent);
-
-var _eventManager = __webpack_require__(3);
-
-var _eventManager2 = _interopRequireDefault(_eventManager);
-
-var _events = __webpack_require__(4);
-
-var _mediaSourceProvider = __webpack_require__(18);
-
-var _mediaSourceProvider2 = _interopRequireDefault(_mediaSourceProvider);
-
-var _videoTrack = __webpack_require__(7);
-
-var _videoTrack2 = _interopRequireDefault(_videoTrack);
-
-var _audioTrack = __webpack_require__(5);
-
-var _audioTrack2 = _interopRequireDefault(_audioTrack);
-
-var _textTrack = __webpack_require__(6);
-
-var _textTrack2 = _interopRequireDefault(_textTrack);
-
-var _util = __webpack_require__(8);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/**
- * The engine video element class name.
- * @type {string}
- * @const
- */
-var VIDEO_ELEMENT_CLASS_NAME = 'playkit-engine-html5';
-
-/**
- * Html5 engine for playback.
- * @classdesc
- */
-
-var Html5 = function (_FakeEventTarget) {
-  _inherits(Html5, _FakeEventTarget);
-
-  _createClass(Html5, null, [{
-    key: 'createEngine',
-
-
-    /**
-     * Factory method to create an engine.
-     * @param {Source} source - The selected source object.
-     * @param {Object} config - The player configuration.
-     * @returns {IEngine} - New instance of the run time engine.
-     * @public
-     * @static
-     */
-
-    /**
-     * The selected media source adapter of the engine.
-     * @type {IMediaSourceAdapter}
-     * @private
-     */
-
-    /**
-     * The video element.
-     * @type {HTMLVideoElement}
-     * @private
-     */
-    value: function createEngine(source, config) {
-      return new this(source, config);
-    }
-
-    /**
-     * Checks if the engine can play a given mime type.
-     * @param {string} mimeType - The mime type to check.
-     * @returns {boolean} - Whether the engine can play the mime type.
-     * @public
-     * @static
-     */
-
-
-    /**
-     * @type {string} - The engine id.
-     */
-
-    /**
-     * The event manager of the engine.
-     * @type {EventManager}
-     * @private
-     */
-
-  }, {
-    key: 'canPlayType',
-    value: function canPlayType(mimeType) {
-      return _mediaSourceProvider2.default.canPlayType(mimeType);
-    }
-
-    /**
-     * @constructor
-     * @param {Source} source - The selected source object.
-     * @param {Object} config - The player configuration.
-     */
-
-  }]);
-
-  function Html5(source, config) {
-    _classCallCheck(this, Html5);
-
-    var _this = _possibleConstructorReturn(this, (Html5.__proto__ || Object.getPrototypeOf(Html5)).call(this));
-
-    _this._eventManager = new _eventManager2.default();
-    _this._createVideoElement();
-    _this._loadMediaSourceAdapter(source, config);
-    _this.attach();
-    return _this;
-  }
-
-  /**
-   * Destroys the engine.
-   * @public
-   * @returns {void}
-   */
-
-
-  _createClass(Html5, [{
-    key: 'destroy',
-    value: function destroy() {
-      this.detach();
-      if (this._mediaSourceAdapter) {
-        this._mediaSourceAdapter.destroy();
-        _mediaSourceProvider2.default.destroy();
-      }
-      if (this._el) {
-        this.pause();
-        this._el.removeAttribute('src');
-        if (this._el.parentNode) {
-          this._el.parentNode.removeChild(this._el);
-        }
-      }
-      this._eventManager.destroy();
-    }
-
-    /**
-     * Get the engine's id
-     * @public
-     * @returns {string} the engine's id
-     */
-
-  }, {
-    key: 'attach',
-
-
-    /**
-     * Listen to the video element events and triggers them from the engine.
-     * @public
-     * @returns {void}
-     */
-    value: function attach() {
-      var _this2 = this;
-
-      var _loop = function _loop(playerEvent) {
-        _this2._eventManager.listen(_this2._el, _events.HTML5_EVENTS[playerEvent], function () {
-          _this2.dispatchEvent(new _fakeEvent2.default(_events.HTML5_EVENTS[playerEvent]));
-        });
-      };
-
-      for (var playerEvent in _events.HTML5_EVENTS) {
-        _loop(playerEvent);
-      }
-      if (this._mediaSourceAdapter) {
-        this._eventManager.listen(this._mediaSourceAdapter, _events.CUSTOM_EVENTS.VIDEO_TRACK_CHANGED, function (event) {
-          _this2.dispatchEvent(event);
-        });
-        this._eventManager.listen(this._mediaSourceAdapter, _events.CUSTOM_EVENTS.AUDIO_TRACK_CHANGED, function (event) {
-          return _this2.dispatchEvent(event);
-        });
-        this._eventManager.listen(this._mediaSourceAdapter, _events.CUSTOM_EVENTS.TEXT_TRACK_CHANGED, function (event) {
-          return _this2.dispatchEvent(event);
-        });
-      }
-    }
-
-    /**
-     * Remove the listeners of the video element events.
-     * @public
-     * @returns {void}
-     */
-
-  }, {
-    key: 'detach',
-    value: function detach() {
-      for (var playerEvent in _events.HTML5_EVENTS) {
-        this._eventManager.unlisten(this._el, _events.HTML5_EVENTS[playerEvent]);
-      }
-      if (this._mediaSourceAdapter) {
-        // unlisten to adaptive bitrate changed
-        this._eventManager.unlisten(this._mediaSourceAdapter, _events.CUSTOM_EVENTS.VIDEO_TRACK_CHANGED);
-        this._eventManager.unlisten(this._mediaSourceAdapter, _events.CUSTOM_EVENTS.AUDIO_TRACK_CHANGED);
-        this._eventManager.unlisten(this._mediaSourceAdapter, _events.CUSTOM_EVENTS.TEXT_TRACK_CHANGED);
-      }
-    }
-
-    /**
-     * @returns {HTMLVideoElement} - The video element.
-     * @public
-     */
-
-  }, {
-    key: 'getVideoElement',
-    value: function getVideoElement() {
-      return this._el;
-    }
-
-    /**
-     * Creates a video element dom object.
-     * @private
-     * @returns {void}
-     */
-
-  }, {
-    key: '_createVideoElement',
-    value: function _createVideoElement() {
-      this._el = document.createElement("video");
-      this._el.id = (0, _util.uniqueId)(5);
-      this._el.className = VIDEO_ELEMENT_CLASS_NAME;
-      this._el.controls = false;
-    }
-
-    /**
-     * Loads the appropriate media source extension adapter.
-     * @param {Source} source - The selected source object.
-     * @param {Object} config - The media source extension configuration.
-     * @private
-     * @returns {void}
-     */
-
-  }, {
-    key: '_loadMediaSourceAdapter',
-    value: function _loadMediaSourceAdapter(source, config) {
-      this._mediaSourceAdapter = _mediaSourceProvider2.default.getMediaSourceAdapter(this.getVideoElement(), source, config);
-    }
-
-    /**
-     * Select a new video track.
-     * @param {VideoTrack} videoTrack - The video track object to set.
-     * @returns {void}
-     */
-
-  }, {
-    key: 'selectVideoTrack',
-    value: function selectVideoTrack(videoTrack) {
-      if (this._mediaSourceAdapter) {
-        this._mediaSourceAdapter.selectVideoTrack(videoTrack);
-      }
-    }
-
-    /**
-     * Select a new audio track.
-     * @param {AudioTrack} audioTrack - The video track object to set.
-     * @returns {void}
-     */
-
-  }, {
-    key: 'selectAudioTrack',
-    value: function selectAudioTrack(audioTrack) {
-      if (this._mediaSourceAdapter) {
-        this._mediaSourceAdapter.selectAudioTrack(audioTrack);
-      }
-    }
-
-    /**
-     * Select a new text track.
-     * @param {TextTrack} textTrack - The text track object to set.
-     * @returns {void}
-     */
-
-  }, {
-    key: 'selectTextTrack',
-    value: function selectTextTrack(textTrack) {
-      if (this._mediaSourceAdapter) {
-        this._mediaSourceAdapter.selectTextTrack(textTrack);
-      }
-    }
-
-    /**
-     * Hide the text track
-     * @function hideTextTrack
-     * @returns {void}
-     * @public
-     */
-
-  }, {
-    key: 'hideTextTrack',
-    value: function hideTextTrack() {
-      if (this._mediaSourceAdapter) {
-        this._mediaSourceAdapter.hideTextTrack();
-      }
-    }
-
-    /**
-     * Enables adaptive bitrate switching according to the media source extension logic.
-     * @function enableAdaptiveBitrate
-     * @returns {void}
-     * @public
-     */
-
-  }, {
-    key: 'enableAdaptiveBitrate',
-    value: function enableAdaptiveBitrate() {
-      if (this._mediaSourceAdapter) {
-        this._mediaSourceAdapter.enableAdaptiveBitrate();
-      }
-    }
-
-    /**
-     * Set a source.
-     * @param {string} source - Source to set.
-     * @public
-     * @returns {void}
-     */
-
-  }, {
-    key: 'play',
-
-
-    //playback interface
-    /**
-     * Start/resume playback.
-     * @public
-     * @returns {void}
-     */
-    value: function play() {
-      return this._el.play();
-    }
-
-    /**
-     * Pause playback.
-     * @public
-     * @returns {void}
-     */
-
-  }, {
-    key: 'pause',
-    value: function pause() {
-      return this._el.pause();
-    }
-
-    /**
-     * Load media.
-     * @public
-     * @returns {Promise<Object>} - The loaded data
-     */
-
-  }, {
-    key: 'load',
-    value: function load() {
-      return this._mediaSourceAdapter ? this._mediaSourceAdapter.load() : Promise.resolve({});
-    }
-
-    /**
-     * Get the current time in seconds.
-     * @returns {Number} - The current playback time.
-     * @public
-     */
-
-  }, {
-    key: 'ready',
-    value: function ready() {}
-
-    /**
-     * Get paused state.
-     * @returns {boolean} - The paused value of the video element.
-     * @public
-     */
-
-  }, {
-    key: 'id',
-    get: function get() {
-      return Html5.id;
-    }
-  }, {
-    key: 'src',
-    set: function set(source) {
-      this._el.src = source;
-    }
-
-    /**
-     * Get the source url.
-     * @returns {string} - The source url.
-     * @public
-     */
-    ,
-    get: function get() {
-      if (this._mediaSourceAdapter) {
-        return this._mediaSourceAdapter.src;
-      }
-      return "";
-    }
-  }, {
-    key: 'currentTime',
-    get: function get() {
-      return this._el.currentTime;
-    }
-
-    /**
-     * Set the current time in seconds.
-     * @param {Number} to - The number to set in seconds.
-     * @public
-     * @returns {void}
-     */
-    ,
-    set: function set(to) {
-      this._el.currentTime = to;
-    }
-
-    /**
-     * Get the duration in seconds.
-     * @returns {Number} - The playback duration.
-     * @public
-     */
-
-  }, {
-    key: 'duration',
-    get: function get() {
-      return this._el.duration;
-    }
-
-    /**
-     * Set playback volume.
-     * @param {Number} vol - The volume to set.
-     * @public
-     * @returns {void}
-     */
-
-  }, {
-    key: 'volume',
-    set: function set(vol) {
-      this._el.volume = vol;
-    }
-
-    /**
-     * Get playback volume.
-     * @returns {Number} - The volume value of the video element.
-     * @public
-     */
-    ,
-    get: function get() {
-      return this._el.volume;
-    }
-  }, {
-    key: 'paused',
-    get: function get() {
-      return this._el.paused;
-    }
-
-    /**
-     * Get seeking state.
-     * @returns {boolean} - The seeking value of the video element.
-     * @public
-     */
-
-  }, {
-    key: 'seeking',
-    get: function get() {
-      return this._el.seeking;
-    }
-
-    /**
-     * Get the first seekable range (part) of the video in seconds.
-     * @returns {TimeRanges} - First seekable range (part) of the video in seconds.
-     * @public
-     */
-
-  }, {
-    key: 'seekable',
-    get: function get() {
-      return this._el.seekable;
-    }
-
-    /**
-     * Get the first played range (part) of the video in seconds.
-     * @returns {TimeRanges} - First played range (part) of the video in seconds.
-     * @public
-     */
-
-  }, {
-    key: 'played',
-    get: function get() {
-      return this._el.played;
-    }
-
-    /**
-     * Get the first buffered range (part) of the video in seconds.
-     * @returns {TimeRanges} - First buffered range (part) of the video in seconds.
-     * @public
-     */
-
-  }, {
-    key: 'buffered',
-    get: function get() {
-      return this._el.buffered;
-    }
-
-    /**
-     * Set player muted state.
-     * @param {boolean} mute - The new mute value.
-     * @public
-     * @returns {void}
-     */
-
-  }, {
-    key: 'muted',
-    set: function set(mute) {
-      this._el.muted = mute;
-    }
-
-    /**
-     * Get player muted state.
-     * @returns {boolean} - The muted value of the video element.
-     * @public
-     */
-    ,
-    get: function get() {
-      return this._el.muted;
-    }
-
-    /**
-     * Get the default mute value.
-     * @returns {boolean} - The defaultMuted of the video element.
-     * @public
-     */
-
-  }, {
-    key: 'defaultMuted',
-    get: function get() {
-      return this._el.defaultMuted;
-    }
-
-    /**
-     * Sets an image to be shown while the video is downloading, or until the user hits the play button.
-     * @param {string} poster - The image url to be shown.
-     * @returns {void}
-     * @public
-     */
-
-  }, {
-    key: 'poster',
-    set: function set(poster) {
-      this._el.poster = poster;
-    }
-
-    /**
-     * Gets an image to be shown while the video is downloading, or until the user hits the play button.
-     * @returns {poster} - The image url.
-     * @public
-     */
-    ,
-    get: function get() {
-      return this._el.poster;
-    }
-
-    /**
-     * Specifies if and how the author thinks that the video should be loaded when the page loads.
-     * @param {string} preload - The preload value.
-     * @public
-     * @returns {void}
-     */
-
-  }, {
-    key: 'preload',
-    set: function set(preload) {
-      this._el.preload = preload;
-    }
-
-    /**
-     * Gets the preload value of the video element.
-     * @returns {string} - The preload value.
-     * @public
-     */
-    ,
-    get: function get() {
-      return this._el.preload;
-    }
-
-    /**
-     * Set if the video will automatically start playing as soon as it can do so without stopping.
-     * @param {boolean} autoplay - The autoplay value.
-     * @public
-     * @returns {void}
-     */
-
-  }, {
-    key: 'autoplay',
-    set: function set(autoplay) {
-      this._el.autoplay = autoplay;
-    }
-
-    /**
-     * Gets the autoplay value of the video element.
-     * @returns {boolean} - The autoplay value.
-     * @public
-     */
-    ,
-    get: function get() {
-      return this._el.autoplay;
-    }
-
-    /**
-     * Set to specifies that the video will start over again, every time it is finished.
-     * @param {boolean} loop - the loop value.
-     * @public
-     * @returns {void}
-     */
-
-  }, {
-    key: 'loop',
-    set: function set(loop) {
-      this._el.loop = loop;
-    }
-
-    /**
-     * Gets the loop value of the video element.
-     * @returns {boolean} - The loop value.
-     * @public
-     */
-    ,
-    get: function get() {
-      return this._el.loop;
-    }
-
-    /**
-     * Set to specifies that video controls should be displayed.
-     * @param {boolean} controls - the controls value.
-     * @public
-     * @returns {void}
-     */
-
-  }, {
-    key: 'controls',
-    set: function set(controls) {
-      this._el.controls = controls;
-    }
-
-    /**
-     * Gets the controls value of the video element.
-     * @returns {boolean} - The controls value.
-     * @public
-     */
-    ,
-    get: function get() {
-      return this._el.controls;
-    }
-
-    /**
-     * Sets the current playback speed of the audio/video.
-     * @param {Number} playbackRate - The playback speed value.
-     * @public
-     * @returns {void}
-     */
-
-  }, {
-    key: 'playbackRate',
-    set: function set(playbackRate) {
-      this._el.playbackRate = playbackRate;
-    }
-
-    /**
-     * Gets the current playback speed of the audio/video.
-     * @returns {Number} - The current playback speed value.
-     * @public
-     */
-    ,
-    get: function get() {
-      return this._el.playbackRate;
-    }
-
-    /**
-     * Sets the default playback speed of the audio/video.
-     * @param {Number} defaultPlaybackRate - The default playback speed value.
-     * @public
-     * @returns {void}
-     */
-
-  }, {
-    key: 'defaultPlaybackRate',
-    set: function set(defaultPlaybackRate) {
-      this._el.defaultPlaybackRate = defaultPlaybackRate;
-    }
-
-    /**
-     * Gets the default playback speed of the audio/video.
-     * @returns {Number} - The default playback speed value.
-     * @public
-     */
-    ,
-    get: function get() {
-      return this._el.defaultPlaybackRate;
-    }
-
-    /**
-     * The ended property returns whether the playback of the audio/video has ended.
-     * @returns {boolean} - The ended value.
-     * @public
-     */
-
-  }, {
-    key: 'ended',
-    get: function get() {
-      return this._el.ended;
-    }
-
-    /**
-     * The error property returns a MediaError object.
-     * @returns {MediaError} - The MediaError object has a code property containing the error state of the audio/video.
-     * @public
-     */
-
-  }, {
-    key: 'error',
-    get: function get() {
-      return this._el.error;
-    }
-
-    /**
-     * @returns {Number} - The current network state (activity) of the audio/video.
-     * @public
-     */
-
-  }, {
-    key: 'networkState',
-    get: function get() {
-      return this._el.networkState;
-    }
-
-    /**
-     * Indicates if the audio/video is ready to play or not.
-     * @returns {Number} - The current ready state of the audio/video.
-     * 0 = HAVE_NOTHING - no information whether or not the audio/video is ready.
-     * 1 = HAVE_METADATA - metadata for the audio/video is ready.
-     * 2 = HAVE_CURRENT_DATA - data for the current playback position is available, but not enough data to play next frame/millisecond.
-     * 3 = HAVE_FUTURE_DATA - data for the current and at least the next frame is available.
-     * 4 = HAVE_ENOUGH_DATA - enough data available to start playing.
-     */
-
-  }, {
-    key: 'readyState',
-    get: function get() {
-      return this._el.readyState;
-    }
-
-    /**
-     * @returns {Number} - The height of the video player, in pixels.
-     * @public
-     */
-
-  }, {
-    key: 'videoHeight',
-    get: function get() {
-      return this._el.videoHeight;
-    }
-
-    /**
-     * @returns {Number} - The width of the video player, in pixels.
-     * @public
-     */
-
-  }, {
-    key: 'videoWidth',
-    get: function get() {
-      return this._el.videoWidth;
-    }
-
-    /**
-     * Test video element to check if html5 engine is supported.
-     */
-
-  }], [{
-    key: 'isSupported',
-
-
-    /**
-     * Checks if the html5 engine is supported.
-     * @returns {boolean} - The isSupported result.
-     * @static
-     * @public
-     */
-    value: function isSupported() {
-      try {
-        Html5.TEST_VID = document.createElement('video');
-        Html5.TEST_VID.volume = 0.5;
-      } catch (e) {
-        return false;
-      }
-      return !!Html5.TEST_VID.canPlayType;
-    }
-  }]);
-
-  return Html5;
-}(_fakeEventTarget2.default);
-
-Html5.id = "html5";
-exports.default = Html5;
-
-/***/ }),
-/* 28 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _eventManager = __webpack_require__(3);
-
-var _eventManager2 = _interopRequireDefault(_eventManager);
-
-var _events = __webpack_require__(4);
-
-var _track = __webpack_require__(2);
-
-var _track2 = _interopRequireDefault(_track);
-
-var _videoTrack = __webpack_require__(7);
-
-var _videoTrack2 = _interopRequireDefault(_videoTrack);
-
-var _audioTrack = __webpack_require__(5);
-
-var _audioTrack2 = _interopRequireDefault(_audioTrack);
-
-var _textTrack = __webpack_require__(6);
-
-var _textTrack2 = _interopRequireDefault(_textTrack);
-
-var _baseMediaSourceAdapter = __webpack_require__(17);
-
-var _baseMediaSourceAdapter2 = _interopRequireDefault(_baseMediaSourceAdapter);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/**
- * An illustration of media source extension for progressive download
- * @classdesc
- * @implements {IMediaSourceAdapter}
- */
-var NativeAdapter = function (_BaseMediaSourceAdapt) {
-  _inherits(NativeAdapter, _BaseMediaSourceAdapt);
-
-  _createClass(NativeAdapter, null, [{
-    key: 'canPlayType',
-
-
-    /**
-     * Checks if NativeAdapter can play a given mime type.
-     * @function canPlayType
-     * @param {string} mimeType - The mime type to check
-     * @returns {boolean} - Whether the native adapter can play a specific mime type
-     * @static
-     */
-
-    /**
-     * The event manager of the class.
-     * @member {EventManager} - _eventManager
-     * @type {EventManager}
-     * @private
-     */
-
-    /**
-     * The load promise
-     * @member {Promise<Object>} - _loadPromise
-     * @type {Promise<Object>}
-     * @private
-     */
-
-    /**
-     * The id of the Adapter
-     * @member {string} id
-     * @static
-     * @public
-     */
-    value: function canPlayType(mimeType) {
-      var canPlayType = typeof mimeType === 'string' ? !!document.createElement("video").canPlayType(mimeType.toLowerCase()) : false;
-      NativeAdapter._logger.debug('canPlayType result for mimeType:' + mimeType + ' is ' + canPlayType.toString());
-      return canPlayType;
-    }
-
-    /**
-     * @constructor
-     * @param {HTMLVideoElement} videoElement - The video element which bind to NativeAdapter
-     * @param {Source} source - The source object
-     */
-
-
-    /**
-     * The adapter logger
-     * @member {any} _logger
-     * @private
-     * @static
-     */
-
-  }]);
-
-  function NativeAdapter(videoElement, source) {
-    _classCallCheck(this, NativeAdapter);
-
-    NativeAdapter._logger.debug('Creating adapter');
-
-    var _this = _possibleConstructorReturn(this, (NativeAdapter.__proto__ || Object.getPrototypeOf(NativeAdapter)).call(this, videoElement, source));
-
-    _this._eventManager = new _eventManager2.default();
-    return _this;
-  }
-
-  /**
-   * Load the video source
-   * @function load
-   * @returns {Promise<Object>} - The loaded data
-   */
-
-
-  _createClass(NativeAdapter, [{
-    key: 'load',
-    value: function load() {
-      var _this2 = this;
-
-      if (!this._loadPromise) {
-        this._loadPromise = new Promise(function (resolve, reject) {
-          // We're using 'loadeddata' event for native hls (on 'loadedmetadata' native hls doesn't have tracks yet).
-          _this2._eventManager.listen(_this2._videoElement, _events.HTML5_EVENTS.LOADED_DATA, function () {
-            _this2._eventManager.unlisten(_this2._videoElement, _events.HTML5_EVENTS.LOADED_DATA);
-            var data = { tracks: _this2._getParsedTracks() };
-            NativeAdapter._logger.debug('The source has been loaded successfully');
-            resolve(data);
-          });
-          _this2._eventManager.listen(_this2._videoElement, _events.HTML5_EVENTS.ERROR, function (error) {
-            _this2._eventManager.unlisten(_this2._videoElement, _events.HTML5_EVENTS.ERROR);
-            NativeAdapter._logger.error(error);
-            reject(error);
-          });
-          if (_this2._sourceObj && _this2._sourceObj.url) {
-            _this2._videoElement.src = _this2._sourceObj.url;
-          }
-        });
-      }
-      return this._loadPromise;
-    }
-
-    /**
-     * Destroys the native adapter.
-     * @function destroy
-     * @returns {void}
-     */
-
-  }, {
-    key: 'destroy',
-    value: function destroy() {
-      NativeAdapter._logger.debug('destroy');
-      _get(NativeAdapter.prototype.__proto__ || Object.getPrototypeOf(NativeAdapter.prototype), 'destroy', this).call(this);
-      this._eventManager.destroy();
-      this._loadPromise = null;
-    }
-
-    /**
-     * Get the parsed tracks
-     * @function _getParsedTracks
-     * @returns {Array<Track>} - The parsed tracks
-     * @private
-     */
-
-  }, {
-    key: '_getParsedTracks',
-    value: function _getParsedTracks() {
-      var videoTracks = this._getParsedVideoTracks();
-      var audioTracks = this._getParsedAudioTracks();
-      var textTracks = this._getParsedTextTracks();
-      return videoTracks.concat(audioTracks).concat(textTracks);
-    }
-
-    /**
-     * Get the parsed video tracks
-     * @function _getParsedVideoTracks
-     * @returns {Array<Track>} - The parsed video tracks
-     * @private
-     */
-
-  }, {
-    key: '_getParsedVideoTracks',
-    value: function _getParsedVideoTracks() {
-      var videoTracks = this._videoElement.videoTracks;
-      var parsedTracks = [];
-      if (videoTracks) {
-        for (var i = 0; i < videoTracks.length; i++) {
-          var settings = {
-            id: videoTracks[i].id,
-            active: videoTracks[i].selected,
-            label: videoTracks[i].label,
-            language: videoTracks[i].language,
-            index: i
-          };
-          parsedTracks.push(new _videoTrack2.default(settings));
-        }
-      }
-      return parsedTracks;
-    }
-
-    /**
-     * Get the parsed audio tracks
-     * @function _getParsedAudioTracks
-     * @returns {Array<Track>} - The parsed audio tracks
-     * @private
-     */
-
-  }, {
-    key: '_getParsedAudioTracks',
-    value: function _getParsedAudioTracks() {
-      var audioTracks = this._videoElement.audioTracks;
-      var parsedTracks = [];
-      if (audioTracks) {
-        for (var i = 0; i < audioTracks.length; i++) {
-          var settings = {
-            id: audioTracks[i].id,
-            active: audioTracks[i].enabled,
-            label: audioTracks[i].label,
-            language: audioTracks[i].language,
-            index: i
-          };
-          parsedTracks.push(new _audioTrack2.default(settings));
-        }
-      }
-      return parsedTracks;
-    }
-
-    /**
-     * Get the parsed text tracks
-     * @function _getParsedTextTracks
-     * @returns {Array<Track>} - The parsed text tracks
-     * @private
-     */
-
-  }, {
-    key: '_getParsedTextTracks',
-    value: function _getParsedTextTracks() {
-      var textTracks = this._videoElement.textTracks;
-      var parsedTracks = [];
-      if (textTracks) {
-        for (var i = 0; i < textTracks.length; i++) {
-          var settings = {
-            kind: textTracks[i].kind,
-            active: textTracks[i].mode === 'showing',
-            label: textTracks[i].label,
-            language: textTracks[i].language,
-            index: i
-          };
-          parsedTracks.push(new _textTrack2.default(settings));
-        }
-      }
-      return parsedTracks;
-    }
-
-    /**
-     * Select a video track
-     * @function selectVideoTrack
-     * @param {VideoTrack} videoTrack - the track to select
-     * @returns {void}
-     * @public
-     */
-
-  }, {
-    key: 'selectVideoTrack',
-    value: function selectVideoTrack(videoTrack) {
-      var videoTracks = this._videoElement.videoTracks;
-      if (videoTrack instanceof _videoTrack2.default && videoTracks && videoTracks[videoTrack.index]) {
-        this._disableVideoTracks();
-        videoTracks[videoTrack.index].selected = true;
-        this._onTrackChanged(videoTrack);
-      }
-    }
-
-    /**
-     * Select an audio track
-     * @function selectAudioTrack
-     * @param {AudioTrack} audioTrack - the  audio track to select
-     * @returns {void}
-     * @public
-     */
-
-  }, {
-    key: 'selectAudioTrack',
-    value: function selectAudioTrack(audioTrack) {
-      var audioTracks = this._videoElement.audioTracks;
-      if (audioTrack instanceof _audioTrack2.default && audioTracks && audioTracks[audioTrack.index]) {
-        this._disableAudioTracks();
-        audioTracks[audioTrack.index].enabled = true;
-        this._onTrackChanged(audioTrack);
-      }
-    }
-
-    /**
-     * Select a text track
-     * @function selectTextTrack
-     * @param {TextTrack} textTrack - the track to select
-     * @returns {void}
-     * @public
-     */
-
-  }, {
-    key: 'selectTextTrack',
-    value: function selectTextTrack(textTrack) {
-      var textTracks = this._videoElement.textTracks;
-      if (textTrack instanceof _textTrack2.default && (textTrack.kind === 'subtitles' || textTrack.kind === 'captions') && textTracks && textTracks[textTrack.index]) {
-        this._disableTextTracks();
-        textTracks[textTrack.index].mode = 'showing';
-        this._onTrackChanged(textTrack);
-      }
-    }
-
-    /**
-     * Hide the text track
-     * @function hideTextTrack
-     * @returns {void}
-     * @public
-     */
-
-  }, {
-    key: 'hideTextTrack',
-    value: function hideTextTrack() {
-      this._disableTextTracks();
-    }
-
-    /**
-     * Enables adaptive bitrate
-     * @function enableAdaptiveBitrate
-     * @returns {void}
-     * @public
-     */
-
-  }, {
-    key: 'enableAdaptiveBitrate',
-    value: function enableAdaptiveBitrate() {
-      NativeAdapter._logger.debug('Enabling adaptive bitrate not supported');
-    }
-
-    /**
-     * Disables all the existing video tracks.
-     * @private
-     * @returns {void}
-     */
-
-  }, {
-    key: '_disableVideoTracks',
-    value: function _disableVideoTracks() {
-      var videoTracks = this._videoElement.videoTracks;
-      if (videoTracks) {
-        for (var i = 0; i < videoTracks.length; i++) {
-          videoTracks[i].selected = false;
-        }
-      }
-    }
-
-    /**
-     * Disables all the existing audio tracks.
-     * @private
-     * @returns {void}
-     */
-
-  }, {
-    key: '_disableAudioTracks',
-    value: function _disableAudioTracks() {
-      var audioTracks = this._videoElement.audioTracks;
-      if (audioTracks) {
-        for (var i = 0; i < audioTracks.length; i++) {
-          audioTracks[i].enabled = false;
-        }
-      }
-    }
-
-    /**
-     * Disables all the existing text tracks.
-     * @private
-     * @returns {void}
-     */
-
-  }, {
-    key: '_disableTextTracks',
-    value: function _disableTextTracks() {
-      var textTracks = this._videoElement.textTracks;
-      if (textTracks) {
-        for (var i = 0; i < textTracks.length; i++) {
-          textTracks[i].mode = 'disabled';
-        }
-      }
-    }
-
-    /**
-     * Getter for the src that the adapter plays on the video element.
-     * @public
-     * @returns {string} - The src url.
-     */
-
-  }, {
-    key: 'src',
-    get: function get() {
-      return this._videoElement.src;
-    }
-  }]);
-
-  return NativeAdapter;
-}(_baseMediaSourceAdapter2.default);
-
-NativeAdapter.id = 'NativeAdapter';
-NativeAdapter._logger = _baseMediaSourceAdapter2.default.getLogger(NativeAdapter.id);
-exports.default = NativeAdapter;
-
-/***/ }),
-/* 29 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _multiMap = __webpack_require__(13);
-
-var _multiMap2 = _interopRequireDefault(_multiMap);
-
-var _playerMiddlewareBase = __webpack_require__(12);
-
-var _playerMiddlewareBase2 = _interopRequireDefault(_playerMiddlewareBase);
-
-var _logger = __webpack_require__(0);
-
-var _logger2 = _interopRequireDefault(_logger);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Middleware = function () {
-  function Middleware(actions) {
-    _classCallCheck(this, Middleware);
-
-    this._actions = actions;
-    this._middlewares = new _multiMap2.default();
-    this._logger = _logger2.default.getLogger("Middleware");
-  }
-
-  _createClass(Middleware, [{
-    key: 'use',
-    value: function use(playerMiddleware) {
-      for (var _action in this._actions) {
-        if (typeof playerMiddleware[this._actions[_action]] === 'function') {
-          this._logger.debug("Register middleware for action " + this._actions[_action], playerMiddleware);
-          this._middlewares.push(this._actions[_action], playerMiddleware[this._actions[_action]].bind(playerMiddleware));
-        }
-      }
-    }
-  }, {
-    key: 'run',
-    value: function run(action, callback) {
-      var _this = this;
-
-      this._logger.debug("Start middleware chain for action " + action);
-      var middlewares = this._middlewares.get(action);
-      if (middlewares && middlewares.length > 0) {
-        this._executeMiddleware(middlewares, function () {
-          _this._logger.debug("Finish middleware chain for action " + action);
-          if (callback) {
-            callback();
-          }
-        });
-      }
-    }
-  }, {
-    key: '_executeMiddleware',
-    value: function _executeMiddleware(middlewares, callback) {
-      /* eslint-disable-next-line no-unused-vars */
-      var composition = middlewares.reduceRight(function (next, fn) {
-        return function (v) {
-          fn(next);
-        };
-      }, callback);
-      composition();
-    }
-  }]);
-
-  return Middleware;
-}();
-
-exports.default = Middleware;
-
-/***/ }),
-/* 30 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _middleware = __webpack_require__(29);
-
-var _middleware2 = _interopRequireDefault(_middleware);
-
-var _playerMiddlewareBase = __webpack_require__(12);
-
-var _playerMiddlewareBase2 = _interopRequireDefault(_playerMiddlewareBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var PlayerMiddleware = function () {
-  function PlayerMiddleware() {
-    _classCallCheck(this, PlayerMiddleware);
-
-    this._middleware = new _middleware2.default(PlayerMiddleware.Actions);
-  }
-
-  _createClass(PlayerMiddleware, [{
-    key: 'use',
-    value: function use(playerMiddleware) {
-      this._middleware.use(playerMiddleware);
-    }
-  }, {
-    key: 'play',
-    value: function play(callback) {
-      this._middleware.run(PlayerMiddleware.Actions.PLAY, callback);
-    }
-  }, {
-    key: 'pause',
-    value: function pause(callback) {
-      this._middleware.run(PlayerMiddleware.Actions.PAUSE, callback);
-    }
-  }]);
-
-  return PlayerMiddleware;
-}();
-
-PlayerMiddleware.Actions = {
-  PLAY: 'play',
-  PAUSE: 'pause'
-};
-exports.default = PlayerMiddleware;
-
-/***/ }),
-/* 31 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _player = __webpack_require__(9);
-
-var _player2 = _interopRequireDefault(_player);
-
-var _eventManager = __webpack_require__(3);
-
-var _eventManager2 = _interopRequireDefault(_eventManager);
-
-var _state = __webpack_require__(32);
-
-var _state2 = _interopRequireDefault(_state);
-
-var _stateTypes = __webpack_require__(21);
-
-var _stateTypes2 = _interopRequireDefault(_stateTypes);
-
-var _events = __webpack_require__(4);
-
-var _fakeEvent = __webpack_require__(1);
-
-var _fakeEvent2 = _interopRequireDefault(_fakeEvent);
-
-var _logger = __webpack_require__(0);
-
-var _logger2 = _interopRequireDefault(_logger);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * This class responsible to manage all the state machine of the player.
- * @classdesc
- */
-
-
-/**
- * Define a transition object.
- */
-var StateManager = function () {
-
-  /**
-   * @constructor
-   * @param {Player} player - Reference to the player.
-   */
-
-  /**
-   * Holds the state history of the player.
-   * @member
-   * @type {Array<State>}
-   * @private
-   */
-
-  /**
-   * Holds the current state of the player.
-   * @member
-   * @type {State}
-   * @private
-   */
-
-  /**
-   * Reference to the actual player.
-   * @member
-   * @type {Player}
-   * @private
-   */
-  function StateManager(player) {
-    var _this = this,
-        _PlayerStates$IDLE,
-        _PlayerStates$LOADING,
-        _PlayerStates$PAUSED,
-        _PlayerStates$PLAYING,
-        _PlayerStates$BUFFERI,
-        _transitions;
-
-    _classCallCheck(this, StateManager);
-
-    this._transitions = (_transitions = {}, _defineProperty(_transitions, _stateTypes2.default.IDLE, (_PlayerStates$IDLE = {}, _defineProperty(_PlayerStates$IDLE, _events.HTML5_EVENTS.LOAD_START, function () {
-      _this._updateState(_stateTypes2.default.LOADING);
-      _this._dispatchEvent();
-    }), _defineProperty(_PlayerStates$IDLE, _events.HTML5_EVENTS.PLAY, function () {
-      _this._updateState(_stateTypes2.default.BUFFERING);
-      _this._dispatchEvent();
-    }), _PlayerStates$IDLE)), _defineProperty(_transitions, _stateTypes2.default.LOADING, (_PlayerStates$LOADING = {}, _defineProperty(_PlayerStates$LOADING, _events.HTML5_EVENTS.LOADED_METADATA, function () {
-      if (_this._player.config.playback.autoplay) {
-        _this._updateState(_stateTypes2.default.PLAYING);
-      } else {
-        _this._updateState(_stateTypes2.default.PAUSED);
-      }
-      _this._dispatchEvent();
-    }), _defineProperty(_PlayerStates$LOADING, _events.HTML5_EVENTS.ERROR, function () {
-      _this._updateState(_stateTypes2.default.IDLE);
-      _this._dispatchEvent();
-    }), _PlayerStates$LOADING)), _defineProperty(_transitions, _stateTypes2.default.PAUSED, (_PlayerStates$PAUSED = {}, _defineProperty(_PlayerStates$PAUSED, _events.HTML5_EVENTS.PLAY, function () {
-      _this._updateState(_stateTypes2.default.PLAYING);
-      _this._dispatchEvent();
-    }), _defineProperty(_PlayerStates$PAUSED, _events.HTML5_EVENTS.PLAYING, function () {
-      _this._updateState(_stateTypes2.default.PLAYING);
-      _this._dispatchEvent();
-    }), _defineProperty(_PlayerStates$PAUSED, _events.HTML5_EVENTS.ENDED, function () {
-      _this._updateState(_stateTypes2.default.IDLE);
-      _this._dispatchEvent();
-    }), _PlayerStates$PAUSED)), _defineProperty(_transitions, _stateTypes2.default.PLAYING, (_PlayerStates$PLAYING = {}, _defineProperty(_PlayerStates$PLAYING, _events.HTML5_EVENTS.PAUSE, function () {
-      _this._updateState(_stateTypes2.default.PAUSED);
-      _this._dispatchEvent();
-    }), _defineProperty(_PlayerStates$PLAYING, _events.HTML5_EVENTS.WAITING, function () {
-      _this._updateState(_stateTypes2.default.BUFFERING);
-      _this._dispatchEvent();
-    }), _defineProperty(_PlayerStates$PLAYING, _events.HTML5_EVENTS.ENDED, function () {
-      _this._updateState(_stateTypes2.default.IDLE);
-      _this._dispatchEvent();
-    }), _defineProperty(_PlayerStates$PLAYING, _events.HTML5_EVENTS.ERROR, function () {
-      _this._updateState(_stateTypes2.default.IDLE);
-      _this._dispatchEvent();
-    }), _PlayerStates$PLAYING)), _defineProperty(_transitions, _stateTypes2.default.BUFFERING, (_PlayerStates$BUFFERI = {}, _defineProperty(_PlayerStates$BUFFERI, _events.HTML5_EVENTS.PLAYING, function () {
-      _this._updateState(_stateTypes2.default.PLAYING);
-      _this._dispatchEvent();
-    }), _defineProperty(_PlayerStates$BUFFERI, _events.HTML5_EVENTS.PAUSE, function () {
-      _this._updateState(_stateTypes2.default.PAUSED);
-      _this._dispatchEvent();
-    }), _PlayerStates$BUFFERI)), _transitions);
-
-    this._player = player;
-    this._logger = _logger2.default.getLogger("StateManager");
-    this._eventManager = new _eventManager2.default();
-    this._history = [];
-    this._prevState = null;
-    this._curState = new _state2.default(_stateTypes2.default.IDLE);
-    this._attachListeners();
-  }
-
-  /**
-   * Register to all necessary events which impacts on the player state.
-   * @private
-   * @returns {void}
-   */
-
-  /**
-   * The possible transitions from one state to another.
-   * @type {Array<Transition>}
-   * @private
-   */
-
-  /**
-   * Holds the previous state of the player.
-   * @member
-   * @type {State | null}
-   * @private
-   */
-
-  /**
-   * The event manager of the class.
-   * @member
-   * @type {EventManager}
-   * @private
-   */
-
-  /**
-   * The logger of the class.
-   * @member
-   * @type {any}
-   * @private
-   */
-
-
-  _createClass(StateManager, [{
-    key: '_attachListeners',
-    value: function _attachListeners() {
-      this._eventManager.listen(this._player, _events.HTML5_EVENTS.ERROR, this._doTransition.bind(this));
-      this._eventManager.listen(this._player, _events.HTML5_EVENTS.ENDED, this._doTransition.bind(this));
-      this._eventManager.listen(this._player, _events.HTML5_EVENTS.PLAY, this._doTransition.bind(this));
-      this._eventManager.listen(this._player, _events.HTML5_EVENTS.LOAD_START, this._doTransition.bind(this));
-      this._eventManager.listen(this._player, _events.HTML5_EVENTS.PLAYING, this._doTransition.bind(this));
-      this._eventManager.listen(this._player, _events.HTML5_EVENTS.LOADED_METADATA, this._doTransition.bind(this));
-      this._eventManager.listen(this._player, _events.HTML5_EVENTS.PAUSE, this._doTransition.bind(this));
-      this._eventManager.listen(this._player, _events.HTML5_EVENTS.WAITING, this._doTransition.bind(this));
-    }
-
-    /**
-     * Performs a state transition depends on the event which occurs in the player system.
-     * @param {FakeEvent} event - The event occurs in the player system.
-     * @private
-     * @returns {void}
-     */
-
-  }, {
-    key: '_doTransition',
-    value: function _doTransition(event) {
-      this._logger.debug('Do transition request', event);
-      var transition = this._transitions[this._curState.type];
-      if (typeof transition[event.type] === 'function') {
-        transition[event.type]();
-      }
-    }
-
-    /**
-     * Updates the player's state.
-     * @param {string} type - The type of the new state.
-     * @private
-     * @returns {void}
-     */
-
-  }, {
-    key: '_updateState',
-    value: function _updateState(type) {
-      if (this._curState.type !== type) {
-        this._curState.duration = Date.now() / 1000;
-        this._history.push(this._curState);
-        this._prevState = this._curState;
-        this._curState = new _state2.default(type);
-        this._logger.debug('Switch player state: from ' + this._prevState.type + ' to ' + this._curState.type);
-      }
-    }
-
-    /**
-     * Fires the playerStateChanged event after state has been changed.
-     * @private
-     * @returns {void}
-     */
-
-  }, {
-    key: '_dispatchEvent',
-    value: function _dispatchEvent() {
-      var event = new _fakeEvent2.default(_events.CUSTOM_EVENTS.PLAYER_STATE_CHANGED, {
-        'oldState': this._prevState,
-        'newState': this._curState
-      });
-      this._player.dispatchEvent(event);
-    }
-
-    /**
-     * Destroys the state manager.
-     * @public
-     * @returns {void}
-     */
-
-  }, {
-    key: 'destroy',
-    value: function destroy() {
-      this._history = [];
-      this._eventManager.destroy();
-    }
-
-    /**
-     * Getter to the current state of the player.
-     * @public
-     * @returns {State} - The current state object
-     */
-
-  }, {
-    key: 'currentState',
-    get: function get() {
-      return this._curState;
-    }
-
-    /**
-     * Getter to the previous state of the player.
-     * @public
-     * @returns {State|null} - The previous state object, or null if such doesn't exists
-     */
-
-  }, {
-    key: 'previousState',
-    get: function get() {
-      return this._prevState;
-    }
-
-    /**
-     * Getter to the state history of the player.
-     * @public
-     * @returns {Array.<State>} - The full states history objects
-     */
-
-  }, {
-    key: 'history',
-    get: function get() {
-      return this._history;
-    }
-  }]);
-
-  return StateManager;
-}();
-
-exports.default = StateManager;
-
-/***/ }),
-/* 32 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * This class describes a player state.
- * @classdesc
- */
-var State = function () {
-
-  /**
-   * @constructor
-   * @param {string} type - The type of the state.
-   */
-
-  /**
-   * The duration that the player was in this state.
-   * @member
-   * @type {number}
-   * @private
-   */
-  function State(type) {
-    _classCallCheck(this, State);
-
-    this.type = type;
-    this._duration = 0;
-    this._timestamp = Date.now() / 1000;
-  }
-
-  /**
-   * Getter for the duration of the state.
-   * @returns {number} - The duration of the state
-   */
-
-  /**
-   * The timestamp that this state started.
-   * @member
-   * @type {number}
-   * @private
-   */
-
-  /**
-   * The type of the state.
-   * Can be one of those describes in states.js
-   * @member
-   * @type {string}
-   * @public
-   */
-
-
-  _createClass(State, [{
-    key: "duration",
-    get: function get() {
-      return this._duration;
-    }
-
-    /**
-     * Setter for the duration of the state.
-     * @param {number} endTime - The timestamp of the next state.
-     */
-    ,
-    set: function set(endTime) {
-      this._duration = endTime - this._timestamp;
-    }
-  }]);
-
-  return State;
-}();
-
-exports.default = State;
-
-/***/ }),
-/* 33 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var TRACK_TYPES = {
-  VIDEO: "video",
-  AUDIO: "audio",
-  TEXT: "text"
-};
-
-exports.default = TRACK_TYPES;
-
-/***/ }),
-/* 34 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(35)(undefined);
-// imports
-
-
-// module
-exports.push([module.i, ".playkit-container {\n  width: 100%;\n  height: 100%;\n  background-color: #000;\n  color: #fff;\n  outline: none;\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  -webkit-tap-highlight-color: transparent;\n}\n\n*[class^=\"playkit-engine-\"] {\n  width: 100%;\n  height: 100%;\n  background-color: #000;\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 35 */
-/***/ (function(module, exports) {
-
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-// css base code, injected by the css-loader
-module.exports = function(useSourceMap) {
-	var list = [];
-
-	// return the list of modules as css string
-	list.toString = function toString() {
-		return this.map(function (item) {
-			var content = cssWithMappingToString(item, useSourceMap);
-			if(item[2]) {
-				return "@media " + item[2] + "{" + content + "}";
-			} else {
-				return content;
-			}
-		}).join("");
-	};
-
-	// import a list of modules into the list
-	list.i = function(modules, mediaQuery) {
-		if(typeof modules === "string")
-			modules = [[null, modules, ""]];
-		var alreadyImportedModules = {};
-		for(var i = 0; i < this.length; i++) {
-			var id = this[i][0];
-			if(typeof id === "number")
-				alreadyImportedModules[id] = true;
-		}
-		for(i = 0; i < modules.length; i++) {
-			var item = modules[i];
-			// skip already imported module
-			// this implementation is not 100% perfect for weird media query combinations
-			//  when a module is imported multiple times with different media queries.
-			//  I hope this will never occur (Hey this way we have smaller bundles)
-			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-				if(mediaQuery && !item[2]) {
-					item[2] = mediaQuery;
-				} else if(mediaQuery) {
-					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-				}
-				list.push(item);
-			}
-		}
-	};
-	return list;
-};
-
-function cssWithMappingToString(item, useSourceMap) {
-	var content = item[1] || '';
-	var cssMapping = item[3];
-	if (!cssMapping) {
-		return content;
-	}
-
-	if (useSourceMap && typeof btoa === 'function') {
-		var sourceMapping = toComment(cssMapping);
-		var sourceURLs = cssMapping.sources.map(function (source) {
-			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
-		});
-
-		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
-	}
-
-	return [content].join('\n');
-}
-
-// Adapted from convert-source-map (MIT)
-function toComment(sourceMap) {
-	// eslint-disable-next-line no-undef
-	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
-	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
-
-	return '/*# ' + data + ' */';
-}
-
-
-/***/ }),
-/* 36 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(process, global) {var require;/*!
- * @overview es6-promise - a tiny implementation of Promises/A+.
- * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
- * @license   Licensed under MIT license
- *            See https://raw.githubusercontent.com/stefanpenner/es6-promise/master/LICENSE
- * @version   4.1.1
- */
-
-(function (global, factory) {
-	 true ? module.exports = factory() :
-	typeof define === 'function' && define.amd ? define(factory) :
-	(global.ES6Promise = factory());
-}(this, (function () { 'use strict';
-
-function objectOrFunction(x) {
-  var type = typeof x;
-  return x !== null && (type === 'object' || type === 'function');
-}
-
-function isFunction(x) {
-  return typeof x === 'function';
-}
-
-var _isArray = undefined;
-if (Array.isArray) {
-  _isArray = Array.isArray;
-} else {
-  _isArray = function (x) {
-    return Object.prototype.toString.call(x) === '[object Array]';
-  };
-}
-
-var isArray = _isArray;
-
-var len = 0;
-var vertxNext = undefined;
-var customSchedulerFn = undefined;
-
-var asap = function asap(callback, arg) {
-  queue[len] = callback;
-  queue[len + 1] = arg;
-  len += 2;
-  if (len === 2) {
-    // If len is 2, that means that we need to schedule an async flush.
-    // If additional callbacks are queued before the queue is flushed, they
-    // will be processed by this flush that we are scheduling.
-    if (customSchedulerFn) {
-      customSchedulerFn(flush);
-    } else {
-      scheduleFlush();
-    }
-  }
-};
-
-function setScheduler(scheduleFn) {
-  customSchedulerFn = scheduleFn;
-}
-
-function setAsap(asapFn) {
-  asap = asapFn;
-}
-
-var browserWindow = typeof window !== 'undefined' ? window : undefined;
-var browserGlobal = browserWindow || {};
-var BrowserMutationObserver = browserGlobal.MutationObserver || browserGlobal.WebKitMutationObserver;
-var isNode = typeof self === 'undefined' && typeof process !== 'undefined' && ({}).toString.call(process) === '[object process]';
-
-// test for web worker but not in IE10
-var isWorker = typeof Uint8ClampedArray !== 'undefined' && typeof importScripts !== 'undefined' && typeof MessageChannel !== 'undefined';
-
-// node
-function useNextTick() {
-  // node version 0.10.x displays a deprecation warning when nextTick is used recursively
-  // see https://github.com/cujojs/when/issues/410 for details
-  return function () {
-    return process.nextTick(flush);
-  };
-}
-
-// vertx
-function useVertxTimer() {
-  if (typeof vertxNext !== 'undefined') {
-    return function () {
-      vertxNext(flush);
-    };
-  }
-
-  return useSetTimeout();
-}
-
-function useMutationObserver() {
-  var iterations = 0;
-  var observer = new BrowserMutationObserver(flush);
-  var node = document.createTextNode('');
-  observer.observe(node, { characterData: true });
-
-  return function () {
-    node.data = iterations = ++iterations % 2;
-  };
-}
-
-// web worker
-function useMessageChannel() {
-  var channel = new MessageChannel();
-  channel.port1.onmessage = flush;
-  return function () {
-    return channel.port2.postMessage(0);
-  };
-}
-
-function useSetTimeout() {
-  // Store setTimeout reference so es6-promise will be unaffected by
-  // other code modifying setTimeout (like sinon.useFakeTimers())
-  var globalSetTimeout = setTimeout;
-  return function () {
-    return globalSetTimeout(flush, 1);
-  };
-}
-
-var queue = new Array(1000);
-function flush() {
-  for (var i = 0; i < len; i += 2) {
-    var callback = queue[i];
-    var arg = queue[i + 1];
-
-    callback(arg);
-
-    queue[i] = undefined;
-    queue[i + 1] = undefined;
-  }
-
-  len = 0;
-}
-
-function attemptVertx() {
-  try {
-    var r = require;
-    var vertx = __webpack_require__(53);
-    vertxNext = vertx.runOnLoop || vertx.runOnContext;
-    return useVertxTimer();
-  } catch (e) {
-    return useSetTimeout();
-  }
-}
-
-var scheduleFlush = undefined;
-// Decide what async method to use to triggering processing of queued callbacks:
-if (isNode) {
-  scheduleFlush = useNextTick();
-} else if (BrowserMutationObserver) {
-  scheduleFlush = useMutationObserver();
-} else if (isWorker) {
-  scheduleFlush = useMessageChannel();
-} else if (browserWindow === undefined && "function" === 'function') {
-  scheduleFlush = attemptVertx();
-} else {
-  scheduleFlush = useSetTimeout();
-}
-
-function then(onFulfillment, onRejection) {
-  var _arguments = arguments;
-
-  var parent = this;
-
-  var child = new this.constructor(noop);
-
-  if (child[PROMISE_ID] === undefined) {
-    makePromise(child);
-  }
-
-  var _state = parent._state;
-
-  if (_state) {
-    (function () {
-      var callback = _arguments[_state - 1];
-      asap(function () {
-        return invokeCallback(_state, child, callback, parent._result);
-      });
-    })();
-  } else {
-    subscribe(parent, child, onFulfillment, onRejection);
-  }
-
-  return child;
-}
-
-/**
-  `Promise.resolve` returns a promise that will become resolved with the
-  passed `value`. It is shorthand for the following:
-
-  ```javascript
-  let promise = new Promise(function(resolve, reject){
-    resolve(1);
-  });
-
-  promise.then(function(value){
-    // value === 1
-  });
-  ```
-
-  Instead of writing the above, your code now simply becomes the following:
-
-  ```javascript
-  let promise = Promise.resolve(1);
-
-  promise.then(function(value){
-    // value === 1
-  });
-  ```
-
-  @method resolve
-  @static
-  @param {Any} value value that the returned promise will be resolved with
-  Useful for tooling.
-  @return {Promise} a promise that will become fulfilled with the given
-  `value`
-*/
-function resolve$1(object) {
-  /*jshint validthis:true */
-  var Constructor = this;
-
-  if (object && typeof object === 'object' && object.constructor === Constructor) {
-    return object;
-  }
-
-  var promise = new Constructor(noop);
-  resolve(promise, object);
-  return promise;
-}
-
-var PROMISE_ID = Math.random().toString(36).substring(16);
-
-function noop() {}
-
-var PENDING = void 0;
-var FULFILLED = 1;
-var REJECTED = 2;
-
-var GET_THEN_ERROR = new ErrorObject();
-
-function selfFulfillment() {
-  return new TypeError("You cannot resolve a promise with itself");
-}
-
-function cannotReturnOwn() {
-  return new TypeError('A promises callback cannot return that same promise.');
-}
-
-function getThen(promise) {
-  try {
-    return promise.then;
-  } catch (error) {
-    GET_THEN_ERROR.error = error;
-    return GET_THEN_ERROR;
-  }
-}
-
-function tryThen(then$$1, value, fulfillmentHandler, rejectionHandler) {
-  try {
-    then$$1.call(value, fulfillmentHandler, rejectionHandler);
-  } catch (e) {
-    return e;
-  }
-}
-
-function handleForeignThenable(promise, thenable, then$$1) {
-  asap(function (promise) {
-    var sealed = false;
-    var error = tryThen(then$$1, thenable, function (value) {
-      if (sealed) {
-        return;
-      }
-      sealed = true;
-      if (thenable !== value) {
-        resolve(promise, value);
-      } else {
-        fulfill(promise, value);
-      }
-    }, function (reason) {
-      if (sealed) {
-        return;
-      }
-      sealed = true;
-
-      reject(promise, reason);
-    }, 'Settle: ' + (promise._label || ' unknown promise'));
-
-    if (!sealed && error) {
-      sealed = true;
-      reject(promise, error);
-    }
-  }, promise);
-}
-
-function handleOwnThenable(promise, thenable) {
-  if (thenable._state === FULFILLED) {
-    fulfill(promise, thenable._result);
-  } else if (thenable._state === REJECTED) {
-    reject(promise, thenable._result);
-  } else {
-    subscribe(thenable, undefined, function (value) {
-      return resolve(promise, value);
-    }, function (reason) {
-      return reject(promise, reason);
-    });
-  }
-}
-
-function handleMaybeThenable(promise, maybeThenable, then$$1) {
-  if (maybeThenable.constructor === promise.constructor && then$$1 === then && maybeThenable.constructor.resolve === resolve$1) {
-    handleOwnThenable(promise, maybeThenable);
-  } else {
-    if (then$$1 === GET_THEN_ERROR) {
-      reject(promise, GET_THEN_ERROR.error);
-      GET_THEN_ERROR.error = null;
-    } else if (then$$1 === undefined) {
-      fulfill(promise, maybeThenable);
-    } else if (isFunction(then$$1)) {
-      handleForeignThenable(promise, maybeThenable, then$$1);
-    } else {
-      fulfill(promise, maybeThenable);
-    }
-  }
-}
-
-function resolve(promise, value) {
-  if (promise === value) {
-    reject(promise, selfFulfillment());
-  } else if (objectOrFunction(value)) {
-    handleMaybeThenable(promise, value, getThen(value));
-  } else {
-    fulfill(promise, value);
-  }
-}
-
-function publishRejection(promise) {
-  if (promise._onerror) {
-    promise._onerror(promise._result);
-  }
-
-  publish(promise);
-}
-
-function fulfill(promise, value) {
-  if (promise._state !== PENDING) {
-    return;
-  }
-
-  promise._result = value;
-  promise._state = FULFILLED;
-
-  if (promise._subscribers.length !== 0) {
-    asap(publish, promise);
-  }
-}
-
-function reject(promise, reason) {
-  if (promise._state !== PENDING) {
-    return;
-  }
-  promise._state = REJECTED;
-  promise._result = reason;
-
-  asap(publishRejection, promise);
-}
-
-function subscribe(parent, child, onFulfillment, onRejection) {
-  var _subscribers = parent._subscribers;
-  var length = _subscribers.length;
-
-  parent._onerror = null;
-
-  _subscribers[length] = child;
-  _subscribers[length + FULFILLED] = onFulfillment;
-  _subscribers[length + REJECTED] = onRejection;
-
-  if (length === 0 && parent._state) {
-    asap(publish, parent);
-  }
-}
-
-function publish(promise) {
-  var subscribers = promise._subscribers;
-  var settled = promise._state;
-
-  if (subscribers.length === 0) {
-    return;
-  }
-
-  var child = undefined,
-      callback = undefined,
-      detail = promise._result;
-
-  for (var i = 0; i < subscribers.length; i += 3) {
-    child = subscribers[i];
-    callback = subscribers[i + settled];
-
-    if (child) {
-      invokeCallback(settled, child, callback, detail);
-    } else {
-      callback(detail);
-    }
-  }
-
-  promise._subscribers.length = 0;
-}
-
-function ErrorObject() {
-  this.error = null;
-}
-
-var TRY_CATCH_ERROR = new ErrorObject();
-
-function tryCatch(callback, detail) {
-  try {
-    return callback(detail);
-  } catch (e) {
-    TRY_CATCH_ERROR.error = e;
-    return TRY_CATCH_ERROR;
-  }
-}
-
-function invokeCallback(settled, promise, callback, detail) {
-  var hasCallback = isFunction(callback),
-      value = undefined,
-      error = undefined,
-      succeeded = undefined,
-      failed = undefined;
-
-  if (hasCallback) {
-    value = tryCatch(callback, detail);
-
-    if (value === TRY_CATCH_ERROR) {
-      failed = true;
-      error = value.error;
-      value.error = null;
-    } else {
-      succeeded = true;
-    }
-
-    if (promise === value) {
-      reject(promise, cannotReturnOwn());
-      return;
-    }
-  } else {
-    value = detail;
-    succeeded = true;
-  }
-
-  if (promise._state !== PENDING) {
-    // noop
-  } else if (hasCallback && succeeded) {
-      resolve(promise, value);
-    } else if (failed) {
-      reject(promise, error);
-    } else if (settled === FULFILLED) {
-      fulfill(promise, value);
-    } else if (settled === REJECTED) {
-      reject(promise, value);
-    }
-}
-
-function initializePromise(promise, resolver) {
-  try {
-    resolver(function resolvePromise(value) {
-      resolve(promise, value);
-    }, function rejectPromise(reason) {
-      reject(promise, reason);
-    });
-  } catch (e) {
-    reject(promise, e);
-  }
-}
-
-var id = 0;
-function nextId() {
-  return id++;
-}
-
-function makePromise(promise) {
-  promise[PROMISE_ID] = id++;
-  promise._state = undefined;
-  promise._result = undefined;
-  promise._subscribers = [];
-}
-
-function Enumerator$1(Constructor, input) {
-  this._instanceConstructor = Constructor;
-  this.promise = new Constructor(noop);
-
-  if (!this.promise[PROMISE_ID]) {
-    makePromise(this.promise);
-  }
-
-  if (isArray(input)) {
-    this.length = input.length;
-    this._remaining = input.length;
-
-    this._result = new Array(this.length);
-
-    if (this.length === 0) {
-      fulfill(this.promise, this._result);
-    } else {
-      this.length = this.length || 0;
-      this._enumerate(input);
-      if (this._remaining === 0) {
-        fulfill(this.promise, this._result);
-      }
-    }
-  } else {
-    reject(this.promise, validationError());
-  }
-}
-
-function validationError() {
-  return new Error('Array Methods must be provided an Array');
-}
-
-Enumerator$1.prototype._enumerate = function (input) {
-  for (var i = 0; this._state === PENDING && i < input.length; i++) {
-    this._eachEntry(input[i], i);
-  }
-};
-
-Enumerator$1.prototype._eachEntry = function (entry, i) {
-  var c = this._instanceConstructor;
-  var resolve$$1 = c.resolve;
-
-  if (resolve$$1 === resolve$1) {
-    var _then = getThen(entry);
-
-    if (_then === then && entry._state !== PENDING) {
-      this._settledAt(entry._state, i, entry._result);
-    } else if (typeof _then !== 'function') {
-      this._remaining--;
-      this._result[i] = entry;
-    } else if (c === Promise$2) {
-      var promise = new c(noop);
-      handleMaybeThenable(promise, entry, _then);
-      this._willSettleAt(promise, i);
-    } else {
-      this._willSettleAt(new c(function (resolve$$1) {
-        return resolve$$1(entry);
-      }), i);
-    }
-  } else {
-    this._willSettleAt(resolve$$1(entry), i);
-  }
-};
-
-Enumerator$1.prototype._settledAt = function (state, i, value) {
-  var promise = this.promise;
-
-  if (promise._state === PENDING) {
-    this._remaining--;
-
-    if (state === REJECTED) {
-      reject(promise, value);
-    } else {
-      this._result[i] = value;
-    }
-  }
-
-  if (this._remaining === 0) {
-    fulfill(promise, this._result);
-  }
-};
-
-Enumerator$1.prototype._willSettleAt = function (promise, i) {
-  var enumerator = this;
-
-  subscribe(promise, undefined, function (value) {
-    return enumerator._settledAt(FULFILLED, i, value);
-  }, function (reason) {
-    return enumerator._settledAt(REJECTED, i, reason);
-  });
-};
-
-/**
-  `Promise.all` accepts an array of promises, and returns a new promise which
-  is fulfilled with an array of fulfillment values for the passed promises, or
-  rejected with the reason of the first passed promise to be rejected. It casts all
-  elements of the passed iterable to promises as it runs this algorithm.
-
-  Example:
-
-  ```javascript
-  let promise1 = resolve(1);
-  let promise2 = resolve(2);
-  let promise3 = resolve(3);
-  let promises = [ promise1, promise2, promise3 ];
-
-  Promise.all(promises).then(function(array){
-    // The array here would be [ 1, 2, 3 ];
-  });
-  ```
-
-  If any of the `promises` given to `all` are rejected, the first promise
-  that is rejected will be given as an argument to the returned promises's
-  rejection handler. For example:
-
-  Example:
-
-  ```javascript
-  let promise1 = resolve(1);
-  let promise2 = reject(new Error("2"));
-  let promise3 = reject(new Error("3"));
-  let promises = [ promise1, promise2, promise3 ];
-
-  Promise.all(promises).then(function(array){
-    // Code here never runs because there are rejected promises!
-  }, function(error) {
-    // error.message === "2"
-  });
-  ```
-
-  @method all
-  @static
-  @param {Array} entries array of promises
-  @param {String} label optional string for labeling the promise.
-  Useful for tooling.
-  @return {Promise} promise that is fulfilled when all `promises` have been
-  fulfilled, or rejected if any of them become rejected.
-  @static
-*/
-function all$1(entries) {
-  return new Enumerator$1(this, entries).promise;
-}
-
-/**
-  `Promise.race` returns a new promise which is settled in the same way as the
-  first passed promise to settle.
-
-  Example:
-
-  ```javascript
-  let promise1 = new Promise(function(resolve, reject){
-    setTimeout(function(){
-      resolve('promise 1');
-    }, 200);
-  });
-
-  let promise2 = new Promise(function(resolve, reject){
-    setTimeout(function(){
-      resolve('promise 2');
-    }, 100);
-  });
-
-  Promise.race([promise1, promise2]).then(function(result){
-    // result === 'promise 2' because it was resolved before promise1
-    // was resolved.
-  });
-  ```
-
-  `Promise.race` is deterministic in that only the state of the first
-  settled promise matters. For example, even if other promises given to the
-  `promises` array argument are resolved, but the first settled promise has
-  become rejected before the other promises became fulfilled, the returned
-  promise will become rejected:
-
-  ```javascript
-  let promise1 = new Promise(function(resolve, reject){
-    setTimeout(function(){
-      resolve('promise 1');
-    }, 200);
-  });
-
-  let promise2 = new Promise(function(resolve, reject){
-    setTimeout(function(){
-      reject(new Error('promise 2'));
-    }, 100);
-  });
-
-  Promise.race([promise1, promise2]).then(function(result){
-    // Code here never runs
-  }, function(reason){
-    // reason.message === 'promise 2' because promise 2 became rejected before
-    // promise 1 became fulfilled
-  });
-  ```
-
-  An example real-world use case is implementing timeouts:
-
-  ```javascript
-  Promise.race([ajax('foo.json'), timeout(5000)])
-  ```
-
-  @method race
-  @static
-  @param {Array} promises array of promises to observe
-  Useful for tooling.
-  @return {Promise} a promise which settles in the same way as the first passed
-  promise to settle.
-*/
-function race$1(entries) {
-  /*jshint validthis:true */
-  var Constructor = this;
-
-  if (!isArray(entries)) {
-    return new Constructor(function (_, reject) {
-      return reject(new TypeError('You must pass an array to race.'));
-    });
-  } else {
-    return new Constructor(function (resolve, reject) {
-      var length = entries.length;
-      for (var i = 0; i < length; i++) {
-        Constructor.resolve(entries[i]).then(resolve, reject);
-      }
-    });
-  }
-}
-
-/**
-  `Promise.reject` returns a promise rejected with the passed `reason`.
-  It is shorthand for the following:
-
-  ```javascript
-  let promise = new Promise(function(resolve, reject){
-    reject(new Error('WHOOPS'));
-  });
-
-  promise.then(function(value){
-    // Code here doesn't run because the promise is rejected!
-  }, function(reason){
-    // reason.message === 'WHOOPS'
-  });
-  ```
-
-  Instead of writing the above, your code now simply becomes the following:
-
-  ```javascript
-  let promise = Promise.reject(new Error('WHOOPS'));
-
-  promise.then(function(value){
-    // Code here doesn't run because the promise is rejected!
-  }, function(reason){
-    // reason.message === 'WHOOPS'
-  });
-  ```
-
-  @method reject
-  @static
-  @param {Any} reason value that the returned promise will be rejected with.
-  Useful for tooling.
-  @return {Promise} a promise rejected with the given `reason`.
-*/
-function reject$1(reason) {
-  /*jshint validthis:true */
-  var Constructor = this;
-  var promise = new Constructor(noop);
-  reject(promise, reason);
-  return promise;
-}
-
-function needsResolver() {
-  throw new TypeError('You must pass a resolver function as the first argument to the promise constructor');
-}
-
-function needsNew() {
-  throw new TypeError("Failed to construct 'Promise': Please use the 'new' operator, this object constructor cannot be called as a function.");
-}
-
-/**
-  Promise objects represent the eventual result of an asynchronous operation. The
-  primary way of interacting with a promise is through its `then` method, which
-  registers callbacks to receive either a promise's eventual value or the reason
-  why the promise cannot be fulfilled.
-
-  Terminology
-  -----------
-
-  - `promise` is an object or function with a `then` method whose behavior conforms to this specification.
-  - `thenable` is an object or function that defines a `then` method.
-  - `value` is any legal JavaScript value (including undefined, a thenable, or a promise).
-  - `exception` is a value that is thrown using the throw statement.
-  - `reason` is a value that indicates why a promise was rejected.
-  - `settled` the final resting state of a promise, fulfilled or rejected.
-
-  A promise can be in one of three states: pending, fulfilled, or rejected.
-
-  Promises that are fulfilled have a fulfillment value and are in the fulfilled
-  state.  Promises that are rejected have a rejection reason and are in the
-  rejected state.  A fulfillment value is never a thenable.
-
-  Promises can also be said to *resolve* a value.  If this value is also a
-  promise, then the original promise's settled state will match the value's
-  settled state.  So a promise that *resolves* a promise that rejects will
-  itself reject, and a promise that *resolves* a promise that fulfills will
-  itself fulfill.
-
-
-  Basic Usage:
-  ------------
-
-  ```js
-  let promise = new Promise(function(resolve, reject) {
-    // on success
-    resolve(value);
-
-    // on failure
-    reject(reason);
-  });
-
-  promise.then(function(value) {
-    // on fulfillment
-  }, function(reason) {
-    // on rejection
-  });
-  ```
-
-  Advanced Usage:
-  ---------------
-
-  Promises shine when abstracting away asynchronous interactions such as
-  `XMLHttpRequest`s.
-
-  ```js
-  function getJSON(url) {
-    return new Promise(function(resolve, reject){
-      let xhr = new XMLHttpRequest();
-
-      xhr.open('GET', url);
-      xhr.onreadystatechange = handler;
-      xhr.responseType = 'json';
-      xhr.setRequestHeader('Accept', 'application/json');
-      xhr.send();
-
-      function handler() {
-        if (this.readyState === this.DONE) {
-          if (this.status === 200) {
-            resolve(this.response);
-          } else {
-            reject(new Error('getJSON: `' + url + '` failed with status: [' + this.status + ']'));
-          }
-        }
-      };
-    });
-  }
-
-  getJSON('/posts.json').then(function(json) {
-    // on fulfillment
-  }, function(reason) {
-    // on rejection
-  });
-  ```
-
-  Unlike callbacks, promises are great composable primitives.
-
-  ```js
-  Promise.all([
-    getJSON('/posts'),
-    getJSON('/comments')
-  ]).then(function(values){
-    values[0] // => postsJSON
-    values[1] // => commentsJSON
-
-    return values;
-  });
-  ```
-
-  @class Promise
-  @param {function} resolver
-  Useful for tooling.
-  @constructor
-*/
-function Promise$2(resolver) {
-  this[PROMISE_ID] = nextId();
-  this._result = this._state = undefined;
-  this._subscribers = [];
-
-  if (noop !== resolver) {
-    typeof resolver !== 'function' && needsResolver();
-    this instanceof Promise$2 ? initializePromise(this, resolver) : needsNew();
-  }
-}
-
-Promise$2.all = all$1;
-Promise$2.race = race$1;
-Promise$2.resolve = resolve$1;
-Promise$2.reject = reject$1;
-Promise$2._setScheduler = setScheduler;
-Promise$2._setAsap = setAsap;
-Promise$2._asap = asap;
-
-Promise$2.prototype = {
-  constructor: Promise$2,
-
-  /**
-    The primary way of interacting with a promise is through its `then` method,
-    which registers callbacks to receive either a promise's eventual value or the
-    reason why the promise cannot be fulfilled.
-
-    ```js
-    findUser().then(function(user){
-      // user is available
-    }, function(reason){
-      // user is unavailable, and you are given the reason why
-    });
-    ```
-
-    Chaining
-    --------
-
-    The return value of `then` is itself a promise.  This second, 'downstream'
-    promise is resolved with the return value of the first promise's fulfillment
-    or rejection handler, or rejected if the handler throws an exception.
-
-    ```js
-    findUser().then(function (user) {
-      return user.name;
-    }, function (reason) {
-      return 'default name';
-    }).then(function (userName) {
-      // If `findUser` fulfilled, `userName` will be the user's name, otherwise it
-      // will be `'default name'`
-    });
-
-    findUser().then(function (user) {
-      throw new Error('Found user, but still unhappy');
-    }, function (reason) {
-      throw new Error('`findUser` rejected and we're unhappy');
-    }).then(function (value) {
-      // never reached
-    }, function (reason) {
-      // if `findUser` fulfilled, `reason` will be 'Found user, but still unhappy'.
-      // If `findUser` rejected, `reason` will be '`findUser` rejected and we're unhappy'.
-    });
-    ```
-    If the downstream promise does not specify a rejection handler, rejection reasons will be propagated further downstream.
-
-    ```js
-    findUser().then(function (user) {
-      throw new PedagogicalException('Upstream error');
-    }).then(function (value) {
-      // never reached
-    }).then(function (value) {
-      // never reached
-    }, function (reason) {
-      // The `PedgagocialException` is propagated all the way down to here
-    });
-    ```
-
-    Assimilation
-    ------------
-
-    Sometimes the value you want to propagate to a downstream promise can only be
-    retrieved asynchronously. This can be achieved by returning a promise in the
-    fulfillment or rejection handler. The downstream promise will then be pending
-    until the returned promise is settled. This is called *assimilation*.
-
-    ```js
-    findUser().then(function (user) {
-      return findCommentsByAuthor(user);
-    }).then(function (comments) {
-      // The user's comments are now available
-    });
-    ```
-
-    If the assimliated promise rejects, then the downstream promise will also reject.
-
-    ```js
-    findUser().then(function (user) {
-      return findCommentsByAuthor(user);
-    }).then(function (comments) {
-      // If `findCommentsByAuthor` fulfills, we'll have the value here
-    }, function (reason) {
-      // If `findCommentsByAuthor` rejects, we'll have the reason here
-    });
-    ```
-
-    Simple Example
-    --------------
-
-    Synchronous Example
-
-    ```javascript
-    let result;
-
-    try {
-      result = findResult();
-      // success
-    } catch(reason) {
-      // failure
-    }
-    ```
-
-    Errback Example
-
-    ```js
-    findResult(function(result, err){
-      if (err) {
-        // failure
-      } else {
-        // success
-      }
-    });
-    ```
-
-    Promise Example;
-
-    ```javascript
-    findResult().then(function(result){
-      // success
-    }, function(reason){
-      // failure
-    });
-    ```
-
-    Advanced Example
-    --------------
-
-    Synchronous Example
-
-    ```javascript
-    let author, books;
-
-    try {
-      author = findAuthor();
-      books  = findBooksByAuthor(author);
-      // success
-    } catch(reason) {
-      // failure
-    }
-    ```
-
-    Errback Example
-
-    ```js
-
-    function foundBooks(books) {
-
-    }
-
-    function failure(reason) {
-
-    }
-
-    findAuthor(function(author, err){
-      if (err) {
-        failure(err);
-        // failure
-      } else {
-        try {
-          findBoooksByAuthor(author, function(books, err) {
-            if (err) {
-              failure(err);
-            } else {
-              try {
-                foundBooks(books);
-              } catch(reason) {
-                failure(reason);
-              }
-            }
-          });
-        } catch(error) {
-          failure(err);
-        }
-        // success
-      }
-    });
-    ```
-
-    Promise Example;
-
-    ```javascript
-    findAuthor().
-      then(findBooksByAuthor).
-      then(function(books){
-        // found books
-    }).catch(function(reason){
-      // something went wrong
-    });
-    ```
-
-    @method then
-    @param {Function} onFulfilled
-    @param {Function} onRejected
-    Useful for tooling.
-    @return {Promise}
-  */
-  then: then,
-
-  /**
-    `catch` is simply sugar for `then(undefined, onRejection)` which makes it the same
-    as the catch block of a try/catch statement.
-
-    ```js
-    function findAuthor(){
-      throw new Error('couldn't find that author');
-    }
-
-    // synchronous
-    try {
-      findAuthor();
-    } catch(reason) {
-      // something went wrong
-    }
-
-    // async with promises
-    findAuthor().catch(function(reason){
-      // something went wrong
-    });
-    ```
-
-    @method catch
-    @param {Function} onRejection
-    Useful for tooling.
-    @return {Promise}
-  */
-  'catch': function _catch(onRejection) {
-    return this.then(null, onRejection);
-  }
-};
-
-/*global self*/
-function polyfill$1() {
-    var local = undefined;
-
-    if (typeof global !== 'undefined') {
-        local = global;
-    } else if (typeof self !== 'undefined') {
-        local = self;
-    } else {
-        try {
-            local = Function('return this')();
-        } catch (e) {
-            throw new Error('polyfill failed because global object is unavailable in this environment');
-        }
-    }
-
-    var P = local.Promise;
-
-    if (P) {
-        var promiseToString = null;
-        try {
-            promiseToString = Object.prototype.toString.call(P.resolve());
-        } catch (e) {
-            // silently ignored
-        }
-
-        if (promiseToString === '[object Promise]' && !P.cast) {
-            return;
-        }
-    }
-
-    local.Promise = Promise$2;
-}
-
-// Strange compat..
-Promise$2.polyfill = polyfill$1;
-Promise$2.Promise = Promise$2;
-
-return Promise$2;
-
-})));
-
-//# sourceMappingURL=es6-promise.map
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(41), __webpack_require__(10)))
-
-/***/ }),
-/* 37 */
-/***/ (function(module, exports) {
-
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-function EventEmitter() {
-  this._events = this._events || {};
-  this._maxListeners = this._maxListeners || undefined;
-}
-module.exports = EventEmitter;
-
-// Backwards-compat with node 0.10.x
-EventEmitter.EventEmitter = EventEmitter;
-
-EventEmitter.prototype._events = undefined;
-EventEmitter.prototype._maxListeners = undefined;
-
-// By default EventEmitters will print a warning if more than 10 listeners are
-// added to it. This is a useful default which helps finding memory leaks.
-EventEmitter.defaultMaxListeners = 10;
-
-// Obviously not all Emitters should be limited to 10. This function allows
-// that to be increased. Set to zero for unlimited.
-EventEmitter.prototype.setMaxListeners = function(n) {
-  if (!isNumber(n) || n < 0 || isNaN(n))
-    throw TypeError('n must be a positive number');
-  this._maxListeners = n;
-  return this;
-};
-
-EventEmitter.prototype.emit = function(type) {
-  var er, handler, len, args, i, listeners;
-
-  if (!this._events)
-    this._events = {};
-
-  // If there is no 'error' event listener then throw.
-  if (type === 'error') {
-    if (!this._events.error ||
-        (isObject(this._events.error) && !this._events.error.length)) {
-      er = arguments[1];
-      if (er instanceof Error) {
-        throw er; // Unhandled 'error' event
-      } else {
-        // At least give some kind of context to the user
-        var err = new Error('Uncaught, unspecified "error" event. (' + er + ')');
-        err.context = er;
-        throw err;
-      }
-    }
-  }
-
-  handler = this._events[type];
-
-  if (isUndefined(handler))
-    return false;
-
-  if (isFunction(handler)) {
-    switch (arguments.length) {
-      // fast cases
-      case 1:
-        handler.call(this);
-        break;
-      case 2:
-        handler.call(this, arguments[1]);
-        break;
-      case 3:
-        handler.call(this, arguments[1], arguments[2]);
-        break;
-      // slower
-      default:
-        args = Array.prototype.slice.call(arguments, 1);
-        handler.apply(this, args);
-    }
-  } else if (isObject(handler)) {
-    args = Array.prototype.slice.call(arguments, 1);
-    listeners = handler.slice();
-    len = listeners.length;
-    for (i = 0; i < len; i++)
-      listeners[i].apply(this, args);
-  }
-
-  return true;
-};
-
-EventEmitter.prototype.addListener = function(type, listener) {
-  var m;
-
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  if (!this._events)
-    this._events = {};
-
-  // To avoid recursion in the case that type === "newListener"! Before
-  // adding it to the listeners, first emit "newListener".
-  if (this._events.newListener)
-    this.emit('newListener', type,
-              isFunction(listener.listener) ?
-              listener.listener : listener);
-
-  if (!this._events[type])
-    // Optimize the case of one listener. Don't need the extra array object.
-    this._events[type] = listener;
-  else if (isObject(this._events[type]))
-    // If we've already got an array, just append.
-    this._events[type].push(listener);
-  else
-    // Adding the second element, need to change to array.
-    this._events[type] = [this._events[type], listener];
-
-  // Check for listener leak
-  if (isObject(this._events[type]) && !this._events[type].warned) {
-    if (!isUndefined(this._maxListeners)) {
-      m = this._maxListeners;
-    } else {
-      m = EventEmitter.defaultMaxListeners;
-    }
-
-    if (m && m > 0 && this._events[type].length > m) {
-      this._events[type].warned = true;
-      console.error('(node) warning: possible EventEmitter memory ' +
-                    'leak detected. %d listeners added. ' +
-                    'Use emitter.setMaxListeners() to increase limit.',
-                    this._events[type].length);
-      if (typeof console.trace === 'function') {
-        // not supported in IE 10
-        console.trace();
-      }
-    }
-  }
-
-  return this;
-};
-
-EventEmitter.prototype.on = EventEmitter.prototype.addListener;
-
-EventEmitter.prototype.once = function(type, listener) {
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  var fired = false;
-
-  function g() {
-    this.removeListener(type, g);
-
-    if (!fired) {
-      fired = true;
-      listener.apply(this, arguments);
-    }
-  }
-
-  g.listener = listener;
-  this.on(type, g);
-
-  return this;
-};
-
-// emits a 'removeListener' event iff the listener was removed
-EventEmitter.prototype.removeListener = function(type, listener) {
-  var list, position, length, i;
-
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  if (!this._events || !this._events[type])
-    return this;
-
-  list = this._events[type];
-  length = list.length;
-  position = -1;
-
-  if (list === listener ||
-      (isFunction(list.listener) && list.listener === listener)) {
-    delete this._events[type];
-    if (this._events.removeListener)
-      this.emit('removeListener', type, listener);
-
-  } else if (isObject(list)) {
-    for (i = length; i-- > 0;) {
-      if (list[i] === listener ||
-          (list[i].listener && list[i].listener === listener)) {
-        position = i;
-        break;
-      }
-    }
-
-    if (position < 0)
-      return this;
-
-    if (list.length === 1) {
-      list.length = 0;
-      delete this._events[type];
-    } else {
-      list.splice(position, 1);
-    }
-
-    if (this._events.removeListener)
-      this.emit('removeListener', type, listener);
-  }
-
-  return this;
-};
-
-EventEmitter.prototype.removeAllListeners = function(type) {
-  var key, listeners;
-
-  if (!this._events)
-    return this;
-
-  // not listening for removeListener, no need to emit
-  if (!this._events.removeListener) {
-    if (arguments.length === 0)
-      this._events = {};
-    else if (this._events[type])
-      delete this._events[type];
-    return this;
-  }
-
-  // emit removeListener for all listeners on all events
-  if (arguments.length === 0) {
-    for (key in this._events) {
-      if (key === 'removeListener') continue;
-      this.removeAllListeners(key);
-    }
-    this.removeAllListeners('removeListener');
-    this._events = {};
-    return this;
-  }
-
-  listeners = this._events[type];
-
-  if (isFunction(listeners)) {
-    this.removeListener(type, listeners);
-  } else if (listeners) {
-    // LIFO order
-    while (listeners.length)
-      this.removeListener(type, listeners[listeners.length - 1]);
-  }
-  delete this._events[type];
-
-  return this;
-};
-
-EventEmitter.prototype.listeners = function(type) {
-  var ret;
-  if (!this._events || !this._events[type])
-    ret = [];
-  else if (isFunction(this._events[type]))
-    ret = [this._events[type]];
-  else
-    ret = this._events[type].slice();
-  return ret;
-};
-
-EventEmitter.prototype.listenerCount = function(type) {
-  if (this._events) {
-    var evlistener = this._events[type];
-
-    if (isFunction(evlistener))
-      return 1;
-    else if (evlistener)
-      return evlistener.length;
-  }
-  return 0;
-};
-
-EventEmitter.listenerCount = function(emitter, type) {
-  return emitter.listenerCount(type);
-};
-
-function isFunction(arg) {
-  return typeof arg === 'function';
-}
-
-function isNumber(arg) {
-  return typeof arg === 'number';
-}
-
-function isObject(arg) {
-  return typeof arg === 'object' && arg !== null;
-}
-
-function isUndefined(arg) {
-  return arg === void 0;
-}
-
-
-/***/ }),
-/* 38 */
-/***/ (function(module, exports) {
-
-module.exports = FsmError;
-
-function FsmError(message, options) {
-  Error.captureStackTrace(this, this.constructor);
-  this.name = 'FsmError';
-  this.message = message;
-  this.trigger = options.name;
-  this.current = options.from;
-
-  if (options.pending) {
-    this.pending = options.pending;
-  }
-}
-
-FsmError.prototype = Object.create(Error.prototype);
-FsmError.prototype.constructor = FsmError;
-
-
-/***/ }),
-/* 39 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7695,11 +887,11 @@ FsmError.prototype.constructor = FsmError;
 
 
 
-var FsmError = __webpack_require__(38);
-var stampit = __webpack_require__(42);
-var _ = __webpack_require__(40);
-var EventEmitter = __webpack_require__(37).EventEmitter;
-var uuid = __webpack_require__(46);
+var FsmError = __webpack_require__(9);
+var stampit = __webpack_require__(10);
+var _ = __webpack_require__(11);
+var EventEmitter = __webpack_require__(13).EventEmitter;
+var uuid = __webpack_require__(14);
 
 var AssignFirstArgument = stampit({
   init: function init(opts) {
@@ -7721,7 +913,7 @@ var StateMachine = stampit({
     current: 'none'
   },
   statics: {
-    Promise: global.Promise || __webpack_require__(36).Promise,
+    Promise: global.Promise || __webpack_require__(17).Promise,
     FsmError: FsmError,
     callbackPrefix: 'on',
     noChoiceFound: 'no-choice',
@@ -8120,7 +1312,7 @@ var StateMachine = stampit({
     }.bind(this));
 
     this.current = this.initial;
-    // return this.initTarget(_.first(context.args));
+    // return this.initTarget(_.first(_context.args));
     return this.initTarget(context.args[1]);
   }
 });
@@ -8129,10 +1321,528 @@ StateMachine = AssignFirstArgument.compose(StateMachine);
 
 module.exports = StateMachine;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 40 */
+/* 9 */
+/***/ (function(module, exports) {
+
+module.exports = FsmError;
+
+function FsmError(message, options) {
+  Error.captureStackTrace(this, this.constructor);
+  this.name = 'FsmError';
+  this.message = message;
+  this.trigger = options.name;
+  this.current = options.from;
+
+  if (options.pending) {
+    this.pending = options.pending;
+  }
+}
+
+FsmError.prototype = Object.create(Error.prototype);
+FsmError.prototype.constructor = FsmError;
+
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+/**
+ * The 'src' argument plays the command role.
+ * The returned values is always of the same type as the 'src'.
+ * @param dst
+ * @param src
+ * @returns {*}
+ */
+function mergeOne(dst, src) {
+  if (src === undefined) { return dst; }
+
+  // According to specification arrays must be concatenated.
+  // Also, the '.concat' creates a new array instance. Overrides the 'dst'.
+  if (isArray(src)) { return (isArray(dst) ? dst : []).concat(src); }
+
+  // Now deal with non plain 'src' object. 'src' overrides 'dst'
+  // Note that functions are also assigned! We do not deep merge functions.
+  if (!isPlainObject(src)) { return src; }
+
+  // See if 'dst' is allowed to be mutated. If not - it's overridden with a new plain object.
+  var returnValue = isObject(dst) ? dst : {};
+
+  var keys = Object.keys(src);
+  for (var i = 0; i < keys.length; i += 1) {
+    var key = keys[i];
+
+    var srcValue = src[key];
+    // Do not merge properties with the 'undefined' value.
+    if (srcValue !== undefined) {
+      var dstValue = returnValue[key];
+      // Recursive calls to mergeOne() must allow only plain objects or arrays in dst
+      var newDst = isPlainObject(dstValue) || isArray(srcValue) ? dstValue : {};
+
+      // deep merge each property. Recursion!
+      returnValue[key] = mergeOne(newDst, srcValue);
+    }
+  }
+
+  return returnValue;
+}
+
+var merge = function (dst) {
+  var srcs = [], len = arguments.length - 1;
+  while ( len-- > 0 ) srcs[ len ] = arguments[ len + 1 ];
+
+  return srcs.reduce(mergeOne, dst);
+};
+
+function isFunction(obj) {
+  return typeof obj === 'function';
+}
+
+function isObject(obj) {
+  var type = typeof obj;
+  return !!obj && (type === 'object' || type === 'function');
+}
+
+var assign = Object.assign;
+var isArray = Array.isArray;
+
+function isPlainObject(value) {
+  return !!value && typeof value === 'object' &&
+    Object.getPrototypeOf(value) === Object.prototype;
+}
+
+
+var concat = Array.prototype.concat;
+function extractFunctions() {
+  var fns = concat.apply([], arguments).filter(isFunction);
+  return fns.length === 0 ? undefined : fns;
+}
+
+function concatAssignFunctions(dstObject, srcArray, propName) {
+  if (!isArray(srcArray)) { return; }
+
+  var length = srcArray.length;
+  var dstArray = dstObject[propName] || [];
+  dstObject[propName] = dstArray;
+  for (var i = 0; i < length; i += 1) {
+    var fn = srcArray[i];
+    if (isFunction(fn) && dstArray.indexOf(fn) < 0) {
+      dstArray.push(fn);
+    }
+  }
+}
+
+
+function combineProperties(dstObject, srcObject, propName, action) {
+  if (!isObject(srcObject[propName])) { return; }
+  if (!isObject(dstObject[propName])) { dstObject[propName] = {}; }
+  action(dstObject[propName], srcObject[propName]);
+}
+
+function deepMergeAssign(dstObject, srcObject, propName) {
+  combineProperties(dstObject, srcObject, propName, merge);
+}
+function mergeAssign(dstObject, srcObject, propName) {
+  combineProperties(dstObject, srcObject, propName, assign);
+}
+
+/**
+ * Converts stampit extended descriptor to a standard one.
+ * @param [methods]
+ * @param [properties]
+ * @param [props]
+ * @param [refs]
+ * @param [initializers]
+ * @param [init]
+ * @param [deepProperties]
+ * @param [deepProps]
+ * @param [propertyDescriptors]
+ * @param [staticProperties]
+ * @param [statics]
+ * @param [staticDeepProperties]
+ * @param [deepStatics]
+ * @param [staticPropertyDescriptors]
+ * @param [configuration]
+ * @param [conf]
+ * @param [deepConfiguration]
+ * @param [deepConf]
+ * @param [composers]
+ * @returns {Descriptor}
+ */
+var standardiseDescriptor = function (ref) {
+  if ( ref === void 0 ) ref = {};
+  var methods = ref.methods;
+  var properties = ref.properties;
+  var props = ref.props;
+  var refs = ref.refs;
+  var initializers = ref.initializers;
+  var init = ref.init;
+  var composers = ref.composers;
+  var deepProperties = ref.deepProperties;
+  var deepProps = ref.deepProps;
+  var propertyDescriptors = ref.propertyDescriptors;
+  var staticProperties = ref.staticProperties;
+  var statics = ref.statics;
+  var staticDeepProperties = ref.staticDeepProperties;
+  var deepStatics = ref.deepStatics;
+  var staticPropertyDescriptors = ref.staticPropertyDescriptors;
+  var configuration = ref.configuration;
+  var conf = ref.conf;
+  var deepConfiguration = ref.deepConfiguration;
+  var deepConf = ref.deepConf;
+
+  var p = isObject(props) || isObject(refs) || isObject(properties) ?
+    assign({}, props, refs, properties) : undefined;
+
+  var dp = isObject(deepProps) ? merge({}, deepProps) : undefined;
+  dp = isObject(deepProperties) ? merge(dp, deepProperties) : dp;
+
+  var sp = isObject(statics) || isObject(staticProperties) ?
+    assign({}, statics, staticProperties) : undefined;
+
+  var dsp = isObject(deepStatics) ? merge({}, deepStatics) : undefined;
+  dsp = isObject(staticDeepProperties) ? merge(dsp, staticDeepProperties) : dsp;
+
+  var c = isObject(conf) || isObject(configuration) ?
+    assign({}, conf, configuration) : undefined;
+
+  var dc = isObject(deepConf) ? merge({}, deepConf) : undefined;
+  dc = isObject(deepConfiguration) ? merge(dc, deepConfiguration) : dc;
+
+  var ii = extractFunctions(init, initializers);
+
+  var composerFunctions = extractFunctions(composers);
+  if (composerFunctions) {
+    dc = dc || {};
+    concatAssignFunctions(dc, composerFunctions, 'composers');
+  }
+
+  var descriptor = {};
+  if (methods) { descriptor.methods = methods; }
+  if (p) { descriptor.properties = p; }
+  if (ii) { descriptor.initializers = ii; }
+  if (dp) { descriptor.deepProperties = dp; }
+  if (sp) { descriptor.staticProperties = sp; }
+  if (methods) { descriptor.methods = methods; }
+  if (dsp) { descriptor.staticDeepProperties = dsp; }
+  if (propertyDescriptors) { descriptor.propertyDescriptors = propertyDescriptors; }
+  if (staticPropertyDescriptors) { descriptor.staticPropertyDescriptors = staticPropertyDescriptors; }
+  if (c) { descriptor.configuration = c; }
+  if (dc) { descriptor.deepConfiguration = dc; }
+
+  return descriptor;
+};
+
+/**
+ * Creates new factory instance.
+ * @param {Descriptor} descriptor The information about the object the factory will be creating.
+ * @returns {Function} The new factory function.
+ */
+function createFactory(descriptor) {
+  return function Stamp(options) {
+    var args = [], len = arguments.length - 1;
+    while ( len-- > 0 ) args[ len ] = arguments[ len + 1 ];
+
+    // Next line was optimized for most JS VMs. Please, be careful here!
+    var obj = Object.create(descriptor.methods || null);
+
+    merge(obj, descriptor.deepProperties);
+    assign(obj, descriptor.properties);
+    Object.defineProperties(obj, descriptor.propertyDescriptors || {});
+
+    if (!descriptor.initializers || descriptor.initializers.length === 0) { return obj; }
+
+    if (options === undefined) { options = {}; }
+    var inits = descriptor.initializers;
+    var length = inits.length;
+    for (var i = 0; i < length; i += 1) {
+      var initializer = inits[i];
+      if (isFunction(initializer)) {
+        var returnedValue = initializer.call(obj, options,
+          {instance: obj, stamp: Stamp, args: [options].concat(args)});
+        obj = returnedValue === undefined ? obj : returnedValue;
+      }
+    }
+
+    return obj;
+  };
+}
+
+/**
+ * Returns a new stamp given a descriptor and a compose function implementation.
+ * @param {Descriptor} [descriptor={}] The information about the object the stamp will be creating.
+ * @param {Compose} composeFunction The "compose" function implementation.
+ * @returns {Stamp}
+ */
+function createStamp(descriptor, composeFunction) {
+  var Stamp = createFactory(descriptor);
+
+  merge(Stamp, descriptor.staticDeepProperties);
+  assign(Stamp, descriptor.staticProperties);
+  Object.defineProperties(Stamp, descriptor.staticPropertyDescriptors || {});
+
+  var composeImplementation = isFunction(Stamp.compose) ? Stamp.compose : composeFunction;
+  Stamp.compose = function _compose() {
+    var args = [], len = arguments.length;
+    while ( len-- ) args[ len ] = arguments[ len ];
+
+    return composeImplementation.apply(this, args);
+  };
+  assign(Stamp.compose, descriptor);
+
+  return Stamp;
+}
+
+/**
+ * Mutates the dstDescriptor by merging the srcComposable data into it.
+ * @param {Descriptor} dstDescriptor The descriptor object to merge into.
+ * @param {Composable} [srcComposable] The composable
+ * (either descriptor or stamp) to merge data form.
+ * @returns {Descriptor} Returns the dstDescriptor argument.
+ */
+function mergeComposable(dstDescriptor, srcComposable) {
+  var srcDescriptor = (srcComposable && srcComposable.compose) || srcComposable;
+  if (!isObject(srcDescriptor)) { return dstDescriptor; }
+
+  mergeAssign(dstDescriptor, srcDescriptor, 'methods');
+  mergeAssign(dstDescriptor, srcDescriptor, 'properties');
+  deepMergeAssign(dstDescriptor, srcDescriptor, 'deepProperties');
+  mergeAssign(dstDescriptor, srcDescriptor, 'propertyDescriptors');
+  mergeAssign(dstDescriptor, srcDescriptor, 'staticProperties');
+  deepMergeAssign(dstDescriptor, srcDescriptor, 'staticDeepProperties');
+  mergeAssign(dstDescriptor, srcDescriptor, 'staticPropertyDescriptors');
+  mergeAssign(dstDescriptor, srcDescriptor, 'configuration');
+  deepMergeAssign(dstDescriptor, srcDescriptor, 'deepConfiguration');
+  concatAssignFunctions(dstDescriptor, srcDescriptor.initializers, 'initializers');
+
+  return dstDescriptor;
+}
+
+/**
+ * Given the list of composables (stamp descriptors and stamps) returns
+ * a new stamp (composable factory function).
+ * @typedef {Function} Compose
+ * @param {...(Composable)} [composables] The list of composables.
+ * @returns {Stamp} A new stamp (aka composable factory function)
+ */
+function compose() {
+  var composables = [], len = arguments.length;
+  while ( len-- ) composables[ len ] = arguments[ len ];
+
+  var descriptor = [this]
+    .concat(composables)
+    .filter(isObject)
+    .reduce(mergeComposable, {});
+  return createStamp(descriptor, compose);
+}
+
+
+/**
+ * The Stamp Descriptor
+ * @typedef {Function|Object} Descriptor
+ * @returns {Stamp} A new stamp based on this Stamp
+ * @property {Object} [methods] Methods or other data used as object instances' prototype
+ * @property {Array<Function>} [initializers] List of initializers called for each object instance
+ * @property {Object} [properties] Shallow assigned properties of object instances
+ * @property {Object} [deepProperties] Deeply merged properties of object instances
+ * @property {Object} [staticProperties] Shallow assigned properties of Stamps
+ * @property {Object} [staticDeepProperties] Deeply merged properties of Stamps
+ * @property {Object} [configuration] Shallow assigned properties of Stamp arbitrary metadata
+ * @property {Object} [deepConfiguration] Deeply merged properties of Stamp arbitrary metadata
+ * @property {Object} [propertyDescriptors] ES5 Property Descriptors applied to object instances
+ * @property {Object} [staticPropertyDescriptors] ES5 Property Descriptors applied to Stamps
+ */
+
+/**
+ * The Stamp factory function
+ * @typedef {Function} Stamp
+ * @returns {*} Instantiated object
+ * @property {Descriptor} compose - The Stamp descriptor and composition function
+ */
+
+/**
+ * A composable object - stamp or descriptor
+ * @typedef {Stamp|Descriptor} Composable
+ */
+
+/**
+ * Returns true if argument is a stamp.
+ * @param {*} obj
+ * @returns {Boolean}
+ */
+function isStamp(obj) {
+  return isFunction(obj) && isFunction(obj.compose);
+}
+
+function createUtilityFunction(propName, action) {
+  return function composeUtil() {
+    var i = arguments.length, argsArray = Array(i);
+    while ( i-- ) argsArray[i] = arguments[i];
+
+    return ((this && this.compose) || stampit).call(this, ( obj = {}, obj[propName] = action.apply(void 0, [ {} ].concat( argsArray )), obj ));
+    var obj;
+  };
+}
+
+var methods = createUtilityFunction('methods', assign);
+
+var properties = createUtilityFunction('properties', assign);
+function initializers() {
+  var args = [], len = arguments.length;
+  while ( len-- ) args[ len ] = arguments[ len ];
+
+  return ((this && this.compose) || stampit).call(this, {
+    initializers: extractFunctions.apply(void 0, args)
+  });
+}
+function composers() {
+  var args = [], len = arguments.length;
+  while ( len-- ) args[ len ] = arguments[ len ];
+
+  return ((this && this.compose) || stampit).call(this, {
+    composers: extractFunctions.apply(void 0, args)
+  });
+}
+
+var deepProperties = createUtilityFunction('deepProperties', merge);
+var staticProperties = createUtilityFunction('staticProperties', assign);
+var staticDeepProperties = createUtilityFunction('staticDeepProperties', merge);
+var configuration = createUtilityFunction('configuration', assign);
+var deepConfiguration = createUtilityFunction('deepConfiguration', merge);
+var propertyDescriptors = createUtilityFunction('propertyDescriptors', assign);
+
+var staticPropertyDescriptors = createUtilityFunction('staticPropertyDescriptors', assign);
+
+var allUtilities = {
+  methods: methods,
+
+  properties: properties,
+  refs: properties,
+  props: properties,
+
+  initializers: initializers,
+  init: initializers,
+
+  composers: composers,
+
+  deepProperties: deepProperties,
+  deepProps: deepProperties,
+
+  staticProperties: staticProperties,
+  statics: staticProperties,
+
+  staticDeepProperties: staticDeepProperties,
+  deepStatics: staticDeepProperties,
+
+  configuration: configuration,
+  conf: configuration,
+
+  deepConfiguration: deepConfiguration,
+  deepConf: deepConfiguration,
+
+  propertyDescriptors: propertyDescriptors,
+
+  staticPropertyDescriptors: staticPropertyDescriptors
+};
+
+/**
+ * Infected stamp. Used as a storage of the infection metadata
+ * @type {Function}
+ * @return {Stamp}
+ */
+var baseStampit = compose(
+  {staticProperties: allUtilities},
+  {
+    staticProperties: {
+      create: function create() {
+        var args = [], len = arguments.length;
+        while ( len-- ) args[ len ] = arguments[ len ];
+
+        return this.apply(void 0, args);
+      },
+      compose: stampit // infecting
+    }
+  }
+);
+
+/**
+ * Infected compose
+ * @param {...(Composable)} [args] The list of composables.
+ * @return {Stamp}
+ */
+function stampit() {
+  var args = [], len = arguments.length;
+  while ( len-- ) args[ len ] = arguments[ len ];
+
+  var composables = args.filter(isObject)
+    .map(function (arg) { return isStamp(arg) ? arg : standardiseDescriptor(arg); });
+
+  // Calling the standard pure compose function here.
+  var stamp = compose.apply(this || baseStampit, composables);
+
+  var composerFunctions = stamp.compose.deepConfiguration &&
+    stamp.compose.deepConfiguration.composers;
+  if (isArray(composerFunctions) && composerFunctions.length > 0) {
+    var uniqueComposers = [];
+    for (var i = 0; i < composerFunctions.length; i += 1) {
+      var composer = composerFunctions[i];
+      if (isFunction(composer) && uniqueComposers.indexOf(composer) < 0) {
+        uniqueComposers.push(composer);
+      }
+    }
+    stamp.compose.deepConfiguration.composers = uniqueComposers;
+
+    if (isStamp(this)) { composables.unshift(this); }
+    for (var i$1 = 0; i$1 < uniqueComposers.length; i$1 += 1) {
+      var composer$1 = uniqueComposers[i$1];
+      var returnedValue = composer$1({stamp: stamp, composables: composables});
+      stamp = isStamp(returnedValue) ? returnedValue : stamp;
+    }
+  }
+
+  return stamp;
+}
+
+var exportedCompose = stampit.bind(); // bind to 'undefined'
+stampit.compose = exportedCompose;
+
+// Setting up the shortcut functions
+var stampit$1 = assign(stampit, allUtilities);
+
+exports.methods = methods;
+exports.properties = properties;
+exports.refs = properties;
+exports.props = properties;
+exports.initializers = initializers;
+exports.init = initializers;
+exports.composers = composers;
+exports.deepProperties = deepProperties;
+exports.deepProps = deepProperties;
+exports.staticProperties = staticProperties;
+exports.statics = staticProperties;
+exports.staticDeepProperties = staticDeepProperties;
+exports.deepStatics = staticDeepProperties;
+exports.configuration = configuration;
+exports.conf = configuration;
+exports.deepConfiguration = deepConfiguration;
+exports.deepConf = deepConfiguration;
+exports.propertyDescriptors = propertyDescriptors;
+exports.staticPropertyDescriptors = staticPropertyDescriptors;
+exports.compose = exportedCompose;
+exports['default'] = stampit$1;
+module.exports = exports['default'];
+//# sourceMappingURL=stampit.full.js.map
+
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, module) {var __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -8416,7 +2126,7 @@ module.exports = StateMachine;
   /** Used to detect strings that need a more robust regexp to match words. */
   var reHasUnicodeWord = /[a-z][A-Z]|[A-Z]{2,}[a-z]|[0-9][a-zA-Z]|[a-zA-Z][0-9]|[^a-zA-Z0-9 ]/;
 
-  /** Used to assign default `context` object properties. */
+  /** Used to assign default `_context` object properties. */
   var contextProps = [
     'Array', 'Buffer', 'DataView', 'Date', 'Error', 'Float32Array', 'Float64Array',
     'Function', 'Int8Array', 'Int16Array', 'Int32Array', 'Map', 'Math', 'Object',
@@ -9533,13 +3243,13 @@ module.exports = StateMachine;
   /*--------------------------------------------------------------------------*/
 
   /**
-   * Create a new pristine `lodash` function using the `context` object.
+   * Create a new pristine `lodash` function using the `_context` object.
    *
    * @static
    * @memberOf _
    * @since 1.1.0
    * @category Util
-   * @param {Object} [context=root] The context object.
+   * @param {Object} [_context=root] The _context object.
    * @returns {Function} Returns a new `lodash` function.
    * @example
    *
@@ -25221,1181 +18931,350 @@ module.exports = StateMachine;
   }
 }.call(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10), __webpack_require__(49)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(12)(module)))
 
 /***/ }),
-/* 41 */
+/* 12 */
 /***/ (function(module, exports) {
 
-// shim for using process in browser
-var process = module.exports = {};
-
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout () {
-    throw new Error('clearTimeout has not been defined');
-}
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-
-
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-
-
-
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
-
-/***/ }),
-/* 42 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-/**
- * The 'src' argument plays the command role.
- * The returned values is always of the same type as the 'src'.
- * @param dst
- * @param src
- * @returns {*}
- */
-function mergeOne(dst, src) {
-  if (src === undefined) { return dst; }
-
-  // According to specification arrays must be concatenated.
-  // Also, the '.concat' creates a new array instance. Overrides the 'dst'.
-  if (isArray(src)) { return (isArray(dst) ? dst : []).concat(src); }
-
-  // Now deal with non plain 'src' object. 'src' overrides 'dst'
-  // Note that functions are also assigned! We do not deep merge functions.
-  if (!isPlainObject(src)) { return src; }
-
-  // See if 'dst' is allowed to be mutated. If not - it's overridden with a new plain object.
-  var returnValue = isObject(dst) ? dst : {};
-
-  var keys = Object.keys(src);
-  for (var i = 0; i < keys.length; i += 1) {
-    var key = keys[i];
-
-    var srcValue = src[key];
-    // Do not merge properties with the 'undefined' value.
-    if (srcValue !== undefined) {
-      var dstValue = returnValue[key];
-      // Recursive calls to mergeOne() must allow only plain objects or arrays in dst
-      var newDst = isPlainObject(dstValue) || isArray(srcValue) ? dstValue : {};
-
-      // deep merge each property. Recursion!
-      returnValue[key] = mergeOne(newDst, srcValue);
-    }
-  }
-
-  return returnValue;
-}
-
-var merge = function (dst) {
-  var srcs = [], len = arguments.length - 1;
-  while ( len-- > 0 ) srcs[ len ] = arguments[ len + 1 ];
-
-  return srcs.reduce(mergeOne, dst);
-};
-
-function isFunction(obj) {
-  return typeof obj === 'function';
-}
-
-function isObject(obj) {
-  var type = typeof obj;
-  return !!obj && (type === 'object' || type === 'function');
-}
-
-var assign = Object.assign;
-var isArray = Array.isArray;
-
-function isPlainObject(value) {
-  return !!value && typeof value === 'object' &&
-    Object.getPrototypeOf(value) === Object.prototype;
-}
-
-
-var concat = Array.prototype.concat;
-function extractFunctions() {
-  var fns = concat.apply([], arguments).filter(isFunction);
-  return fns.length === 0 ? undefined : fns;
-}
-
-function concatAssignFunctions(dstObject, srcArray, propName) {
-  if (!isArray(srcArray)) { return; }
-
-  var length = srcArray.length;
-  var dstArray = dstObject[propName] || [];
-  dstObject[propName] = dstArray;
-  for (var i = 0; i < length; i += 1) {
-    var fn = srcArray[i];
-    if (isFunction(fn) && dstArray.indexOf(fn) < 0) {
-      dstArray.push(fn);
-    }
-  }
-}
-
-
-function combineProperties(dstObject, srcObject, propName, action) {
-  if (!isObject(srcObject[propName])) { return; }
-  if (!isObject(dstObject[propName])) { dstObject[propName] = {}; }
-  action(dstObject[propName], srcObject[propName]);
-}
-
-function deepMergeAssign(dstObject, srcObject, propName) {
-  combineProperties(dstObject, srcObject, propName, merge);
-}
-function mergeAssign(dstObject, srcObject, propName) {
-  combineProperties(dstObject, srcObject, propName, assign);
-}
-
-/**
- * Converts stampit extended descriptor to a standard one.
- * @param [methods]
- * @param [properties]
- * @param [props]
- * @param [refs]
- * @param [initializers]
- * @param [init]
- * @param [deepProperties]
- * @param [deepProps]
- * @param [propertyDescriptors]
- * @param [staticProperties]
- * @param [statics]
- * @param [staticDeepProperties]
- * @param [deepStatics]
- * @param [staticPropertyDescriptors]
- * @param [configuration]
- * @param [conf]
- * @param [deepConfiguration]
- * @param [deepConf]
- * @param [composers]
- * @returns {Descriptor}
- */
-var standardiseDescriptor = function (ref) {
-  if ( ref === void 0 ) ref = {};
-  var methods = ref.methods;
-  var properties = ref.properties;
-  var props = ref.props;
-  var refs = ref.refs;
-  var initializers = ref.initializers;
-  var init = ref.init;
-  var composers = ref.composers;
-  var deepProperties = ref.deepProperties;
-  var deepProps = ref.deepProps;
-  var propertyDescriptors = ref.propertyDescriptors;
-  var staticProperties = ref.staticProperties;
-  var statics = ref.statics;
-  var staticDeepProperties = ref.staticDeepProperties;
-  var deepStatics = ref.deepStatics;
-  var staticPropertyDescriptors = ref.staticPropertyDescriptors;
-  var configuration = ref.configuration;
-  var conf = ref.conf;
-  var deepConfiguration = ref.deepConfiguration;
-  var deepConf = ref.deepConf;
-
-  var p = isObject(props) || isObject(refs) || isObject(properties) ?
-    assign({}, props, refs, properties) : undefined;
-
-  var dp = isObject(deepProps) ? merge({}, deepProps) : undefined;
-  dp = isObject(deepProperties) ? merge(dp, deepProperties) : dp;
-
-  var sp = isObject(statics) || isObject(staticProperties) ?
-    assign({}, statics, staticProperties) : undefined;
-
-  var dsp = isObject(deepStatics) ? merge({}, deepStatics) : undefined;
-  dsp = isObject(staticDeepProperties) ? merge(dsp, staticDeepProperties) : dsp;
-
-  var c = isObject(conf) || isObject(configuration) ?
-    assign({}, conf, configuration) : undefined;
-
-  var dc = isObject(deepConf) ? merge({}, deepConf) : undefined;
-  dc = isObject(deepConfiguration) ? merge(dc, deepConfiguration) : dc;
-
-  var ii = extractFunctions(init, initializers);
-
-  var composerFunctions = extractFunctions(composers);
-  if (composerFunctions) {
-    dc = dc || {};
-    concatAssignFunctions(dc, composerFunctions, 'composers');
-  }
-
-  var descriptor = {};
-  if (methods) { descriptor.methods = methods; }
-  if (p) { descriptor.properties = p; }
-  if (ii) { descriptor.initializers = ii; }
-  if (dp) { descriptor.deepProperties = dp; }
-  if (sp) { descriptor.staticProperties = sp; }
-  if (methods) { descriptor.methods = methods; }
-  if (dsp) { descriptor.staticDeepProperties = dsp; }
-  if (propertyDescriptors) { descriptor.propertyDescriptors = propertyDescriptors; }
-  if (staticPropertyDescriptors) { descriptor.staticPropertyDescriptors = staticPropertyDescriptors; }
-  if (c) { descriptor.configuration = c; }
-  if (dc) { descriptor.deepConfiguration = dc; }
-
-  return descriptor;
-};
-
-/**
- * Creates new factory instance.
- * @param {Descriptor} descriptor The information about the object the factory will be creating.
- * @returns {Function} The new factory function.
- */
-function createFactory(descriptor) {
-  return function Stamp(options) {
-    var args = [], len = arguments.length - 1;
-    while ( len-- > 0 ) args[ len ] = arguments[ len + 1 ];
-
-    // Next line was optimized for most JS VMs. Please, be careful here!
-    var obj = Object.create(descriptor.methods || null);
-
-    merge(obj, descriptor.deepProperties);
-    assign(obj, descriptor.properties);
-    Object.defineProperties(obj, descriptor.propertyDescriptors || {});
-
-    if (!descriptor.initializers || descriptor.initializers.length === 0) { return obj; }
-
-    if (options === undefined) { options = {}; }
-    var inits = descriptor.initializers;
-    var length = inits.length;
-    for (var i = 0; i < length; i += 1) {
-      var initializer = inits[i];
-      if (isFunction(initializer)) {
-        var returnedValue = initializer.call(obj, options,
-          {instance: obj, stamp: Stamp, args: [options].concat(args)});
-        obj = returnedValue === undefined ? obj : returnedValue;
-      }
-    }
-
-    return obj;
-  };
-}
-
-/**
- * Returns a new stamp given a descriptor and a compose function implementation.
- * @param {Descriptor} [descriptor={}] The information about the object the stamp will be creating.
- * @param {Compose} composeFunction The "compose" function implementation.
- * @returns {Stamp}
- */
-function createStamp(descriptor, composeFunction) {
-  var Stamp = createFactory(descriptor);
-
-  merge(Stamp, descriptor.staticDeepProperties);
-  assign(Stamp, descriptor.staticProperties);
-  Object.defineProperties(Stamp, descriptor.staticPropertyDescriptors || {});
-
-  var composeImplementation = isFunction(Stamp.compose) ? Stamp.compose : composeFunction;
-  Stamp.compose = function _compose() {
-    var args = [], len = arguments.length;
-    while ( len-- ) args[ len ] = arguments[ len ];
-
-    return composeImplementation.apply(this, args);
-  };
-  assign(Stamp.compose, descriptor);
-
-  return Stamp;
-}
-
-/**
- * Mutates the dstDescriptor by merging the srcComposable data into it.
- * @param {Descriptor} dstDescriptor The descriptor object to merge into.
- * @param {Composable} [srcComposable] The composable
- * (either descriptor or stamp) to merge data form.
- * @returns {Descriptor} Returns the dstDescriptor argument.
- */
-function mergeComposable(dstDescriptor, srcComposable) {
-  var srcDescriptor = (srcComposable && srcComposable.compose) || srcComposable;
-  if (!isObject(srcDescriptor)) { return dstDescriptor; }
-
-  mergeAssign(dstDescriptor, srcDescriptor, 'methods');
-  mergeAssign(dstDescriptor, srcDescriptor, 'properties');
-  deepMergeAssign(dstDescriptor, srcDescriptor, 'deepProperties');
-  mergeAssign(dstDescriptor, srcDescriptor, 'propertyDescriptors');
-  mergeAssign(dstDescriptor, srcDescriptor, 'staticProperties');
-  deepMergeAssign(dstDescriptor, srcDescriptor, 'staticDeepProperties');
-  mergeAssign(dstDescriptor, srcDescriptor, 'staticPropertyDescriptors');
-  mergeAssign(dstDescriptor, srcDescriptor, 'configuration');
-  deepMergeAssign(dstDescriptor, srcDescriptor, 'deepConfiguration');
-  concatAssignFunctions(dstDescriptor, srcDescriptor.initializers, 'initializers');
-
-  return dstDescriptor;
-}
-
-/**
- * Given the list of composables (stamp descriptors and stamps) returns
- * a new stamp (composable factory function).
- * @typedef {Function} Compose
- * @param {...(Composable)} [composables] The list of composables.
- * @returns {Stamp} A new stamp (aka composable factory function)
- */
-function compose() {
-  var composables = [], len = arguments.length;
-  while ( len-- ) composables[ len ] = arguments[ len ];
-
-  var descriptor = [this]
-    .concat(composables)
-    .filter(isObject)
-    .reduce(mergeComposable, {});
-  return createStamp(descriptor, compose);
-}
-
-
-/**
- * The Stamp Descriptor
- * @typedef {Function|Object} Descriptor
- * @returns {Stamp} A new stamp based on this Stamp
- * @property {Object} [methods] Methods or other data used as object instances' prototype
- * @property {Array<Function>} [initializers] List of initializers called for each object instance
- * @property {Object} [properties] Shallow assigned properties of object instances
- * @property {Object} [deepProperties] Deeply merged properties of object instances
- * @property {Object} [staticProperties] Shallow assigned properties of Stamps
- * @property {Object} [staticDeepProperties] Deeply merged properties of Stamps
- * @property {Object} [configuration] Shallow assigned properties of Stamp arbitrary metadata
- * @property {Object} [deepConfiguration] Deeply merged properties of Stamp arbitrary metadata
- * @property {Object} [propertyDescriptors] ES5 Property Descriptors applied to object instances
- * @property {Object} [staticPropertyDescriptors] ES5 Property Descriptors applied to Stamps
- */
-
-/**
- * The Stamp factory function
- * @typedef {Function} Stamp
- * @returns {*} Instantiated object
- * @property {Descriptor} compose - The Stamp descriptor and composition function
- */
-
-/**
- * A composable object - stamp or descriptor
- * @typedef {Stamp|Descriptor} Composable
- */
-
-/**
- * Returns true if argument is a stamp.
- * @param {*} obj
- * @returns {Boolean}
- */
-function isStamp(obj) {
-  return isFunction(obj) && isFunction(obj.compose);
-}
-
-function createUtilityFunction(propName, action) {
-  return function composeUtil() {
-    var i = arguments.length, argsArray = Array(i);
-    while ( i-- ) argsArray[i] = arguments[i];
-
-    return ((this && this.compose) || stampit).call(this, ( obj = {}, obj[propName] = action.apply(void 0, [ {} ].concat( argsArray )), obj ));
-    var obj;
-  };
-}
-
-var methods = createUtilityFunction('methods', assign);
-
-var properties = createUtilityFunction('properties', assign);
-function initializers() {
-  var args = [], len = arguments.length;
-  while ( len-- ) args[ len ] = arguments[ len ];
-
-  return ((this && this.compose) || stampit).call(this, {
-    initializers: extractFunctions.apply(void 0, args)
-  });
-}
-function composers() {
-  var args = [], len = arguments.length;
-  while ( len-- ) args[ len ] = arguments[ len ];
-
-  return ((this && this.compose) || stampit).call(this, {
-    composers: extractFunctions.apply(void 0, args)
-  });
-}
-
-var deepProperties = createUtilityFunction('deepProperties', merge);
-var staticProperties = createUtilityFunction('staticProperties', assign);
-var staticDeepProperties = createUtilityFunction('staticDeepProperties', merge);
-var configuration = createUtilityFunction('configuration', assign);
-var deepConfiguration = createUtilityFunction('deepConfiguration', merge);
-var propertyDescriptors = createUtilityFunction('propertyDescriptors', assign);
-
-var staticPropertyDescriptors = createUtilityFunction('staticPropertyDescriptors', assign);
-
-var allUtilities = {
-  methods: methods,
-
-  properties: properties,
-  refs: properties,
-  props: properties,
-
-  initializers: initializers,
-  init: initializers,
-
-  composers: composers,
-
-  deepProperties: deepProperties,
-  deepProps: deepProperties,
-
-  staticProperties: staticProperties,
-  statics: staticProperties,
-
-  staticDeepProperties: staticDeepProperties,
-  deepStatics: staticDeepProperties,
-
-  configuration: configuration,
-  conf: configuration,
-
-  deepConfiguration: deepConfiguration,
-  deepConf: deepConfiguration,
-
-  propertyDescriptors: propertyDescriptors,
-
-  staticPropertyDescriptors: staticPropertyDescriptors
-};
-
-/**
- * Infected stamp. Used as a storage of the infection metadata
- * @type {Function}
- * @return {Stamp}
- */
-var baseStampit = compose(
-  {staticProperties: allUtilities},
-  {
-    staticProperties: {
-      create: function create() {
-        var args = [], len = arguments.length;
-        while ( len-- ) args[ len ] = arguments[ len ];
-
-        return this.apply(void 0, args);
-      },
-      compose: stampit // infecting
-    }
-  }
-);
-
-/**
- * Infected compose
- * @param {...(Composable)} [args] The list of composables.
- * @return {Stamp}
- */
-function stampit() {
-  var args = [], len = arguments.length;
-  while ( len-- ) args[ len ] = arguments[ len ];
-
-  var composables = args.filter(isObject)
-    .map(function (arg) { return isStamp(arg) ? arg : standardiseDescriptor(arg); });
-
-  // Calling the standard pure compose function here.
-  var stamp = compose.apply(this || baseStampit, composables);
-
-  var composerFunctions = stamp.compose.deepConfiguration &&
-    stamp.compose.deepConfiguration.composers;
-  if (isArray(composerFunctions) && composerFunctions.length > 0) {
-    var uniqueComposers = [];
-    for (var i = 0; i < composerFunctions.length; i += 1) {
-      var composer = composerFunctions[i];
-      if (isFunction(composer) && uniqueComposers.indexOf(composer) < 0) {
-        uniqueComposers.push(composer);
-      }
-    }
-    stamp.compose.deepConfiguration.composers = uniqueComposers;
-
-    if (isStamp(this)) { composables.unshift(this); }
-    for (var i$1 = 0; i$1 < uniqueComposers.length; i$1 += 1) {
-      var composer$1 = uniqueComposers[i$1];
-      var returnedValue = composer$1({stamp: stamp, composables: composables});
-      stamp = isStamp(returnedValue) ? returnedValue : stamp;
-    }
-  }
-
-  return stamp;
-}
-
-var exportedCompose = stampit.bind(); // bind to 'undefined'
-stampit.compose = exportedCompose;
-
-// Setting up the shortcut functions
-var stampit$1 = assign(stampit, allUtilities);
-
-exports.methods = methods;
-exports.properties = properties;
-exports.refs = properties;
-exports.props = properties;
-exports.initializers = initializers;
-exports.init = initializers;
-exports.composers = composers;
-exports.deepProperties = deepProperties;
-exports.deepProps = deepProperties;
-exports.staticProperties = staticProperties;
-exports.statics = staticProperties;
-exports.staticDeepProperties = staticDeepProperties;
-exports.deepStatics = staticDeepProperties;
-exports.configuration = configuration;
-exports.conf = configuration;
-exports.deepConfiguration = deepConfiguration;
-exports.deepConf = deepConfiguration;
-exports.propertyDescriptors = propertyDescriptors;
-exports.staticPropertyDescriptors = staticPropertyDescriptors;
-exports.compose = exportedCompose;
-exports['default'] = stampit$1;
-module.exports = exports['default'];
-//# sourceMappingURL=stampit.full.js.map
-
-
-/***/ }),
-/* 43 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(34);
-if(typeof content === 'string') content = [[module.i, content, '']];
-// Prepare cssTransformation
-var transform;
-
-var options = {}
-options.transform = transform
-// add the styles to the DOM
-var update = __webpack_require__(44)(content, options);
-if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
-if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../../../playkit-js-ima/node_modules/css-loader/index.js!./style.css", function() {
-			var newContent = require("!!../../../playkit-js-ima/node_modules/css-loader/index.js!./style.css");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
+module.exports = function(module) {
+	if(!module.webpackPolyfill) {
+		module.deprecate = function() {};
+		module.paths = [];
+		// module.parent = undefined by default
+		if(!module.children) module.children = [];
+		Object.defineProperty(module, "loaded", {
+			enumerable: true,
+			get: function() {
+				return module.l;
+			}
 		});
+		Object.defineProperty(module, "id", {
+			enumerable: true,
+			get: function() {
+				return module.i;
+			}
+		});
+		module.webpackPolyfill = 1;
 	}
-	// When the module is disposed, remove the <style> tags
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 44 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-
-var stylesInDom = {};
-
-var	memoize = function (fn) {
-	var memo;
-
-	return function () {
-		if (typeof memo === "undefined") memo = fn.apply(this, arguments);
-		return memo;
-	};
+	return module;
 };
-
-var isOldIE = memoize(function () {
-	// Test for IE <= 9 as proposed by Browserhacks
-	// @see http://browserhacks.com/#hack-e71d8692f65334173fee715c222cb805
-	// Tests for existence of standard globals is to allow style-loader
-	// to operate correctly into non-standard environments
-	// @see https://github.com/webpack-contrib/style-loader/issues/177
-	return window && document && document.all && !window.atob;
-});
-
-var getElement = (function (fn) {
-	var memo = {};
-
-	return function(selector) {
-		if (typeof memo[selector] === "undefined") {
-			memo[selector] = fn.call(this, selector);
-		}
-
-		return memo[selector]
-	};
-})(function (target) {
-	return document.querySelector(target)
-});
-
-var singleton = null;
-var	singletonCounter = 0;
-var	stylesInsertedAtTop = [];
-
-var	fixUrls = __webpack_require__(45);
-
-module.exports = function(list, options) {
-	if (typeof DEBUG !== "undefined" && DEBUG) {
-		if (typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
-	}
-
-	options = options || {};
-
-	options.attrs = typeof options.attrs === "object" ? options.attrs : {};
-
-	// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
-	// tags it will allow on a page
-	if (!options.singleton) options.singleton = isOldIE();
-
-	// By default, add <style> tags to the <head> element
-	if (!options.insertInto) options.insertInto = "head";
-
-	// By default, add <style> tags to the bottom of the target
-	if (!options.insertAt) options.insertAt = "bottom";
-
-	var styles = listToStyles(list, options);
-
-	addStylesToDom(styles, options);
-
-	return function update (newList) {
-		var mayRemove = [];
-
-		for (var i = 0; i < styles.length; i++) {
-			var item = styles[i];
-			var domStyle = stylesInDom[item.id];
-
-			domStyle.refs--;
-			mayRemove.push(domStyle);
-		}
-
-		if(newList) {
-			var newStyles = listToStyles(newList, options);
-			addStylesToDom(newStyles, options);
-		}
-
-		for (var i = 0; i < mayRemove.length; i++) {
-			var domStyle = mayRemove[i];
-
-			if(domStyle.refs === 0) {
-				for (var j = 0; j < domStyle.parts.length; j++) domStyle.parts[j]();
-
-				delete stylesInDom[domStyle.id];
-			}
-		}
-	};
-};
-
-function addStylesToDom (styles, options) {
-	for (var i = 0; i < styles.length; i++) {
-		var item = styles[i];
-		var domStyle = stylesInDom[item.id];
-
-		if(domStyle) {
-			domStyle.refs++;
-
-			for(var j = 0; j < domStyle.parts.length; j++) {
-				domStyle.parts[j](item.parts[j]);
-			}
-
-			for(; j < item.parts.length; j++) {
-				domStyle.parts.push(addStyle(item.parts[j], options));
-			}
-		} else {
-			var parts = [];
-
-			for(var j = 0; j < item.parts.length; j++) {
-				parts.push(addStyle(item.parts[j], options));
-			}
-
-			stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
-		}
-	}
-}
-
-function listToStyles (list, options) {
-	var styles = [];
-	var newStyles = {};
-
-	for (var i = 0; i < list.length; i++) {
-		var item = list[i];
-		var id = options.base ? item[0] + options.base : item[0];
-		var css = item[1];
-		var media = item[2];
-		var sourceMap = item[3];
-		var part = {css: css, media: media, sourceMap: sourceMap};
-
-		if(!newStyles[id]) styles.push(newStyles[id] = {id: id, parts: [part]});
-		else newStyles[id].parts.push(part);
-	}
-
-	return styles;
-}
-
-function insertStyleElement (options, style) {
-	var target = getElement(options.insertInto)
-
-	if (!target) {
-		throw new Error("Couldn't find a style target. This probably means that the value for the 'insertInto' parameter is invalid.");
-	}
-
-	var lastStyleElementInsertedAtTop = stylesInsertedAtTop[stylesInsertedAtTop.length - 1];
-
-	if (options.insertAt === "top") {
-		if (!lastStyleElementInsertedAtTop) {
-			target.insertBefore(style, target.firstChild);
-		} else if (lastStyleElementInsertedAtTop.nextSibling) {
-			target.insertBefore(style, lastStyleElementInsertedAtTop.nextSibling);
-		} else {
-			target.appendChild(style);
-		}
-		stylesInsertedAtTop.push(style);
-	} else if (options.insertAt === "bottom") {
-		target.appendChild(style);
-	} else {
-		throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
-	}
-}
-
-function removeStyleElement (style) {
-	if (style.parentNode === null) return false;
-	style.parentNode.removeChild(style);
-
-	var idx = stylesInsertedAtTop.indexOf(style);
-	if(idx >= 0) {
-		stylesInsertedAtTop.splice(idx, 1);
-	}
-}
-
-function createStyleElement (options) {
-	var style = document.createElement("style");
-
-	options.attrs.type = "text/css";
-
-	addAttrs(style, options.attrs);
-	insertStyleElement(options, style);
-
-	return style;
-}
-
-function createLinkElement (options) {
-	var link = document.createElement("link");
-
-	options.attrs.type = "text/css";
-	options.attrs.rel = "stylesheet";
-
-	addAttrs(link, options.attrs);
-	insertStyleElement(options, link);
-
-	return link;
-}
-
-function addAttrs (el, attrs) {
-	Object.keys(attrs).forEach(function (key) {
-		el.setAttribute(key, attrs[key]);
-	});
-}
-
-function addStyle (obj, options) {
-	var style, update, remove, result;
-
-	// If a transform function was defined, run it on the css
-	if (options.transform && obj.css) {
-	    result = options.transform(obj.css);
-
-	    if (result) {
-	    	// If transform returns a value, use that instead of the original css.
-	    	// This allows running runtime transformations on the css.
-	    	obj.css = result;
-	    } else {
-	    	// If the transform function returns a falsy value, don't add this css.
-	    	// This allows conditional loading of css
-	    	return function() {
-	    		// noop
-	    	};
-	    }
-	}
-
-	if (options.singleton) {
-		var styleIndex = singletonCounter++;
-
-		style = singleton || (singleton = createStyleElement(options));
-
-		update = applyToSingletonTag.bind(null, style, styleIndex, false);
-		remove = applyToSingletonTag.bind(null, style, styleIndex, true);
-
-	} else if (
-		obj.sourceMap &&
-		typeof URL === "function" &&
-		typeof URL.createObjectURL === "function" &&
-		typeof URL.revokeObjectURL === "function" &&
-		typeof Blob === "function" &&
-		typeof btoa === "function"
-	) {
-		style = createLinkElement(options);
-		update = updateLink.bind(null, style, options);
-		remove = function () {
-			removeStyleElement(style);
-
-			if(style.href) URL.revokeObjectURL(style.href);
-		};
-	} else {
-		style = createStyleElement(options);
-		update = applyToTag.bind(null, style);
-		remove = function () {
-			removeStyleElement(style);
-		};
-	}
-
-	update(obj);
-
-	return function updateStyle (newObj) {
-		if (newObj) {
-			if (
-				newObj.css === obj.css &&
-				newObj.media === obj.media &&
-				newObj.sourceMap === obj.sourceMap
-			) {
-				return;
-			}
-
-			update(obj = newObj);
-		} else {
-			remove();
-		}
-	};
-}
-
-var replaceText = (function () {
-	var textStore = [];
-
-	return function (index, replacement) {
-		textStore[index] = replacement;
-
-		return textStore.filter(Boolean).join('\n');
-	};
-})();
-
-function applyToSingletonTag (style, index, remove, obj) {
-	var css = remove ? "" : obj.css;
-
-	if (style.styleSheet) {
-		style.styleSheet.cssText = replaceText(index, css);
-	} else {
-		var cssNode = document.createTextNode(css);
-		var childNodes = style.childNodes;
-
-		if (childNodes[index]) style.removeChild(childNodes[index]);
-
-		if (childNodes.length) {
-			style.insertBefore(cssNode, childNodes[index]);
-		} else {
-			style.appendChild(cssNode);
-		}
-	}
-}
-
-function applyToTag (style, obj) {
-	var css = obj.css;
-	var media = obj.media;
-
-	if(media) {
-		style.setAttribute("media", media)
-	}
-
-	if(style.styleSheet) {
-		style.styleSheet.cssText = css;
-	} else {
-		while(style.firstChild) {
-			style.removeChild(style.firstChild);
-		}
-
-		style.appendChild(document.createTextNode(css));
-	}
-}
-
-function updateLink (link, options, obj) {
-	var css = obj.css;
-	var sourceMap = obj.sourceMap;
-
-	/*
-		If convertToAbsoluteUrls isn't defined, but sourcemaps are enabled
-		and there is no publicPath defined then lets turn convertToAbsoluteUrls
-		on by default.  Otherwise default to the convertToAbsoluteUrls option
-		directly
-	*/
-	var autoFixUrls = options.convertToAbsoluteUrls === undefined && sourceMap;
-
-	if (options.convertToAbsoluteUrls || autoFixUrls) {
-		css = fixUrls(css);
-	}
-
-	if (sourceMap) {
-		// http://stackoverflow.com/a/26603875
-		css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
-	}
-
-	var blob = new Blob([css], { type: "text/css" });
-
-	var oldSrc = link.href;
-
-	link.href = URL.createObjectURL(blob);
-
-	if(oldSrc) URL.revokeObjectURL(oldSrc);
-}
 
 
 /***/ }),
-/* 45 */
+/* 13 */
 /***/ (function(module, exports) {
 
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-/**
- * When source maps are enabled, `style-loader` uses a link element with a data-uri to
- * embed the css on the page. This breaks all relative urls because now they are relative to a
- * bundle instead of the current page.
- *
- * One solution is to only use full urls, but that may be impossible.
- *
- * Instead, this function "fixes" the relative urls to be absolute according to the current page location.
- *
- * A rudimentary test suite is located at `test/fixUrls.js` and can be run via the `npm test` command.
- *
- */
+function EventEmitter() {
+  this._events = this._events || {};
+  this._maxListeners = this._maxListeners || undefined;
+}
+module.exports = EventEmitter;
 
-module.exports = function (css) {
-  // get current location
-  var location = typeof window !== "undefined" && window.location;
+// Backwards-compat with node 0.10.x
+EventEmitter.EventEmitter = EventEmitter;
 
-  if (!location) {
-    throw new Error("fixUrls requires window.location");
-  }
+EventEmitter.prototype._events = undefined;
+EventEmitter.prototype._maxListeners = undefined;
 
-	// blank or null?
-	if (!css || typeof css !== "string") {
-	  return css;
-  }
+// By default EventEmitters will print a warning if more than 10 listeners are
+// added to it. This is a useful default which helps finding memory leaks.
+EventEmitter.defaultMaxListeners = 10;
 
-  var baseUrl = location.protocol + "//" + location.host;
-  var currentDir = baseUrl + location.pathname.replace(/\/[^\/]*$/, "/");
-
-	// convert each url(...)
-	/*
-	This regular expression is just a way to recursively match brackets within
-	a string.
-
-	 /url\s*\(  = Match on the word "url" with any whitespace after it and then a parens
-	   (  = Start a capturing group
-	     (?:  = Start a non-capturing group
-	         [^)(]  = Match anything that isn't a parentheses
-	         |  = OR
-	         \(  = Match a start parentheses
-	             (?:  = Start another non-capturing groups
-	                 [^)(]+  = Match anything that isn't a parentheses
-	                 |  = OR
-	                 \(  = Match a start parentheses
-	                     [^)(]*  = Match anything that isn't a parentheses
-	                 \)  = Match a end parentheses
-	             )  = End Group
-              *\) = Match anything and then a close parens
-          )  = Close non-capturing group
-          *  = Match anything
-       )  = Close capturing group
-	 \)  = Match a close parens
-
-	 /gi  = Get all matches, not the first.  Be case insensitive.
-	 */
-	var fixedCss = css.replace(/url\s*\(((?:[^)(]|\((?:[^)(]+|\([^)(]*\))*\))*)\)/gi, function(fullMatch, origUrl) {
-		// strip quotes (if they exist)
-		var unquotedOrigUrl = origUrl
-			.trim()
-			.replace(/^"(.*)"$/, function(o, $1){ return $1; })
-			.replace(/^'(.*)'$/, function(o, $1){ return $1; });
-
-		// already a full url? no change
-		if (/^(#|data:|http:\/\/|https:\/\/|file:\/\/\/)/i.test(unquotedOrigUrl)) {
-		  return fullMatch;
-		}
-
-		// convert the url to a full url
-		var newUrl;
-
-		if (unquotedOrigUrl.indexOf("//") === 0) {
-		  	//TODO: should we add protocol?
-			newUrl = unquotedOrigUrl;
-		} else if (unquotedOrigUrl.indexOf("/") === 0) {
-			// path should be relative to the base url
-			newUrl = baseUrl + unquotedOrigUrl; // already starts with '/'
-		} else {
-			// path should be relative to current directory
-			newUrl = currentDir + unquotedOrigUrl.replace(/^\.\//, ""); // Strip leading './'
-		}
-
-		// send back the fixed url(...)
-		return "url(" + JSON.stringify(newUrl) + ")";
-	});
-
-	// send back the fixed css
-	return fixedCss;
+// Obviously not all Emitters should be limited to 10. This function allows
+// that to be increased. Set to zero for unlimited.
+EventEmitter.prototype.setMaxListeners = function(n) {
+  if (!isNumber(n) || n < 0 || isNaN(n))
+    throw TypeError('n must be a positive number');
+  this._maxListeners = n;
+  return this;
 };
+
+EventEmitter.prototype.emit = function(type) {
+  var er, handler, len, args, i, listeners;
+
+  if (!this._events)
+    this._events = {};
+
+  // If there is no 'error' event listener then throw.
+  if (type === 'error') {
+    if (!this._events.error ||
+        (isObject(this._events.error) && !this._events.error.length)) {
+      er = arguments[1];
+      if (er instanceof Error) {
+        throw er; // Unhandled 'error' event
+      } else {
+        // At least give some kind of _context to the user
+        var err = new Error('Uncaught, unspecified "error" event. (' + er + ')');
+        err.context = er;
+        throw err;
+      }
+    }
+  }
+
+  handler = this._events[type];
+
+  if (isUndefined(handler))
+    return false;
+
+  if (isFunction(handler)) {
+    switch (arguments.length) {
+      // fast cases
+      case 1:
+        handler.call(this);
+        break;
+      case 2:
+        handler.call(this, arguments[1]);
+        break;
+      case 3:
+        handler.call(this, arguments[1], arguments[2]);
+        break;
+      // slower
+      default:
+        args = Array.prototype.slice.call(arguments, 1);
+        handler.apply(this, args);
+    }
+  } else if (isObject(handler)) {
+    args = Array.prototype.slice.call(arguments, 1);
+    listeners = handler.slice();
+    len = listeners.length;
+    for (i = 0; i < len; i++)
+      listeners[i].apply(this, args);
+  }
+
+  return true;
+};
+
+EventEmitter.prototype.addListener = function(type, listener) {
+  var m;
+
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  if (!this._events)
+    this._events = {};
+
+  // To avoid recursion in the case that type === "newListener"! Before
+  // adding it to the listeners, first emit "newListener".
+  if (this._events.newListener)
+    this.emit('newListener', type,
+              isFunction(listener.listener) ?
+              listener.listener : listener);
+
+  if (!this._events[type])
+    // Optimize the case of one listener. Don't need the extra array object.
+    this._events[type] = listener;
+  else if (isObject(this._events[type]))
+    // If we've already got an array, just append.
+    this._events[type].push(listener);
+  else
+    // Adding the second element, need to change to array.
+    this._events[type] = [this._events[type], listener];
+
+  // Check for listener leak
+  if (isObject(this._events[type]) && !this._events[type].warned) {
+    if (!isUndefined(this._maxListeners)) {
+      m = this._maxListeners;
+    } else {
+      m = EventEmitter.defaultMaxListeners;
+    }
+
+    if (m && m > 0 && this._events[type].length > m) {
+      this._events[type].warned = true;
+      console.error('(node) warning: possible EventEmitter memory ' +
+                    'leak detected. %d listeners added. ' +
+                    'Use emitter.setMaxListeners() to increase limit.',
+                    this._events[type].length);
+      if (typeof console.trace === 'function') {
+        // not supported in IE 10
+        console.trace();
+      }
+    }
+  }
+
+  return this;
+};
+
+EventEmitter.prototype.on = EventEmitter.prototype.addListener;
+
+EventEmitter.prototype.once = function(type, listener) {
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  var fired = false;
+
+  function g() {
+    this.removeListener(type, g);
+
+    if (!fired) {
+      fired = true;
+      listener.apply(this, arguments);
+    }
+  }
+
+  g.listener = listener;
+  this.on(type, g);
+
+  return this;
+};
+
+// emits a 'removeListener' event iff the listener was removed
+EventEmitter.prototype.removeListener = function(type, listener) {
+  var list, position, length, i;
+
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  if (!this._events || !this._events[type])
+    return this;
+
+  list = this._events[type];
+  length = list.length;
+  position = -1;
+
+  if (list === listener ||
+      (isFunction(list.listener) && list.listener === listener)) {
+    delete this._events[type];
+    if (this._events.removeListener)
+      this.emit('removeListener', type, listener);
+
+  } else if (isObject(list)) {
+    for (i = length; i-- > 0;) {
+      if (list[i] === listener ||
+          (list[i].listener && list[i].listener === listener)) {
+        position = i;
+        break;
+      }
+    }
+
+    if (position < 0)
+      return this;
+
+    if (list.length === 1) {
+      list.length = 0;
+      delete this._events[type];
+    } else {
+      list.splice(position, 1);
+    }
+
+    if (this._events.removeListener)
+      this.emit('removeListener', type, listener);
+  }
+
+  return this;
+};
+
+EventEmitter.prototype.removeAllListeners = function(type) {
+  var key, listeners;
+
+  if (!this._events)
+    return this;
+
+  // not listening for removeListener, no need to emit
+  if (!this._events.removeListener) {
+    if (arguments.length === 0)
+      this._events = {};
+    else if (this._events[type])
+      delete this._events[type];
+    return this;
+  }
+
+  // emit removeListener for all listeners on all events
+  if (arguments.length === 0) {
+    for (key in this._events) {
+      if (key === 'removeListener') continue;
+      this.removeAllListeners(key);
+    }
+    this.removeAllListeners('removeListener');
+    this._events = {};
+    return this;
+  }
+
+  listeners = this._events[type];
+
+  if (isFunction(listeners)) {
+    this.removeListener(type, listeners);
+  } else if (listeners) {
+    // LIFO order
+    while (listeners.length)
+      this.removeListener(type, listeners[listeners.length - 1]);
+  }
+  delete this._events[type];
+
+  return this;
+};
+
+EventEmitter.prototype.listeners = function(type) {
+  var ret;
+  if (!this._events || !this._events[type])
+    ret = [];
+  else if (isFunction(this._events[type]))
+    ret = [this._events[type]];
+  else
+    ret = this._events[type].slice();
+  return ret;
+};
+
+EventEmitter.prototype.listenerCount = function(type) {
+  if (this._events) {
+    var evlistener = this._events[type];
+
+    if (isFunction(evlistener))
+      return 1;
+    else if (evlistener)
+      return evlistener.length;
+  }
+  return 0;
+};
+
+EventEmitter.listenerCount = function(emitter, type) {
+  return emitter.listenerCount(type);
+};
+
+function isFunction(arg) {
+  return typeof arg === 'function';
+}
+
+function isNumber(arg) {
+  return typeof arg === 'number';
+}
+
+function isObject(arg) {
+  return typeof arg === 'object' && arg !== null;
+}
+
+function isUndefined(arg) {
+  return arg === void 0;
+}
 
 
 /***/ }),
-/* 46 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var v1 = __webpack_require__(47);
-var v4 = __webpack_require__(48);
+var v1 = __webpack_require__(15);
+var v4 = __webpack_require__(16);
 
 var uuid = v4;
 uuid.v1 = v1;
@@ -26405,14 +19284,11 @@ module.exports = uuid;
 
 
 /***/ }),
-/* 47 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// Unique ID creation requires a high quality random # generator.  We feature
-// detect to determine the best RNG source, normalizing to a function that
-// returns 128-bits of randomness, since that's what's usually required
-var rng = __webpack_require__(24);
-var bytesToUuid = __webpack_require__(23);
+var rng = __webpack_require__(3);
+var bytesToUuid = __webpack_require__(4);
 
 // **`v1()` - Generate time-based UUID**
 //
@@ -26514,11 +19390,11 @@ module.exports = v1;
 
 
 /***/ }),
-/* 48 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var rng = __webpack_require__(24);
-var bytesToUuid = __webpack_require__(23);
+var rng = __webpack_require__(3);
+var bytesToUuid = __webpack_require__(4);
 
 function v4(options, buf, offset) {
   var i = buf && offset || 0;
@@ -26549,833 +19425,1364 @@ module.exports = v4;
 
 
 /***/ }),
-/* 49 */
-/***/ (function(module, exports) {
-
-module.exports = function(module) {
-	if(!module.webpackPolyfill) {
-		module.deprecate = function() {};
-		module.paths = [];
-		// module.parent = undefined by default
-		if(!module.children) module.children = [];
-		Object.defineProperty(module, "loaded", {
-			enumerable: true,
-			get: function() {
-				return module.l;
-			}
-		});
-		Object.defineProperty(module, "id", {
-			enumerable: true,
-			get: function() {
-				return module.i;
-			}
-		});
-		module.webpackPolyfill = 1;
-	}
-	return module;
-};
-
-
-/***/ }),
-/* 50 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
- * js-logger - http://github.com/jonnyreeves/js-logger
- * Jonny Reeves, http://jonnyreeves.co.uk/
- * js-logger may be freely distributed under the MIT license.
+/* WEBPACK VAR INJECTION */(function(process, global) {var require;/*!
+ * @overview es6-promise - a tiny implementation of Promises/A+.
+ * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
+ * @license   Licensed under MIT license
+ *            See https://raw.githubusercontent.com/stefanpenner/es6-promise/master/LICENSE
+ * @version   4.1.1
  */
-(function (global) {
-	"use strict";
 
-	// Top level module for the global, static logger instance.
-	var Logger = { };
+(function (global, factory) {
+	 true ? module.exports = factory() :
+	typeof define === 'function' && define.amd ? define(factory) :
+	(global.ES6Promise = factory());
+}(this, (function () { 'use strict';
 
-	// For those that are at home that are keeping score.
-	Logger.VERSION = "1.3.0";
+function objectOrFunction(x) {
+  var type = typeof x;
+  return x !== null && (type === 'object' || type === 'function');
+}
 
-	// Function which handles all incoming log messages.
-	var logHandler;
+function isFunction(x) {
+  return typeof x === 'function';
+}
 
-	// Map of ContextualLogger instances by name; used by Logger.get() to return the same named instance.
-	var contextualLoggersByNameMap = {};
+var _isArray = undefined;
+if (Array.isArray) {
+  _isArray = Array.isArray;
+} else {
+  _isArray = function (x) {
+    return Object.prototype.toString.call(x) === '[object Array]';
+  };
+}
 
-	// Polyfill for ES5's Function.bind.
-	var bind = function(scope, func) {
-		return function() {
-			return func.apply(scope, arguments);
-		};
-	};
+var isArray = _isArray;
 
-	// Super exciting object merger-matron 9000 adding another 100 bytes to your download.
-	var merge = function () {
-		var args = arguments, target = args[0], key, i;
-		for (i = 1; i < args.length; i++) {
-			for (key in args[i]) {
-				if (!(key in target) && args[i].hasOwnProperty(key)) {
-					target[key] = args[i][key];
-				}
-			}
-		}
-		return target;
-	};
+var len = 0;
+var vertxNext = undefined;
+var customSchedulerFn = undefined;
 
-	// Helper to define a logging level object; helps with optimisation.
-	var defineLogLevel = function(value, name) {
-		return { value: value, name: name };
-	};
-
-	// Predefined logging levels.
-	Logger.DEBUG = defineLogLevel(1, 'DEBUG');
-	Logger.INFO = defineLogLevel(2, 'INFO');
-	Logger.TIME = defineLogLevel(3, 'TIME');
-	Logger.WARN = defineLogLevel(4, 'WARN');
-	Logger.ERROR = defineLogLevel(8, 'ERROR');
-	Logger.OFF = defineLogLevel(99, 'OFF');
-
-	// Inner class which performs the bulk of the work; ContextualLogger instances can be configured independently
-	// of each other.
-	var ContextualLogger = function(defaultContext) {
-		this.context = defaultContext;
-		this.setLevel(defaultContext.filterLevel);
-		this.log = this.info;  // Convenience alias.
-	};
-
-	ContextualLogger.prototype = {
-		// Changes the current logging level for the logging instance.
-		setLevel: function (newLevel) {
-			// Ensure the supplied Level object looks valid.
-			if (newLevel && "value" in newLevel) {
-				this.context.filterLevel = newLevel;
-			}
-		},
-
-		// Is the logger configured to output messages at the supplied level?
-		enabledFor: function (lvl) {
-			var filterLevel = this.context.filterLevel;
-			return lvl.value >= filterLevel.value;
-		},
-
-		debug: function () {
-			this.invoke(Logger.DEBUG, arguments);
-		},
-
-		info: function () {
-			this.invoke(Logger.INFO, arguments);
-		},
-
-		warn: function () {
-			this.invoke(Logger.WARN, arguments);
-		},
-
-		error: function () {
-			this.invoke(Logger.ERROR, arguments);
-		},
-
-		time: function (label) {
-			if (typeof label === 'string' && label.length > 0) {
-				this.invoke(Logger.TIME, [ label, 'start' ]);
-			}
-		},
-
-		timeEnd: function (label) {
-			if (typeof label === 'string' && label.length > 0) {
-				this.invoke(Logger.TIME, [ label, 'end' ]);
-			}
-		},
-
-		// Invokes the logger callback if it's not being filtered.
-		invoke: function (level, msgArgs) {
-			if (logHandler && this.enabledFor(level)) {
-				logHandler(msgArgs, merge({ level: level }, this.context));
-			}
-		}
-	};
-
-	// Protected instance which all calls to the to level `Logger` module will be routed through.
-	var globalLogger = new ContextualLogger({ filterLevel: Logger.OFF });
-
-	// Configure the global Logger instance.
-	(function() {
-		// Shortcut for optimisers.
-		var L = Logger;
-
-		L.enabledFor = bind(globalLogger, globalLogger.enabledFor);
-		L.debug = bind(globalLogger, globalLogger.debug);
-		L.time = bind(globalLogger, globalLogger.time);
-		L.timeEnd = bind(globalLogger, globalLogger.timeEnd);
-		L.info = bind(globalLogger, globalLogger.info);
-		L.warn = bind(globalLogger, globalLogger.warn);
-		L.error = bind(globalLogger, globalLogger.error);
-
-		// Don't forget the convenience alias!
-		L.log = L.info;
-	}());
-
-	// Set the global logging handler.  The supplied function should expect two arguments, the first being an arguments
-	// object with the supplied log messages and the second being a context object which contains a hash of stateful
-	// parameters which the logging function can consume.
-	Logger.setHandler = function (func) {
-		logHandler = func;
-	};
-
-	// Sets the global logging filter level which applies to *all* previously registered, and future Logger instances.
-	// (note that named loggers (retrieved via `Logger.get`) can be configured independently if required).
-	Logger.setLevel = function(level) {
-		// Set the globalLogger's level.
-		globalLogger.setLevel(level);
-
-		// Apply this level to all registered contextual loggers.
-		for (var key in contextualLoggersByNameMap) {
-			if (contextualLoggersByNameMap.hasOwnProperty(key)) {
-				contextualLoggersByNameMap[key].setLevel(level);
-			}
-		}
-	};
-
-	// Retrieve a ContextualLogger instance.  Note that named loggers automatically inherit the global logger's level,
-	// default context and log handler.
-	Logger.get = function (name) {
-		// All logger instances are cached so they can be configured ahead of use.
-		return contextualLoggersByNameMap[name] ||
-			(contextualLoggersByNameMap[name] = new ContextualLogger(merge({ name: name }, globalLogger.context)));
-	};
-
-	// CreateDefaultHandler returns a handler function which can be passed to `Logger.setHandler()` which will
-	// write to the window's console object (if present); the optional options object can be used to customise the
-	// formatter used to format each log message.
-	Logger.createDefaultHandler = function (options) {
-		options = options || {};
-
-		options.formatter = options.formatter || function defaultMessageFormatter(messages, context) {
-			// Prepend the logger's name to the log message for easy identification.
-			if (context.name) {
-				messages.unshift("[" + context.name + "]");
-			}
-		};
-
-		// Map of timestamps by timer labels used to track `#time` and `#timeEnd()` invocations in environments
-		// that don't offer a native console method.
-		var timerStartTimeByLabelMap = {};
-
-		// Support for IE8+ (and other, slightly more sane environments)
-		var invokeConsoleMethod = function (hdlr, messages) {
-			Function.prototype.apply.call(hdlr, console, messages);
-		};
-
-		// Check for the presence of a logger.
-		if (typeof console === "undefined") {
-			return function () { /* no console */ };
-		}
-
-		return function(messages, context) {
-			// Convert arguments object to Array.
-			messages = Array.prototype.slice.call(messages);
-
-			var hdlr = console.log;
-			var timerLabel;
-
-			if (context.level === Logger.TIME) {
-				timerLabel = (context.name ? '[' + context.name + '] ' : '') + messages[0];
-
-				if (messages[1] === 'start') {
-					if (console.time) {
-						console.time(timerLabel);
-					}
-					else {
-						timerStartTimeByLabelMap[timerLabel] = new Date().getTime();
-					}
-				}
-				else {
-					if (console.timeEnd) {
-						console.timeEnd(timerLabel);
-					}
-					else {
-						invokeConsoleMethod(hdlr, [ timerLabel + ': ' +
-							(new Date().getTime() - timerStartTimeByLabelMap[timerLabel]) + 'ms' ]);
-					}
-				}
-			}
-			else {
-				// Delegate through to custom warn/error loggers if present on the console.
-				if (context.level === Logger.WARN && console.warn) {
-					hdlr = console.warn;
-				} else if (context.level === Logger.ERROR && console.error) {
-					hdlr = console.error;
-				} else if (context.level === Logger.INFO && console.info) {
-					hdlr = console.info;
-				}
-
-				options.formatter(messages, context);
-				invokeConsoleMethod(hdlr, messages);
-			}
-		};
-	};
-
-	// Configure and example a Default implementation which writes to the `window.console` (if present).  The
-	// `options` hash can be used to configure the default logLevel and provide a custom message formatter.
-	Logger.useDefaults = function(options) {
-		Logger.setLevel(options && options.defaultLevel || Logger.DEBUG);
-		Logger.setHandler(Logger.createDefaultHandler(options));
-	};
-
-	// Export to popular environments boilerplate.
-	if (true) {
-		!(__WEBPACK_AMD_DEFINE_FACTORY__ = (Logger),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
-				__WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	}
-	else if (typeof module !== 'undefined' && module.exports) {
-		module.exports = Logger;
-	}
-	else {
-		Logger._prevLogger = global.Logger;
-
-		Logger.noConflict = function () {
-			global.Logger = Logger._prevLogger;
-			return Logger;
-		};
-
-		global.Logger = Logger;
-	}
-}(this));
-
-
-/***/ }),
-/* 51 */
-/***/ (function(module, exports) {
-
-module.exports = {
-	"name": "playkit-js",
-	"version": "0.2.0",
-	"main": "dist/playkit.js",
-	"scripts": {
-		"clean": "rm -rf ./dist",
-		"prebuild": "npm run clean",
-		"build:prod": "NODE_ENV=production webpack",
-		"build": "webpack",
-		"dev": "webpack --progress --colors --watch",
-		"test": "NODE_ENV=test karma start --color",
-		"test:chrome": "NODE_ENV=test karma start --color --browsers Chrome",
-		"test:chrome:dots": "NODE_ENV=test karma start --color --browsers Chrome --reporters dots",
-		"test:firefox": "NODE_ENV=test karma start --color --browsers Firefox",
-		"test:safari": "NODE_ENV=test karma start --color --browsers Safari",
-		"test:watch": "NODE_ENV=test karma start --color --auto-watch",
-		"start": "webpack-dev-server",
-		"release": "npm run build:prod && npm run commit:dist && standard-version",
-		"publish": "git push --follow-tags --no-verify origin develop",
-		"eslint": "eslint . --color",
-		"flow": "flow check",
-		"eslint:flow:test": "npm run eslint && npm run flow && npm run test",
-		"commit:dist": "git add --all dist && (git commit -m 'chore: update dist' || exit 0)",
-		"prepush-msg:build": "echo '\nRunning build before push...\n' && exit 0",
-		"prepush-msg:dist": "echo '\nAdding dist files to a seperate commit...\n' && exit 0",
-		"prepush-msg:done": "echo '\nPre push tasks are done.\n' && exit 0"
-	},
-	"pre-push": [
-		"prepush-msg:build",
-		"prebuild",
-		"build",
-		"build:prod",
-		"prepush-msg:dist",
-		"commit:dist",
-		"prepush-msg:done"
-	],
-	"devDependencies": {
-		"babel-cli": "^6.18.0",
-		"babel-core": "^6.18.2",
-		"babel-eslint": "^7.1.1",
-		"babel-loader": "^6.2.7",
-		"babel-plugin-istanbul": "^4.0.0",
-		"babel-plugin-transform-class-properties": "^6.22.0",
-		"babel-plugin-transform-flow-strip-types": "^6.22.0",
-		"babel-preset-es2015": "^6.18.0",
-		"babel-register": "^6.23.0",
-		"chai": "^3.5.0",
-		"cross-env": "^3.1.4",
-		"css-loader": "^0.28.4",
-		"eslint": "^3.10.0",
-		"eslint-loader": "^1.6.1",
-		"eslint-plugin-flowtype": "^2.30.0",
-		"eslint-plugin-import": "^2.2.0",
-		"eslint-plugin-mocha-no-only": "^0.0.5",
-		"flow-bin": "latest",
-		"istanbul": "^0.4.5",
-		"karma": "^1.5.0",
-		"karma-chai": "^0.1.0",
-		"karma-chrome-launcher": "^2.0.0",
-		"karma-cli": "^1.0.1",
-		"karma-coverage": "^1.1.1",
-		"karma-firefox-launcher": "^1.0.1",
-		"karma-ie-launcher": "^1.0.0",
-		"karma-mocha": "^1.3.0",
-		"karma-safari-launcher": "^1.0.0",
-		"karma-sourcemap-loader": "^0.3.7",
-		"karma-webpack": "^2.0.2",
-		"mocha": "^3.2.0",
-		"mocha-cli": "^1.0.1",
-		"pre-push": "^0.1.1",
-		"sinon": "^2.0.0",
-		"sinon-chai": "^2.8.0",
-		"standard-version": "^4.0.0",
-		"style-loader": "^0.18.2",
-		"uglifyjs-webpack-plugin": "^0.4.3",
-		"webpack": "latest",
-		"webpack-dev-server": "latest"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/kaltura/playkit-js"
-	},
-	"keywords": [
-		"kaltura",
-		"player",
-		"html5 player"
-	],
-	"license": "AGPLV3",
-	"bugs": {
-		"url": "https://github.com/kaltura/playkit-js/issues"
-	},
-	"homepage": "https://github.com/kaltura/playkit-js",
-	"dependencies": {
-		"js-logger": "^1.3.0"
-	}
+var asap = function asap(callback, arg) {
+  queue[len] = callback;
+  queue[len + 1] = arg;
+  len += 2;
+  if (len === 2) {
+    // If len is 2, that means that we need to schedule an async flush.
+    // If additional callbacks are queued before the queue is flushed, they
+    // will be processed by this flush that we are scheduling.
+    if (customSchedulerFn) {
+      customSchedulerFn(flush);
+    } else {
+      scheduleFlush();
+    }
+  }
 };
 
-/***/ }),
-/* 52 */
-/***/ (function(module, exports) {
+function setScheduler(scheduleFn) {
+  customSchedulerFn = scheduleFn;
+}
 
-module.exports = {
-	"playback": {
-		"preload": "none",
-		"autoplay": false,
-		"muted": false,
-		"options": {
-			"html5": {
-				"hls": {},
-				"dash": {}
-			}
-		},
-		"streamPriority": [
-			{
-				"engine": "html5",
-				"format": "hls"
-			},
-			{
-				"engine": "html5",
-				"format": "dash"
-			},
-			{
-				"engine": "html5",
-				"format": "progressive"
-			}
-		]
-	}
+function setAsap(asapFn) {
+  asap = asapFn;
+}
+
+var browserWindow = typeof window !== 'undefined' ? window : undefined;
+var browserGlobal = browserWindow || {};
+var BrowserMutationObserver = browserGlobal.MutationObserver || browserGlobal.WebKitMutationObserver;
+var isNode = typeof self === 'undefined' && typeof process !== 'undefined' && ({}).toString.call(process) === '[object process]';
+
+// test for web worker but not in IE10
+var isWorker = typeof Uint8ClampedArray !== 'undefined' && typeof importScripts !== 'undefined' && typeof MessageChannel !== 'undefined';
+
+// node
+function useNextTick() {
+  // node version 0.10.x displays a deprecation warning when nextTick is used recursively
+  // see https://github.com/cujojs/when/issues/410 for details
+  return function () {
+    return process.nextTick(flush);
+  };
+}
+
+// vertx
+function useVertxTimer() {
+  if (typeof vertxNext !== 'undefined') {
+    return function () {
+      vertxNext(flush);
+    };
+  }
+
+  return useSetTimeout();
+}
+
+function useMutationObserver() {
+  var iterations = 0;
+  var observer = new BrowserMutationObserver(flush);
+  var node = document.createTextNode('');
+  observer.observe(node, { characterData: true });
+
+  return function () {
+    node.data = iterations = ++iterations % 2;
+  };
+}
+
+// web worker
+function useMessageChannel() {
+  var channel = new MessageChannel();
+  channel.port1.onmessage = flush;
+  return function () {
+    return channel.port2.postMessage(0);
+  };
+}
+
+function useSetTimeout() {
+  // Store setTimeout reference so es6-promise will be unaffected by
+  // other code modifying setTimeout (like sinon.useFakeTimers())
+  var globalSetTimeout = setTimeout;
+  return function () {
+    return globalSetTimeout(flush, 1);
+  };
+}
+
+var queue = new Array(1000);
+function flush() {
+  for (var i = 0; i < len; i += 2) {
+    var callback = queue[i];
+    var arg = queue[i + 1];
+
+    callback(arg);
+
+    queue[i] = undefined;
+    queue[i + 1] = undefined;
+  }
+
+  len = 0;
+}
+
+function attemptVertx() {
+  try {
+    var r = require;
+    var vertx = __webpack_require__(19);
+    vertxNext = vertx.runOnLoop || vertx.runOnContext;
+    return useVertxTimer();
+  } catch (e) {
+    return useSetTimeout();
+  }
+}
+
+var scheduleFlush = undefined;
+// Decide what async method to use to triggering processing of queued callbacks:
+if (isNode) {
+  scheduleFlush = useNextTick();
+} else if (BrowserMutationObserver) {
+  scheduleFlush = useMutationObserver();
+} else if (isWorker) {
+  scheduleFlush = useMessageChannel();
+} else if (browserWindow === undefined && "function" === 'function') {
+  scheduleFlush = attemptVertx();
+} else {
+  scheduleFlush = useSetTimeout();
+}
+
+function then(onFulfillment, onRejection) {
+  var _arguments = arguments;
+
+  var parent = this;
+
+  var child = new this.constructor(noop);
+
+  if (child[PROMISE_ID] === undefined) {
+    makePromise(child);
+  }
+
+  var _state = parent._state;
+
+  if (_state) {
+    (function () {
+      var callback = _arguments[_state - 1];
+      asap(function () {
+        return invokeCallback(_state, child, callback, parent._result);
+      });
+    })();
+  } else {
+    subscribe(parent, child, onFulfillment, onRejection);
+  }
+
+  return child;
+}
+
+/**
+  `Promise.resolve` returns a promise that will become resolved with the
+  passed `value`. It is shorthand for the following:
+
+  ```javascript
+  let promise = new Promise(function(resolve, reject){
+    resolve(1);
+  });
+
+  promise.then(function(value){
+    // value === 1
+  });
+  ```
+
+  Instead of writing the above, your code now simply becomes the following:
+
+  ```javascript
+  let promise = Promise.resolve(1);
+
+  promise.then(function(value){
+    // value === 1
+  });
+  ```
+
+  @method resolve
+  @static
+  @param {Any} value value that the returned promise will be resolved with
+  Useful for tooling.
+  @return {Promise} a promise that will become fulfilled with the given
+  `value`
+*/
+function resolve$1(object) {
+  /*jshint validthis:true */
+  var Constructor = this;
+
+  if (object && typeof object === 'object' && object.constructor === Constructor) {
+    return object;
+  }
+
+  var promise = new Constructor(noop);
+  resolve(promise, object);
+  return promise;
+}
+
+var PROMISE_ID = Math.random().toString(36).substring(16);
+
+function noop() {}
+
+var PENDING = void 0;
+var FULFILLED = 1;
+var REJECTED = 2;
+
+var GET_THEN_ERROR = new ErrorObject();
+
+function selfFulfillment() {
+  return new TypeError("You cannot resolve a promise with itself");
+}
+
+function cannotReturnOwn() {
+  return new TypeError('A promises callback cannot return that same promise.');
+}
+
+function getThen(promise) {
+  try {
+    return promise.then;
+  } catch (error) {
+    GET_THEN_ERROR.error = error;
+    return GET_THEN_ERROR;
+  }
+}
+
+function tryThen(then$$1, value, fulfillmentHandler, rejectionHandler) {
+  try {
+    then$$1.call(value, fulfillmentHandler, rejectionHandler);
+  } catch (e) {
+    return e;
+  }
+}
+
+function handleForeignThenable(promise, thenable, then$$1) {
+  asap(function (promise) {
+    var sealed = false;
+    var error = tryThen(then$$1, thenable, function (value) {
+      if (sealed) {
+        return;
+      }
+      sealed = true;
+      if (thenable !== value) {
+        resolve(promise, value);
+      } else {
+        fulfill(promise, value);
+      }
+    }, function (reason) {
+      if (sealed) {
+        return;
+      }
+      sealed = true;
+
+      reject(promise, reason);
+    }, 'Settle: ' + (promise._label || ' unknown promise'));
+
+    if (!sealed && error) {
+      sealed = true;
+      reject(promise, error);
+    }
+  }, promise);
+}
+
+function handleOwnThenable(promise, thenable) {
+  if (thenable._state === FULFILLED) {
+    fulfill(promise, thenable._result);
+  } else if (thenable._state === REJECTED) {
+    reject(promise, thenable._result);
+  } else {
+    subscribe(thenable, undefined, function (value) {
+      return resolve(promise, value);
+    }, function (reason) {
+      return reject(promise, reason);
+    });
+  }
+}
+
+function handleMaybeThenable(promise, maybeThenable, then$$1) {
+  if (maybeThenable.constructor === promise.constructor && then$$1 === then && maybeThenable.constructor.resolve === resolve$1) {
+    handleOwnThenable(promise, maybeThenable);
+  } else {
+    if (then$$1 === GET_THEN_ERROR) {
+      reject(promise, GET_THEN_ERROR.error);
+      GET_THEN_ERROR.error = null;
+    } else if (then$$1 === undefined) {
+      fulfill(promise, maybeThenable);
+    } else if (isFunction(then$$1)) {
+      handleForeignThenable(promise, maybeThenable, then$$1);
+    } else {
+      fulfill(promise, maybeThenable);
+    }
+  }
+}
+
+function resolve(promise, value) {
+  if (promise === value) {
+    reject(promise, selfFulfillment());
+  } else if (objectOrFunction(value)) {
+    handleMaybeThenable(promise, value, getThen(value));
+  } else {
+    fulfill(promise, value);
+  }
+}
+
+function publishRejection(promise) {
+  if (promise._onerror) {
+    promise._onerror(promise._result);
+  }
+
+  publish(promise);
+}
+
+function fulfill(promise, value) {
+  if (promise._state !== PENDING) {
+    return;
+  }
+
+  promise._result = value;
+  promise._state = FULFILLED;
+
+  if (promise._subscribers.length !== 0) {
+    asap(publish, promise);
+  }
+}
+
+function reject(promise, reason) {
+  if (promise._state !== PENDING) {
+    return;
+  }
+  promise._state = REJECTED;
+  promise._result = reason;
+
+  asap(publishRejection, promise);
+}
+
+function subscribe(parent, child, onFulfillment, onRejection) {
+  var _subscribers = parent._subscribers;
+  var length = _subscribers.length;
+
+  parent._onerror = null;
+
+  _subscribers[length] = child;
+  _subscribers[length + FULFILLED] = onFulfillment;
+  _subscribers[length + REJECTED] = onRejection;
+
+  if (length === 0 && parent._state) {
+    asap(publish, parent);
+  }
+}
+
+function publish(promise) {
+  var subscribers = promise._subscribers;
+  var settled = promise._state;
+
+  if (subscribers.length === 0) {
+    return;
+  }
+
+  var child = undefined,
+      callback = undefined,
+      detail = promise._result;
+
+  for (var i = 0; i < subscribers.length; i += 3) {
+    child = subscribers[i];
+    callback = subscribers[i + settled];
+
+    if (child) {
+      invokeCallback(settled, child, callback, detail);
+    } else {
+      callback(detail);
+    }
+  }
+
+  promise._subscribers.length = 0;
+}
+
+function ErrorObject() {
+  this.error = null;
+}
+
+var TRY_CATCH_ERROR = new ErrorObject();
+
+function tryCatch(callback, detail) {
+  try {
+    return callback(detail);
+  } catch (e) {
+    TRY_CATCH_ERROR.error = e;
+    return TRY_CATCH_ERROR;
+  }
+}
+
+function invokeCallback(settled, promise, callback, detail) {
+  var hasCallback = isFunction(callback),
+      value = undefined,
+      error = undefined,
+      succeeded = undefined,
+      failed = undefined;
+
+  if (hasCallback) {
+    value = tryCatch(callback, detail);
+
+    if (value === TRY_CATCH_ERROR) {
+      failed = true;
+      error = value.error;
+      value.error = null;
+    } else {
+      succeeded = true;
+    }
+
+    if (promise === value) {
+      reject(promise, cannotReturnOwn());
+      return;
+    }
+  } else {
+    value = detail;
+    succeeded = true;
+  }
+
+  if (promise._state !== PENDING) {
+    // noop
+  } else if (hasCallback && succeeded) {
+      resolve(promise, value);
+    } else if (failed) {
+      reject(promise, error);
+    } else if (settled === FULFILLED) {
+      fulfill(promise, value);
+    } else if (settled === REJECTED) {
+      reject(promise, value);
+    }
+}
+
+function initializePromise(promise, resolver) {
+  try {
+    resolver(function resolvePromise(value) {
+      resolve(promise, value);
+    }, function rejectPromise(reason) {
+      reject(promise, reason);
+    });
+  } catch (e) {
+    reject(promise, e);
+  }
+}
+
+var id = 0;
+function nextId() {
+  return id++;
+}
+
+function makePromise(promise) {
+  promise[PROMISE_ID] = id++;
+  promise._state = undefined;
+  promise._result = undefined;
+  promise._subscribers = [];
+}
+
+function Enumerator$1(Constructor, input) {
+  this._instanceConstructor = Constructor;
+  this.promise = new Constructor(noop);
+
+  if (!this.promise[PROMISE_ID]) {
+    makePromise(this.promise);
+  }
+
+  if (isArray(input)) {
+    this.length = input.length;
+    this._remaining = input.length;
+
+    this._result = new Array(this.length);
+
+    if (this.length === 0) {
+      fulfill(this.promise, this._result);
+    } else {
+      this.length = this.length || 0;
+      this._enumerate(input);
+      if (this._remaining === 0) {
+        fulfill(this.promise, this._result);
+      }
+    }
+  } else {
+    reject(this.promise, validationError());
+  }
+}
+
+function validationError() {
+  return new Error('Array Methods must be provided an Array');
+}
+
+Enumerator$1.prototype._enumerate = function (input) {
+  for (var i = 0; this._state === PENDING && i < input.length; i++) {
+    this._eachEntry(input[i], i);
+  }
 };
 
+Enumerator$1.prototype._eachEntry = function (entry, i) {
+  var c = this._instanceConstructor;
+  var resolve$$1 = c.resolve;
+
+  if (resolve$$1 === resolve$1) {
+    var _then = getThen(entry);
+
+    if (_then === then && entry._state !== PENDING) {
+      this._settledAt(entry._state, i, entry._result);
+    } else if (typeof _then !== 'function') {
+      this._remaining--;
+      this._result[i] = entry;
+    } else if (c === Promise$2) {
+      var promise = new c(noop);
+      handleMaybeThenable(promise, entry, _then);
+      this._willSettleAt(promise, i);
+    } else {
+      this._willSettleAt(new c(function (resolve$$1) {
+        return resolve$$1(entry);
+      }), i);
+    }
+  } else {
+    this._willSettleAt(resolve$$1(entry), i);
+  }
+};
+
+Enumerator$1.prototype._settledAt = function (state, i, value) {
+  var promise = this.promise;
+
+  if (promise._state === PENDING) {
+    this._remaining--;
+
+    if (state === REJECTED) {
+      reject(promise, value);
+    } else {
+      this._result[i] = value;
+    }
+  }
+
+  if (this._remaining === 0) {
+    fulfill(promise, this._result);
+  }
+};
+
+Enumerator$1.prototype._willSettleAt = function (promise, i) {
+  var enumerator = this;
+
+  subscribe(promise, undefined, function (value) {
+    return enumerator._settledAt(FULFILLED, i, value);
+  }, function (reason) {
+    return enumerator._settledAt(REJECTED, i, reason);
+  });
+};
+
+/**
+  `Promise.all` accepts an array of promises, and returns a new promise which
+  is fulfilled with an array of fulfillment values for the passed promises, or
+  rejected with the reason of the first passed promise to be rejected. It casts all
+  elements of the passed iterable to promises as it runs this algorithm.
+
+  Example:
+
+  ```javascript
+  let promise1 = resolve(1);
+  let promise2 = resolve(2);
+  let promise3 = resolve(3);
+  let promises = [ promise1, promise2, promise3 ];
+
+  Promise.all(promises).then(function(array){
+    // The array here would be [ 1, 2, 3 ];
+  });
+  ```
+
+  If any of the `promises` given to `all` are rejected, the first promise
+  that is rejected will be given as an argument to the returned promises's
+  rejection handler. For example:
+
+  Example:
+
+  ```javascript
+  let promise1 = resolve(1);
+  let promise2 = reject(new Error("2"));
+  let promise3 = reject(new Error("3"));
+  let promises = [ promise1, promise2, promise3 ];
+
+  Promise.all(promises).then(function(array){
+    // Code here never runs because there are rejected promises!
+  }, function(error) {
+    // error.message === "2"
+  });
+  ```
+
+  @method all
+  @static
+  @param {Array} entries array of promises
+  @param {String} label optional string for labeling the promise.
+  Useful for tooling.
+  @return {Promise} promise that is fulfilled when all `promises` have been
+  fulfilled, or rejected if any of them become rejected.
+  @static
+*/
+function all$1(entries) {
+  return new Enumerator$1(this, entries).promise;
+}
+
+/**
+  `Promise.race` returns a new promise which is settled in the same way as the
+  first passed promise to settle.
+
+  Example:
+
+  ```javascript
+  let promise1 = new Promise(function(resolve, reject){
+    setTimeout(function(){
+      resolve('promise 1');
+    }, 200);
+  });
+
+  let promise2 = new Promise(function(resolve, reject){
+    setTimeout(function(){
+      resolve('promise 2');
+    }, 100);
+  });
+
+  Promise.race([promise1, promise2]).then(function(result){
+    // result === 'promise 2' because it was resolved before promise1
+    // was resolved.
+  });
+  ```
+
+  `Promise.race` is deterministic in that only the state of the first
+  settled promise matters. For example, even if other promises given to the
+  `promises` array argument are resolved, but the first settled promise has
+  become rejected before the other promises became fulfilled, the returned
+  promise will become rejected:
+
+  ```javascript
+  let promise1 = new Promise(function(resolve, reject){
+    setTimeout(function(){
+      resolve('promise 1');
+    }, 200);
+  });
+
+  let promise2 = new Promise(function(resolve, reject){
+    setTimeout(function(){
+      reject(new Error('promise 2'));
+    }, 100);
+  });
+
+  Promise.race([promise1, promise2]).then(function(result){
+    // Code here never runs
+  }, function(reason){
+    // reason.message === 'promise 2' because promise 2 became rejected before
+    // promise 1 became fulfilled
+  });
+  ```
+
+  An example real-world use case is implementing timeouts:
+
+  ```javascript
+  Promise.race([ajax('foo.json'), timeout(5000)])
+  ```
+
+  @method race
+  @static
+  @param {Array} promises array of promises to observe
+  Useful for tooling.
+  @return {Promise} a promise which settles in the same way as the first passed
+  promise to settle.
+*/
+function race$1(entries) {
+  /*jshint validthis:true */
+  var Constructor = this;
+
+  if (!isArray(entries)) {
+    return new Constructor(function (_, reject) {
+      return reject(new TypeError('You must pass an array to race.'));
+    });
+  } else {
+    return new Constructor(function (resolve, reject) {
+      var length = entries.length;
+      for (var i = 0; i < length; i++) {
+        Constructor.resolve(entries[i]).then(resolve, reject);
+      }
+    });
+  }
+}
+
+/**
+  `Promise.reject` returns a promise rejected with the passed `reason`.
+  It is shorthand for the following:
+
+  ```javascript
+  let promise = new Promise(function(resolve, reject){
+    reject(new Error('WHOOPS'));
+  });
+
+  promise.then(function(value){
+    // Code here doesn't run because the promise is rejected!
+  }, function(reason){
+    // reason.message === 'WHOOPS'
+  });
+  ```
+
+  Instead of writing the above, your code now simply becomes the following:
+
+  ```javascript
+  let promise = Promise.reject(new Error('WHOOPS'));
+
+  promise.then(function(value){
+    // Code here doesn't run because the promise is rejected!
+  }, function(reason){
+    // reason.message === 'WHOOPS'
+  });
+  ```
+
+  @method reject
+  @static
+  @param {Any} reason value that the returned promise will be rejected with.
+  Useful for tooling.
+  @return {Promise} a promise rejected with the given `reason`.
+*/
+function reject$1(reason) {
+  /*jshint validthis:true */
+  var Constructor = this;
+  var promise = new Constructor(noop);
+  reject(promise, reason);
+  return promise;
+}
+
+function needsResolver() {
+  throw new TypeError('You must pass a resolver function as the first argument to the promise constructor');
+}
+
+function needsNew() {
+  throw new TypeError("Failed to construct 'Promise': Please use the 'new' operator, this object constructor cannot be called as a function.");
+}
+
+/**
+  Promise objects represent the eventual result of an asynchronous operation. The
+  primary way of interacting with a promise is through its `then` method, which
+  registers callbacks to receive either a promise's eventual value or the reason
+  why the promise cannot be fulfilled.
+
+  Terminology
+  -----------
+
+  - `promise` is an object or function with a `then` method whose behavior conforms to this specification.
+  - `thenable` is an object or function that defines a `then` method.
+  - `value` is any legal JavaScript value (including undefined, a thenable, or a promise).
+  - `exception` is a value that is thrown using the throw statement.
+  - `reason` is a value that indicates why a promise was rejected.
+  - `settled` the final resting state of a promise, fulfilled or rejected.
+
+  A promise can be in one of three states: pending, fulfilled, or rejected.
+
+  Promises that are fulfilled have a fulfillment value and are in the fulfilled
+  state.  Promises that are rejected have a rejection reason and are in the
+  rejected state.  A fulfillment value is never a thenable.
+
+  Promises can also be said to *resolve* a value.  If this value is also a
+  promise, then the original promise's settled state will match the value's
+  settled state.  So a promise that *resolves* a promise that rejects will
+  itself reject, and a promise that *resolves* a promise that fulfills will
+  itself fulfill.
+
+
+  Basic Usage:
+  ------------
+
+  ```js
+  let promise = new Promise(function(resolve, reject) {
+    // on success
+    resolve(value);
+
+    // on failure
+    reject(reason);
+  });
+
+  promise.then(function(value) {
+    // on fulfillment
+  }, function(reason) {
+    // on rejection
+  });
+  ```
+
+  Advanced Usage:
+  ---------------
+
+  Promises shine when abstracting away asynchronous interactions such as
+  `XMLHttpRequest`s.
+
+  ```js
+  function getJSON(url) {
+    return new Promise(function(resolve, reject){
+      let xhr = new XMLHttpRequest();
+
+      xhr.open('GET', url);
+      xhr.onreadystatechange = handler;
+      xhr.responseType = 'json';
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.send();
+
+      function handler() {
+        if (this.readyState === this.DONE) {
+          if (this.status === 200) {
+            resolve(this.response);
+          } else {
+            reject(new Error('getJSON: `' + url + '` failed with status: [' + this.status + ']'));
+          }
+        }
+      };
+    });
+  }
+
+  getJSON('/posts.json').then(function(json) {
+    // on fulfillment
+  }, function(reason) {
+    // on rejection
+  });
+  ```
+
+  Unlike callbacks, promises are great composable primitives.
+
+  ```js
+  Promise.all([
+    getJSON('/posts'),
+    getJSON('/comments')
+  ]).then(function(values){
+    values[0] // => postsJSON
+    values[1] // => commentsJSON
+
+    return values;
+  });
+  ```
+
+  @class Promise
+  @param {function} resolver
+  Useful for tooling.
+  @constructor
+*/
+function Promise$2(resolver) {
+  this[PROMISE_ID] = nextId();
+  this._result = this._state = undefined;
+  this._subscribers = [];
+
+  if (noop !== resolver) {
+    typeof resolver !== 'function' && needsResolver();
+    this instanceof Promise$2 ? initializePromise(this, resolver) : needsNew();
+  }
+}
+
+Promise$2.all = all$1;
+Promise$2.race = race$1;
+Promise$2.resolve = resolve$1;
+Promise$2.reject = reject$1;
+Promise$2._setScheduler = setScheduler;
+Promise$2._setAsap = setAsap;
+Promise$2._asap = asap;
+
+Promise$2.prototype = {
+  constructor: Promise$2,
+
+  /**
+    The primary way of interacting with a promise is through its `then` method,
+    which registers callbacks to receive either a promise's eventual value or the
+    reason why the promise cannot be fulfilled.
+
+    ```js
+    findUser().then(function(user){
+      // user is available
+    }, function(reason){
+      // user is unavailable, and you are given the reason why
+    });
+    ```
+
+    Chaining
+    --------
+
+    The return value of `then` is itself a promise.  This second, 'downstream'
+    promise is resolved with the return value of the first promise's fulfillment
+    or rejection handler, or rejected if the handler throws an exception.
+
+    ```js
+    findUser().then(function (user) {
+      return user.name;
+    }, function (reason) {
+      return 'default name';
+    }).then(function (userName) {
+      // If `findUser` fulfilled, `userName` will be the user's name, otherwise it
+      // will be `'default name'`
+    });
+
+    findUser().then(function (user) {
+      throw new Error('Found user, but still unhappy');
+    }, function (reason) {
+      throw new Error('`findUser` rejected and we're unhappy');
+    }).then(function (value) {
+      // never reached
+    }, function (reason) {
+      // if `findUser` fulfilled, `reason` will be 'Found user, but still unhappy'.
+      // If `findUser` rejected, `reason` will be '`findUser` rejected and we're unhappy'.
+    });
+    ```
+    If the downstream promise does not specify a rejection handler, rejection reasons will be propagated further downstream.
+
+    ```js
+    findUser().then(function (user) {
+      throw new PedagogicalException('Upstream error');
+    }).then(function (value) {
+      // never reached
+    }).then(function (value) {
+      // never reached
+    }, function (reason) {
+      // The `PedgagocialException` is propagated all the way down to here
+    });
+    ```
+
+    Assimilation
+    ------------
+
+    Sometimes the value you want to propagate to a downstream promise can only be
+    retrieved asynchronously. This can be achieved by returning a promise in the
+    fulfillment or rejection handler. The downstream promise will then be pending
+    until the returned promise is settled. This is called *assimilation*.
+
+    ```js
+    findUser().then(function (user) {
+      return findCommentsByAuthor(user);
+    }).then(function (comments) {
+      // The user's comments are now available
+    });
+    ```
+
+    If the assimliated promise rejects, then the downstream promise will also reject.
+
+    ```js
+    findUser().then(function (user) {
+      return findCommentsByAuthor(user);
+    }).then(function (comments) {
+      // If `findCommentsByAuthor` fulfills, we'll have the value here
+    }, function (reason) {
+      // If `findCommentsByAuthor` rejects, we'll have the reason here
+    });
+    ```
+
+    Simple Example
+    --------------
+
+    Synchronous Example
+
+    ```javascript
+    let result;
+
+    try {
+      result = findResult();
+      // success
+    } catch(reason) {
+      // failure
+    }
+    ```
+
+    Errback Example
+
+    ```js
+    findResult(function(result, err){
+      if (err) {
+        // failure
+      } else {
+        // success
+      }
+    });
+    ```
+
+    Promise Example;
+
+    ```javascript
+    findResult().then(function(result){
+      // success
+    }, function(reason){
+      // failure
+    });
+    ```
+
+    Advanced Example
+    --------------
+
+    Synchronous Example
+
+    ```javascript
+    let author, books;
+
+    try {
+      author = findAuthor();
+      books  = findBooksByAuthor(author);
+      // success
+    } catch(reason) {
+      // failure
+    }
+    ```
+
+    Errback Example
+
+    ```js
+
+    function foundBooks(books) {
+
+    }
+
+    function failure(reason) {
+
+    }
+
+    findAuthor(function(author, err){
+      if (err) {
+        failure(err);
+        // failure
+      } else {
+        try {
+          findBoooksByAuthor(author, function(books, err) {
+            if (err) {
+              failure(err);
+            } else {
+              try {
+                foundBooks(books);
+              } catch(reason) {
+                failure(reason);
+              }
+            }
+          });
+        } catch(error) {
+          failure(err);
+        }
+        // success
+      }
+    });
+    ```
+
+    Promise Example;
+
+    ```javascript
+    findAuthor().
+      then(findBooksByAuthor).
+      then(function(books){
+        // found books
+    }).catch(function(reason){
+      // something went wrong
+    });
+    ```
+
+    @method then
+    @param {Function} onFulfilled
+    @param {Function} onRejected
+    Useful for tooling.
+    @return {Promise}
+  */
+  then: then,
+
+  /**
+    `catch` is simply sugar for `then(undefined, onRejection)` which makes it the same
+    as the catch block of a try/catch statement.
+
+    ```js
+    function findAuthor(){
+      throw new Error('couldn't find that author');
+    }
+
+    // synchronous
+    try {
+      findAuthor();
+    } catch(reason) {
+      // something went wrong
+    }
+
+    // async with promises
+    findAuthor().catch(function(reason){
+      // something went wrong
+    });
+    ```
+
+    @method catch
+    @param {Function} onRejection
+    Useful for tooling.
+    @return {Promise}
+  */
+  'catch': function _catch(onRejection) {
+    return this.then(null, onRejection);
+  }
+};
+
+/*global self*/
+function polyfill$1() {
+    var local = undefined;
+
+    if (typeof global !== 'undefined') {
+        local = global;
+    } else if (typeof self !== 'undefined') {
+        local = self;
+    } else {
+        try {
+            local = Function('return this')();
+        } catch (e) {
+            throw new Error('polyfill failed because global object is unavailable in this environment');
+        }
+    }
+
+    var P = local.Promise;
+
+    if (P) {
+        var promiseToString = null;
+        try {
+            promiseToString = Object.prototype.toString.call(P.resolve());
+        } catch (e) {
+            // silently ignored
+        }
+
+        if (promiseToString === '[object Promise]' && !P.cast) {
+            return;
+        }
+    }
+
+    local.Promise = Promise$2;
+}
+
+// Strange compat..
+Promise$2.polyfill = polyfill$1;
+Promise$2.Promise = Promise$2;
+
+return Promise$2;
+
+})));
+
+//# sourceMappingURL=es6-promise.map
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(18), __webpack_require__(0)))
+
 /***/ }),
-/* 53 */
+/* 18 */
+/***/ (function(module, exports) {
+
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our _context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our _context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+
+/***/ }),
+/* 19 */
 /***/ (function(module, exports) {
 
 /* (ignored) */
-
-/***/ }),
-/* 54 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _imaMiddleware = __webpack_require__(26);
-
-var _imaMiddleware2 = _interopRequireDefault(_imaMiddleware);
-
-var _fsm = __webpack_require__(25);
-
-var _fsm2 = _interopRequireDefault(_fsm);
-
-var _playkit = __webpack_require__(15);
-
-var Playkit = _interopRequireWildcard(_playkit);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-// import {registerPlugin, BasePlugin} from 'playkit-js'
-
-
-// import {VERSION} from 'playkit-js'
-// import {PlayerMiddlewareBase} from 'playkit-js'
-
-var pluginName = "ima";
-
-var ADS_CONTAINER_ID = "ads-container";
-var PLAYER_NAME = "kaltura-player-js";
-
-var Ima = function (_BasePlugin) {
-  _inherits(Ima, _BasePlugin);
-
-  _createClass(Ima, null, [{
-    key: 'isValid',
-    value: function isValid() {
-      return true;
-    }
-  }]);
-
-  function Ima(name, player, config) {
-    _classCallCheck(this, Ima);
-
-    var _this = _possibleConstructorReturn(this, (Ima.__proto__ || Object.getPrototypeOf(Ima)).call(this, name, player, config));
-
-    _this._fsm = new _fsm2.default(_this);
-    _this._intervalTimer = null;
-    _this._adsManager = null;
-    _this._contentComplete = false;
-    _this._contentPlayheadTracker = { currentTime: 0, previousTime: 0, seeking: false, duration: 0 };
-    _this._addBindings();
-    _this._init();
-    return _this;
-  }
-
-  _createClass(Ima, [{
-    key: 'getStateMachine',
-    value: function getStateMachine() {
-      return this._fsm;
-    }
-  }, {
-    key: 'getPlayerMiddleware',
-    value: function getPlayerMiddleware() {
-      return new _imaMiddleware2.default(this);
-    }
-  }, {
-    key: 'destroy',
-    value: function destroy() {
-      this.logger.debug("destroy");
-      this.eventManager.destroy();
-      this._reset();
-    }
-  }, {
-    key: 'initialize',
-    value: function initialize() {
-      try {
-        var playerViewSize = this._getPlayerViewSize();
-        // Initialize the container.
-        this._adDisplayContainer.initialize();
-        // Initialize the ads manager. Ad rules playlist will start at this time.
-        this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
-        // Call play to start showing the ad.
-        // Single video and overlay ads will start at this time.
-        // The call will be ignored for ad rules.
-        this._adsManager.start();
-      } catch (adError) {
-        this.logger.error(adError);
-        this.destroy();
-      }
-    }
-  }, {
-    key: 'resumeAd',
-    value: function resumeAd() {
-      this._adsManager.resume();
-    }
-  }, {
-    key: 'pauseAd',
-    value: function pauseAd() {
-      this._adsManager.pause();
-    }
-  }, {
-    key: '_addBindings',
-    value: function _addBindings() {
-      this.eventManager.listen(window, 'resize', this._onResize.bind(this));
-      this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, this._onLoadedMetadata.bind(this));
-      this.eventManager.listen(this.player, this.player.Event.TIME_UPDATE, this._onMediaTimeUpdate.bind(this));
-      this.eventManager.listen(this.player, this.player.Event.SEEKING, this._onMediaSeeking.bind(this));
-      this.eventManager.listen(this.player, this.player.Event.SEEKED, this._onMediaSeeked.bind(this));
-      this.eventManager.listen(this.player, this.player.Event.ENDED, this._onMediaEnded.bind(this));
-    }
-  }, {
-    key: '_init',
-    value: function _init() {
-      var _this2 = this;
-
-      this.preparePromise = new Promise(function (resolve, reject) {
-        var loadPromise = window.google && window.google.ima ? Promise.resolve() : _this2._loadIma();
-        loadPromise.then(function () {
-          _this2._sdk = window.google.ima;
-          _this2.logger.debug("IMA SDK version: " + _this2._sdk.VERSION);
-          _this2._requestAds(resolve);
-        }).catch(function (e) {
-          reject(e);
-        });
-      });
-    }
-  }, {
-    key: '_initAdsContainer',
-    value: function _initAdsContainer() {
-      this.logger.debug("Init ads container");
-      var adsContainerDiv = document.getElementById(ADS_CONTAINER_ID);
-      var playerView = this.player.getView();
-      if (!adsContainerDiv) {
-        this._adsContainerDiv = playerView.appendChild(document.createElement('div'));
-        this._adsContainerDiv.id = ADS_CONTAINER_ID;
-        this._adsContainerDiv.style.position = "absolute";
-        this._adsContainerDiv.style.zIndex = "2000";
-        this._adsContainerDiv.style.top = "0";
-      } else {
-        this._adsContainerDiv = adsContainerDiv;
-      }
-      this._adDisplayContainer = new this._sdk.AdDisplayContainer(this._adsContainerDiv, this.player.getVideoElement());
-    }
-  }, {
-    key: '_initAdsLoader',
-    value: function _initAdsLoader(resolve) {
-      this.logger.debug("Init ads loader");
-      this._adsLoader = new this._sdk.AdsLoader(this._adDisplayContainer);
-      this._adsLoader.addEventListener(this._sdk.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._onAdsManagerLoaded.bind(this, resolve));
-      this._adsLoader.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, this._fsm.aderror);
-    }
-  }, {
-    key: '_requestAds',
-    value: function _requestAds(resolve) {
-      this.logger.debug("Request ads");
-      if (!this.config.adTagUrl && !this.config.adsResponse) {
-        throw new Error("Missing ad tag url for ima plugin");
-      } else {
-        this._sdk.settings.setPlayerType(PLAYER_NAME);
-        this._sdk.settings.setPlayerVersion(_playkit.VERSION);
-        // Create the ad display container.
-        this._initAdsContainer();
-        // Create ads loader.
-        this._initAdsLoader(resolve);
-        // Request video ads.
-        var adsRequest = new this._sdk.AdsRequest();
-        if (this.config.adTagUrl) {
-          adsRequest.adTagUrl = this.config.adTagUrl;
-        } else {
-          adsRequest.adsResponse = this.config.adsResponse;
-        }
-        var playerViewSize = this._getPlayerViewSize();
-        adsRequest.linearAdSlotWidth = playerViewSize.width;
-        adsRequest.linearAdSlotHeight = playerViewSize.height;
-        adsRequest.nonLinearAdSlotWidth = playerViewSize.width;
-        adsRequest.nonLinearAdSlotHeight = playerViewSize.height / 3;
-        adsRequest.setAdWillAutoPlay(this.player.config.playback.autoplay);
-        this._adsLoader.requestAds(adsRequest);
-      }
-    }
-  }, {
-    key: '_onResize',
-    value: function _onResize() {
-      if (this._sdk && this._adsManager) {
-        var playerViewSize = this._getPlayerViewSize();
-        this._adsManager.resize(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
-      }
-    }
-  }, {
-    key: '_getPlayerViewSize',
-    value: function _getPlayerViewSize() {
-      var playerView = this.player.getView();
-      var width = playerView ? parseInt(getComputedStyle(playerView).width, 10) : 640;
-      var height = playerView ? parseInt(getComputedStyle(playerView).height, 10) : 360;
-      return { width: width, height: height };
-    }
-  }, {
-    key: '_onLoadedMetadata',
-    value: function _onLoadedMetadata() {
-      this._contentPlayheadTracker.duration = this.player.duration;
-    }
-  }, {
-    key: '_onMediaTimeUpdate',
-    value: function _onMediaTimeUpdate() {
-      if (!this._contentPlayheadTracker.seeking) {
-        this._contentPlayheadTracker.previousTime = this._contentPlayheadTracker.currentTime;
-        this._contentPlayheadTracker.currentTime = this.player.currentTime;
-      }
-    }
-  }, {
-    key: '_onMediaSeeking',
-    value: function _onMediaSeeking() {
-      this._contentPlayheadTracker.seeking = true;
-    }
-  }, {
-    key: '_onMediaSeeked',
-    value: function _onMediaSeeked() {
-      this._contentPlayheadTracker.seeking = false;
-    }
-  }, {
-    key: '_onMediaEnded',
-    value: function _onMediaEnded() {
-      if (this._adsLoader && !this._contentComplete) {
-        this._adsLoader.contentComplete();
-        this._contentComplete = true;
-      }
-    }
-  }, {
-    key: '_showAdsContainer',
-    value: function _showAdsContainer() {
-      if (this._adsContainerDiv) {
-        this._adsContainerDiv.style.display = "";
-      }
-    }
-  }, {
-    key: '_hideAdsContainer',
-    value: function _hideAdsContainer() {
-      if (this._adsContainerDiv) {
-        this._adsContainerDiv.style.display = "none";
-      }
-    }
-  }, {
-    key: '_onAdsManagerLoaded',
-    value: function _onAdsManagerLoaded(resolve, adsManagerLoadedEvent) {
-      this.logger.debug('Ads manager loaded');
-      var adsRenderingSettings = new this._sdk.AdsRenderingSettings();
-      adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
-      adsRenderingSettings.enablePreloading = this.config.adsRenderingSettings.enablePreloading;
-      adsRenderingSettings.useStyledLinearAds = this.config.adsRenderingSettings.useStyledLinearAds;
-      adsRenderingSettings.useStyledNonLinearAds = this.config.adsRenderingSettings.useStyledNonLinearAds;
-      adsRenderingSettings.bitrate = this.config.adsRenderingSettings.bitrate;
-      adsRenderingSettings.autoAlign = this.config.adsRenderingSettings.autoAlign;
-      this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
-      this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_PAUSE_REQUESTED, this._fsm.adbreakstart);
-      this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOADED, this._fsm.adsloaded);
-      this._adsManager.addEventListener(this._sdk.AdEvent.Type.STARTED, this._fsm.adstarted);
-      this._adsManager.addEventListener(this._sdk.AdEvent.Type.PAUSED, this._fsm.adpaused);
-      this._adsManager.addEventListener(this._sdk.AdEvent.Type.RESUMED, this._fsm.adresumed);
-      this._adsManager.addEventListener(this._sdk.AdEvent.Type.FIRST_QUARTILE, this._fsm.adfirstquartile);
-      this._adsManager.addEventListener(this._sdk.AdEvent.Type.MIDPOINT, this._fsm.admidpoint);
-      this._adsManager.addEventListener(this._sdk.AdEvent.Type.THIRD_QUARTILE, this._fsm.adthirdquartile);
-      this._adsManager.addEventListener(this._sdk.AdEvent.Type.CLICK, this._fsm.adclicked);
-      this._adsManager.addEventListener(this._sdk.AdEvent.Type.SKIPPED, this._fsm.adskipped);
-      this._adsManager.addEventListener(this._sdk.AdEvent.Type.COMPLETE, this._fsm.adcompleted);
-      this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_RESUME_REQUESTED, this._fsm.adbreakend);
-      this._adsManager.addEventListener(this._sdk.AdEvent.Type.ALL_ADS_COMPLETED, this._fsm.alladscompleted);
-      this._adsManager.addEventListener(this._sdk.AdEvent.Type.USER_CLOSE, this._fsm.userclosedad);
-      this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_CHANGED, this._fsm.advolumechanged);
-      this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_MUTED, this._fsm.admuted);
-      this._adsManager.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, this._fsm.aderror);
-      this._syncPlayerVolume();
-      this._fsm.loaded().then(function () {
-        resolve();
-      });
-    }
-  }, {
-    key: '_syncPlayerVolume',
-    value: function _syncPlayerVolume() {
-      if (this.player.src) {
-        this._adsManager.setVolume(this.player.volume);
-      } else {
-        if (this.player.config.playback.muted) {
-          this._adsManager.setVolume(0);
-        }
-      }
-    }
-  }, {
-    key: '_startAdInterval',
-    value: function _startAdInterval() {
-      var _this3 = this;
-
-      this._intervalTimer = setInterval(function () {
-        var remainingTime = _this3._adsManager.getRemainingTime();
-      }, 300);
-    }
-  }, {
-    key: '_startPlayContent',
-    value: function _startPlayContent() {
-      this.logger.debug("Playing content");
-      this.player.play();
-    }
-  }, {
-    key: '_maybePreloadContent',
-    value: function _maybePreloadContent() {
-      if (this.config.adsRenderingSettings.enablePreloading && !this.player.src) {
-        this.logger.debug("Preloading media");
-        this.player.load();
-      }
-    }
-  }, {
-    key: '_reset',
-    value: function _reset() {
-      this._hideAdsContainer();
-      if (this._adsManager) {
-        this._adsManager.destroy();
-        this._adsManager = null;
-      }
-      if (this._adsLoader && !this._contentComplete) {
-        this._adsLoader.contentComplete();
-      }
-      this._adsLoader = null;
-      this._contentComplete = false;
-      this._intervalTimer = null;
-      this._contentPlayheadTracker = { currentTime: 0, previousTime: 0, seeking: false, duration: 0 };
-    }
-  }, {
-    key: '_loadIma',
-    value: function _loadIma() {
-      var _this4 = this;
-
-      return new Promise(function (resolve, reject) {
-        var r = false,
-            t = document.getElementsByTagName("script")[0],
-            s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = _this4.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL;
-        s.async = true;
-        _this4.logger.debug("Loading lib: " + s.src);
-        s.onload = s.onreadystatechange = function () {
-          if (!r && (!this.readyState || this.readyState === "complete")) {
-            r = true;
-            resolve(this);
-          }
-        };
-        s.onerror = s.onabort = reject;
-        if (t && t.parentNode) {
-          t.parentNode.insertBefore(s, t);
-        }
-      });
-    }
-  }]);
-
-  return Ima;
-}(_playkit.BasePlugin);
-
-Ima.defaultConfig = {
-  debug: false,
-  timeout: 5000,
-  prerollTimeout: 100,
-  adLabel: 'Advertisement',
-  showControlsForJSAds: true,
-  adsRenderingSettings: {
-    enablePreloading: true,
-    useStyledLinearAds: true,
-    useStyledNonLinearAds: true,
-    bitrate: -1,
-    autoAlign: true
-  }
-};
-Ima.IMA_SDK_LIB_URL = "//imasdk.googleapis.com/js/sdkloader/ima3.js";
-Ima.IMA_SDK_DEBUG_LIB_URL = "//imasdk.googleapis.com/js/sdkloader/ima3_debug.js";
-exports.default = Ima;
-
-
-(0, _playkit.registerPlugin)(pluginName, Ima);
-
-// TODO: Remove
-
-window.Playkit = Playkit;
 
 /***/ })
 /******/ ]);
