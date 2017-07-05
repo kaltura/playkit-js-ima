@@ -573,14 +573,15 @@ export default class Ima extends BasePlugin implements IMiddlewareProvider {
     this._hideAdsContainer();
     if (this._adsManager) {
       this._adsManager.destroy();
-      this._adsManager = null;
     }
-    if (this._adsLoader && !this._contentComplete) {
+    if (this._adsLoader) {
       this._adsLoader.contentComplete();
     }
+    this._adsManager = null;
     this._adsLoader = null;
     this._contentComplete = false;
     this._intervalTimer = null;
+    this._videoLastCurrentTime = null;
     this._contentPlayheadTracker = {currentTime: 0, previousTime: 0, seeking: false, duration: 0};
   }
 

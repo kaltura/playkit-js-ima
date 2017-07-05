@@ -197,8 +197,10 @@ export default class ImaFSM {
     function onAllAdsCompleted(options: Object): void {
       let adEvent = options.args[0];
       this.logger.debug("onAllAdsCompleted: " + adEvent.type.toUpperCase());
-      this._hideAdsContainer();
-      this.dispatchEvent(options.name, adEvent);
+      onAdBreakEnd.call(this, options);
+      if (this._contentComplete) {
+        this.destroy();
+      }
     }
 
     /**
