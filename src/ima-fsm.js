@@ -151,7 +151,7 @@ export default class ImaFSM {
       let ad = adEvent.getAd();
       this.logger.debug("onAdStarted: " + adEvent.type.toUpperCase());
       if (!ad.isLinear()) {
-        this._startPlayContent();
+        this.player.play();
       } else {
         this._startAdInterval();
       }
