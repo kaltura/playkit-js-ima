@@ -150,6 +150,7 @@ export default class ImaFSM {
       let ad = adEvent.getAd();
       this.logger.debug("onAdStarted: " + adEvent.type.toUpperCase());
       if (!ad.isLinear()) {
+        this._setVideoEndedCallbackEnabled(true);
         this.player.play();
       } else {
         this._startAdInterval();
@@ -210,6 +211,8 @@ export default class ImaFSM {
       this.logger.debug("onAdBreakStart: " + adEvent.type.toUpperCase());
       this._showAdsContainer();
       this.player.pause();
+      this._setVideoEndedCallbackEnabled(false);
+      this._maybeSaveVideoCurrentTime();
       this.dispatchEvent(options.name, adEvent);
     }
 
@@ -221,8 +224,10 @@ export default class ImaFSM {
     function onAdBreakEnd(options: Object): void {
       let adEvent = options.args[0];
       this.logger.debug("onAdBreakEnd: " + adEvent.type.toUpperCase());
+      this._setVideoEndedCallbackEnabled(true);
       if (!this._contentComplete) {
         this._hideAdsContainer();
+        this._maybeSetVideoCurrentTime();
         this.player.play();
       }
     }

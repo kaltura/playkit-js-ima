@@ -124,6 +124,13 @@ export default class Ima extends BasePlugin implements IMiddlewareProvider {
    * @private
    */
   _intervalTimer: ?number;
+  /**
+   * Video current time before ads.
+   * On custom playback when only one video tag playing, save the video current time.
+   * @member
+   * @private
+   */
+  _videoLastCurrentTime: ?number;
 
   /**
    * Whether the ima plugin is valid.
@@ -145,6 +152,7 @@ export default class Ima extends BasePlugin implements IMiddlewareProvider {
     super(name, player, config);
     this._fsm = new ImaFSM(this);
     this._intervalTimer = null;
+    this._videoLastCurrentTime = null;
     this._adsManager = null;
     this._contentComplete = false;
     this._contentPlayheadTracker = {currentTime: 0, previousTime: 0, seeking: false, duration: 0};
@@ -192,12 +200,17 @@ export default class Ima extends BasePlugin implements IMiddlewareProvider {
       let playerViewSize = this._getPlayerViewSize();
       // Initialize the container.
       this._adDisplayContainer.initialize();
-      // Initialize the ads manager. Ad rules playlist will start at this time.
-      this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
-      // Call play to start showing the ad.
-      // Single video and overlay ads will start at this time.
-      // The call will be ignored for ad rules.
-      this._adsManager.start();
+      if (this._isMobilePlatform()) {
+        this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, () => {
+          this.eventManager.unlisten(this.player, this.player.Event.LOADED_METADATA);
+          this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
+          this._adsManager.start();
+        });
+        this.player.load();
+      } else {
+        this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
+        this._adsManager.start();
+      }
     }
     catch (adError) {
       this.logger.error(adError);
@@ -242,7 +255,6 @@ export default class Ima extends BasePlugin implements IMiddlewareProvider {
     this.eventManager.listen(this.player, this.player.Event.TIME_UPDATE, this._onMediaTimeUpdate.bind(this));
     this.eventManager.listen(this.player, this.player.Event.SEEKING, this._onMediaSeeking.bind(this));
     this.eventManager.listen(this.player, this.player.Event.SEEKED, this._onMediaSeeked.bind(this));
-    this.eventManager.listen(this.player, this.player.Event.ENDED, this._onMediaEnded.bind(this));
     this.eventManager.listen(this.player, this.player.Event.VOLUME_CHANGE, this._syncPlayerVolume.bind(this));
   }
 
@@ -312,13 +324,7 @@ export default class Ima extends BasePlugin implements IMiddlewareProvider {
     } else {
       this._sdk.settings.setPlayerType(PLAYER_NAME);
       this._sdk.settings.setPlayerVersion(VERSION);
-      // Create the ad display container.
-      this._initAdsContainer();
-      // If we're not on mobile, init the ads container immediately.
-      if (!this._isMobilePlatform()) {
-        this._adDisplayContainer.initialize();
-      }
-      // Request video ads.
+      // Request video ads
       let adsRequest = new this._sdk.AdsRequest();
       if (this.config.adTagUrl) {
         adsRequest.adTagUrl = this.config.adTagUrl;
@@ -330,7 +336,6 @@ export default class Ima extends BasePlugin implements IMiddlewareProvider {
       adsRequest.linearAdSlotHeight = playerViewSize.height;
       adsRequest.nonLinearAdSlotWidth = playerViewSize.width;
       adsRequest.nonLinearAdSlotHeight = playerViewSize.height / 3;
-      adsRequest.setAdWillAutoPlay(this.player.config.playback.autoplay);
       this._adsLoader.requestAds(adsRequest);
     }
   }
@@ -399,16 +404,54 @@ export default class Ima extends BasePlugin implements IMiddlewareProvider {
   }
 
   /**
+   * Removes or adds the listener for ended event.
+   * @param {boolean} enable - Whether to enable the event listener or not.
+   * @private
+   * @return {void}
+   */
+  _setVideoEndedCallbackEnabled(enable: boolean): void {
+    if (enable) {
+      this.eventManager.listen(this.player, this.player.Event.ENDED, this._onMediaEnded.bind(this));
+    } else {
+      this.eventManager.unlisten(this.player, this.player.Event.ENDED);
+    }
+  }
+
+  /**
+   * Maybe save the video current time before ads starts (on ios this is necessary).
+   * @private
+   * @return {void}
+   */
+  _maybeSaveVideoCurrentTime(): void {
+    if (this._adsManager.isCustomPlaybackUsed() &&
+      this.player.currentTime &&
+      this.player.currentTime > 0) {
+      this._videoLastCurrentTime = this.player.currentTime;
+    }
+  }
+
+  /**
+   * Maybe sets the video current time after ads finished (on ios this is necessary).
+   * @private
+   * @return {void}
+   */
+  _maybeSetVideoCurrentTime(): void {
+    if (this._videoLastCurrentTime) {
+      this.player.currentTime = this._videoLastCurrentTime;
+      this._videoLastCurrentTime = null;
+    }
+  }
+
+  /**
    * Ended event handler.
    * @private
    * @returns {void}
    */
   _onMediaEnded(): void {
-    if (this._adsLoader && !this._contentComplete) {
-      this._adsLoader.contentComplete();
-      this._contentComplete = true;
-    }
+    this._adsLoader.contentComplete();
+    this._contentComplete = true;
   }
+
 
   /**
    * Shows the ads container.
