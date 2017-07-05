@@ -20,6 +20,7 @@
 <button class="button" onclick="volumeUp()">Volume [+]</button>
 <button class="button" onclick="volumeDown()">Volume [-]</button>
 <button class="button" onclick="toggleMute()">Toggle Mute</button>
+<button class="button" onclick="seek()">Seek [+5]</button>
 <script>
   function play() {
     window.player.play();
@@ -38,13 +39,17 @@
   }
 
   function toggleMute() {
-    player.muted = !player.muted;
+    window.player.muted = !window.player.muted;
+  }
+
+  function seek() {
+    window.player.currentTime += 5;
   }
 
   window.player = Playkit.loadPlayer('player-placeholder', {
     playback: {
-      autoplay: true,
-      muted: true
+      autoplay: false,
+      muted: false
     },
     sources: {
       progressive: [
