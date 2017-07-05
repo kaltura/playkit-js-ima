@@ -28,7 +28,7 @@ const PLAYER_NAME: string = "kaltura-player-js";
  * The ima plugin.
  * @classdesc
  */
-export default class Ima extends BasePlugin implements IMiddlewarePovider {
+export default class Ima extends BasePlugin implements IMiddlewareProvider {
 
   /**
    * The default configuration of the plugin.
@@ -42,9 +42,9 @@ export default class Ima extends BasePlugin implements IMiddlewarePovider {
     adLabel: 'Advertisement',
     showControlsForJSAds: true,
     adsRenderingSettings: {
-      enablePreloading: true,
-      useStyledLinearAds: true,
-      useStyledNonLinearAds: true,
+      enablePreloading: false,
+      useStyledLinearAds: false,
+      useStyledNonLinearAds: false,
       bitrate: -1,
       autoAlign: true
     }
@@ -187,7 +187,7 @@ export default class Ima extends BasePlugin implements IMiddlewarePovider {
    * @public
    * @returns {void}
    */
-  initialize() {
+  initialUserAction(): void {
     try {
       let playerViewSize = this._getPlayerViewSize();
       // Initialize the container.
@@ -257,7 +257,9 @@ export default class Ima extends BasePlugin implements IMiddlewarePovider {
       loadPromise.then(() => {
         this._sdk = window.google.ima;
         this.logger.debug("IMA SDK version: " + this._sdk.VERSION);
-        this._requestAds(resolve);
+        this._initAdsContainer();
+        this._initAdsLoader(resolve);
+        this._requestAds();
       }).catch((e) => {
         reject(e);
       });
@@ -300,11 +302,10 @@ export default class Ima extends BasePlugin implements IMiddlewarePovider {
 
   /**
    * Requests the ads from the ads loader.
-   * @param {Function} resolve - The resolve function of the loading promise.
    * @private
    * @returns {void}
    */
-  _requestAds(resolve: Function): void {
+  _requestAds(): void {
     this.logger.debug("Request ads");
     if (!this.config.adTagUrl && !this.config.adsResponse) {
       throw new Error("Missing ad tag url for ima plugin");
@@ -317,8 +318,6 @@ export default class Ima extends BasePlugin implements IMiddlewarePovider {
       if (!this._isMobilePlatform()) {
         this._adDisplayContainer.initialize();
       }
-      // Create ads loader.
-      this._initAdsLoader(resolve);
       // Request video ads.
       let adsRequest = new this._sdk.AdsRequest();
       if (this.config.adTagUrl) {
@@ -516,7 +515,7 @@ export default class Ima extends BasePlugin implements IMiddlewarePovider {
    * @returns {void}
    */
   _maybePreloadContent(): void {
-    if (this.config.adsRenderingSettings.enablePreloading && !this.player.src) {
+    if (!this.player.src) {
       this.logger.debug("Preloading media");
       this.player.load();
     }

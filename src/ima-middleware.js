@@ -39,7 +39,7 @@ export default class ImaMiddleware extends BaseMiddleware {
     this._context.preparePromise.then(() => {
       let fsm = this._context.getStateMachine();
       if (fsm.is(State.LOADED)) {
-        this._context.initialize();
+        this._context.initialUserAction();
       } else {
         if (fsm.is(State.PAUSED)) {
           this._context.resumeAd();
