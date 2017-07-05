@@ -136,7 +136,6 @@ export default class ImaFSM {
       this.logger.debug("onAdsLoaded: " + adEvent.type.toUpperCase());
       let playerViewSize = this._getPlayerViewSize();
       this._adsManager.resize(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
-      this._syncPlayerVolume();
       this.dispatchEvent(options.name, adEvent);
       this._maybePreloadContent();
     }
@@ -167,9 +166,9 @@ export default class ImaFSM {
       let adEvent = options.args[0];
       this.logger.debug("onAdClicked: " + adEvent.type.toUpperCase());
       if (this._fsm.is(State.PLAYING)) {
-        this._adsManager.pause();
+        this.pauseAd();
       } else {
-        this._adsManager.resume();
+        this.resumeAd();
       }
     }
 
@@ -235,7 +234,7 @@ export default class ImaFSM {
      */
     function onAdError(options: Object): void {
       let adEvent = options.args[0];
-      this.logger.debug("onAdError: " + adEvent.type.toUpperCase());
+      this.logger.error("onAdError: " + adEvent.type.toUpperCase());
       let adError = adEvent.getError();
       this.logger.error(adError);
       this.destroy();

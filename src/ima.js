@@ -3,7 +3,7 @@ import ImaMiddleware from './ima-middleware'
 import ImaFSM from './ima-fsm'
 // import {registerPlugin, BasePlugin} from 'playkit-js'
 // import {VERSION} from 'playkit-js'
-// import {PlayerMiddlewareBase} from 'playkit-js'
+// import {BaseMiddleware} from 'playkit-js'
 
 /**
  * The plugin name.
@@ -28,7 +28,7 @@ const PLAYER_NAME: string = "kaltura-player-js";
  * The ima plugin.
  * @classdesc
  */
-export default class Ima extends BasePlugin {
+export default class Ima extends BasePlugin implements IMiddlewarePovider {
 
   /**
    * The default configuration of the plugin.
@@ -166,7 +166,7 @@ export default class Ima extends BasePlugin {
    * @public
    * @returns {ImaMiddleware} - The middleware api.
    */
-  getPlayerMiddleware(): PlayerMiddlewareBase {
+  getMiddlewareImpl(): BaseMiddleware {
     return new ImaMiddleware(this);
   }
 
@@ -221,6 +221,14 @@ export default class Ima extends BasePlugin {
    */
   pauseAd(): void {
     this._adsManager.pause();
+    // If we're on auto play mobile - cancel mute
+    if (this._isMobilePlatform() &&
+      this.player.config.playback.autoplay &&
+      this.player.config.playback.muted) {
+      this.logger.debug("Mobile auto play: cancel mute");
+      this._adsManager.setVolume(this.player.volume);
+      this.player.muted = false;
+    }
   }
 
   /**
@@ -235,6 +243,7 @@ export default class Ima extends BasePlugin {
     this.eventManager.listen(this.player, this.player.Event.SEEKING, this._onMediaSeeking.bind(this));
     this.eventManager.listen(this.player, this.player.Event.SEEKED, this._onMediaSeeked.bind(this));
     this.eventManager.listen(this.player, this.player.Event.ENDED, this._onMediaEnded.bind(this));
+    this.eventManager.listen(this.player, this.player.Event.VOLUME_CHANGE, this._syncPlayerVolume.bind(this));
   }
 
   /**
@@ -305,7 +314,7 @@ export default class Ima extends BasePlugin {
       // Create the ad display container.
       this._initAdsContainer();
       // If we're not on mobile, init the ads container immediately.
-      if (this.player.env.device.type !== 'mobile') {
+      if (!this._isMobilePlatform()) {
         this._adDisplayContainer.initialize();
       }
       // Create ads loader.
@@ -425,6 +434,16 @@ export default class Ima extends BasePlugin {
   }
 
   /**
+   * Checks for mobile platform.
+   * @returns {boolean} - Whether the device is mobile or tablet.
+   * @private
+   */
+  _isMobilePlatform(): boolean {
+    let deviceType = this.player.env.device.type;
+    return (deviceType === "mobile" || deviceType === "tablet");
+  }
+
+  /**
    * The ads manager loaded handler.
    * @param {Function} resolve - The resolve function of the loading promise.
    * @param {any} adsManagerLoadedEvent - The event data.
@@ -435,7 +454,8 @@ export default class Ima extends BasePlugin {
     this.logger.debug('Ads manager loaded');
     let adsRenderingSettings = new this._sdk.AdsRenderingSettings();
     adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
-    adsRenderingSettings.enablePreloading = this.config.adsRenderingSettings.enablePreloading;
+    /* For now we have issue with this settings: autoplay mobile doesn't works if it sets to true.
+     adsRenderingSettings.enablePreloading = this.config.adsRenderingSettings.enablePreloading; */
     adsRenderingSettings.useStyledLinearAds = this.config.adsRenderingSettings.useStyledLinearAds;
     adsRenderingSettings.useStyledNonLinearAds = this.config.adsRenderingSettings.useStyledNonLinearAds;
     adsRenderingSettings.bitrate = this.config.adsRenderingSettings.bitrate;
@@ -470,11 +490,11 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _syncPlayerVolume(): void {
-    if (this.player.src) {
-      this._adsManager.setVolume(this.player.volume);
-    } else {
-      if (this.player.config.playback.muted) {
+    if (this._adsManager) {
+      if (this.player.muted) {
         this._adsManager.setVolume(0);
+      } else {
+        this._adsManager.setVolume(this.player.volume);
       }
     }
   }
@@ -553,9 +573,8 @@ export default class Ima extends BasePlugin {
 // Register to the player
 registerPlugin(pluginName, Ima);
 
-// TODO: Remove
 import {VERSION} from '../node_modules/playkit-js/src/playkit.js'
 import {registerPlugin, BasePlugin} from '../node_modules/playkit-js/src/playkit.js'
-import {PlayerMiddlewareBase} from '../node_modules/playkit-js/src/playkit.js'
+import {BaseMiddleware} from '../node_modules/playkit-js/src/playkit.js'
 import * as Playkit from '../node_modules/playkit-js/src/playkit.js'
 window.Playkit = Playkit;

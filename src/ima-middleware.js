@@ -1,13 +1,19 @@
 // @flow
-import {PlayerMiddlewareBase} from '../node_modules/playkit-js/src/playkit.js'
-// import {PlayerMiddlewareBase} from 'playkit-js'
+import {BaseMiddleware} from '../node_modules/playkit-js/src/playkit.js'
+// import {BaseMiddleware} from 'playkit-js'
 import State from './state'
 
 /**
  * Middleware implementation for ima plugin.
  * @classdesc
  */
-export default class ImaMiddleware extends PlayerMiddlewareBase {
+export default class ImaMiddleware extends BaseMiddleware {
+  /**
+   * The id of the ima middleware.
+   * @type {string}
+   * @public
+   */
+  id: string = "ImaMiddleware";
   /**
    * The plugin context.
    * @member
@@ -38,7 +44,7 @@ export default class ImaMiddleware extends PlayerMiddlewareBase {
         if (fsm.is(State.PAUSED)) {
           this._context.resumeAd();
         } else {
-          super.play(next);
+          this.callNext(next);
         }
       }
     }).catch((e) => {
@@ -57,7 +63,7 @@ export default class ImaMiddleware extends PlayerMiddlewareBase {
     if (fsm.is(State.PLAYING)) {
       this._context.pauseAd();
     } else {
-      super.pause(next);
+      this.callNext(next);
     }
   }
 }

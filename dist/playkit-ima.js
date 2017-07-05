@@ -3734,6 +3734,14 @@ var Ima = function (_BasePlugin) {
   _createClass(Ima, null, [{
     key: 'isValid',
 
+
+    /**
+     * Whether the ima plugin is valid.
+     * @static
+     * @override
+     * @public
+     */
+
     /**
      * Promise for loading the plugin.
      * Will be resolved after:
@@ -3805,6 +3813,14 @@ var Ima = function (_BasePlugin) {
     value: function isValid() {
       return true;
     }
+
+    /**
+     * @constructor
+     * @param {string} name - The plugin name.
+     * @param {Player} player - The player instance.
+     * @param {Object} config - The plugin config.
+     */
+
     /**
      * The debug sdk lib url.
      * @type {string}
@@ -3835,16 +3851,38 @@ var Ima = function (_BasePlugin) {
     return _this;
   }
 
+  /**
+   * Gets the state machine.
+   * @public
+   * @returns {any} - The state machine.
+   */
+
+
   _createClass(Ima, [{
     key: 'getStateMachine',
     value: function getStateMachine() {
       return this._fsm;
     }
+
+    /**
+     * Gets the middleware.
+     * @public
+     * @returns {ImaMiddleware} - The middleware api.
+     */
+
   }, {
     key: 'getPlayerMiddleware',
     value: function getPlayerMiddleware() {
       return new _imaMiddleware2.default(this);
     }
+
+    /**
+     * Destroys the plugin.
+     * @override
+     * @public
+     * @returns {void}
+     */
+
   }, {
     key: 'destroy',
     value: function destroy() {
@@ -3852,6 +3890,13 @@ var Ima = function (_BasePlugin) {
       this.eventManager.destroy();
       this._reset();
     }
+
+    /**
+     * Initialize the ads for the first time.
+     * @public
+     * @returns {void}
+     */
+
   }, {
     key: 'initialize',
     value: function initialize() {
@@ -3870,16 +3915,37 @@ var Ima = function (_BasePlugin) {
         this.destroy();
       }
     }
+
+    /**
+     * Resuming the ad.
+     * @public
+     * @returns {void}
+     */
+
   }, {
     key: 'resumeAd',
     value: function resumeAd() {
       this._adsManager.resume();
     }
+
+    /**
+     * Pausing the ad.
+     * @public
+     * @returns {void}
+     */
+
   }, {
     key: 'pauseAd',
     value: function pauseAd() {
       this._adsManager.pause();
     }
+
+    /**
+     * Adding bindings.
+     * @private
+     * @returns {void}
+     */
+
   }, {
     key: '_addBindings',
     value: function _addBindings() {
@@ -3890,6 +3956,13 @@ var Ima = function (_BasePlugin) {
       this.eventManager.listen(this.player, this.player.Event.SEEKED, this._onMediaSeeked.bind(this));
       this.eventManager.listen(this.player, this.player.Event.ENDED, this._onMediaEnded.bind(this));
     }
+
+    /**
+     * Initializing the plugin.
+     * @private
+     * @returns {void}
+     */
+
   }, {
     key: '_init',
     value: function _init() {
@@ -3906,6 +3979,13 @@ var Ima = function (_BasePlugin) {
         });
       });
     }
+
+    /**
+     * Initializing the ad container.
+     * @private
+     * @returns {void}
+     */
+
   }, {
     key: '_initAdsContainer',
     value: function _initAdsContainer() {
@@ -3923,6 +4003,14 @@ var Ima = function (_BasePlugin) {
       }
       this._adDisplayContainer = new this._sdk.AdDisplayContainer(this._adsContainerDiv, this.player.getVideoElement());
     }
+
+    /**
+     * Initializing the ads loader.
+     * @param {Function} resolve - The resolve function of the loading promise.
+     * @private
+     * @returns {void}
+     */
+
   }, {
     key: '_initAdsLoader',
     value: function _initAdsLoader(resolve) {
@@ -3931,6 +4019,14 @@ var Ima = function (_BasePlugin) {
       this._adsLoader.addEventListener(this._sdk.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._onAdsManagerLoaded.bind(this, resolve));
       this._adsLoader.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, this._fsm.aderror);
     }
+
+    /**
+     * Requests the ads from the ads loader.
+     * @param {Function} resolve - The resolve function of the loading promise.
+     * @private
+     * @returns {void}
+     */
+
   }, {
     key: '_requestAds',
     value: function _requestAds(resolve) {
@@ -3942,6 +4038,10 @@ var Ima = function (_BasePlugin) {
         this._sdk.settings.setPlayerVersion(_playkit.VERSION);
         // Create the ad display container.
         this._initAdsContainer();
+        // If we're not on mobile, init the ads container immediately.
+        if (this.player.env.device.type !== 'mobile') {
+          this._adDisplayContainer.initialize();
+        }
         // Create ads loader.
         this._initAdsLoader(resolve);
         // Request video ads.
@@ -3960,6 +4060,13 @@ var Ima = function (_BasePlugin) {
         this._adsLoader.requestAds(adsRequest);
       }
     }
+
+    /**
+     * Resize event handler.
+     * @private
+     * @returns {void}
+     */
+
   }, {
     key: '_onResize',
     value: function _onResize() {
@@ -3968,6 +4075,13 @@ var Ima = function (_BasePlugin) {
         this._adsManager.resize(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
       }
     }
+
+    /**
+     * Gets the player view width and height.
+     * @return {Object} - The player sizes.
+     * @private
+     */
+
   }, {
     key: '_getPlayerViewSize',
     value: function _getPlayerViewSize() {
@@ -3976,11 +4090,25 @@ var Ima = function (_BasePlugin) {
       var height = playerView ? parseInt(getComputedStyle(playerView).height, 10) : 360;
       return { width: width, height: height };
     }
+
+    /**
+     * Loadedmetada event handler.
+     * @private
+     * @returns {void}
+     */
+
   }, {
     key: '_onLoadedMetadata',
     value: function _onLoadedMetadata() {
       this._contentPlayheadTracker.duration = this.player.duration;
     }
+
+    /**
+     * Timeupdate event handler.
+     * @private
+     * @returns {void}
+     */
+
   }, {
     key: '_onMediaTimeUpdate',
     value: function _onMediaTimeUpdate() {
@@ -3989,16 +4117,37 @@ var Ima = function (_BasePlugin) {
         this._contentPlayheadTracker.currentTime = this.player.currentTime;
       }
     }
+
+    /**
+     * Seeking event handler.
+     * @private
+     * @returns {void}
+     */
+
   }, {
     key: '_onMediaSeeking',
     value: function _onMediaSeeking() {
       this._contentPlayheadTracker.seeking = true;
     }
+
+    /**
+     * Seeked event handler.
+     * @private
+     * @returns {void}
+     */
+
   }, {
     key: '_onMediaSeeked',
     value: function _onMediaSeeked() {
       this._contentPlayheadTracker.seeking = false;
     }
+
+    /**
+     * Ended event handler.
+     * @private
+     * @returns {void}
+     */
+
   }, {
     key: '_onMediaEnded',
     value: function _onMediaEnded() {
@@ -4007,6 +4156,13 @@ var Ima = function (_BasePlugin) {
         this._contentComplete = true;
       }
     }
+
+    /**
+     * Shows the ads container.
+     * @private
+     * @returns {void}
+     */
+
   }, {
     key: '_showAdsContainer',
     value: function _showAdsContainer() {
@@ -4014,6 +4170,13 @@ var Ima = function (_BasePlugin) {
         this._adsContainerDiv.style.display = "";
       }
     }
+
+    /**
+     * Hides the ads container.
+     * @private
+     * @returns {void}
+     */
+
   }, {
     key: '_hideAdsContainer',
     value: function _hideAdsContainer() {
@@ -4021,6 +4184,15 @@ var Ima = function (_BasePlugin) {
         this._adsContainerDiv.style.display = "none";
       }
     }
+
+    /**
+     * The ads manager loaded handler.
+     * @param {Function} resolve - The resolve function of the loading promise.
+     * @param {any} adsManagerLoadedEvent - The event data.
+     * @private
+     * @returns {void}
+     */
+
   }, {
     key: '_onAdsManagerLoaded',
     value: function _onAdsManagerLoaded(resolve, adsManagerLoadedEvent) {
@@ -4055,6 +4227,13 @@ var Ima = function (_BasePlugin) {
         resolve();
       });
     }
+
+    /**
+     * Syncs the player volume.
+     * @private
+     * @returns {void}
+     */
+
   }, {
     key: '_syncPlayerVolume',
     value: function _syncPlayerVolume() {
@@ -4066,6 +4245,13 @@ var Ima = function (_BasePlugin) {
         }
       }
     }
+
+    /**
+     * Starts ad interval timer.
+     * @private
+     * @returns {void}
+     */
+
   }, {
     key: '_startAdInterval',
     value: function _startAdInterval() {
@@ -4073,12 +4259,13 @@ var Ima = function (_BasePlugin) {
         // let remainingTime = this._adsManager.getRemainingTime();
       }, 300);
     }
-  }, {
-    key: '_startPlayContent',
-    value: function _startPlayContent() {
-      this.logger.debug("Playing content");
-      this.player.play();
-    }
+
+    /**
+     * Maybe pre loaded the player.
+     * @private
+     * @returns {void}
+     */
+
   }, {
     key: '_maybePreloadContent',
     value: function _maybePreloadContent() {
@@ -4087,6 +4274,13 @@ var Ima = function (_BasePlugin) {
         this.player.load();
       }
     }
+
+    /**
+     * Resets the plugin.
+     * @private
+     * @returns {void}
+     */
+
   }, {
     key: '_reset',
     value: function _reset() {
@@ -4103,6 +4297,13 @@ var Ima = function (_BasePlugin) {
       this._intervalTimer = null;
       this._contentPlayheadTracker = { currentTime: 0, previousTime: 0, seeking: false, duration: 0 };
     }
+
+    /**
+     * Loads ima sdk lib dynamically.
+     * @return {Promise} - The loading promise.
+     * @private
+     */
+
   }, {
     key: '_loadIma',
     value: function _loadIma() {
@@ -4133,6 +4334,9 @@ var Ima = function (_BasePlugin) {
   return Ima;
 }(_playkit.BasePlugin);
 
+// Register to the player
+
+
 Ima.defaultConfig = {
   debug: false,
   timeout: 5000,
@@ -4150,8 +4354,6 @@ Ima.defaultConfig = {
 Ima.IMA_SDK_LIB_URL = "//imasdk.googleapis.com/js/sdkloader/ima3.js";
 Ima.IMA_SDK_DEBUG_LIB_URL = "//imasdk.googleapis.com/js/sdkloader/ima3_debug.js";
 exports.default = Ima;
-
-
 (0, _playkit.registerPlugin)(pluginName, Ima);
 
 // TODO: Remove
@@ -8159,7 +8361,7 @@ function ImaFSM(context) {
     var ad = adEvent.getAd();
     this.logger.debug("onAdStarted: " + adEvent.type.toUpperCase());
     if (!ad.isLinear()) {
-      this._startPlayContent();
+      this.player.play();
     } else {
       this._startAdInterval();
     }
