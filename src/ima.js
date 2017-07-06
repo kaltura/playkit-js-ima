@@ -156,7 +156,7 @@ export default class Ima extends BasePlugin {
     this._adsManager = null;
     this._contentComplete = false;
     this._contentPlayheadTracker = {currentTime: 0, previousTime: 0, seeking: false, duration: 0};
-    this._handleMobileAutoPlayCallback = this._bind(this, this._handleMobileAutoPlayCallback);
+    this._handleMobileAutoPlayCallback = this._bind(this, this._onMobileAutoPlay);
     this._addBindings();
     this._init();
   }
@@ -569,9 +569,8 @@ export default class Ima extends BasePlugin {
    * @param {Function} fn - The handler.
    * @returns {Function} - The new bound function.
    * @private
-   * @returns {void}
    */
-  _bind(thisObj: any, fn: Function): void {
+  _bind(thisObj: any, fn: Function): Function {
     return function () {
       fn.apply(thisObj, arguments);
     };
@@ -622,7 +621,7 @@ export default class Ima extends BasePlugin {
    * @private
    * @returns {void}
    */
-  _handleMobileAutoPlayCallback(): void {
+  _onMobileAutoPlay(): void {
     this.logger.debug("Mobile auto play: cancel mute on user interaction");
     this._setMobileAutoPlayCallbackEnable(false);
     this._adsManager.setVolume(this.player.volume);
