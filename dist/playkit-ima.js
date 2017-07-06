@@ -377,7 +377,7 @@ var Ima = function (_BasePlugin) {
     _this._adsManager = null;
     _this._contentComplete = false;
     _this._contentPlayheadTracker = { currentTime: 0, previousTime: 0, seeking: false, duration: 0 };
-    _this._handleMobileAutoPlayCallback = _this._bind(_this, _this._handleMobileAutoPlayCallback);
+    _this._handleMobileAutoPlayCallback = _this._bind(_this, _this._onMobileAutoPlay);
     _this._addBindings();
     _this._init();
     return _this;
@@ -873,7 +873,6 @@ var Ima = function (_BasePlugin) {
      * @param {Function} fn - The handler.
      * @returns {Function} - The new bound function.
      * @private
-     * @returns {void}
      */
 
   }, {
@@ -940,8 +939,8 @@ var Ima = function (_BasePlugin) {
      */
 
   }, {
-    key: '_handleMobileAutoPlayCallback',
-    value: function _handleMobileAutoPlayCallback() {
+    key: '_onMobileAutoPlay',
+    value: function _onMobileAutoPlay() {
       this.logger.debug("Mobile auto play: cancel mute on user interaction");
       this._setMobileAutoPlayCallbackEnable(false);
       this._adsManager.setVolume(this.player.volume);
