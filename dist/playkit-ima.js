@@ -377,6 +377,7 @@ var Ima = function (_BasePlugin) {
     _this._adsManager = null;
     _this._contentComplete = false;
     _this._contentPlayheadTracker = { currentTime: 0, previousTime: 0, seeking: false, duration: 0 };
+    _this._handleMobileAutoPlayCallback = _this._bind(_this, _this._handleMobileAutoPlayCallback);
     _this._addBindings();
     _this._init();
     return _this;
@@ -447,6 +448,7 @@ var Ima = function (_BasePlugin) {
 
       try {
         this.logger.debug("Initial user action");
+        this._maybeHandleMobileAutoPlay();
         var playerViewSize = this._getPlayerViewSize();
         // Initialize the container.
         this._adDisplayContainer.initialize();
@@ -493,12 +495,6 @@ var Ima = function (_BasePlugin) {
     key: 'pauseAd',
     value: function pauseAd() {
       this._adsManager.pause();
-      // If we're on auto play mobile - cancel mute
-      if (this._isMobilePlatform() && this.player.config.playback.autoplay && this.player.config.playback.muted) {
-        this.logger.debug("Mobile auto play: cancel mute");
-        this._adsManager.setVolume(this.player.volume);
-        this.player.muted = false;
-      }
     }
 
     /**
@@ -872,6 +868,23 @@ var Ima = function (_BasePlugin) {
     }
 
     /**
+     * Binds an handler to a desired context.
+     * @param {any} thisObj - The handler context.
+     * @param {Function} fn - The handler.
+     * @returns {Function} - The new bound function.
+     * @private
+     * @returns {void}
+     */
+
+  }, {
+    key: '_bind',
+    value: function _bind(thisObj, fn) {
+      return function () {
+        fn.apply(thisObj, arguments);
+      };
+    }
+
+    /**
      * Starts ad interval timer.
      * @private
      * @returns {void}
@@ -897,6 +910,69 @@ var Ima = function (_BasePlugin) {
       if (!this.player.src) {
         this.logger.debug("Preloading content");
         this.player.load();
+      }
+    }
+
+    /**
+     * Checks for mobile auto play and if it's the case, registers the necessary listeners.
+     * @private
+     * @returns {void}
+     */
+
+  }, {
+    key: '_maybeHandleMobileAutoPlay',
+    value: function _maybeHandleMobileAutoPlay() {
+      if (this._isMobilePlatform()) {
+        this._isMobileAutoPlay = this.player.config.playback.autoplay && this.player.muted;
+        if (this._isIOS()) {
+          this._isMobileAutoPlay = this._isMobileAutoPlay && this.player.playsinline;
+        }
+        if (this._isMobileAutoPlay) {
+          this._setMobileAutoPlayCallbackEnable(true);
+        }
+      }
+    }
+
+    /**
+     * The mobile auto play callback handler.
+     * @private
+     * @returns {void}
+     */
+
+  }, {
+    key: '_handleMobileAutoPlayCallback',
+    value: function _handleMobileAutoPlayCallback() {
+      this.logger.debug("Mobile auto play: cancel mute on user interaction");
+      this._setMobileAutoPlayCallbackEnable(false);
+      this._adsManager.setVolume(this.player.volume);
+      this.player.muted = false;
+    }
+
+    /**
+     * Register/unregister the mobile auto play handler to the relevant events.
+     * @param {boolean} enable - Whether to add or remove the listeners.
+     * @private
+     * @returns {void}
+     */
+
+  }, {
+    key: '_setMobileAutoPlayCallbackEnable',
+    value: function _setMobileAutoPlayCallbackEnable(enable) {
+      if (enable) {
+        // TODO: full screen event?
+        this.player.addEventListener(this.player.Event.PAUSE, this._handleMobileAutoPlayCallback);
+        this.player.addEventListener(this.player.Event.VOLUME_CHANGE, this._handleMobileAutoPlayCallback);
+        this.player.addEventListener(this.player.Event.SEEKING, this._handleMobileAutoPlayCallback);
+        this.player.addEventListener(this.player.Event.AD_PAUSED, this._handleMobileAutoPlayCallback);
+        this.player.addEventListener(this.player.Event.AD_VOLUME_CHANGED, this._handleMobileAutoPlayCallback);
+        this.player.addEventListener(this.player.Event.AD_CLICKED, this._handleMobileAutoPlayCallback);
+      } else {
+        this.player.removeEventListener(this.player.Event.PAUSE, this._handleMobileAutoPlayCallback);
+        this.player.removeEventListener(this.player.Event.VOLUME_CHANGE, this._handleMobileAutoPlayCallback);
+        this.player.removeEventListener(this.player.Event.SEEKING, this._handleMobileAutoPlayCallback);
+        this.player.removeEventListener(this.player.Event.AD_PAUSED, this._handleMobileAutoPlayCallback);
+        this.player.removeEventListener(this.player.Event.AD_VOLUME_CHANGED, this._handleMobileAutoPlayCallback);
+        this.player.removeEventListener(this.player.Event.AD_CLICKED, this._handleMobileAutoPlayCallback);
       }
     }
 
