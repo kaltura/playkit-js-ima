@@ -264,7 +264,9 @@ export default class ImaFSM {
      * @returns {void}
      */
     function onEnterState(options: Object): void {
-      this.logger.debug("Change state: " + options.from + " --> " + options.to);
+      if (options.from !== options.to) {
+        this.logger.debug("Change state: " + options.from + " --> " + options.to);
+      }
     }
   }
 }

@@ -28,7 +28,7 @@ const PLAYER_NAME: string = "kaltura-player-js";
  * The ima plugin.
  * @classdesc
  */
-export default class Ima extends BasePlugin implements IMiddlewareProvider {
+export default class Ima extends BasePlugin {
 
   /**
    * The default configuration of the plugin.
@@ -209,17 +209,22 @@ export default class Ima extends BasePlugin implements IMiddlewareProvider {
    */
   initialUserAction(): void {
     try {
+      this.logger.debug("Initial user action");
       let playerViewSize = this._getPlayerViewSize();
       // Initialize the container.
       this._adDisplayContainer.initialize();
       if (this._isMobilePlatform() && this._isIOS()) {
+        this.logger.debug("Mobile ios: waiting for loadedmetada event");
         this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, () => {
+          this.logger.debug("Loadedmetada event raised: start ads manager");
           this.eventManager.unlisten(this.player, this.player.Event.LOADED_METADATA);
           this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
           this._adsManager.start();
         });
+        this.logger.debug("Load player");
         this.player.load();
       } else {
+        this.logger.debug("Start ads manager");
         this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
         this._adsManager.start();
       }
@@ -303,7 +308,6 @@ export default class Ima extends BasePlugin implements IMiddlewareProvider {
       this._adsContainerDiv = playerView.appendChild(document.createElement('div'));
       this._adsContainerDiv.id = ADS_CONTAINER_ID;
       this._adsContainerDiv.style.position = "absolute";
-      this._adsContainerDiv.style.zIndex = "2000";
       this._adsContainerDiv.style.top = "0";
     } else {
       this._adsContainerDiv = adsContainerDiv;
@@ -333,23 +337,22 @@ export default class Ima extends BasePlugin implements IMiddlewareProvider {
     this.logger.debug("Request ads");
     if (!this.config.adTagUrl && !this.config.adsResponse) {
       throw new Error("Missing ad tag url for ima plugin");
-    } else {
-      this._sdk.settings.setPlayerType(PLAYER_NAME);
-      this._sdk.settings.setPlayerVersion(VERSION);
-      // Request video ads
-      let adsRequest = new this._sdk.AdsRequest();
-      if (this.config.adTagUrl) {
-        adsRequest.adTagUrl = this.config.adTagUrl;
-      } else {
-        adsRequest.adsResponse = this.config.adsResponse;
-      }
-      let playerViewSize = this._getPlayerViewSize();
-      adsRequest.linearAdSlotWidth = playerViewSize.width;
-      adsRequest.linearAdSlotHeight = playerViewSize.height;
-      adsRequest.nonLinearAdSlotWidth = playerViewSize.width;
-      adsRequest.nonLinearAdSlotHeight = playerViewSize.height / 3;
-      this._adsLoader.requestAds(adsRequest);
     }
+    this._sdk.settings.setPlayerType(PLAYER_NAME);
+    this._sdk.settings.setPlayerVersion(VERSION);
+    // Request video ads
+    let adsRequest = new this._sdk.AdsRequest();
+    if (this.config.adTagUrl) {
+      adsRequest.adTagUrl = this.config.adTagUrl;
+    } else {
+      adsRequest.adsResponse = this.config.adsResponse;
+    }
+    let playerViewSize = this._getPlayerViewSize();
+    adsRequest.linearAdSlotWidth = playerViewSize.width;
+    adsRequest.linearAdSlotHeight = playerViewSize.height;
+    adsRequest.nonLinearAdSlotWidth = playerViewSize.width;
+    adsRequest.nonLinearAdSlotHeight = playerViewSize.height / 3;
+    this._adsLoader.requestAds(adsRequest);
   }
 
   /**
@@ -371,8 +374,8 @@ export default class Ima extends BasePlugin implements IMiddlewareProvider {
    */
   _getPlayerViewSize(): Object {
     let playerView = this.player.getView();
-    let width = playerView ? parseInt(getComputedStyle(playerView).width, 10) : 640;
-    let height = playerView ? parseInt(getComputedStyle(playerView).height, 10) : 360;
+    let width = parseInt(getComputedStyle(playerView).width, 10);
+    let height = parseInt(getComputedStyle(playerView).height, 10);
     return {width: width, height: height};
   }
 
@@ -438,6 +441,7 @@ export default class Ima extends BasePlugin implements IMiddlewareProvider {
     if (this._adsManager.isCustomPlaybackUsed() &&
       this.player.currentTime &&
       this.player.currentTime > 0) {
+      this.logger.debug("Custom playback used: save current time before ads", this.player.currentTime);
       this._videoLastCurrentTime = this.player.currentTime;
     }
   }
@@ -449,6 +453,7 @@ export default class Ima extends BasePlugin implements IMiddlewareProvider {
    */
   _maybeSetVideoCurrentTime(): void {
     if (this._videoLastCurrentTime) {
+      this.logger.debug("Custom playback used: set current time after ads", this.player.currentTime);
       this.player.currentTime = this._videoLastCurrentTime;
       this._videoLastCurrentTime = null;
     }
@@ -460,6 +465,7 @@ export default class Ima extends BasePlugin implements IMiddlewareProvider {
    * @returns {void}
    */
   _onMediaEnded(): void {
+    this.logger.debug("Media ended");
     this._adsLoader.contentComplete();
     this._contentComplete = true;
   }
@@ -581,7 +587,7 @@ export default class Ima extends BasePlugin implements IMiddlewareProvider {
    */
   _maybePreloadContent(): void {
     if (!this.player.src) {
-      this.logger.debug("Preloading media");
+      this.logger.debug("Preloading content");
       this.player.load();
     }
   }
