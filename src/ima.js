@@ -187,7 +187,19 @@ export default class Ima extends BasePlugin implements IMiddlewareProvider {
   destroy(): void {
     this.logger.debug("destroy");
     this.eventManager.destroy();
-    this._reset();
+    this._hideAdsContainer();
+    if (this._adsManager) {
+      this._adsManager.destroy();
+    }
+    if (this._adsLoader) {
+      this._adsLoader.contentComplete();
+    }
+    this._adsManager = null;
+    this._adsLoader = null;
+    this._contentComplete = false;
+    this._intervalTimer = null;
+    this._videoLastCurrentTime = null;
+    this._contentPlayheadTracker = {currentTime: 0, previousTime: 0, seeking: false, duration: 0};
   }
 
   /**
@@ -200,7 +212,7 @@ export default class Ima extends BasePlugin implements IMiddlewareProvider {
       let playerViewSize = this._getPlayerViewSize();
       // Initialize the container.
       this._adDisplayContainer.initialize();
-      if (this._isMobilePlatform()) {
+      if (this._isMobilePlatform() && this._isIOS()) {
         this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, () => {
           this.eventManager.unlisten(this.player, this.player.Event.LOADED_METADATA);
           this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
@@ -265,7 +277,7 @@ export default class Ima extends BasePlugin implements IMiddlewareProvider {
    */
   _init(): void {
     this.preparePromise = new Promise((resolve, reject) => {
-      let loadPromise = (window.google && window.google.ima) ? Promise.resolve() : this._loadIma();
+      let loadPromise = (window.google && window.google.ima) ? Promise.resolve() : this._loadImaSDK();
       loadPromise.then(() => {
         this._sdk = window.google.ima;
         this.logger.debug("IMA SDK version: " + this._sdk.VERSION);
@@ -481,8 +493,18 @@ export default class Ima extends BasePlugin implements IMiddlewareProvider {
    * @private
    */
   _isMobilePlatform(): boolean {
-    let deviceType = this.player.env.device.type;
-    return (deviceType === "mobile" || deviceType === "tablet");
+    let device = this.player.env.device.type;
+    return (device === "mobile" || device === "tablet");
+  }
+
+  /**
+   * Checks for iOS os.
+   * @returns {boolean} - Whether the os name is iOS.
+   * @private
+   */
+  _isIOS(): boolean {
+    let os = this.player.env.os.name;
+    return (os === "iOS");
   }
 
   /**
@@ -565,32 +587,11 @@ export default class Ima extends BasePlugin implements IMiddlewareProvider {
   }
 
   /**
-   * Resets the plugin.
-   * @private
-   * @returns {void}
-   */
-  _reset(): void {
-    this._hideAdsContainer();
-    if (this._adsManager) {
-      this._adsManager.destroy();
-    }
-    if (this._adsLoader) {
-      this._adsLoader.contentComplete();
-    }
-    this._adsManager = null;
-    this._adsLoader = null;
-    this._contentComplete = false;
-    this._intervalTimer = null;
-    this._videoLastCurrentTime = null;
-    this._contentPlayheadTracker = {currentTime: 0, previousTime: 0, seeking: false, duration: 0};
-  }
-
-  /**
    * Loads ima sdk lib dynamically.
    * @return {Promise} - The loading promise.
    * @private
    */
-  _loadIma(): Promise<*> {
+  _loadImaSDK(): Promise<*> {
     return new Promise((resolve, reject) => {
       let r = false,
         t = document.getElementsByTagName("script")[0],

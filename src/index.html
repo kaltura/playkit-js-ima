@@ -49,8 +49,9 @@
 
   window.player = Playkit.loadPlayer('player-placeholder', {
     playback: {
-      autoplay: false,
-      muted: false
+      playsinline: false,
+      autoplay: true,
+      muted: true
     },
     sources: {
       progressive: [
