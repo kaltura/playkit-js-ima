@@ -446,17 +446,22 @@ var Ima = function (_BasePlugin) {
       var _this2 = this;
 
       try {
+        this.logger.debug("Initial user action");
         var playerViewSize = this._getPlayerViewSize();
         // Initialize the container.
         this._adDisplayContainer.initialize();
         if (this._isMobilePlatform() && this._isIOS()) {
+          this.logger.debug("Mobile ios: waiting for loadedmetada event");
           this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, function () {
+            _this2.logger.debug("Loadedmetada event raised: start ads manager");
             _this2.eventManager.unlisten(_this2.player, _this2.player.Event.LOADED_METADATA);
             _this2._adsManager.init(playerViewSize.width, playerViewSize.height, _this2._sdk.ViewMode.NORMAL);
             _this2._adsManager.start();
           });
+          this.logger.debug("Load player");
           this.player.load();
         } else {
+          this.logger.debug("Start ads manager");
           this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
           this._adsManager.start();
         }
@@ -554,7 +559,6 @@ var Ima = function (_BasePlugin) {
         this._adsContainerDiv = playerView.appendChild(document.createElement('div'));
         this._adsContainerDiv.id = ADS_CONTAINER_ID;
         this._adsContainerDiv.style.position = "absolute";
-        this._adsContainerDiv.style.zIndex = "2000";
         this._adsContainerDiv.style.top = "0";
       } else {
         this._adsContainerDiv = adsContainerDiv;
@@ -590,23 +594,22 @@ var Ima = function (_BasePlugin) {
       this.logger.debug("Request ads");
       if (!this.config.adTagUrl && !this.config.adsResponse) {
         throw new Error("Missing ad tag url for ima plugin");
-      } else {
-        this._sdk.settings.setPlayerType(PLAYER_NAME);
-        this._sdk.settings.setPlayerVersion(_playkitJs.VERSION);
-        // Request video ads
-        var adsRequest = new this._sdk.AdsRequest();
-        if (this.config.adTagUrl) {
-          adsRequest.adTagUrl = this.config.adTagUrl;
-        } else {
-          adsRequest.adsResponse = this.config.adsResponse;
-        }
-        var playerViewSize = this._getPlayerViewSize();
-        adsRequest.linearAdSlotWidth = playerViewSize.width;
-        adsRequest.linearAdSlotHeight = playerViewSize.height;
-        adsRequest.nonLinearAdSlotWidth = playerViewSize.width;
-        adsRequest.nonLinearAdSlotHeight = playerViewSize.height / 3;
-        this._adsLoader.requestAds(adsRequest);
       }
+      this._sdk.settings.setPlayerType(PLAYER_NAME);
+      this._sdk.settings.setPlayerVersion(_playkitJs.VERSION);
+      // Request video ads
+      var adsRequest = new this._sdk.AdsRequest();
+      if (this.config.adTagUrl) {
+        adsRequest.adTagUrl = this.config.adTagUrl;
+      } else {
+        adsRequest.adsResponse = this.config.adsResponse;
+      }
+      var playerViewSize = this._getPlayerViewSize();
+      adsRequest.linearAdSlotWidth = playerViewSize.width;
+      adsRequest.linearAdSlotHeight = playerViewSize.height;
+      adsRequest.nonLinearAdSlotWidth = playerViewSize.width;
+      adsRequest.nonLinearAdSlotHeight = playerViewSize.height / 3;
+      this._adsLoader.requestAds(adsRequest);
     }
 
     /**
@@ -634,8 +637,8 @@ var Ima = function (_BasePlugin) {
     key: '_getPlayerViewSize',
     value: function _getPlayerViewSize() {
       var playerView = this.player.getView();
-      var width = playerView ? parseInt(getComputedStyle(playerView).width, 10) : 640;
-      var height = playerView ? parseInt(getComputedStyle(playerView).height, 10) : 360;
+      var width = parseInt(getComputedStyle(playerView).width, 10);
+      var height = parseInt(getComputedStyle(playerView).height, 10);
       return { width: width, height: height };
     }
 
@@ -717,6 +720,7 @@ var Ima = function (_BasePlugin) {
     key: '_maybeSaveVideoCurrentTime',
     value: function _maybeSaveVideoCurrentTime() {
       if (this._adsManager.isCustomPlaybackUsed() && this.player.currentTime && this.player.currentTime > 0) {
+        this.logger.debug("Custom playback used: save current time before ads", this.player.currentTime);
         this._videoLastCurrentTime = this.player.currentTime;
       }
     }
@@ -731,6 +735,7 @@ var Ima = function (_BasePlugin) {
     key: '_maybeSetVideoCurrentTime',
     value: function _maybeSetVideoCurrentTime() {
       if (this._videoLastCurrentTime) {
+        this.logger.debug("Custom playback used: set current time after ads", this.player.currentTime);
         this.player.currentTime = this._videoLastCurrentTime;
         this._videoLastCurrentTime = null;
       }
@@ -745,6 +750,7 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_onMediaEnded',
     value: function _onMediaEnded() {
+      this.logger.debug("Media ended");
       this._adsLoader.contentComplete();
       this._contentComplete = true;
     }
@@ -889,7 +895,7 @@ var Ima = function (_BasePlugin) {
     key: '_maybePreloadContent',
     value: function _maybePreloadContent() {
       if (!this.player.src) {
-        this.logger.debug("Preloading media");
+        this.logger.debug("Preloading content");
         this.player.load();
       }
     }
@@ -1333,7 +1339,9 @@ function ImaFSM(context) {
    * @returns {void}
    */
   function onEnterState(options) {
-    this.logger.debug("Change state: " + options.from + " --> " + options.to);
+    if (options.from !== options.to) {
+      this.logger.debug("Change state: " + options.from + " --> " + options.to);
+    }
   }
 };
 
