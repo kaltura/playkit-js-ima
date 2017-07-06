@@ -1,6 +1,5 @@
 // @flow
-import {BaseMiddleware} from '../node_modules/playkit-js/src/playkit.js'
-// import {BaseMiddleware} from 'playkit-js'
+import {BaseMiddleware} from 'playkit-js'
 import State from './state'
 
 /**
