@@ -334,6 +334,12 @@ var Ima = function (_BasePlugin) {
      * @private
      */
 
+    /**
+     * The promise which when resolved starts the next handler in the middleware chain.
+     * @member
+     * @private
+     */
+
 
     /**
      * The sdk lib url.
@@ -448,6 +454,7 @@ var Ima = function (_BasePlugin) {
 
       try {
         this.logger.debug("Initial user action");
+        this._nextPromise = defer();
         this._maybeHandleMobileAutoPlay();
         var playerViewSize = this._getPlayerViewSize();
         // Initialize the container.
@@ -459,6 +466,7 @@ var Ima = function (_BasePlugin) {
             _this2.eventManager.unlisten(_this2.player, _this2.player.Event.LOADED_METADATA);
             _this2._adsManager.init(playerViewSize.width, playerViewSize.height, _this2._sdk.ViewMode.NORMAL);
             _this2._adsManager.start();
+            return _this2._nextPromise;
           });
           this.logger.debug("Load player");
           this.player.load();
@@ -466,6 +474,7 @@ var Ima = function (_BasePlugin) {
           this.logger.debug("Start ads manager");
           this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
           this._adsManager.start();
+          return this._nextPromise;
         }
       } catch (adError) {
         this.logger.error(adError);
@@ -482,7 +491,10 @@ var Ima = function (_BasePlugin) {
   }, {
     key: 'resumeAd',
     value: function resumeAd() {
+      this.logger.debug("Resume ad");
+      this._nextPromise = defer();
       this._adsManager.resume();
+      return this._nextPromise;
     }
 
     /**
@@ -494,7 +506,10 @@ var Ima = function (_BasePlugin) {
   }, {
     key: 'pauseAd',
     value: function pauseAd() {
+      this.logger.debug("Pause ad");
+      this._nextPromise = defer();
       this._adsManager.pause();
+      return this._nextPromise;
     }
 
     /**
@@ -525,9 +540,8 @@ var Ima = function (_BasePlugin) {
     value: function _init() {
       var _this3 = this;
 
-      this.preparePromise = new Promise(function (resolve, reject) {
-        var loadPromise = window.google && window.google.ima ? Promise.resolve() : _this3._loadImaSDK();
-        loadPromise.then(function () {
+      this.loadPromise = new Promise(function (resolve, reject) {
+        (window.google && window.google.ima ? Promise.resolve() : _this3._loadImaSDK()).then(function () {
           _this3._sdk = window.google.ima;
           _this3.logger.debug("IMA SDK version: " + _this3._sdk.VERSION);
           _this3._initAdsContainer();
@@ -1033,6 +1047,25 @@ Ima.IMA_SDK_DEBUG_LIB_URL = "//imasdk.googleapis.com/js/sdkloader/ima3_debug.js"
 exports.default = Ima;
 (0, _playkitJs.registerPlugin)(pluginName, Ima);
 
+/**
+ * Creates global promise with can resolved/rejected outside the promise scope.
+ * @returns {Promise} - The promise with resolve and reject props.
+ */
+function defer() {
+  var res = void 0,
+      rej = void 0;
+  var promise = new Promise(function (resolve, reject) {
+    res = resolve;
+    rej = reject;
+  });
+  // $FlowFixMe
+  promise.resolve = res;
+  // $FlowFixMe
+  promise.reject = rej;
+
+  return promise;
+}
+
 /***/ }),
 /* 6 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -1106,16 +1139,22 @@ var ImaMiddleware = function (_BaseMiddleware) {
     value: function play(next) {
       var _this2 = this;
 
-      this._context.preparePromise.then(function () {
+      this._context.loadPromise.then(function () {
         var fsm = _this2._context.getStateMachine();
-        if (fsm.is(_state2.default.LOADED)) {
-          _this2._context.initialUserAction();
-        } else {
-          if (fsm.is(_state2.default.PAUSED)) {
-            _this2._context.resumeAd();
-          } else {
+        switch (fsm.current) {
+          case _state2.default.LOADED:
+            _this2._context.initialUserAction().then(function () {
+              _this2.callNext(next);
+            });
+            break;
+          case _state2.default.PAUSED:
+            _this2._context.resumeAd().then(function () {
+              _this2.callNext(next);
+            });
+            break;
+          default:
             _this2.callNext(next);
-          }
+            break;
         }
       }).catch(function (e) {
         _this2._context.destroy();
@@ -1132,11 +1171,18 @@ var ImaMiddleware = function (_BaseMiddleware) {
   }, {
     key: 'pause',
     value: function pause(next) {
+      var _this3 = this;
+
       var fsm = this._context.getStateMachine();
-      if (fsm.is(_state2.default.PLAYING)) {
-        this._context.pauseAd();
-      } else {
-        this.callNext(next);
+      switch (fsm.current) {
+        case _state2.default.PLAYING:
+          this._context.pauseAd().then(function () {
+            _this3.callNext(next);
+          });
+          break;
+        default:
+          this.callNext(next);
+          break;
       }
     }
   }]);
@@ -1257,7 +1303,7 @@ function ImaFSM(context) {
     callbacks: {
       onadsloaded: onAdsLoaded.bind(context),
       onadstarted: onAdStarted.bind(context),
-      onadpaused: onAdEvent.bind(context),
+      onadpaused: onAdPaused.bind(context),
       onadresumed: onAdEvent.bind(context),
       onadclicked: onAdClicked.bind(context),
       onadskipped: onAdEvent.bind(context),
@@ -1301,7 +1347,12 @@ function ImaFSM(context) {
     this.logger.debug("onAdStarted: " + adEvent.type.toUpperCase());
     if (!ad.isLinear()) {
       this._setVideoEndedCallbackEnabled(true);
-      this.player.play();
+      if (this._nextPromise) {
+        this._nextPromise.resolve();
+        this._nextPromise = null;
+      } else {
+        this.player.play();
+      }
     } else {
       this._startAdInterval();
     }
@@ -1321,6 +1372,22 @@ function ImaFSM(context) {
     } else {
       this.resumeAd();
     }
+    this.dispatchEvent(options.name, adEvent);
+  }
+
+  /**
+   * PAUSED event handler.
+   * @param {Object} options - fsm event data.
+   * @returns {void}
+   */
+  function onAdPaused(options) {
+    var adEvent = options.args[0];
+    this.logger.debug("onAdPaused: " + adEvent.type.toUpperCase());
+    if (this._nextPromise) {
+      this._nextPromise.resolve();
+      this._nextPromise = null;
+    }
+    this.dispatchEvent(options.name, adEvent);
   }
 
   /**
@@ -1348,9 +1415,6 @@ function ImaFSM(context) {
     var adEvent = options.args[0];
     this.logger.debug("onAllAdsCompleted: " + adEvent.type.toUpperCase());
     onAdBreakEnd.call(this, options);
-    if (this._contentComplete) {
-      this.destroy();
-    }
   }
 
   /**
@@ -1380,7 +1444,12 @@ function ImaFSM(context) {
     if (!this._contentComplete) {
       this._hideAdsContainer();
       this._maybeSetVideoCurrentTime();
-      this.player.play();
+      if (this._nextPromise) {
+        this._nextPromise.resolve();
+        this._nextPromise = null;
+      } else {
+        this.player.play();
+      }
     }
   }
 
