@@ -7,7 +7,7 @@
 		exports["PlaykitJsIma"] = factory(require("playkit-js"));
 	else
 		root["PlaykitJsIma"] = factory(root["Playkit"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_1__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_19__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 5);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -102,33 +102,6 @@ module.exports = g;
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports) {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var State = {
-  LOADING: "loading",
-  LOADED: "loaded",
-  PLAYING: "playing",
-  PAUSED: "paused",
-  IDLE: "idle",
-  DONE: "done"
-};
-
-exports.default = State;
-
-/***/ }),
-/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {// Unique ID creation requires a high quality random # generator.  In the
@@ -168,7 +141,7 @@ module.exports = rng;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 4 */
+/* 2 */
 /***/ (function(module, exports) {
 
 /**
@@ -197,7 +170,7 @@ module.exports = bytesToUuid;
 
 
 /***/ }),
-/* 5 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -209,15 +182,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _imaMiddleware = __webpack_require__(6);
+var _imaMiddleware = __webpack_require__(4);
 
 var _imaMiddleware2 = _interopRequireDefault(_imaMiddleware);
 
-var _imaFsm = __webpack_require__(7);
+var _imaFsm = __webpack_require__(5);
 
 var _imaFsm2 = _interopRequireDefault(_imaFsm);
 
-var _playkitJs = __webpack_require__(1);
+var _playkitJs = __webpack_require__(19);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -841,7 +814,7 @@ var Ima = function (_BasePlugin) {
       adsRenderingSettings.autoAlign = this.config.adsRenderingSettings.autoAlign;
       this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_PAUSE_REQUESTED, this._fsm.adbreakstart);
-      this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOADED, this._fsm.adsloaded);
+      this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOADED, this._fsm.adloaded);
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.STARTED, this._fsm.adstarted);
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.PAUSED, this._fsm.adpaused);
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.RESUMED, this._fsm.adresumed);
@@ -990,6 +963,19 @@ var Ima = function (_BasePlugin) {
     }
 
     /**
+     * Resolves the next promise to let the next handler in the middleware chain start.
+     * @private
+     * @returns {void}
+     */
+
+  }, {
+    key: '_resolveNextPromise',
+    value: function _resolveNextPromise() {
+      this._nextPromise.resolve();
+      this._nextPromise = null;
+    }
+
+    /**
      * Loads ima sdk lib dynamically.
      * @return {Promise} - The loading promise.
      * @private
@@ -1067,133 +1053,13 @@ function defer() {
 }
 
 /***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
+/* 4 */
+/***/ (function(module, exports) {
 
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _playkitJs = __webpack_require__(1);
-
-var _state = __webpack_require__(2);
-
-var _state2 = _interopRequireDefault(_state);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/**
- * Middleware implementation for ima plugin.
- * @classdesc
- */
-var ImaMiddleware = function (_BaseMiddleware) {
-  _inherits(ImaMiddleware, _BaseMiddleware);
-
-  /**
-   * @constructor
-   * @param {any} context - The plugin context.
-   */
-
-  /**
-   * The plugin context.
-   * @member
-   * @private
-   */
-  function ImaMiddleware(context) {
-    _classCallCheck(this, ImaMiddleware);
-
-    var _this = _possibleConstructorReturn(this, (ImaMiddleware.__proto__ || Object.getPrototypeOf(ImaMiddleware)).call(this));
-
-    _this.id = "ImaMiddleware";
-
-    _this._context = context;
-    return _this;
-  }
-
-  /**
-   * Play middleware handler.
-   * @param {Function} next - The next play handler in the middleware chain.
-   * @returns {void}
-   */
-
-  /**
-   * The id of the ima middleware.
-   * @type {string}
-   * @public
-   */
-
-
-  _createClass(ImaMiddleware, [{
-    key: 'play',
-    value: function play(next) {
-      var _this2 = this;
-
-      this._context.loadPromise.then(function () {
-        var fsm = _this2._context.getStateMachine();
-        switch (fsm.current) {
-          case _state2.default.LOADED:
-            _this2._context.initialUserAction().then(function () {
-              _this2.callNext(next);
-            });
-            break;
-          case _state2.default.PAUSED:
-            _this2._context.resumeAd().then(function () {
-              _this2.callNext(next);
-            });
-            break;
-          default:
-            _this2.callNext(next);
-            break;
-        }
-      }).catch(function (e) {
-        _this2._context.destroy();
-        _this2._context.logger.error(e);
-      });
-    }
-
-    /**
-     * Pause middleware handler.
-     * @param {Function} next - The next pause handler in the middleware chain.
-     * @returns {void}
-     */
-
-  }, {
-    key: 'pause',
-    value: function pause(next) {
-      var _this3 = this;
-
-      var fsm = this._context.getStateMachine();
-      switch (fsm.current) {
-        case _state2.default.PLAYING:
-          this._context.pauseAd().then(function () {
-            _this3.callNext(next);
-          });
-          break;
-        default:
-          this.callNext(next);
-          break;
-      }
-    }
-  }]);
-
-  return ImaMiddleware;
-}(_playkitJs.BaseMiddleware);
-
-exports.default = ImaMiddleware;
+throw new Error("Module build failed: Duplicate declaration \"BaseMiddleware\"\n\n\u001b[0m \u001b[90m 82 | \u001b[39m}\n \u001b[90m 83 | \u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 84 | \u001b[39m\u001b[36mimport\u001b[39m {\u001b[33mBaseMiddleware\u001b[39m} from \u001b[32m'../node_modules/playkit-js/src/playkit.js'\u001b[39m\n \u001b[90m    | \u001b[39m        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 85 | \u001b[39m\u001b[0m\n");
 
 /***/ }),
-/* 7 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1203,11 +1069,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _index = __webpack_require__(8);
+var _index = __webpack_require__(6);
 
 var _index2 = _interopRequireDefault(_index);
 
-var _state = __webpack_require__(2);
+var _state = __webpack_require__(18);
 
 var _state2 = _interopRequireDefault(_state);
 
@@ -1235,7 +1101,7 @@ function ImaFSM(context) {
       from: _state2.default.LOADING,
       to: _state2.default.LOADED
     }, {
-      name: context.player.Event.ADS_LOADED,
+      name: context.player.Event.AD_LOADED,
       from: [_state2.default.IDLE, _state2.default.LOADED]
     }, {
       name: context.player.Event.AD_STARTED,
@@ -1301,7 +1167,7 @@ function ImaFSM(context) {
       from: [_state2.default.PLAYING, _state2.default.PAUSED, _state2.default.LOADED]
     }],
     callbacks: {
-      onadsloaded: onAdsLoaded.bind(context),
+      onadloaded: onAdLoaded.bind(context),
       onadstarted: onAdStarted.bind(context),
       onadpaused: onAdPaused.bind(context),
       onadresumed: onAdEvent.bind(context),
@@ -1327,9 +1193,9 @@ function ImaFSM(context) {
    * @param {Object} options - fsm event data.
    * @returns {void}
    */
-  function onAdsLoaded(options) {
+  function onAdLoaded(options) {
     var adEvent = options.args[0];
-    this.logger.debug("onAdsLoaded: " + adEvent.type.toUpperCase());
+    this.logger.debug("onAdLoaded: " + adEvent.type.toUpperCase());
     var playerViewSize = this._getPlayerViewSize();
     this._adsManager.resize(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
     this.dispatchEvent(options.name, adEvent);
@@ -1348,8 +1214,7 @@ function ImaFSM(context) {
     if (!ad.isLinear()) {
       this._setVideoEndedCallbackEnabled(true);
       if (this._nextPromise) {
-        this._nextPromise.resolve();
-        this._nextPromise = null;
+        this._resolveNextPromise();
       } else {
         this.player.play();
       }
@@ -1384,8 +1249,7 @@ function ImaFSM(context) {
     var adEvent = options.args[0];
     this.logger.debug("onAdPaused: " + adEvent.type.toUpperCase());
     if (this._nextPromise) {
-      this._nextPromise.resolve();
-      this._nextPromise = null;
+      this._resolveNextPromise();
     }
     this.dispatchEvent(options.name, adEvent);
   }
@@ -1445,8 +1309,7 @@ function ImaFSM(context) {
       this._hideAdsContainer();
       this._maybeSetVideoCurrentTime();
       if (this._nextPromise) {
-        this._nextPromise.resolve();
-        this._nextPromise = null;
+        this._resolveNextPromise();
       } else {
         this.player.play();
       }
@@ -1492,7 +1355,7 @@ function ImaFSM(context) {
 exports.default = ImaFSM;
 
 /***/ }),
-/* 8 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1505,11 +1368,11 @@ exports.default = ImaFSM;
 
 
 
-var FsmError = __webpack_require__(9);
-var stampit = __webpack_require__(10);
-var _ = __webpack_require__(11);
-var EventEmitter = __webpack_require__(13).EventEmitter;
-var uuid = __webpack_require__(14);
+var FsmError = __webpack_require__(7);
+var stampit = __webpack_require__(8);
+var _ = __webpack_require__(9);
+var EventEmitter = __webpack_require__(11).EventEmitter;
+var uuid = __webpack_require__(12);
 
 var AssignFirstArgument = stampit({
   init: function init(opts) {
@@ -1531,7 +1394,7 @@ var StateMachine = stampit({
     current: 'none'
   },
   statics: {
-    Promise: global.Promise || __webpack_require__(17).Promise,
+    Promise: global.Promise || __webpack_require__(15).Promise,
     FsmError: FsmError,
     callbackPrefix: 'on',
     noChoiceFound: 'no-choice',
@@ -1942,7 +1805,7 @@ module.exports = StateMachine;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 9 */
+/* 7 */
 /***/ (function(module, exports) {
 
 module.exports = FsmError;
@@ -1964,7 +1827,7 @@ FsmError.prototype.constructor = FsmError;
 
 
 /***/ }),
-/* 10 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2460,7 +2323,7 @@ module.exports = exports['default'];
 
 
 /***/ }),
-/* 11 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, module) {var __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -19549,10 +19412,10 @@ module.exports = exports['default'];
   }
 }.call(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(12)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(10)(module)))
 
 /***/ }),
-/* 12 */
+/* 10 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -19580,7 +19443,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 13 */
+/* 11 */
 /***/ (function(module, exports) {
 
 // Copyright Joyent, Inc. and other Node contributors.
@@ -19888,11 +19751,11 @@ function isUndefined(arg) {
 
 
 /***/ }),
-/* 14 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var v1 = __webpack_require__(15);
-var v4 = __webpack_require__(16);
+var v1 = __webpack_require__(13);
+var v4 = __webpack_require__(14);
 
 var uuid = v4;
 uuid.v1 = v1;
@@ -19902,11 +19765,11 @@ module.exports = uuid;
 
 
 /***/ }),
-/* 15 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var rng = __webpack_require__(3);
-var bytesToUuid = __webpack_require__(4);
+var rng = __webpack_require__(1);
+var bytesToUuid = __webpack_require__(2);
 
 // **`v1()` - Generate time-based UUID**
 //
@@ -20008,11 +19871,11 @@ module.exports = v1;
 
 
 /***/ }),
-/* 16 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var rng = __webpack_require__(3);
-var bytesToUuid = __webpack_require__(4);
+var rng = __webpack_require__(1);
+var bytesToUuid = __webpack_require__(2);
 
 function v4(options, buf, offset) {
   var i = buf && offset || 0;
@@ -20043,7 +19906,7 @@ module.exports = v4;
 
 
 /***/ }),
-/* 17 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(process, global) {var require;/*!
@@ -20183,7 +20046,7 @@ function flush() {
 function attemptVertx() {
   try {
     var r = require;
-    var vertx = __webpack_require__(19);
+    var vertx = __webpack_require__(17);
     vertxNext = vertx.runOnLoop || vertx.runOnContext;
     return useVertxTimer();
   } catch (e) {
@@ -21204,10 +21067,10 @@ return Promise$2;
 
 //# sourceMappingURL=es6-promise.map
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(18), __webpack_require__(0)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16), __webpack_require__(0)))
 
 /***/ }),
-/* 18 */
+/* 16 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -21397,10 +21260,37 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 19 */
+/* 17 */
 /***/ (function(module, exports) {
 
 /* (ignored) */
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var State = {
+  LOADING: "loading",
+  LOADED: "loaded",
+  PLAYING: "playing",
+  PAUSED: "paused",
+  IDLE: "idle",
+  DONE: "done"
+};
+
+exports.default = State;
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE_19__;
 
 /***/ })
 /******/ ]);
