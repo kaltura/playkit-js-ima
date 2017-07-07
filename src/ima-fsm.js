@@ -107,7 +107,7 @@ export default class ImaFSM {
       callbacks: {
         onadsloaded: onAdsLoaded.bind(context),
         onadstarted: onAdStarted.bind(context),
-        onadpaused: onAdEvent.bind(context),
+        onadpaused: onAdPaused.bind(context),
         onadresumed: onAdEvent.bind(context),
         onadclicked: onAdClicked.bind(context),
         onadskipped: onAdEvent.bind(context),
@@ -151,7 +151,12 @@ export default class ImaFSM {
       this.logger.debug("onAdStarted: " + adEvent.type.toUpperCase());
       if (!ad.isLinear()) {
         this._setVideoEndedCallbackEnabled(true);
-        this.player.play();
+        if (this._nextPromise) {
+          this._nextPromise.resolve();
+          this._nextPromise = null;
+        } else {
+          this.player.play();
+        }
       } else {
         this._startAdInterval();
       }
@@ -171,6 +176,22 @@ export default class ImaFSM {
       } else {
         this.resumeAd();
       }
+      this.dispatchEvent(options.name, adEvent);
+    }
+
+    /**
+     * PAUSED event handler.
+     * @param {Object} options - fsm event data.
+     * @returns {void}
+     */
+    function onAdPaused(options: Object): void {
+      let adEvent = options.args[0];
+      this.logger.debug("onAdPaused: " + adEvent.type.toUpperCase());
+      if (this._nextPromise) {
+        this._nextPromise.resolve();
+        this._nextPromise = null;
+      }
+      this.dispatchEvent(options.name, adEvent);
     }
 
     /**
@@ -198,9 +219,6 @@ export default class ImaFSM {
       let adEvent = options.args[0];
       this.logger.debug("onAllAdsCompleted: " + adEvent.type.toUpperCase());
       onAdBreakEnd.call(this, options);
-      if (this._contentComplete) {
-        this.destroy();
-      }
     }
 
     /**
@@ -230,7 +248,12 @@ export default class ImaFSM {
       if (!this._contentComplete) {
         this._hideAdsContainer();
         this._maybeSetVideoCurrentTime();
-        this.player.play();
+        if (this._nextPromise) {
+          this._nextPromise.resolve();
+          this._nextPromise = null;
+        } else {
+          this.player.play();
+        }
       }
     }
 

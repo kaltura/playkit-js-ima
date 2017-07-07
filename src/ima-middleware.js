@@ -35,16 +35,24 @@ export default class ImaMiddleware extends BaseMiddleware {
    * @returns {void}
    */
   play(next: Function): void {
-    this._context.preparePromise.then(() => {
+    this._context.loadPromise.then(() => {
       let fsm = this._context.getStateMachine();
-      if (fsm.is(State.LOADED)) {
-        this._context.initialUserAction();
-      } else {
-        if (fsm.is(State.PAUSED)) {
-          this._context.resumeAd();
-        } else {
+      switch (fsm.current) {
+        case State.LOADED:
+          this._context.initialUserAction()
+            .then(() => {
+              this.callNext(next);
+            });
+          break;
+        case State.PAUSED:
+          this._context.resumeAd()
+            .then(() => {
+              this.callNext(next);
+            });
+          break;
+        default:
           this.callNext(next);
-        }
+          break;
       }
     }).catch((e) => {
       this._context.destroy();
@@ -59,10 +67,16 @@ export default class ImaMiddleware extends BaseMiddleware {
    */
   pause(next: Function): void {
     let fsm = this._context.getStateMachine();
-    if (fsm.is(State.PLAYING)) {
-      this._context.pauseAd();
-    } else {
-      this.callNext(next);
+    switch (fsm.current) {
+      case State.PLAYING:
+        this._context.pauseAd()
+          .then(() => {
+            this.callNext(next);
+          });
+        break;
+      default:
+        this.callNext(next);
+        break;
     }
   }
 }

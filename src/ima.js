@@ -71,7 +71,7 @@ export default class Ima extends BasePlugin {
    * @member
    * @public
    */
-  preparePromise: Promise<*>;
+  loadPromise: Promise<*>;
   /**
    * The finite state machine of the plugin.
    * @member
@@ -131,6 +131,12 @@ export default class Ima extends BasePlugin {
    * @private
    */
   _videoLastCurrentTime: ?number;
+  /**
+   * The promise which when resolved starts the next handler in the middleware chain.
+   * @member
+   * @private
+   */
+  _nextPromise: Promise<*>;
 
   /**
    * Whether the ima plugin is valid.
@@ -208,9 +214,10 @@ export default class Ima extends BasePlugin {
    * @public
    * @returns {void}
    */
-  initialUserAction(): void {
+  initialUserAction(): ?Promise<*> {
     try {
       this.logger.debug("Initial user action");
+      this._nextPromise = defer();
       this._maybeHandleMobileAutoPlay();
       let playerViewSize = this._getPlayerViewSize();
       // Initialize the container.
@@ -222,6 +229,7 @@ export default class Ima extends BasePlugin {
           this.eventManager.unlisten(this.player, this.player.Event.LOADED_METADATA);
           this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
           this._adsManager.start();
+          return this._nextPromise;
         });
         this.logger.debug("Load player");
         this.player.load();
@@ -229,6 +237,7 @@ export default class Ima extends BasePlugin {
         this.logger.debug("Start ads manager");
         this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
         this._adsManager.start();
+        return this._nextPromise;
       }
     }
     catch (adError) {
@@ -242,8 +251,11 @@ export default class Ima extends BasePlugin {
    * @public
    * @returns {void}
    */
-  resumeAd(): void {
+  resumeAd(): Promise<*> {
+    this.logger.debug("Resume ad");
+    this._nextPromise = defer();
     this._adsManager.resume();
+    return this._nextPromise;
   }
 
   /**
@@ -251,8 +263,11 @@ export default class Ima extends BasePlugin {
    * @public
    * @returns {void}
    */
-  pauseAd(): void {
+  pauseAd(): Promise<*> {
+    this.logger.debug("Pause ad");
+    this._nextPromise = defer();
     this._adsManager.pause();
+    return this._nextPromise;
   }
 
   /**
@@ -275,15 +290,15 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _init(): void {
-    this.preparePromise = new Promise((resolve, reject) => {
-      let loadPromise = (window.google && window.google.ima) ? Promise.resolve() : this._loadImaSDK();
-      loadPromise.then(() => {
-        this._sdk = window.google.ima;
-        this.logger.debug("IMA SDK version: " + this._sdk.VERSION);
-        this._initAdsContainer();
-        this._initAdsLoader(resolve);
-        this._requestAds();
-      }).catch((e) => {
+    this.loadPromise = new Promise((resolve, reject) => {
+      (window.google && window.google.ima ? Promise.resolve() : this._loadImaSDK())
+        .then(() => {
+          this._sdk = window.google.ima;
+          this.logger.debug("IMA SDK version: " + this._sdk.VERSION);
+          this._initAdsContainer();
+          this._initAdsLoader(resolve);
+          this._requestAds();
+        }).catch((e) => {
         reject(e);
       });
     });
@@ -684,3 +699,22 @@ export default class Ima extends BasePlugin {
 
 // Register to the player
 registerPlugin(pluginName, Ima);
+
+/**
+ * Creates global promise with can resolved/rejected outside the promise scope.
+ * @returns {Promise} - The promise with resolve and reject props.
+ */
+function defer(): Promise<*> {
+  let res, rej;
+  let promise = new Promise((resolve, reject) => {
+    res = resolve;
+    rej = reject;
+  });
+  // $FlowFixMe
+  promise.resolve = res;
+  // $FlowFixMe
+  promise.reject = rej;
+
+  return promise;
+}
+
