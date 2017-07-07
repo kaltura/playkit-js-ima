@@ -541,7 +541,7 @@ export default class Ima extends BasePlugin {
     adsRenderingSettings.autoAlign = this.config.adsRenderingSettings.autoAlign;
     this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_PAUSE_REQUESTED, this._fsm.adbreakstart);
-    this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOADED, this._fsm.adsloaded);
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOADED, this._fsm.adloaded);
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.STARTED, this._fsm.adstarted);
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.PAUSED, this._fsm.adpaused);
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.RESUMED, this._fsm.adresumed);
@@ -668,6 +668,15 @@ export default class Ima extends BasePlugin {
     }
   }
 
+  /**
+   * Resolves the next promise to let the next handler in the middleware chain start.
+   * @private
+   * @returns {void}
+   */
+  _resolveNextPromise(): void {
+    this._nextPromise.resolve();
+    this._nextPromise = null;
+  }
 
   /**
    * Loads ima sdk lib dynamically.

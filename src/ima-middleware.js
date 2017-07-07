@@ -81,3 +81,4 @@ export default class ImaMiddleware extends BaseMiddleware {
   }
 }
 
+import {BaseMiddleware} from '../node_modules/playkit-js/src/playkit.js'

@@ -22,7 +22,7 @@ export default class ImaFSM {
           to: State.LOADED
         },
         {
-          name: context.player.Event.ADS_LOADED,
+          name: context.player.Event.AD_LOADED,
           from: [State.IDLE, State.LOADED]
         },
         {
@@ -105,7 +105,7 @@ export default class ImaFSM {
         }
       ],
       callbacks: {
-        onadsloaded: onAdsLoaded.bind(context),
+        onadloaded: onAdLoaded.bind(context),
         onadstarted: onAdStarted.bind(context),
         onadpaused: onAdPaused.bind(context),
         onadresumed: onAdEvent.bind(context),
@@ -131,9 +131,9 @@ export default class ImaFSM {
      * @param {Object} options - fsm event data.
      * @returns {void}
      */
-    function onAdsLoaded(options: Object): void {
+    function onAdLoaded(options: Object): void {
       let adEvent = options.args[0];
-      this.logger.debug("onAdsLoaded: " + adEvent.type.toUpperCase());
+      this.logger.debug("onAdLoaded: " + adEvent.type.toUpperCase());
       let playerViewSize = this._getPlayerViewSize();
       this._adsManager.resize(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
       this.dispatchEvent(options.name, adEvent);
@@ -152,8 +152,7 @@ export default class ImaFSM {
       if (!ad.isLinear()) {
         this._setVideoEndedCallbackEnabled(true);
         if (this._nextPromise) {
-          this._nextPromise.resolve();
-          this._nextPromise = null;
+          this._resolveNextPromise();
         } else {
           this.player.play();
         }
@@ -188,8 +187,7 @@ export default class ImaFSM {
       let adEvent = options.args[0];
       this.logger.debug("onAdPaused: " + adEvent.type.toUpperCase());
       if (this._nextPromise) {
-        this._nextPromise.resolve();
-        this._nextPromise = null;
+        this._resolveNextPromise();
       }
       this.dispatchEvent(options.name, adEvent);
     }
@@ -249,8 +247,7 @@ export default class ImaFSM {
         this._hideAdsContainer();
         this._maybeSetVideoCurrentTime();
         if (this._nextPromise) {
-          this._nextPromise.resolve();
-          this._nextPromise = null;
+          this._resolveNextPromise();
         } else {
           this.player.play();
         }
