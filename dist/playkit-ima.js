@@ -7,7 +7,7 @@
 		exports["PlaykitJsIma"] = factory(require("playkit-js"));
 	else
 		root["PlaykitJsIma"] = factory(root["Playkit"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_19__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_1__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ 	return __webpack_require__(__webpack_require__.s = 5);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -102,6 +102,33 @@ module.exports = g;
 
 /***/ }),
 /* 1 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var State = {
+  LOADING: "loading",
+  LOADED: "loaded",
+  PLAYING: "playing",
+  PAUSED: "paused",
+  IDLE: "idle",
+  DONE: "done"
+};
+
+exports.default = State;
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {// Unique ID creation requires a high quality random # generator.  In the
@@ -141,7 +168,7 @@ module.exports = rng;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 2 */
+/* 4 */
 /***/ (function(module, exports) {
 
 /**
@@ -170,7 +197,7 @@ module.exports = bytesToUuid;
 
 
 /***/ }),
-/* 3 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -182,15 +209,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _imaMiddleware = __webpack_require__(4);
+var _imaMiddleware = __webpack_require__(6);
 
 var _imaMiddleware2 = _interopRequireDefault(_imaMiddleware);
 
-var _imaFsm = __webpack_require__(5);
+var _imaFsm = __webpack_require__(7);
 
 var _imaFsm2 = _interopRequireDefault(_imaFsm);
 
-var _playkitJs = __webpack_require__(19);
+var _playkitJs = __webpack_require__(1);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1053,13 +1080,7 @@ function defer() {
 }
 
 /***/ }),
-/* 4 */
-/***/ (function(module, exports) {
-
-throw new Error("Module build failed: Duplicate declaration \"BaseMiddleware\"\n\n\u001b[0m \u001b[90m 82 | \u001b[39m}\n \u001b[90m 83 | \u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 84 | \u001b[39m\u001b[36mimport\u001b[39m {\u001b[33mBaseMiddleware\u001b[39m} from \u001b[32m'../node_modules/playkit-js/src/playkit.js'\u001b[39m\n \u001b[90m    | \u001b[39m        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 85 | \u001b[39m\u001b[0m\n");
-
-/***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1069,11 +1090,137 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _index = __webpack_require__(6);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _playkitJs = __webpack_require__(1);
+
+var _state = __webpack_require__(2);
+
+var _state2 = _interopRequireDefault(_state);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * Middleware implementation for ima plugin.
+ * @classdesc
+ */
+var ImaMiddleware = function (_BaseMiddleware) {
+  _inherits(ImaMiddleware, _BaseMiddleware);
+
+  /**
+   * @constructor
+   * @param {any} context - The plugin context.
+   */
+
+  /**
+   * The plugin context.
+   * @member
+   * @private
+   */
+  function ImaMiddleware(context) {
+    _classCallCheck(this, ImaMiddleware);
+
+    var _this = _possibleConstructorReturn(this, (ImaMiddleware.__proto__ || Object.getPrototypeOf(ImaMiddleware)).call(this));
+
+    _this.id = "ImaMiddleware";
+
+    _this._context = context;
+    return _this;
+  }
+
+  /**
+   * Play middleware handler.
+   * @param {Function} next - The next play handler in the middleware chain.
+   * @returns {void}
+   */
+
+  /**
+   * The id of the ima middleware.
+   * @type {string}
+   * @public
+   */
+
+
+  _createClass(ImaMiddleware, [{
+    key: 'play',
+    value: function play(next) {
+      var _this2 = this;
+
+      this._context.loadPromise.then(function () {
+        var fsm = _this2._context.getStateMachine();
+        switch (fsm.current) {
+          case _state2.default.LOADED:
+            _this2._context.initialUserAction().then(function () {
+              _this2.callNext(next);
+            });
+            break;
+          case _state2.default.PAUSED:
+            _this2._context.resumeAd().then(function () {
+              _this2.callNext(next);
+            });
+            break;
+          default:
+            _this2.callNext(next);
+            break;
+        }
+      }).catch(function (e) {
+        _this2._context.destroy();
+        _this2._context.logger.error(e);
+      });
+    }
+
+    /**
+     * Pause middleware handler.
+     * @param {Function} next - The next pause handler in the middleware chain.
+     * @returns {void}
+     */
+
+  }, {
+    key: 'pause',
+    value: function pause(next) {
+      var _this3 = this;
+
+      var fsm = this._context.getStateMachine();
+      switch (fsm.current) {
+        case _state2.default.PLAYING:
+          this._context.pauseAd().then(function () {
+            _this3.callNext(next);
+          });
+          break;
+        default:
+          this.callNext(next);
+          break;
+      }
+    }
+  }]);
+
+  return ImaMiddleware;
+}(_playkitJs.BaseMiddleware);
+
+exports.default = ImaMiddleware;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _index = __webpack_require__(8);
 
 var _index2 = _interopRequireDefault(_index);
 
-var _state = __webpack_require__(18);
+var _state = __webpack_require__(2);
 
 var _state2 = _interopRequireDefault(_state);
 
@@ -1355,7 +1502,7 @@ function ImaFSM(context) {
 exports.default = ImaFSM;
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1368,11 +1515,11 @@ exports.default = ImaFSM;
 
 
 
-var FsmError = __webpack_require__(7);
-var stampit = __webpack_require__(8);
-var _ = __webpack_require__(9);
-var EventEmitter = __webpack_require__(11).EventEmitter;
-var uuid = __webpack_require__(12);
+var FsmError = __webpack_require__(9);
+var stampit = __webpack_require__(10);
+var _ = __webpack_require__(11);
+var EventEmitter = __webpack_require__(13).EventEmitter;
+var uuid = __webpack_require__(14);
 
 var AssignFirstArgument = stampit({
   init: function init(opts) {
@@ -1394,7 +1541,7 @@ var StateMachine = stampit({
     current: 'none'
   },
   statics: {
-    Promise: global.Promise || __webpack_require__(15).Promise,
+    Promise: global.Promise || __webpack_require__(17).Promise,
     FsmError: FsmError,
     callbackPrefix: 'on',
     noChoiceFound: 'no-choice',
@@ -1805,7 +1952,7 @@ module.exports = StateMachine;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, exports) {
 
 module.exports = FsmError;
@@ -1827,7 +1974,7 @@ FsmError.prototype.constructor = FsmError;
 
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2323,7 +2470,7 @@ module.exports = exports['default'];
 
 
 /***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, module) {var __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -19412,10 +19559,10 @@ module.exports = exports['default'];
   }
 }.call(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(10)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(12)(module)))
 
 /***/ }),
-/* 10 */
+/* 12 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -19443,7 +19590,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 11 */
+/* 13 */
 /***/ (function(module, exports) {
 
 // Copyright Joyent, Inc. and other Node contributors.
@@ -19751,11 +19898,11 @@ function isUndefined(arg) {
 
 
 /***/ }),
-/* 12 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var v1 = __webpack_require__(13);
-var v4 = __webpack_require__(14);
+var v1 = __webpack_require__(15);
+var v4 = __webpack_require__(16);
 
 var uuid = v4;
 uuid.v1 = v1;
@@ -19765,11 +19912,11 @@ module.exports = uuid;
 
 
 /***/ }),
-/* 13 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var rng = __webpack_require__(1);
-var bytesToUuid = __webpack_require__(2);
+var rng = __webpack_require__(3);
+var bytesToUuid = __webpack_require__(4);
 
 // **`v1()` - Generate time-based UUID**
 //
@@ -19871,11 +20018,11 @@ module.exports = v1;
 
 
 /***/ }),
-/* 14 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var rng = __webpack_require__(1);
-var bytesToUuid = __webpack_require__(2);
+var rng = __webpack_require__(3);
+var bytesToUuid = __webpack_require__(4);
 
 function v4(options, buf, offset) {
   var i = buf && offset || 0;
@@ -19906,7 +20053,7 @@ module.exports = v4;
 
 
 /***/ }),
-/* 15 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(process, global) {var require;/*!
@@ -20046,7 +20193,7 @@ function flush() {
 function attemptVertx() {
   try {
     var r = require;
-    var vertx = __webpack_require__(17);
+    var vertx = __webpack_require__(19);
     vertxNext = vertx.runOnLoop || vertx.runOnContext;
     return useVertxTimer();
   } catch (e) {
@@ -21067,10 +21214,10 @@ return Promise$2;
 
 //# sourceMappingURL=es6-promise.map
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16), __webpack_require__(0)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(18), __webpack_require__(0)))
 
 /***/ }),
-/* 16 */
+/* 18 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -21260,37 +21407,10 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 17 */
-/***/ (function(module, exports) {
-
-/* (ignored) */
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var State = {
-  LOADING: "loading",
-  LOADED: "loaded",
-  PLAYING: "playing",
-  PAUSED: "paused",
-  IDLE: "idle",
-  DONE: "done"
-};
-
-exports.default = State;
-
-/***/ }),
 /* 19 */
 /***/ (function(module, exports) {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE_19__;
+/* (ignored) */
 
 /***/ })
 /******/ ]);
