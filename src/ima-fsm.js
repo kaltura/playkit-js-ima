@@ -9,7 +9,7 @@ import State from './state'
 export default class ImaFSM {
   /**
    * @constructor
-   * @param {any} context - The plugin _context.
+   * @param {any} context - The plugin context.
    */
   constructor(context: any) {
     return StateMachine({

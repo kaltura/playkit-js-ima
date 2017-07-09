@@ -5,6 +5,8 @@ import {registerPlugin, BasePlugin} from 'playkit-js'
 import {VERSION} from 'playkit-js'
 import {BaseMiddleware} from 'playkit-js'
 
+type GlobalPromise = Promise<*> & { resolve: Function, reject: Function };
+
 /**
  * The plugin name.
  * @type {string}
@@ -71,7 +73,7 @@ export default class Ima extends BasePlugin {
    * @member
    * @public
    */
-  loadPromise: Promise<*>;
+  loadPromise: GlobalPromise;
   /**
    * The finite state machine of the plugin.
    * @member
@@ -136,7 +138,7 @@ export default class Ima extends BasePlugin {
    * @member
    * @private
    */
-  _nextPromise: Promise<*>;
+  _nextPromise: ?GlobalPromise;
 
   /**
    * Whether the ima plugin is valid.
@@ -162,7 +164,7 @@ export default class Ima extends BasePlugin {
     this._adsManager = null;
     this._contentComplete = false;
     this._contentPlayheadTracker = {currentTime: 0, previousTime: 0, seeking: false, duration: 0};
-    this._handleMobileAutoPlayCallback = this._bind(this, this._onMobileAutoPlay);
+    this._handleMobileAutoPlayCallback = bind(this, this._onMobileAutoPlay);
     this._addBindings();
     this._init();
   }
@@ -212,9 +214,9 @@ export default class Ima extends BasePlugin {
   /**
    * Initialize the ads for the first time.
    * @public
-   * @returns {void}
+   * @returns {?GlobalPromise} - The promise which when resolved starts the next handler in the middleware chain.
    */
-  initialUserAction(): ?Promise<*> {
+  initialUserAction(): ?GlobalPromise {
     try {
       this.logger.debug("Initial user action");
       this._nextPromise = defer();
@@ -239,8 +241,7 @@ export default class Ima extends BasePlugin {
         this._adsManager.start();
         return this._nextPromise;
       }
-    }
-    catch (adError) {
+    } catch (adError) {
       this.logger.error(adError);
       this.destroy();
     }
@@ -249,9 +250,9 @@ export default class Ima extends BasePlugin {
   /**
    * Resuming the ad.
    * @public
-   * @returns {void}
+   * @returns {GlobalPromise} - The promise which when resolved starts the next handler in the middleware chain.
    */
-  resumeAd(): Promise<*> {
+  resumeAd(): ?GlobalPromise {
     this.logger.debug("Resume ad");
     this._nextPromise = defer();
     this._adsManager.resume();
@@ -261,9 +262,9 @@ export default class Ima extends BasePlugin {
   /**
    * Pausing the ad.
    * @public
-   * @returns {void}
+   * @returns {GlobalPromise} - The promise which when resolved starts the next handler in the middleware chain.
    */
-  pauseAd(): Promise<*> {
+  pauseAd(): ?GlobalPromise {
     this.logger.debug("Pause ad");
     this._nextPromise = defer();
     this._adsManager.pause();
@@ -290,17 +291,16 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _init(): void {
-    this.loadPromise = new Promise((resolve, reject) => {
-      (window.google && window.google.ima ? Promise.resolve() : this._loadImaSDK())
-        .then(() => {
-          this._sdk = window.google.ima;
-          this.logger.debug("IMA SDK version: " + this._sdk.VERSION);
-          this._initAdsContainer();
-          this._initAdsLoader(resolve);
-          this._requestAds();
-        }).catch((e) => {
-        reject(e);
-      });
+    this.loadPromise = defer();
+    (window.google && window.google.ima ? Promise.resolve() : this._loadImaSDK())
+      .then(() => {
+        this._sdk = window.google.ima;
+        this.logger.debug("IMA SDK version: " + this._sdk.VERSION);
+        this._initAdsContainer();
+        this._initAdsLoader();
+        this._requestAds();
+      }).catch((e) => {
+      this.loadPromise.reject(e);
     });
   }
 
@@ -326,14 +326,13 @@ export default class Ima extends BasePlugin {
 
   /**
    * Initializing the ads loader.
-   * @param {Function} resolve - The resolve function of the loading promise.
    * @private
    * @returns {void}
    */
-  _initAdsLoader(resolve: Function): void {
+  _initAdsLoader(): void {
     this.logger.debug("Init ads loader");
     this._adsLoader = new this._sdk.AdsLoader(this._adDisplayContainer);
-    this._adsLoader.addEventListener(this._sdk.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._onAdsManagerLoaded.bind(this, resolve));
+    this._adsLoader.addEventListener(this._sdk.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._onAdsManagerLoaded.bind(this));
     this._adsLoader.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, this._fsm.aderror);
   }
 
@@ -524,12 +523,11 @@ export default class Ima extends BasePlugin {
 
   /**
    * The ads manager loaded handler.
-   * @param {Function} resolve - The resolve function of the loading promise.
    * @param {any} adsManagerLoadedEvent - The event data.
    * @private
    * @returns {void}
    */
-  _onAdsManagerLoaded(resolve: Function, adsManagerLoadedEvent: any): void {
+  _onAdsManagerLoaded(adsManagerLoadedEvent: any): void {
     this.logger.debug('Ads manager loaded');
     let adsRenderingSettings = new this._sdk.AdsRenderingSettings();
     adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
@@ -540,6 +538,19 @@ export default class Ima extends BasePlugin {
     adsRenderingSettings.bitrate = this.config.adsRenderingSettings.bitrate;
     adsRenderingSettings.autoAlign = this.config.adsRenderingSettings.autoAlign;
     this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
+    this._attachAdsManagerListeners();
+    this._syncPlayerVolume();
+    this._fsm.loaded().then(() => {
+      this.loadPromise.resolve();
+    });
+  }
+
+  /**
+   * Attach the ads manager listeners.
+   * @private
+   * @returns {void}
+   */
+  _attachAdsManagerListeners(): void {
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_PAUSE_REQUESTED, this._fsm.adbreakstart);
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOADED, this._fsm.adloaded);
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.STARTED, this._fsm.adstarted);
@@ -557,10 +568,6 @@ export default class Ima extends BasePlugin {
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_CHANGED, this._fsm.advolumechanged);
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_MUTED, this._fsm.admuted);
     this._adsManager.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, this._fsm.aderror);
-    this._syncPlayerVolume();
-    this._fsm.loaded().then(() => {
-      resolve();
-    });
   }
 
   /**
@@ -576,19 +583,6 @@ export default class Ima extends BasePlugin {
         this._adsManager.setVolume(this.player.volume);
       }
     }
-  }
-
-  /**
-   * Binds an handler to a desired context.
-   * @param {any} thisObj - The handler context.
-   * @param {Function} fn - The handler.
-   * @returns {Function} - The new bound function.
-   * @private
-   */
-  _bind(thisObj: any, fn: Function): Function {
-    return function () {
-      fn.apply(thisObj, arguments);
-    };
   }
 
   /**
@@ -674,8 +668,10 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _resolveNextPromise(): void {
-    this._nextPromise.resolve();
-    this._nextPromise = null;
+    if (this._nextPromise) {
+      this._nextPromise.resolve();
+      this._nextPromise = null;
+    }
   }
 
   /**
@@ -710,11 +706,12 @@ export default class Ima extends BasePlugin {
 registerPlugin(pluginName, Ima);
 
 /**
- * Creates global promise with can resolved/rejected outside the promise scope.
- * @returns {Promise} - The promise with resolve and reject props.
+ * Creates global promise which can resolved/rejected outside the promise scope.
+ * @returns {GlobalPromise} - The promise with resolve and reject props.
  */
-function defer(): Promise<*> {
+function defer(): GlobalPromise {
   let res, rej;
+  // $FlowFixMe
   let promise = new Promise((resolve, reject) => {
     res = resolve;
     rej = reject;
@@ -723,7 +720,18 @@ function defer(): Promise<*> {
   promise.resolve = res;
   // $FlowFixMe
   promise.reject = rej;
-
   return promise;
 }
 
+/**
+ * Binds an handler to a desired context.
+ * @param {any} thisObj - The handler context.
+ * @param {Function} fn - The handler.
+ * @returns {Function} - The new bound function.
+ * @private
+ */
+function bind(thisObj: any, fn: Function): Function {
+  return function () {
+    fn.apply(thisObj, arguments);
+  };
+}
