@@ -1182,6 +1182,7 @@ var ImaMiddleware = function (_BaseMiddleware) {
       }).catch(function (e) {
         _this2._context.destroy();
         _this2._context.logger.error(e);
+        _this2.callNext(next);
       });
     }
 
