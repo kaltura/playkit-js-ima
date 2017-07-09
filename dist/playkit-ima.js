@@ -383,7 +383,7 @@ var Ima = function (_BasePlugin) {
     _this._adsManager = null;
     _this._contentComplete = false;
     _this._contentPlayheadTracker = { currentTime: 0, previousTime: 0, seeking: false, duration: 0 };
-    _this._handleMobileAutoPlayCallback = _this._bind(_this, _this._onMobileAutoPlay);
+    _this._handleMobileAutoPlayCallback = bind(_this, _this._onMobileAutoPlay);
     _this._addBindings();
     _this._init();
     return _this;
@@ -444,7 +444,7 @@ var Ima = function (_BasePlugin) {
     /**
      * Initialize the ads for the first time.
      * @public
-     * @returns {void}
+     * @returns {?GlobalPromise} - The promise which when resolved starts the next handler in the middleware chain.
      */
 
   }, {
@@ -485,7 +485,7 @@ var Ima = function (_BasePlugin) {
     /**
      * Resuming the ad.
      * @public
-     * @returns {void}
+     * @returns {GlobalPromise} - The promise which when resolved starts the next handler in the middleware chain.
      */
 
   }, {
@@ -500,7 +500,7 @@ var Ima = function (_BasePlugin) {
     /**
      * Pausing the ad.
      * @public
-     * @returns {void}
+     * @returns {GlobalPromise} - The promise which when resolved starts the next handler in the middleware chain.
      */
 
   }, {
@@ -540,16 +540,15 @@ var Ima = function (_BasePlugin) {
     value: function _init() {
       var _this3 = this;
 
-      this.loadPromise = new Promise(function (resolve, reject) {
-        (window.google && window.google.ima ? Promise.resolve() : _this3._loadImaSDK()).then(function () {
-          _this3._sdk = window.google.ima;
-          _this3.logger.debug("IMA SDK version: " + _this3._sdk.VERSION);
-          _this3._initAdsContainer();
-          _this3._initAdsLoader(resolve);
-          _this3._requestAds();
-        }).catch(function (e) {
-          reject(e);
-        });
+      this.loadPromise = defer();
+      (window.google && window.google.ima ? Promise.resolve() : this._loadImaSDK()).then(function () {
+        _this3._sdk = window.google.ima;
+        _this3.logger.debug("IMA SDK version: " + _this3._sdk.VERSION);
+        _this3._initAdsContainer();
+        _this3._initAdsLoader();
+        _this3._requestAds();
+      }).catch(function (e) {
+        _this3.loadPromise.reject(e);
       });
     }
 
@@ -578,17 +577,16 @@ var Ima = function (_BasePlugin) {
 
     /**
      * Initializing the ads loader.
-     * @param {Function} resolve - The resolve function of the loading promise.
      * @private
      * @returns {void}
      */
 
   }, {
     key: '_initAdsLoader',
-    value: function _initAdsLoader(resolve) {
+    value: function _initAdsLoader() {
       this.logger.debug("Init ads loader");
       this._adsLoader = new this._sdk.AdsLoader(this._adDisplayContainer);
-      this._adsLoader.addEventListener(this._sdk.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._onAdsManagerLoaded.bind(this, resolve));
+      this._adsLoader.addEventListener(this._sdk.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._onAdsManagerLoaded.bind(this));
       this._adsLoader.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, this._fsm.aderror);
     }
 
@@ -821,7 +819,6 @@ var Ima = function (_BasePlugin) {
 
     /**
      * The ads manager loaded handler.
-     * @param {Function} resolve - The resolve function of the loading promise.
      * @param {any} adsManagerLoadedEvent - The event data.
      * @private
      * @returns {void}
@@ -829,7 +826,9 @@ var Ima = function (_BasePlugin) {
 
   }, {
     key: '_onAdsManagerLoaded',
-    value: function _onAdsManagerLoaded(resolve, adsManagerLoadedEvent) {
+    value: function _onAdsManagerLoaded(adsManagerLoadedEvent) {
+      var _this4 = this;
+
       this.logger.debug('Ads manager loaded');
       var adsRenderingSettings = new this._sdk.AdsRenderingSettings();
       adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
@@ -840,6 +839,22 @@ var Ima = function (_BasePlugin) {
       adsRenderingSettings.bitrate = this.config.adsRenderingSettings.bitrate;
       adsRenderingSettings.autoAlign = this.config.adsRenderingSettings.autoAlign;
       this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
+      this._attachAdsManagerListeners();
+      this._syncPlayerVolume();
+      this._fsm.loaded().then(function () {
+        _this4.loadPromise.resolve();
+      });
+    }
+
+    /**
+     * Attach the ads manager listeners.
+     * @private
+     * @returns {void}
+     */
+
+  }, {
+    key: '_attachAdsManagerListeners',
+    value: function _attachAdsManagerListeners() {
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_PAUSE_REQUESTED, this._fsm.adbreakstart);
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOADED, this._fsm.adloaded);
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.STARTED, this._fsm.adstarted);
@@ -857,10 +872,6 @@ var Ima = function (_BasePlugin) {
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_CHANGED, this._fsm.advolumechanged);
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_MUTED, this._fsm.admuted);
       this._adsManager.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, this._fsm.aderror);
-      this._syncPlayerVolume();
-      this._fsm.loaded().then(function () {
-        resolve();
-      });
     }
 
     /**
@@ -879,22 +890,6 @@ var Ima = function (_BasePlugin) {
           this._adsManager.setVolume(this.player.volume);
         }
       }
-    }
-
-    /**
-     * Binds an handler to a desired context.
-     * @param {any} thisObj - The handler context.
-     * @param {Function} fn - The handler.
-     * @returns {Function} - The new bound function.
-     * @private
-     */
-
-  }, {
-    key: '_bind',
-    value: function _bind(thisObj, fn) {
-      return function () {
-        fn.apply(thisObj, arguments);
-      };
     }
 
     /**
@@ -998,8 +993,10 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_resolveNextPromise',
     value: function _resolveNextPromise() {
-      this._nextPromise.resolve();
-      this._nextPromise = null;
+      if (this._nextPromise) {
+        this._nextPromise.resolve();
+        this._nextPromise = null;
+      }
     }
 
     /**
@@ -1011,16 +1008,16 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_loadImaSDK',
     value: function _loadImaSDK() {
-      var _this4 = this;
+      var _this5 = this;
 
       return new Promise(function (resolve, reject) {
         var r = false,
             t = document.getElementsByTagName("script")[0],
             s = document.createElement("script");
         s.type = "text/javascript";
-        s.src = _this4.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL;
+        s.src = _this5.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL;
         s.async = true;
-        _this4.logger.debug("Loading lib: " + s.src);
+        _this5.logger.debug("Loading lib: " + s.src);
         s.onload = s.onreadystatechange = function () {
           if (!r && (!this.readyState || this.readyState === "complete")) {
             r = true;
@@ -1061,12 +1058,13 @@ exports.default = Ima;
 (0, _playkitJs.registerPlugin)(pluginName, Ima);
 
 /**
- * Creates global promise with can resolved/rejected outside the promise scope.
- * @returns {Promise} - The promise with resolve and reject props.
+ * Creates global promise which can resolved/rejected outside the promise scope.
+ * @returns {GlobalPromise} - The promise with resolve and reject props.
  */
 function defer() {
   var res = void 0,
       rej = void 0;
+  // $FlowFixMe
   var promise = new Promise(function (resolve, reject) {
     res = resolve;
     rej = reject;
@@ -1075,8 +1073,20 @@ function defer() {
   promise.resolve = res;
   // $FlowFixMe
   promise.reject = rej;
-
   return promise;
+}
+
+/**
+ * Binds an handler to a desired context.
+ * @param {any} thisObj - The handler context.
+ * @param {Function} fn - The handler.
+ * @returns {Function} - The new bound function.
+ * @private
+ */
+function bind(thisObj, fn) {
+  return function () {
+    fn.apply(thisObj, arguments);
+  };
 }
 
 /***/ }),
@@ -1235,7 +1245,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var ImaFSM =
 /**
  * @constructor
- * @param {any} context - The plugin _context.
+ * @param {any} context - The plugin context.
  */
 function ImaFSM(context) {
   _classCallCheck(this, ImaFSM);
