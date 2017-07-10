@@ -70,10 +70,7 @@ export default class ImaMiddleware extends BaseMiddleware {
     let fsm = this._context.getStateMachine();
     switch (fsm.current) {
       case State.PLAYING:
-        this._context.pauseAd()
-          .then(() => {
-            this.callNext(next);
-          });
+        this._context.pauseAd();
         break;
       default:
         this.callNext(next);

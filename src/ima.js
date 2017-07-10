@@ -3,9 +3,9 @@ import ImaMiddleware from './ima-middleware'
 import ImaFSM from './ima-fsm'
 import {registerPlugin, BasePlugin} from 'playkit-js'
 import {VERSION} from 'playkit-js'
+import {PLAYER_NAME} from 'playkit-js'
 import {BaseMiddleware} from 'playkit-js'
-
-type GlobalPromise = Promise<*> & { resolve: Function, reject: Function };
+import {Utils} from 'playkit-js'
 
 /**
  * The plugin name.
@@ -19,12 +19,6 @@ const pluginName: string = "ima";
  * @const
  */
 const ADS_CONTAINER_ID: string = "ads-container";
-/**
- * The player name.
- * @type {string}
- * @const
- */
-const PLAYER_NAME: string = "kaltura-player-js";
 
 /**
  * The ima plugin.
@@ -39,10 +33,6 @@ export default class Ima extends BasePlugin {
    */
   static defaultConfig: Object = {
     debug: false,
-    timeout: 5000,
-    prerollTimeout: 100,
-    adLabel: 'Advertisement',
-    showControlsForJSAds: true,
     adsRenderingSettings: {
       enablePreloading: false,
       useStyledLinearAds: false,
@@ -73,7 +63,7 @@ export default class Ima extends BasePlugin {
    * @member
    * @public
    */
-  loadPromise: GlobalPromise;
+  loadPromise: DeferredPromise;
   /**
    * The finite state machine of the plugin.
    * @member
@@ -138,7 +128,7 @@ export default class Ima extends BasePlugin {
    * @member
    * @private
    */
-  _nextPromise: ?GlobalPromise;
+  _nextPromise: ?DeferredPromise;
 
   /**
    * Whether the ima plugin is valid.
@@ -164,9 +154,17 @@ export default class Ima extends BasePlugin {
     this._adsManager = null;
     this._contentComplete = false;
     this._contentPlayheadTracker = {currentTime: 0, previousTime: 0, seeking: false, duration: 0};
-    this._handleMobileAutoPlayCallback = bind(this, this._onMobileAutoPlay);
+    this._handleMobileAutoPlayCallback = Utils.objects.bind(this, this._onMobileAutoPlay);
     this._addBindings();
     this._init();
+  }
+
+  playAdNow(): void {
+    // TODO: playAdNow()
+  }
+
+  skipAd(): void {
+    // TODO: skipAd()
   }
 
   /**
@@ -214,27 +212,27 @@ export default class Ima extends BasePlugin {
   /**
    * Initialize the ads for the first time.
    * @public
-   * @returns {?GlobalPromise} - The promise which when resolved starts the next handler in the middleware chain.
+   * @returns {?DeferredPromise} - The promise which when resolved starts the next handler in the middleware chain.
    */
-  initialUserAction(): ?GlobalPromise {
+  initialUserAction(): ?DeferredPromise {
     try {
       this.logger.debug("Initial user action");
-      this._nextPromise = defer();
+      this._nextPromise = Utils.objects.defer();
       this._maybeHandleMobileAutoPlay();
       let playerViewSize = this._getPlayerViewSize();
       // Initialize the container.
       this._adDisplayContainer.initialize();
-      if (this._isMobilePlatform() && this._isIOS()) {
-        this.logger.debug("Mobile ios: waiting for loadedmetada event");
+      if (this._adsManager.isCustomPlaybackUsed()) {
+        this.logger.debug("Waiting for loadedmetada event");
         this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, () => {
           this.logger.debug("Loadedmetada event raised: start ads manager");
           this.eventManager.unlisten(this.player, this.player.Event.LOADED_METADATA);
           this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
           this._adsManager.start();
-          return this._nextPromise;
         });
         this.logger.debug("Load player");
         this.player.load();
+        return this._nextPromise;
       } else {
         this.logger.debug("Start ads manager");
         this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
@@ -250,11 +248,11 @@ export default class Ima extends BasePlugin {
   /**
    * Resuming the ad.
    * @public
-   * @returns {GlobalPromise} - The promise which when resolved starts the next handler in the middleware chain.
+   * @returns {DeferredPromise} - The promise which when resolved starts the next handler in the middleware chain.
    */
-  resumeAd(): ?GlobalPromise {
+  resumeAd(): ?DeferredPromise {
     this.logger.debug("Resume ad");
-    this._nextPromise = defer();
+    this._nextPromise = Utils.objects.defer();
     this._adsManager.resume();
     return this._nextPromise;
   }
@@ -262,18 +260,18 @@ export default class Ima extends BasePlugin {
   /**
    * Pausing the ad.
    * @public
-   * @returns {GlobalPromise} - The promise which when resolved starts the next handler in the middleware chain.
+   * @returns {DeferredPromise} - The promise which when resolved starts the next handler in the middleware chain.
    */
-  pauseAd(): ?GlobalPromise {
+  pauseAd(): ?DeferredPromise {
     this.logger.debug("Pause ad");
-    this._nextPromise = defer();
+    this._nextPromise = Utils.objects.defer();
     this._adsManager.pause();
     return this._nextPromise;
   }
 
   /**
    * Adding bindings.
-   * @private
+   * @private_addBindings
    * @returns {void}
    */
   _addBindings(): void {
@@ -291,8 +289,8 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _init(): void {
-    this.loadPromise = defer();
-    (window.google && window.google.ima ? Promise.resolve() : this._loadImaSDK())
+    this.loadPromise = Utils.objects.defer();
+    (window.google && window.google.ima ? Promise.resolve() : Utils.dom.loadScriptAsync(this.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL))
       .then(() => {
         this._sdk = window.google.ima;
         this.logger.debug("IMA SDK version: " + this._sdk.VERSION);
@@ -312,15 +310,17 @@ export default class Ima extends BasePlugin {
   _initAdsContainer(): void {
     this.logger.debug("Init ads container");
     let adsContainerDiv = document.getElementById(ADS_CONTAINER_ID);
-    let playerView = this.player.getView();
     if (!adsContainerDiv) {
+      // TODO: Move DOM actions to playkit utils
+      let playerView = this.player.getView();
       this._adsContainerDiv = playerView.appendChild(document.createElement('div'));
-      this._adsContainerDiv.id = ADS_CONTAINER_ID;
+      this._adsContainerDiv.id = ADS_CONTAINER_ID + playerView.id;
       this._adsContainerDiv.style.position = "absolute";
-      this._adsContainerDiv.style.top = "0";
+      this._adsContainerDiv.style.top = "0px";
     } else {
       this._adsContainerDiv = adsContainerDiv;
     }
+    this._sdk.settings.setVpaidMode(this._sdk.ImaSdkSettings.VpaidMode.ENABLED);
     this._adDisplayContainer = new this._sdk.AdDisplayContainer(this._adsContainerDiv, this.player.getVideoElement());
   }
 
@@ -343,6 +343,7 @@ export default class Ima extends BasePlugin {
    */
   _requestAds(): void {
     this.logger.debug("Request ads");
+    // TODO: Support request ads after user action also?
     if (!this.config.adTagUrl && !this.config.adsResponse) {
       throw new Error("Missing ad tag url for ima plugin");
     }
@@ -478,7 +479,6 @@ export default class Ima extends BasePlugin {
     this._contentComplete = true;
   }
 
-
   /**
    * Shows the ads container.
    * @private
@@ -540,9 +540,7 @@ export default class Ima extends BasePlugin {
     this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
     this._attachAdsManagerListeners();
     this._syncPlayerVolume();
-    this._fsm.loaded().then(() => {
-      this.loadPromise.resolve();
-    });
+    this._fsm.loaded().then(this.loadPromise.resolve);
   }
 
   /**
@@ -568,6 +566,7 @@ export default class Ima extends BasePlugin {
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_CHANGED, this._fsm.advolumechanged);
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_MUTED, this._fsm.admuted);
     this._adsManager.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, this._fsm.aderror);
+    // TODO: Listen to LOG event
   }
 
   /**
@@ -591,9 +590,20 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _startAdInterval(): void {
+    this._stopAdInterval();
     this._intervalTimer = setInterval(() => {
       // let remainingTime = this._adsManager.getRemainingTime();
     }, 300);
+  }
+
+  /**
+   * Stops ads interval timer.
+   * @private
+   * @returns {void}
+   */
+  _stopAdInterval(): void {
+    clearInterval(this._intervalTimer);
+    this._intervalTimer = null;
   }
 
   /**
@@ -602,7 +612,7 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _maybePreloadContent(): void {
-    if (!this.player.src) {
+    if (!this.player.src && !this._adsManager.isCustomPlaybackUsed()) {
       this.logger.debug("Preloading content");
       this.player.load();
     }
@@ -615,11 +625,11 @@ export default class Ima extends BasePlugin {
    */
   _maybeHandleMobileAutoPlay(): void {
     if (this._isMobilePlatform()) {
-      this._isMobileAutoPlay = this.player.config.playback.autoplay && this.player.muted;
+      let isMobileAutoPlay = this.player.config.playback.autoplay && this.player.muted;
       if (this._isIOS()) {
-        this._isMobileAutoPlay = this._isMobileAutoPlay && this.player.playsinline;
+        isMobileAutoPlay = isMobileAutoPlay && this.player.playsinline;
       }
-      if (this._isMobileAutoPlay) {
+      if (isMobileAutoPlay) {
         this._setMobileAutoPlayCallbackEnable(true);
       }
     }
@@ -645,20 +655,14 @@ export default class Ima extends BasePlugin {
    */
   _setMobileAutoPlayCallbackEnable(enable: boolean): void {
     if (enable) {
-      // TODO: full screen event?
-      this.player.addEventListener(this.player.Event.PAUSE, this._handleMobileAutoPlayCallback);
-      this.player.addEventListener(this.player.Event.VOLUME_CHANGE, this._handleMobileAutoPlayCallback);
-      this.player.addEventListener(this.player.Event.SEEKING, this._handleMobileAutoPlayCallback);
-      this.player.addEventListener(this.player.Event.AD_PAUSED, this._handleMobileAutoPlayCallback);
-      this.player.addEventListener(this.player.Event.AD_VOLUME_CHANGED, this._handleMobileAutoPlayCallback);
-      this.player.addEventListener(this.player.Event.AD_CLICKED, this._handleMobileAutoPlayCallback);
+      // TODO: Full screen event?
+      this.eventManager.listen(this.player, this.player.Event.AD_PAUSED, this._handleMobileAutoPlayCallback);
+      this.eventManager.listen(this.player, this.player.Event.AD_VOLUME_CHANGED, this._handleMobileAutoPlayCallback);
+      this.eventManager.listen(this.player, this.player.Event.AD_CLICKED, this._handleMobileAutoPlayCallback);
     } else {
-      this.player.removeEventListener(this.player.Event.PAUSE, this._handleMobileAutoPlayCallback);
-      this.player.removeEventListener(this.player.Event.VOLUME_CHANGE, this._handleMobileAutoPlayCallback);
-      this.player.removeEventListener(this.player.Event.SEEKING, this._handleMobileAutoPlayCallback);
-      this.player.removeEventListener(this.player.Event.AD_PAUSED, this._handleMobileAutoPlayCallback);
-      this.player.removeEventListener(this.player.Event.AD_VOLUME_CHANGED, this._handleMobileAutoPlayCallback);
-      this.player.removeEventListener(this.player.Event.AD_CLICKED, this._handleMobileAutoPlayCallback);
+      this.eventManager.unlisten(this.player, this.player.Event.AD_PAUSED, this._handleMobileAutoPlayCallback);
+      this.eventManager.unlisten(this.player, this.player.Event.AD_VOLUME_CHANGED, this._handleMobileAutoPlayCallback);
+      this.eventManager.unlisten(this.player, this.player.Event.AD_CLICKED, this._handleMobileAutoPlayCallback);
     }
   }
 
@@ -673,65 +677,7 @@ export default class Ima extends BasePlugin {
       this._nextPromise = null;
     }
   }
-
-  /**
-   * Loads ima sdk lib dynamically.
-   * @return {Promise} - The loading promise.
-   * @private
-   */
-  _loadImaSDK(): Promise<*> {
-    return new Promise((resolve, reject) => {
-      let r = false,
-        t = document.getElementsByTagName("script")[0],
-        s = document.createElement("script");
-      s.type = "text/javascript";
-      s.src = this.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL;
-      s.async = true;
-      this.logger.debug("Loading lib: " + s.src);
-      s.onload = s.onreadystatechange = function () {
-        if (!r && (!this.readyState || this.readyState === "complete")) {
-          r = true;
-          resolve(this);
-        }
-      };
-      s.onerror = s.onabort = reject;
-      if (t && t.parentNode) {
-        t.parentNode.insertBefore(s, t);
-      }
-    });
-  }
 }
 
 // Register to the player
 registerPlugin(pluginName, Ima);
-
-/**
- * Creates global promise which can resolved/rejected outside the promise scope.
- * @returns {GlobalPromise} - The promise with resolve and reject props.
- */
-function defer(): GlobalPromise {
-  let res, rej;
-  // $FlowFixMe
-  let promise = new Promise((resolve, reject) => {
-    res = resolve;
-    rej = reject;
-  });
-  // $FlowFixMe
-  promise.resolve = res;
-  // $FlowFixMe
-  promise.reject = rej;
-  return promise;
-}
-
-/**
- * Binds an handler to a desired context.
- * @param {any} thisObj - The handler context.
- * @param {Function} fn - The handler.
- * @returns {Function} - The new bound function.
- * @private
- */
-function bind(thisObj: any, fn: Function): Function {
-  return function () {
-    fn.apply(thisObj, arguments);
-  };
-}

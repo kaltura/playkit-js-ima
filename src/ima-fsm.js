@@ -22,10 +22,6 @@ export default class ImaFSM {
           to: State.LOADED
         },
         {
-          name: context.player.Event.AD_LOADED,
-          from: [State.IDLE, State.LOADED]
-        },
-        {
           name: context.player.Event.AD_STARTED,
           from: [State.LOADED, State.IDLE, State.PAUSED],
           to: [State.PLAYING, State.IDLE],
@@ -40,15 +36,13 @@ export default class ImaFSM {
         },
         {
           name: context.player.Event.AD_RESUMED,
-          from: State.PAUSED, to: State.PLAYING
+          from: State.PAUSED,
+          to: State.PLAYING
         },
         {
           name: context.player.Event.AD_PAUSED,
-          from: State.PLAYING, to: State.PAUSED
-        },
-        {
-          name: context.player.Event.AD_CLICKED,
-          from: [State.PLAYING, State.PAUSED]
+          from: State.PLAYING,
+          to: State.PAUSED
         },
         {
           name: context.player.Event.AD_SKIPPED,
@@ -66,17 +60,26 @@ export default class ImaFSM {
           to: State.DONE
         },
         {
-          name: context.player.Event.AD_BREAK_START,
-          from: [State.IDLE, State.LOADED]
-        },
-        {
           name: context.player.Event.AD_BREAK_END,
           from: [State.IDLE, State.LOADED],
           to: State.IDLE
         },
         {
+          name: context.player.Event.AD_ERROR,
+          from: [State.LOADED, State.PLAYING, State.PAUSED, State.LOADING],
+          to: State.IDLE
+        },
+        {
+          name: context.player.Event.AD_LOADED,
+          from: [State.IDLE, State.LOADED]
+        },
+        {
           name: context.player.Event.AD_FIRST_QUARTILE,
           from: State.PLAYING
+        },
+        {
+          name: context.player.Event.AD_BREAK_START,
+          from: [State.IDLE, State.LOADED]
         },
         {
           name: context.player.Event.AD_MIDPOINT,
@@ -85,11 +88,6 @@ export default class ImaFSM {
         {
           name: context.player.Event.AD_THIRD_QUARTILE,
           from: State.PLAYING
-        },
-        {
-          name: context.player.Event.AD_ERROR,
-          from: [State.LOADED, State.PLAYING, State.PAUSED, State.LOADING],
-          to: State.IDLE
         },
         {
           name: context.player.Event.USER_CLOSED_AD,
@@ -102,6 +100,10 @@ export default class ImaFSM {
         {
           name: context.player.Event.AD_MUTED,
           from: [State.PLAYING, State.PAUSED, State.LOADED]
+        },
+        {
+          name: context.player.Event.AD_CLICKED,
+          from: [State.PLAYING, State.PAUSED]
         }
       ],
       callbacks: {
@@ -202,8 +204,7 @@ export default class ImaFSM {
       let ad = adEvent.getAd();
       this.logger.debug("onAdCompleted: " + adEvent.type.toUpperCase());
       if (ad.isLinear()) {
-        clearInterval(this._intervalTimer);
-        this._intervalTimer = null;
+        this._stopAdInterval();
       }
       this.dispatchEvent(options.name, adEvent);
     }
@@ -217,6 +218,7 @@ export default class ImaFSM {
       let adEvent = options.args[0];
       this.logger.debug("onAllAdsCompleted: " + adEvent.type.toUpperCase());
       onAdBreakEnd.call(this, options);
+      this.destroy();
     }
 
     /**
@@ -261,10 +263,11 @@ export default class ImaFSM {
      */
     function onAdError(options: Object): void {
       let adEvent = options.args[0];
-      this.logger.error("onAdError: " + adEvent.type.toUpperCase());
+      this.logger.debug("onAdError: " + adEvent.type.toUpperCase());
       let adError = adEvent.getError();
       this.logger.error(adError);
       this.destroy();
+      // TODO: Normalise ima errors
     }
 
     /**
