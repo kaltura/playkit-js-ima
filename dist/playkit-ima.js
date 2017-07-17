@@ -371,7 +371,7 @@ var Ima = function (_BasePlugin) {
   function Ima(name, player, config) {
     _classCallCheck(this, Ima);
 
-    var _this = _possibleConstructorReturn(this, (Ima.__proto__ || Object.getPrototypeOf(Ima)).call(this, name, player, config));
+    var _this = _possibleConstructorReturn(this, (Ima.__proto__ || Object.getPrototypeOf(Ima)).call(this, _playkitJs.Utils.String.capitlize(name), player, config));
 
     _this._fsm = new _imaFsm2.default(_this);
     _this._intervalTimer = null;
@@ -910,8 +910,8 @@ var Ima = function (_BasePlugin) {
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.USER_CLOSE, this._fsm.userclosedad);
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_CHANGED, this._fsm.advolumechanged);
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_MUTED, this._fsm.admuted);
+      this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOG, this._fsm.aderror);
       this._adsManager.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, this._fsm.aderror);
-      // TODO: Listen to LOG event
     }
 
     /**
@@ -1384,7 +1384,7 @@ function ImaFSM(context) {
     this.logger.debug("onAdLoaded: " + adEvent.type.toUpperCase());
     var playerViewSize = this._getPlayerViewSize();
     this._adsManager.resize(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
-    this.dispatchEvent(options.name, adEvent);
+    this.dispatchEvent(options.name, normalizeAdEvent(adEvent));
     this._maybePreloadContent();
   }
 
@@ -1408,7 +1408,7 @@ function ImaFSM(context) {
     } else {
       this._startAdInterval();
     }
-    this.dispatchEvent(options.name, adEvent);
+    this.dispatchEvent(options.name);
   }
 
   /**
@@ -1424,7 +1424,7 @@ function ImaFSM(context) {
     } else {
       this.resumeAd();
     }
-    this.dispatchEvent(options.name, adEvent);
+    this.dispatchEvent(options.name);
   }
 
   /**
@@ -1438,7 +1438,7 @@ function ImaFSM(context) {
     if (this._nextPromise) {
       this._resolveNextPromise();
     }
-    this.dispatchEvent(options.name, adEvent);
+    this.dispatchEvent(options.name);
   }
 
   /**
@@ -1453,7 +1453,7 @@ function ImaFSM(context) {
     if (ad.isLinear()) {
       this._stopAdInterval();
     }
-    this.dispatchEvent(options.name, adEvent);
+    this.dispatchEvent(options.name);
   }
 
   /**
@@ -1480,7 +1480,7 @@ function ImaFSM(context) {
     this.player.pause();
     this._setVideoEndedCallbackEnabled(false);
     this._maybeSaveVideoCurrentTime();
-    this.dispatchEvent(options.name, adEvent);
+    this.dispatchEvent(options.name);
   }
 
   /**
@@ -1510,11 +1510,25 @@ function ImaFSM(context) {
    */
   function onAdError(options) {
     var adEvent = options.args[0];
-    this.logger.debug("onAdError: " + adEvent.type.toUpperCase());
-    var adError = adEvent.getError();
-    this.logger.error(adError);
-    this.destroy();
-    // TODO: Normalise ima errors
+    if (adEvent.type === "adError") {
+      this.logger.debug("onAdError: " + adEvent.type.toUpperCase());
+      var adError = adEvent.getError();
+      if (this.loadPromise) {
+        this.loadPromise.reject(adError);
+      }
+      if (this._nextPromise) {
+        this._nextPromise.reject(adError);
+      }
+      this.dispatchEvent(options.name, normalizeAdError(adError, true));
+    } else {
+      this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
+      var adData = adEvent.getAdData();
+      var _adError = adData.adError;
+      if (adData.adError) {
+        this.logger.error('Non-fatal error occurred: ' + _adError.getMessage());
+        this.dispatchEvent(this.player.Event.AD_ERROR, normalizeAdError(_adError, false));
+      }
+    }
   }
 
   /**
@@ -1525,7 +1539,7 @@ function ImaFSM(context) {
   function onAdEvent(options) {
     var adEvent = options.args[0];
     this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
-    this.dispatchEvent(options.name, adEvent);
+    this.dispatchEvent(options.name);
   }
 
   /**
@@ -1537,6 +1551,34 @@ function ImaFSM(context) {
     if (options.from !== options.to) {
       this.logger.debug("Change state: " + options.from + " --> " + options.to);
     }
+  }
+
+  /**
+   * Normalize the ima ad error object.
+   * @param {any} adError - The ima ad error object.
+   * @param {boolean} fatal - Whether the error is fatal.
+   * @returns {Object} - The normalized ad error object.
+   */
+  function normalizeAdError(adError, fatal) {
+    return {
+      fatal: fatal,
+      error: {
+        code: adError.getErrorCode(),
+        message: adError.getMessage()
+      }
+    };
+  }
+
+  /**
+   * Normalize the ima ad event object.
+   * @param {any} adEvent - The ima ad error object.
+   * @returns {Object} - The normalized ad event object.
+   */
+  function normalizeAdEvent(adEvent) {
+    return {
+      ad: adEvent.getAd(),
+      extraAdData: adEvent.getAdData()
+    };
   }
 };
 
