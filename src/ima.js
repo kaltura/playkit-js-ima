@@ -147,7 +147,7 @@ export default class Ima extends BasePlugin {
    * @param {Object} config - The plugin config.
    */
   constructor(name: string, player: Player, config: Object) {
-    super(name, player, config);
+    super(Utils.String.capitlize(name), player, config);
     this._fsm = new ImaFSM(this);
     this._intervalTimer = null;
     this._videoLastCurrentTime = null;
@@ -591,8 +591,8 @@ export default class Ima extends BasePlugin {
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.USER_CLOSE, this._fsm.userclosedad);
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_CHANGED, this._fsm.advolumechanged);
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_MUTED, this._fsm.admuted);
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOG, this._fsm.aderror);
     this._adsManager.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, this._fsm.aderror);
-    // TODO: Listen to LOG event
   }
 
   /**

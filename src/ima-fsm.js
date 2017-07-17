@@ -138,7 +138,7 @@ export default class ImaFSM {
       this.logger.debug("onAdLoaded: " + adEvent.type.toUpperCase());
       let playerViewSize = this._getPlayerViewSize();
       this._adsManager.resize(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
-      this.dispatchEvent(options.name, adEvent);
+      this.dispatchEvent(options.name, normalizeAdEvent(adEvent));
       this._maybePreloadContent();
     }
 
@@ -162,7 +162,7 @@ export default class ImaFSM {
       } else {
         this._startAdInterval();
       }
-      this.dispatchEvent(options.name, adEvent);
+      this.dispatchEvent(options.name);
     }
 
     /**
@@ -178,7 +178,7 @@ export default class ImaFSM {
       } else {
         this.resumeAd();
       }
-      this.dispatchEvent(options.name, adEvent);
+      this.dispatchEvent(options.name);
     }
 
     /**
@@ -192,7 +192,7 @@ export default class ImaFSM {
       if (this._nextPromise) {
         this._resolveNextPromise();
       }
-      this.dispatchEvent(options.name, adEvent);
+      this.dispatchEvent(options.name);
     }
 
     /**
@@ -207,7 +207,7 @@ export default class ImaFSM {
       if (ad.isLinear()) {
         this._stopAdInterval();
       }
-      this.dispatchEvent(options.name, adEvent);
+      this.dispatchEvent(options.name);
     }
 
     /**
@@ -234,7 +234,7 @@ export default class ImaFSM {
       this.player.pause();
       this._setVideoEndedCallbackEnabled(false);
       this._maybeSaveVideoCurrentTime();
-      this.dispatchEvent(options.name, adEvent);
+      this.dispatchEvent(options.name);
     }
 
     /**
@@ -264,11 +264,25 @@ export default class ImaFSM {
      */
     function onAdError(options: Object): void {
       let adEvent = options.args[0];
-      this.logger.debug("onAdError: " + adEvent.type.toUpperCase());
-      let adError = adEvent.getError();
-      this.logger.error(adError);
-      this.destroy();
-      // TODO: Normalise ima errors
+      if (adEvent.type === "adError") {
+        this.logger.debug("onAdError: " + adEvent.type.toUpperCase());
+        let adError = adEvent.getError();
+        if (this.loadPromise) {
+          this.loadPromise.reject(adError);
+        }
+        if (this._nextPromise) {
+          this._nextPromise.reject(adError);
+        }
+        this.dispatchEvent(options.name, normalizeAdError(adError, true));
+      } else {
+        this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
+        let adData = adEvent.getAdData();
+        let adError = adData.adError;
+        if (adData.adError) {
+          this.logger.error('Non-fatal error occurred: ' + adError.getMessage());
+          this.dispatchEvent(this.player.Event.AD_ERROR, normalizeAdError(adError, false));
+        }
+      }
     }
 
     /**
@@ -279,7 +293,7 @@ export default class ImaFSM {
     function onAdEvent(options: Object): void {
       let adEvent = options.args[0];
       this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
-      this.dispatchEvent(options.name, adEvent);
+      this.dispatchEvent(options.name);
     }
 
     /**
@@ -291,6 +305,34 @@ export default class ImaFSM {
       if (options.from !== options.to) {
         this.logger.debug("Change state: " + options.from + " --> " + options.to);
       }
+    }
+
+    /**
+     * Normalize the ima ad error object.
+     * @param {any} adError - The ima ad error object.
+     * @param {boolean} fatal - Whether the error is fatal.
+     * @returns {Object} - The normalized ad error object.
+     */
+    function normalizeAdError(adError: any, fatal: boolean): Object {
+      return {
+        fatal: fatal,
+        error: {
+          code: adError.getErrorCode(),
+          message: adError.getMessage()
+        }
+      };
+    }
+
+    /**
+     * Normalize the ima ad event object.
+     * @param {any} adEvent - The ima ad error object.
+     * @returns {Object} - The normalized ad event object.
+     */
+    function normalizeAdEvent(adEvent: any): Object {
+      return {
+        ad: adEvent.getAd(),
+        extraAdData: adEvent.getAdData()
+      };
     }
   }
 }
