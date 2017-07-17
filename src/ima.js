@@ -154,17 +154,36 @@ export default class Ima extends BasePlugin {
     this._adsManager = null;
     this._contentComplete = false;
     this._contentPlayheadTracker = {currentTime: 0, previousTime: 0, seeking: false, duration: 0};
-    this._handleMobileAutoPlayCallback = Utils.objects.bind(this, this._onMobileAutoPlay);
+    this._handleMobileAutoPlayCallback = Utils.Object.bind(this, this._onMobileAutoPlay);
     this._addBindings();
     this._init();
   }
 
+  /**
+   * TODO: playAdNow() impl
+   * @returns {void}
+   */
   playAdNow(): void {
-    // TODO: playAdNow()
   }
 
+  /**
+   * TODO: skipAd() impl
+   * @returns {void}
+   */
   skipAd(): void {
-    // TODO: skipAd()
+  }
+
+  /**
+   * Updates the configuration of the plugin.
+   * @param {Object} update - The fully or partially updated configuration.
+   * @override
+   * @returns {void}
+   */
+  updateConfig(update: Object): void {
+    super.updateConfig(update);
+    if (update.adTagUrl) {
+      this._requestAds();
+    }
   }
 
   /**
@@ -217,31 +236,38 @@ export default class Ima extends BasePlugin {
   initialUserAction(): ?DeferredPromise {
     try {
       this.logger.debug("Initial user action");
-      this._nextPromise = Utils.objects.defer();
+      this._nextPromise = Utils.Object.defer();
       this._maybeHandleMobileAutoPlay();
-      let playerViewSize = this._getPlayerViewSize();
-      // Initialize the container.
       this._adDisplayContainer.initialize();
-      if (this._adsManager.isCustomPlaybackUsed()) {
-        this.logger.debug("Waiting for loadedmetada event");
-        this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, () => {
-          this.logger.debug("Loadedmetada event raised: start ads manager");
-          this.eventManager.unlisten(this.player, this.player.Event.LOADED_METADATA);
-          this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
-          this._adsManager.start();
-        });
-        this.logger.debug("Load player");
-        this.player.load();
-        return this._nextPromise;
-      } else {
-        this.logger.debug("Start ads manager");
-        this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
-        this._adsManager.start();
-        return this._nextPromise;
-      }
+      this._startAdsManager();
     } catch (adError) {
       this.logger.error(adError);
       this.destroy();
+    }
+    return this._nextPromise;
+  }
+
+  /**
+   * Starts the ads manager.
+   * @private
+   * @returns {void}
+   */
+  _startAdsManager(): void {
+    let playerViewSize = this._getPlayerViewSize();
+    if (this._adsManager.isCustomPlaybackUsed()) {
+      this.logger.debug("Waiting for loadedmetada event");
+      this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, () => {
+        this.logger.debug("Loadedmetada event raised: start ads manager");
+        this.eventManager.unlisten(this.player, this.player.Event.LOADED_METADATA);
+        this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
+        this._adsManager.start();
+      });
+      this.logger.debug("Load player");
+      this.player.load();
+    } else {
+      this.logger.debug("Start ads manager");
+      this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
+      this._adsManager.start();
     }
   }
 
@@ -252,7 +278,7 @@ export default class Ima extends BasePlugin {
    */
   resumeAd(): ?DeferredPromise {
     this.logger.debug("Resume ad");
-    this._nextPromise = Utils.objects.defer();
+    this._nextPromise = Utils.Object.defer();
     this._adsManager.resume();
     return this._nextPromise;
   }
@@ -264,7 +290,7 @@ export default class Ima extends BasePlugin {
    */
   pauseAd(): ?DeferredPromise {
     this.logger.debug("Pause ad");
-    this._nextPromise = Utils.objects.defer();
+    this._nextPromise = Utils.Object.defer();
     this._adsManager.pause();
     return this._nextPromise;
   }
@@ -289,11 +315,13 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _init(): void {
-    this.loadPromise = Utils.objects.defer();
-    (window.google && window.google.ima ? Promise.resolve() : Utils.dom.loadScriptAsync(this.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL))
+    this.loadPromise = Utils.Object.defer();
+    (window.google && window.google.ima ? Promise.resolve() : Utils.Dom.loadScriptAsync(this.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL))
       .then(() => {
         this._sdk = window.google.ima;
         this.logger.debug("IMA SDK version: " + this._sdk.VERSION);
+        this._sdk.settings.setPlayerType(PLAYER_NAME);
+        this._sdk.settings.setPlayerVersion(VERSION);
         this._initAdsContainer();
         this._initAdsLoader();
         this._requestAds();
@@ -309,14 +337,14 @@ export default class Ima extends BasePlugin {
    */
   _initAdsContainer(): void {
     this.logger.debug("Init ads container");
-    let adsContainerDiv = document.getElementById(ADS_CONTAINER_ID);
+    let adsContainerDiv = Utils.Dom.getElementById(ADS_CONTAINER_ID);
     if (!adsContainerDiv) {
-      // TODO: Move DOM actions to playkit utils
       let playerView = this.player.getView();
-      this._adsContainerDiv = playerView.appendChild(document.createElement('div'));
+      this._adsContainerDiv = Utils.Dom.createElement('div');
       this._adsContainerDiv.id = ADS_CONTAINER_ID + playerView.id;
       this._adsContainerDiv.style.position = "absolute";
       this._adsContainerDiv.style.top = "0px";
+      Utils.Dom.appendChild(playerView, this._adsContainerDiv);
     } else {
       this._adsContainerDiv = adsContainerDiv;
     }
@@ -342,26 +370,24 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _requestAds(): void {
-    this.logger.debug("Request ads");
-    // TODO: Support request ads after user action also?
-    if (!this.config.adTagUrl && !this.config.adsResponse) {
-      throw new Error("Missing ad tag url for ima plugin");
-    }
-    this._sdk.settings.setPlayerType(PLAYER_NAME);
-    this._sdk.settings.setPlayerVersion(VERSION);
-    // Request video ads
-    let adsRequest = new this._sdk.AdsRequest();
-    if (this.config.adTagUrl) {
-      adsRequest.adTagUrl = this.config.adTagUrl;
+    if (this.config.adTagUrl || this.config.adsResponse) {
+      this.logger.debug("Request ads");
+      // Request video ads
+      let adsRequest = new this._sdk.AdsRequest();
+      if (this.config.adTagUrl) {
+        adsRequest.adTagUrl = this.config.adTagUrl;
+      } else {
+        adsRequest.adsResponse = this.config.adsResponse;
+      }
+      let playerViewSize = this._getPlayerViewSize();
+      adsRequest.linearAdSlotWidth = playerViewSize.width;
+      adsRequest.linearAdSlotHeight = playerViewSize.height;
+      adsRequest.nonLinearAdSlotWidth = playerViewSize.width;
+      adsRequest.nonLinearAdSlotHeight = playerViewSize.height / 3;
+      this._adsLoader.requestAds(adsRequest);
     } else {
-      adsRequest.adsResponse = this.config.adsResponse;
+      this.logger.warn("Missing ad tag url: create plugin without requesting ads");
     }
-    let playerViewSize = this._getPlayerViewSize();
-    adsRequest.linearAdSlotWidth = playerViewSize.width;
-    adsRequest.linearAdSlotHeight = playerViewSize.height;
-    adsRequest.nonLinearAdSlotWidth = playerViewSize.width;
-    adsRequest.nonLinearAdSlotHeight = playerViewSize.height / 3;
-    this._adsLoader.requestAds(adsRequest);
   }
 
   /**
@@ -675,6 +701,53 @@ export default class Ima extends BasePlugin {
     if (this._nextPromise) {
       this._nextPromise.resolve();
       this._nextPromise = null;
+    }
+  }
+
+  /**
+   * Displays companion ads using the Ad API.
+   * @param {any} ad - The ad object.
+   * @private
+   * @returns {void}
+   */
+  _maybeDisplayCompanionAds(ad: any): void {
+    if (this.config.companions && !window.googletag) {
+      let companionsIds = Object.keys(this.config.companions);
+      for (let i = 0; i < companionsIds.length; i++) {
+        let id = companionsIds[i];
+        let width = this.config.companions[id].width;
+        let height = this.config.companions[id].height;
+        let sizeCriteria = this.config.companions[id].sizeCriteria || '';
+        let companionAds = [];
+        try {
+          let selectionCriteria = new this._sdk.CompanionAdSelectionSettings();
+          selectionCriteria.resourceType = this._sdk.CompanionAdSelectionSettings.ResourceType.ALL;
+          selectionCriteria.creativeType = this._sdk.CompanionAdSelectionSettings.CreativeType.ALL;
+          switch (sizeCriteria.toLowerCase()) {
+            case 'selectnearmatch':
+              selectionCriteria.sizeCriteria = this._sdk.CompanionAdSelectionSettings.SizeCriteria.SELECT_NEAR_MATCH;
+              break;
+            case 'ignore':
+              selectionCriteria.sizeCriteria = this._sdk.CompanionAdSelectionSettings.SizeCriteria.IGNORE;
+              break;
+            case 'selectexactmatch':
+            default:
+              selectionCriteria.sizeCriteria = this._sdk.CompanionAdSelectionSettings.SizeCriteria.SELECT_EXACT_MATCH;
+              break;
+          }
+          companionAds = ad.getCompanionAds(width, height, selectionCriteria);
+          if (companionAds.length > 0) {
+            let companionAd = companionAds[0];
+            let content = companionAd.getContent();
+            let el = Utils.Dom.getElementById(id);
+            if (el) {
+              el.innerHTML = content;
+            }
+          }
+        } catch (e) {
+          this.logger.error(e);
+        }
+      }
     }
   }
 }

@@ -151,6 +151,7 @@ export default class ImaFSM {
       let adEvent = options.args[0];
       let ad = adEvent.getAd();
       this.logger.debug("onAdStarted: " + adEvent.type.toUpperCase());
+      this._maybeDisplayCompanionAds(ad);
       if (!ad.isLinear()) {
         this._setVideoEndedCallbackEnabled(true);
         if (this._nextPromise) {
