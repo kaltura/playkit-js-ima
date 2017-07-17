@@ -584,14 +584,29 @@ var Ima = function (_BasePlugin) {
       (window.google && window.google.ima ? Promise.resolve() : _playkitJs.Utils.Dom.loadScriptAsync(this.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL)).then(function () {
         _this3._sdk = window.google.ima;
         _this3.logger.debug("IMA SDK version: " + _this3._sdk.VERSION);
-        _this3._sdk.settings.setPlayerType(_playkitJs.PLAYER_NAME);
-        _this3._sdk.settings.setPlayerVersion(_playkitJs.VERSION);
+        _this3._initImaSettings();
         _this3._initAdsContainer();
         _this3._initAdsLoader();
         _this3._requestAds();
       }).catch(function (e) {
         _this3.loadPromise.reject(e);
       });
+    }
+
+    /**
+     * Init ima settings.
+     * @private
+     * @returns {void}
+     */
+
+  }, {
+    key: '_initImaSettings',
+    value: function _initImaSettings() {
+      this._sdk.settings.setPlayerType(_playkitJs.PLAYER_NAME);
+      this._sdk.settings.setPlayerVersion(_playkitJs.VERSION);
+      this._sdk.settings.setVpaidAllowed(true);
+      this._sdk.settings.setVpaidMode(this._sdk.ImaSdkSettings.VpaidMode.ENABLED);
+      this._sdk.settings.setDisableCustomPlaybackForIOS10Plus(true);
     }
 
     /**
@@ -615,7 +630,6 @@ var Ima = function (_BasePlugin) {
       } else {
         this._adsContainerDiv = adsContainerDiv;
       }
-      this._sdk.settings.setVpaidMode(this._sdk.ImaSdkSettings.VpaidMode.ENABLED);
       this._adDisplayContainer = new this._sdk.AdDisplayContainer(this._adsContainerDiv, this.player.getVideoElement());
     }
 
