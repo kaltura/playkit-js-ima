@@ -320,14 +320,26 @@ export default class Ima extends BasePlugin {
       .then(() => {
         this._sdk = window.google.ima;
         this.logger.debug("IMA SDK version: " + this._sdk.VERSION);
-        this._sdk.settings.setPlayerType(PLAYER_NAME);
-        this._sdk.settings.setPlayerVersion(VERSION);
+        this._initImaSettings();
         this._initAdsContainer();
         this._initAdsLoader();
         this._requestAds();
       }).catch((e) => {
       this.loadPromise.reject(e);
     });
+  }
+
+  /**
+   * Init ima settings.
+   * @private
+   * @returns {void}
+   */
+  _initImaSettings(): void {
+    this._sdk.settings.setPlayerType(PLAYER_NAME);
+    this._sdk.settings.setPlayerVersion(VERSION);
+    this._sdk.settings.setVpaidAllowed(true);
+    this._sdk.settings.setVpaidMode(this._sdk.ImaSdkSettings.VpaidMode.ENABLED);
+    this._sdk.settings.setDisableCustomPlaybackForIOS10Plus(true);
   }
 
   /**
@@ -348,7 +360,6 @@ export default class Ima extends BasePlugin {
     } else {
       this._adsContainerDiv = adsContainerDiv;
     }
-    this._sdk.settings.setVpaidMode(this._sdk.ImaSdkSettings.VpaidMode.ENABLED);
     this._adDisplayContainer = new this._sdk.AdDisplayContainer(this._adsContainerDiv, this.player.getVideoElement());
   }
 
