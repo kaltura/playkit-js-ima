@@ -207,6 +207,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _imaMiddleware = __webpack_require__(6);
@@ -377,22 +379,46 @@ var Ima = function (_BasePlugin) {
     _this._adsManager = null;
     _this._contentComplete = false;
     _this._contentPlayheadTracker = { currentTime: 0, previousTime: 0, seeking: false, duration: 0 };
-    _this._handleMobileAutoPlayCallback = _playkitJs.Utils.objects.bind(_this, _this._onMobileAutoPlay);
+    _this._handleMobileAutoPlayCallback = _playkitJs.Utils.Object.bind(_this, _this._onMobileAutoPlay);
     _this._addBindings();
     _this._init();
     return _this;
   }
 
+  /**
+   * TODO: playAdNow() impl
+   * @returns {void}
+   */
+
+
   _createClass(Ima, [{
     key: 'playAdNow',
-    value: function playAdNow() {
-      // TODO: playAdNow()
-    }
+    value: function playAdNow() {}
+
+    /**
+     * TODO: skipAd() impl
+     * @returns {void}
+     */
+
   }, {
     key: 'skipAd',
     value: function skipAd() {}
-    // TODO: skipAd()
 
+    /**
+     * Updates the configuration of the plugin.
+     * @param {Object} update - The fully or partially updated configuration.
+     * @override
+     * @returns {void}
+     */
+
+  }, {
+    key: 'updateConfig',
+    value: function updateConfig(update) {
+      _get(Ima.prototype.__proto__ || Object.getPrototypeOf(Ima.prototype), 'updateConfig', this).call(this, update);
+      if (update.adTagUrl) {
+        this._requestAds();
+      }
+    }
 
     /**
      * Gets the state machine.
@@ -454,35 +480,45 @@ var Ima = function (_BasePlugin) {
   }, {
     key: 'initialUserAction',
     value: function initialUserAction() {
-      var _this2 = this;
-
       try {
         this.logger.debug("Initial user action");
-        this._nextPromise = _playkitJs.Utils.objects.defer();
+        this._nextPromise = _playkitJs.Utils.Object.defer();
         this._maybeHandleMobileAutoPlay();
-        var playerViewSize = this._getPlayerViewSize();
-        // Initialize the container.
         this._adDisplayContainer.initialize();
-        if (this._adsManager.isCustomPlaybackUsed()) {
-          this.logger.debug("Waiting for loadedmetada event");
-          this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, function () {
-            _this2.logger.debug("Loadedmetada event raised: start ads manager");
-            _this2.eventManager.unlisten(_this2.player, _this2.player.Event.LOADED_METADATA);
-            _this2._adsManager.init(playerViewSize.width, playerViewSize.height, _this2._sdk.ViewMode.NORMAL);
-            _this2._adsManager.start();
-          });
-          this.logger.debug("Load player");
-          this.player.load();
-          return this._nextPromise;
-        } else {
-          this.logger.debug("Start ads manager");
-          this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
-          this._adsManager.start();
-          return this._nextPromise;
-        }
+        this._startAdsManager();
       } catch (adError) {
         this.logger.error(adError);
         this.destroy();
+      }
+      return this._nextPromise;
+    }
+
+    /**
+     * Starts the ads manager.
+     * @private
+     * @returns {void}
+     */
+
+  }, {
+    key: '_startAdsManager',
+    value: function _startAdsManager() {
+      var _this2 = this;
+
+      var playerViewSize = this._getPlayerViewSize();
+      if (this._adsManager.isCustomPlaybackUsed()) {
+        this.logger.debug("Waiting for loadedmetada event");
+        this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, function () {
+          _this2.logger.debug("Loadedmetada event raised: start ads manager");
+          _this2.eventManager.unlisten(_this2.player, _this2.player.Event.LOADED_METADATA);
+          _this2._adsManager.init(playerViewSize.width, playerViewSize.height, _this2._sdk.ViewMode.NORMAL);
+          _this2._adsManager.start();
+        });
+        this.logger.debug("Load player");
+        this.player.load();
+      } else {
+        this.logger.debug("Start ads manager");
+        this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
+        this._adsManager.start();
       }
     }
 
@@ -496,7 +532,7 @@ var Ima = function (_BasePlugin) {
     key: 'resumeAd',
     value: function resumeAd() {
       this.logger.debug("Resume ad");
-      this._nextPromise = _playkitJs.Utils.objects.defer();
+      this._nextPromise = _playkitJs.Utils.Object.defer();
       this._adsManager.resume();
       return this._nextPromise;
     }
@@ -511,7 +547,7 @@ var Ima = function (_BasePlugin) {
     key: 'pauseAd',
     value: function pauseAd() {
       this.logger.debug("Pause ad");
-      this._nextPromise = _playkitJs.Utils.objects.defer();
+      this._nextPromise = _playkitJs.Utils.Object.defer();
       this._adsManager.pause();
       return this._nextPromise;
     }
@@ -544,10 +580,12 @@ var Ima = function (_BasePlugin) {
     value: function _init() {
       var _this3 = this;
 
-      this.loadPromise = _playkitJs.Utils.objects.defer();
-      (window.google && window.google.ima ? Promise.resolve() : _playkitJs.Utils.dom.loadScriptAsync(this.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL)).then(function () {
+      this.loadPromise = _playkitJs.Utils.Object.defer();
+      (window.google && window.google.ima ? Promise.resolve() : _playkitJs.Utils.Dom.loadScriptAsync(this.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL)).then(function () {
         _this3._sdk = window.google.ima;
         _this3.logger.debug("IMA SDK version: " + _this3._sdk.VERSION);
+        _this3._sdk.settings.setPlayerType(_playkitJs.PLAYER_NAME);
+        _this3._sdk.settings.setPlayerVersion(_playkitJs.VERSION);
         _this3._initAdsContainer();
         _this3._initAdsLoader();
         _this3._requestAds();
@@ -566,14 +604,14 @@ var Ima = function (_BasePlugin) {
     key: '_initAdsContainer',
     value: function _initAdsContainer() {
       this.logger.debug("Init ads container");
-      var adsContainerDiv = document.getElementById(ADS_CONTAINER_ID);
+      var adsContainerDiv = _playkitJs.Utils.Dom.getElementById(ADS_CONTAINER_ID);
       if (!adsContainerDiv) {
-        // TODO: Move DOM actions to playkit utils
         var playerView = this.player.getView();
-        this._adsContainerDiv = playerView.appendChild(document.createElement('div'));
+        this._adsContainerDiv = _playkitJs.Utils.Dom.createElement('div');
         this._adsContainerDiv.id = ADS_CONTAINER_ID + playerView.id;
         this._adsContainerDiv.style.position = "absolute";
         this._adsContainerDiv.style.top = "0px";
+        _playkitJs.Utils.Dom.appendChild(playerView, this._adsContainerDiv);
       } else {
         this._adsContainerDiv = adsContainerDiv;
       }
@@ -605,26 +643,24 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_requestAds',
     value: function _requestAds() {
-      this.logger.debug("Request ads");
-      // TODO: Support request ads after user action also?
-      if (!this.config.adTagUrl && !this.config.adsResponse) {
-        throw new Error("Missing ad tag url for ima plugin");
-      }
-      this._sdk.settings.setPlayerType(_playkitJs.PLAYER_NAME);
-      this._sdk.settings.setPlayerVersion(_playkitJs.VERSION);
-      // Request video ads
-      var adsRequest = new this._sdk.AdsRequest();
-      if (this.config.adTagUrl) {
-        adsRequest.adTagUrl = this.config.adTagUrl;
+      if (this.config.adTagUrl || this.config.adsResponse) {
+        this.logger.debug("Request ads");
+        // Request video ads
+        var adsRequest = new this._sdk.AdsRequest();
+        if (this.config.adTagUrl) {
+          adsRequest.adTagUrl = this.config.adTagUrl;
+        } else {
+          adsRequest.adsResponse = this.config.adsResponse;
+        }
+        var playerViewSize = this._getPlayerViewSize();
+        adsRequest.linearAdSlotWidth = playerViewSize.width;
+        adsRequest.linearAdSlotHeight = playerViewSize.height;
+        adsRequest.nonLinearAdSlotWidth = playerViewSize.width;
+        adsRequest.nonLinearAdSlotHeight = playerViewSize.height / 3;
+        this._adsLoader.requestAds(adsRequest);
       } else {
-        adsRequest.adsResponse = this.config.adsResponse;
+        this.logger.warn("Missing ad tag url: create plugin without requesting ads");
       }
-      var playerViewSize = this._getPlayerViewSize();
-      adsRequest.linearAdSlotWidth = playerViewSize.width;
-      adsRequest.linearAdSlotHeight = playerViewSize.height;
-      adsRequest.nonLinearAdSlotWidth = playerViewSize.width;
-      adsRequest.nonLinearAdSlotHeight = playerViewSize.height / 3;
-      this._adsLoader.requestAds(adsRequest);
     }
 
     /**
@@ -1010,6 +1046,56 @@ var Ima = function (_BasePlugin) {
         this._nextPromise = null;
       }
     }
+
+    /**
+     * Displays companion ads using the Ad API.
+     * @param {any} ad - The ad object.
+     * @private
+     * @returns {void}
+     */
+
+  }, {
+    key: '_maybeDisplayCompanionAds',
+    value: function _maybeDisplayCompanionAds(ad) {
+      if (this.config.companions && !window.googletag) {
+        var companionsIds = Object.keys(this.config.companions);
+        for (var i = 0; i < companionsIds.length; i++) {
+          var id = companionsIds[i];
+          var width = this.config.companions[id].width;
+          var height = this.config.companions[id].height;
+          var sizeCriteria = this.config.companions[id].sizeCriteria || '';
+          var companionAds = [];
+          try {
+            var selectionCriteria = new this._sdk.CompanionAdSelectionSettings();
+            selectionCriteria.resourceType = this._sdk.CompanionAdSelectionSettings.ResourceType.ALL;
+            selectionCriteria.creativeType = this._sdk.CompanionAdSelectionSettings.CreativeType.ALL;
+            switch (sizeCriteria.toLowerCase()) {
+              case 'selectnearmatch':
+                selectionCriteria.sizeCriteria = this._sdk.CompanionAdSelectionSettings.SizeCriteria.SELECT_NEAR_MATCH;
+                break;
+              case 'ignore':
+                selectionCriteria.sizeCriteria = this._sdk.CompanionAdSelectionSettings.SizeCriteria.IGNORE;
+                break;
+              case 'selectexactmatch':
+              default:
+                selectionCriteria.sizeCriteria = this._sdk.CompanionAdSelectionSettings.SizeCriteria.SELECT_EXACT_MATCH;
+                break;
+            }
+            companionAds = ad.getCompanionAds(width, height, selectionCriteria);
+            if (companionAds.length > 0) {
+              var companionAd = companionAds[0];
+              var content = companionAd.getContent();
+              var el = _playkitJs.Utils.Dom.getElementById(id);
+              if (el) {
+                el.innerHTML = content;
+              }
+            }
+          } catch (e) {
+            this.logger.error(e);
+          }
+        }
+      }
+    }
   }]);
 
   return Ima;
@@ -1311,6 +1397,7 @@ function ImaFSM(context) {
     var adEvent = options.args[0];
     var ad = adEvent.getAd();
     this.logger.debug("onAdStarted: " + adEvent.type.toUpperCase());
+    this._maybeDisplayCompanionAds(ad);
     if (!ad.isLinear()) {
       this._setVideoEndedCallbackEnabled(true);
       if (this._nextPromise) {
