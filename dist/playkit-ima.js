@@ -396,13 +396,17 @@ var Ima = function (_BasePlugin) {
     value: function playAdNow() {}
 
     /**
-     * TODO: skipAd() impl
+     * Skips on an ad.
      * @returns {void}
      */
 
   }, {
     key: 'skipAd',
-    value: function skipAd() {}
+    value: function skipAd() {
+      if (this._adsManager && this._adsManager.getAdSkippableState()) {
+        this._adsManager.skip();
+      }
+    }
 
     /**
      * Updates the configuration of the plugin.
@@ -970,8 +974,10 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_stopAdInterval',
     value: function _stopAdInterval() {
-      clearInterval(this._intervalTimer);
-      this._intervalTimer = null;
+      if (this._intervalTimer) {
+        clearInterval(this._intervalTimer);
+        this._intervalTimer = null;
+      }
     }
 
     /**
