@@ -379,7 +379,6 @@ var Ima = function (_BasePlugin) {
     _this._adsManager = null;
     _this._contentComplete = false;
     _this._contentPlayheadTracker = { currentTime: 0, previousTime: 0, seeking: false, duration: 0 };
-    _this._handleMobileAutoPlayCallback = _playkitJs.Utils.Object.bind(_this, _this._onMobileAutoPlay);
     _this._addBindings();
     _this._init();
     return _this;
@@ -487,7 +486,6 @@ var Ima = function (_BasePlugin) {
       try {
         this.logger.debug("Initial user action");
         this._nextPromise = _playkitJs.Utils.Object.defer();
-        this._maybeHandleMobileAutoPlay();
         this._adDisplayContainer.initialize();
         this._startAdsManager();
       } catch (adError) {
@@ -853,32 +851,6 @@ var Ima = function (_BasePlugin) {
     }
 
     /**
-     * Checks for mobile platform.
-     * @returns {boolean} - Whether the device is mobile or tablet.
-     * @private
-     */
-
-  }, {
-    key: '_isMobilePlatform',
-    value: function _isMobilePlatform() {
-      var device = this.player.env.device.type;
-      return device === "mobile" || device === "tablet";
-    }
-
-    /**
-     * Checks for iOS os.
-     * @returns {boolean} - Whether the os name is iOS.
-     * @private
-     */
-
-  }, {
-    key: '_isIOS',
-    value: function _isIOS() {
-      var os = this.player.env.os.name;
-      return os === "iOS";
-    }
-
-    /**
      * The ads manager loaded handler.
      * @param {any} adsManagerLoadedEvent - The event data.
      * @private
@@ -996,63 +968,6 @@ var Ima = function (_BasePlugin) {
     }
 
     /**
-     * Checks for mobile auto play and if it's the case, registers the necessary listeners.
-     * @private
-     * @returns {void}
-     */
-
-  }, {
-    key: '_maybeHandleMobileAutoPlay',
-    value: function _maybeHandleMobileAutoPlay() {
-      if (this._isMobilePlatform()) {
-        var isMobileAutoPlay = this.player.config.playback.autoplay && this.player.muted;
-        if (this._isIOS()) {
-          isMobileAutoPlay = isMobileAutoPlay && this.player.playsinline;
-        }
-        if (isMobileAutoPlay) {
-          this._setMobileAutoPlayCallbackEnable(true);
-        }
-      }
-    }
-
-    /**
-     * The mobile auto play callback handler.
-     * @private
-     * @returns {void}
-     */
-
-  }, {
-    key: '_onMobileAutoPlay',
-    value: function _onMobileAutoPlay() {
-      this.logger.debug("Mobile auto play: cancel mute on user interaction");
-      this._setMobileAutoPlayCallbackEnable(false);
-      this._adsManager.setVolume(this.player.volume);
-      this.player.muted = false;
-    }
-
-    /**
-     * Register/unregister the mobile auto play handler to the relevant events.
-     * @param {boolean} enable - Whether to add or remove the listeners.
-     * @private
-     * @returns {void}
-     */
-
-  }, {
-    key: '_setMobileAutoPlayCallbackEnable',
-    value: function _setMobileAutoPlayCallbackEnable(enable) {
-      if (enable) {
-        // TODO: Full screen event?
-        this.eventManager.listen(this.player, this.player.Event.AD_PAUSED, this._handleMobileAutoPlayCallback);
-        this.eventManager.listen(this.player, this.player.Event.AD_VOLUME_CHANGED, this._handleMobileAutoPlayCallback);
-        this.eventManager.listen(this.player, this.player.Event.AD_CLICKED, this._handleMobileAutoPlayCallback);
-      } else {
-        this.eventManager.unlisten(this.player, this.player.Event.AD_PAUSED, this._handleMobileAutoPlayCallback);
-        this.eventManager.unlisten(this.player, this.player.Event.AD_VOLUME_CHANGED, this._handleMobileAutoPlayCallback);
-        this.eventManager.unlisten(this.player, this.player.Event.AD_CLICKED, this._handleMobileAutoPlayCallback);
-      }
-    }
-
-    /**
      * Resolves the next promise to let the next handler in the middleware chain start.
      * @private
      * @returns {void}
@@ -1121,9 +1036,6 @@ var Ima = function (_BasePlugin) {
   return Ima;
 }(_playkitJs.BasePlugin);
 
-// Register to the player
-
-
 Ima.defaultConfig = {
   debug: false,
   adsRenderingSettings: {
@@ -1137,6 +1049,8 @@ Ima.defaultConfig = {
 Ima.IMA_SDK_LIB_URL = "//imasdk.googleapis.com/js/sdkloader/ima3.js";
 Ima.IMA_SDK_DEBUG_LIB_URL = "//imasdk.googleapis.com/js/sdkloader/ima3_debug.js";
 exports.default = Ima;
+
+
 (0, _playkitJs.registerPlugin)(pluginName, Ima);
 
 /***/ }),
