@@ -255,6 +255,7 @@ export default class ImaFSM {
           this.player.play();
         }
       }
+      this.dispatchEvent(options.name);
     }
 
     /**

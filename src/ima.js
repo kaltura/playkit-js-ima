@@ -166,6 +166,32 @@ export default class Ima extends BasePlugin {
   }
 
   /**
+   * Mutes the ad.
+   * @returns {void}
+   */
+  muteAd(): void {
+    this.setAdVolume(0);
+    this.player.muted = true;
+  }
+
+  /**
+   * Sets a volume to the ad.
+   * @param {number} volume - The new volume to set.
+   * @returns {void}
+   */
+  setAdVolume(volume: number): void {
+    if (this._adsManager && typeof volume === 'number') {
+      if (volume > 1) {
+        volume = 1;
+      } else if (volume < 0) {
+        volume = 0;
+      }
+      this._adsManager.setVolume(volume);
+      this.player.volume = volume;
+    }
+  }
+
+  /**
    * Skips on an ad.
    * @returns {void}
    */
