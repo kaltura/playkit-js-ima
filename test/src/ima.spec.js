@@ -1,5 +1,12 @@
-describe('ImaPlugin', function () {
-  it('should play mp4 stream with ads', (done) => {
+describe('ImaPlugin - Unit', function () {
+  it('', (done) => {
     done();
   });
 });
+
+describe('ImaPlugin - Integration', function () {
+  it('', (done) => {
+    done();
+  });
+});
+

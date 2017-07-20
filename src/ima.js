@@ -167,10 +167,13 @@ export default class Ima extends BasePlugin {
   }
 
   /**
-   * TODO: skipAd() impl
+   * Skips on an ad.
    * @returns {void}
    */
   skipAd(): void {
+    if (this._adsManager && this._adsManager.getAdSkippableState()) {
+      this._adsManager.skip();
+    }
   }
 
   /**
@@ -639,8 +642,10 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _stopAdInterval(): void {
-    clearInterval(this._intervalTimer);
-    this._intervalTimer = null;
+    if (this._intervalTimer) {
+      clearInterval(this._intervalTimer);
+      this._intervalTimer = null;
+    }
   }
 
   /**
