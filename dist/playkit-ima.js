@@ -395,6 +395,38 @@ var Ima = function (_BasePlugin) {
     value: function playAdNow() {}
 
     /**
+     * Mutes the ad.
+     * @returns {void}
+     */
+
+  }, {
+    key: 'muteAd',
+    value: function muteAd() {
+      this.setAdVolume(0);
+      this.player.muted = true;
+    }
+
+    /**
+     * Sets a volume to the ad.
+     * @param {number} volume - The new volume to set.
+     * @returns {void}
+     */
+
+  }, {
+    key: 'setAdVolume',
+    value: function setAdVolume(volume) {
+      if (this._adsManager && typeof volume === 'number') {
+        if (volume > 1) {
+          volume = 1;
+        } else if (volume < 0) {
+          volume = 0;
+        }
+        this._adsManager.setVolume(volume);
+        this.player.volume = volume;
+      }
+    }
+
+    /**
      * Skips on an ad.
      * @returns {void}
      */
@@ -1435,6 +1467,7 @@ function ImaFSM(context) {
         this.player.play();
       }
     }
+    this.dispatchEvent(options.name);
   }
 
   /**
