@@ -154,7 +154,6 @@ export default class Ima extends BasePlugin {
     this._adsManager = null;
     this._contentComplete = false;
     this._contentPlayheadTracker = {currentTime: 0, previousTime: 0, seeking: false, duration: 0};
-    this._handleMobileAutoPlayCallback = Utils.Object.bind(this, this._onMobileAutoPlay);
     this._addBindings();
     this._init();
   }
@@ -240,7 +239,6 @@ export default class Ima extends BasePlugin {
     try {
       this.logger.debug("Initial user action");
       this._nextPromise = Utils.Object.defer();
-      this._maybeHandleMobileAutoPlay();
       this._adDisplayContainer.initialize();
       this._startAdsManager();
     } catch (adError) {
@@ -487,9 +485,7 @@ export default class Ima extends BasePlugin {
    * @return {void}
    */
   _maybeSaveVideoCurrentTime(): void {
-    if (this._adsManager.isCustomPlaybackUsed() &&
-      this.player.currentTime &&
-      this.player.currentTime > 0) {
+    if (this._adsManager.isCustomPlaybackUsed() && this.player.currentTime && this.player.currentTime > 0) {
       this.logger.debug("Custom playback used: save current time before ads", this.player.currentTime);
       this._videoLastCurrentTime = this.player.currentTime;
     }
@@ -539,26 +535,6 @@ export default class Ima extends BasePlugin {
     if (this._adsContainerDiv) {
       this._adsContainerDiv.style.display = "none";
     }
-  }
-
-  /**
-   * Checks for mobile platform.
-   * @returns {boolean} - Whether the device is mobile or tablet.
-   * @private
-   */
-  _isMobilePlatform(): boolean {
-    let device = this.player.env.device.type;
-    return (device === "mobile" || device === "tablet");
-  }
-
-  /**
-   * Checks for iOS os.
-   * @returns {boolean} - Whether the os name is iOS.
-   * @private
-   */
-  _isIOS(): boolean {
-    let os = this.player.env.os.name;
-    return (os === "iOS");
   }
 
   /**
@@ -661,54 +637,6 @@ export default class Ima extends BasePlugin {
   }
 
   /**
-   * Checks for mobile auto play and if it's the case, registers the necessary listeners.
-   * @private
-   * @returns {void}
-   */
-  _maybeHandleMobileAutoPlay(): void {
-    if (this._isMobilePlatform()) {
-      let isMobileAutoPlay = this.player.config.playback.autoplay && this.player.muted;
-      if (this._isIOS()) {
-        isMobileAutoPlay = isMobileAutoPlay && this.player.playsinline;
-      }
-      if (isMobileAutoPlay) {
-        this._setMobileAutoPlayCallbackEnable(true);
-      }
-    }
-  }
-
-  /**
-   * The mobile auto play callback handler.
-   * @private
-   * @returns {void}
-   */
-  _onMobileAutoPlay(): void {
-    this.logger.debug("Mobile auto play: cancel mute on user interaction");
-    this._setMobileAutoPlayCallbackEnable(false);
-    this._adsManager.setVolume(this.player.volume);
-    this.player.muted = false;
-  }
-
-  /**
-   * Register/unregister the mobile auto play handler to the relevant events.
-   * @param {boolean} enable - Whether to add or remove the listeners.
-   * @private
-   * @returns {void}
-   */
-  _setMobileAutoPlayCallbackEnable(enable: boolean): void {
-    if (enable) {
-      // TODO: Full screen event?
-      this.eventManager.listen(this.player, this.player.Event.AD_PAUSED, this._handleMobileAutoPlayCallback);
-      this.eventManager.listen(this.player, this.player.Event.AD_VOLUME_CHANGED, this._handleMobileAutoPlayCallback);
-      this.eventManager.listen(this.player, this.player.Event.AD_CLICKED, this._handleMobileAutoPlayCallback);
-    } else {
-      this.eventManager.unlisten(this.player, this.player.Event.AD_PAUSED, this._handleMobileAutoPlayCallback);
-      this.eventManager.unlisten(this.player, this.player.Event.AD_VOLUME_CHANGED, this._handleMobileAutoPlayCallback);
-      this.eventManager.unlisten(this.player, this.player.Event.AD_CLICKED, this._handleMobileAutoPlayCallback);
-    }
-  }
-
-  /**
    * Resolves the next promise to let the next handler in the middleware chain start.
    * @private
    * @returns {void}
@@ -768,5 +696,4 @@ export default class Ima extends BasePlugin {
   }
 }
 
-// Register to the player
 registerPlugin(pluginName, Ima);
