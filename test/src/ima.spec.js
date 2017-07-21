@@ -196,7 +196,6 @@ describe('Ima Plugin', function () {
     });
     player.addEventListener(player.Event.AD_STARTED, () => {
       maybeDoneTest(cuePoints, adPodIndex);
-      let ima = player._pluginManager.get('ima');
       setTimeout(function () {
         ima.skipAd();
       }, 6000);

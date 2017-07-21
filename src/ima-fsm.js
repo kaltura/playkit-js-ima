@@ -1,5 +1,5 @@
 // @flow
-import StateMachine from 'fsm-as-promised/lib/index'
+import StateMachine from 'fsm-as-promised'
 import State from './state'
 
 /**

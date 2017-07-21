@@ -33,6 +33,7 @@ export default class Ima extends BasePlugin {
    */
   static defaultConfig: Object = {
     debug: false,
+    companions: {},
     adsRenderingSettings: {
       enablePreloading: false,
       useStyledLinearAds: false,
@@ -160,9 +161,11 @@ export default class Ima extends BasePlugin {
 
   /**
    * TODO: playAdNow() impl
+   * @param {string} adTagUrl - The ad tag url to play.
    * @returns {void}
    */
-  playAdNow(): void {
+  playAdNow(adTagUrl: string): void {
+    this.logger.debug("playAdNow", adTagUrl);
   }
 
   /**
@@ -170,6 +173,7 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   muteAd(): void {
+    this.logger.debug("muteAd");
     this.setAdVolume(0);
     this.player.muted = true;
   }
@@ -180,6 +184,7 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   setAdVolume(volume: number): void {
+    this.logger.debug("setAdVolume: " + volume);
     if (this._adsManager && typeof volume === 'number') {
       if (volume > 1) {
         volume = 1;
@@ -196,9 +201,34 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   skipAd(): void {
+    this.logger.debug("skipAd");
     if (this._adsManager && this._adsManager.getAdSkippableState()) {
       this._adsManager.skip();
     }
+  }
+
+  /**
+   * Resuming the ad.
+   * @public
+   * @returns {DeferredPromise} - The promise which when resolved starts the next handler in the middleware chain.
+   */
+  resumeAd(): ?DeferredPromise {
+    this.logger.debug("Resume ad");
+    this._nextPromise = Utils.Object.defer();
+    this._adsManager.resume();
+    return this._nextPromise;
+  }
+
+  /**
+   * Pausing the ad.
+   * @public
+   * @returns {DeferredPromise} - The promise which when resolved starts the next handler in the middleware chain.
+   */
+  pauseAd(): ?DeferredPromise {
+    this.logger.debug("Pause ad");
+    this._nextPromise = Utils.Object.defer();
+    this._adsManager.pause();
+    return this._nextPromise;
   }
 
   /**
@@ -296,30 +326,6 @@ export default class Ima extends BasePlugin {
       this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
       this._adsManager.start();
     }
-  }
-
-  /**
-   * Resuming the ad.
-   * @public
-   * @returns {DeferredPromise} - The promise which when resolved starts the next handler in the middleware chain.
-   */
-  resumeAd(): ?DeferredPromise {
-    this.logger.debug("Resume ad");
-    this._nextPromise = Utils.Object.defer();
-    this._adsManager.resume();
-    return this._nextPromise;
-  }
-
-  /**
-   * Pausing the ad.
-   * @public
-   * @returns {DeferredPromise} - The promise which when resolved starts the next handler in the middleware chain.
-   */
-  pauseAd(): ?DeferredPromise {
-    this.logger.debug("Pause ad");
-    this._nextPromise = Utils.Object.defer();
-    this._adsManager.pause();
-    return this._nextPromise;
   }
 
   /**
