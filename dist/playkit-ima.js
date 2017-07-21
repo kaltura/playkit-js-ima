@@ -386,13 +386,16 @@ var Ima = function (_BasePlugin) {
 
   /**
    * TODO: playAdNow() impl
+   * @param {string} adTagUrl - The ad tag url to play.
    * @returns {void}
    */
 
 
   _createClass(Ima, [{
     key: 'playAdNow',
-    value: function playAdNow() {}
+    value: function playAdNow(adTagUrl) {
+      this.logger.debug("playAdNow", adTagUrl);
+    }
 
     /**
      * Mutes the ad.
@@ -402,6 +405,7 @@ var Ima = function (_BasePlugin) {
   }, {
     key: 'muteAd',
     value: function muteAd() {
+      this.logger.debug("muteAd");
       this.setAdVolume(0);
       this.player.muted = true;
     }
@@ -415,6 +419,7 @@ var Ima = function (_BasePlugin) {
   }, {
     key: 'setAdVolume',
     value: function setAdVolume(volume) {
+      this.logger.debug("setAdVolume: " + volume);
       if (this._adsManager && typeof volume === 'number') {
         if (volume > 1) {
           volume = 1;
@@ -434,9 +439,40 @@ var Ima = function (_BasePlugin) {
   }, {
     key: 'skipAd',
     value: function skipAd() {
+      this.logger.debug("skipAd");
       if (this._adsManager && this._adsManager.getAdSkippableState()) {
         this._adsManager.skip();
       }
+    }
+
+    /**
+     * Resuming the ad.
+     * @public
+     * @returns {DeferredPromise} - The promise which when resolved starts the next handler in the middleware chain.
+     */
+
+  }, {
+    key: 'resumeAd',
+    value: function resumeAd() {
+      this.logger.debug("Resume ad");
+      this._nextPromise = _playkitJs.Utils.Object.defer();
+      this._adsManager.resume();
+      return this._nextPromise;
+    }
+
+    /**
+     * Pausing the ad.
+     * @public
+     * @returns {DeferredPromise} - The promise which when resolved starts the next handler in the middleware chain.
+     */
+
+  }, {
+    key: 'pauseAd',
+    value: function pauseAd() {
+      this.logger.debug("Pause ad");
+      this._nextPromise = _playkitJs.Utils.Object.defer();
+      this._adsManager.pause();
+      return this._nextPromise;
     }
 
     /**
@@ -554,36 +590,6 @@ var Ima = function (_BasePlugin) {
         this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
         this._adsManager.start();
       }
-    }
-
-    /**
-     * Resuming the ad.
-     * @public
-     * @returns {DeferredPromise} - The promise which when resolved starts the next handler in the middleware chain.
-     */
-
-  }, {
-    key: 'resumeAd',
-    value: function resumeAd() {
-      this.logger.debug("Resume ad");
-      this._nextPromise = _playkitJs.Utils.Object.defer();
-      this._adsManager.resume();
-      return this._nextPromise;
-    }
-
-    /**
-     * Pausing the ad.
-     * @public
-     * @returns {DeferredPromise} - The promise which when resolved starts the next handler in the middleware chain.
-     */
-
-  }, {
-    key: 'pauseAd',
-    value: function pauseAd() {
-      this.logger.debug("Pause ad");
-      this._nextPromise = _playkitJs.Utils.Object.defer();
-      this._adsManager.pause();
-      return this._nextPromise;
     }
 
     /**
@@ -1070,6 +1076,7 @@ var Ima = function (_BasePlugin) {
 
 Ima.defaultConfig = {
   debug: false,
+  companions: {},
   adsRenderingSettings: {
     enablePreloading: false,
     useStyledLinearAds: false,
@@ -1219,9 +1226,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _index = __webpack_require__(8);
+var _fsmAsPromised = __webpack_require__(8);
 
-var _index2 = _interopRequireDefault(_index);
+var _fsmAsPromised2 = _interopRequireDefault(_fsmAsPromised);
 
 var _state = __webpack_require__(2);
 
@@ -1243,7 +1250,7 @@ var ImaFSM =
 function ImaFSM(context) {
   _classCallCheck(this, ImaFSM);
 
-  return (0, _index2.default)({
+  return (0, _fsmAsPromised2.default)({
     initial: _state2.default.LOADING,
     final: _state2.default.DONE,
     events: [{
