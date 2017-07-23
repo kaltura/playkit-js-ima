@@ -53,19 +53,23 @@ describe('Ima Plugin', function () {
       player.Event.AD_MIDPOINT,
       player.Event.AD_THIRD_QUARTILE,
       player.Event.AD_VOLUME_CHANGED,
-      player.Event.AD_MUTED
+      player.Event.AD_MUTED,
+      player.Event.AD_PROGRESS
     ];
     player.addEventListener(player.Event.AD_LOADED, () => {
       maybeDoneTest(adsEvents, player.Event.AD_LOADED, done);
     });
+    player.addEventListener(player.Event.AD_PROGRESS, () => {
+      maybeDoneTest(adsEvents, player.Event.AD_PROGRESS, done);
+    });
     player.addEventListener(player.Event.AD_STARTED, () => {
       maybeDoneTest(adsEvents, player.Event.AD_STARTED, done);
-      ima.setAdVolume(0.5);
+      ima._adsManager.setVolume(0.5);
       ima.pauseAd();
     });
     player.addEventListener(player.Event.AD_PAUSED, () => {
       maybeDoneTest(adsEvents, player.Event.AD_PAUSED, done);
-      ima.muteAd();
+      ima._adsManager.setVolume(0);
       ima.resumeAd();
     });
     player.addEventListener(player.Event.AD_RESUMED, () => {

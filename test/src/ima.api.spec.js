@@ -49,36 +49,6 @@ describe('Ima API', function () {
     player.play();
   });
 
-
-  it('muteAd()', function (done) {
-    player = loadPlayerWithAds(targetId, {
-      adTagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator='
-    });
-    ima = player._pluginManager.get('ima');
-    player.addEventListener(player.Event.AD_STARTED, () => {
-      ima.muteAd();
-    });
-    player.addEventListener(player.Event.AD_MUTED, () => {
-      done();
-    });
-    player.play();
-  });
-
-  it('setAdVolume(volume: number)', function (done) {
-    player = loadPlayerWithAds(targetId, {
-      adTagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator='
-    });
-    ima = player._pluginManager.get('ima');
-    player.addEventListener(player.Event.AD_STARTED, () => {
-      ima.setAdVolume(0.5);
-    });
-    player.addEventListener(player.Event.AD_VOLUME_CHANGED, () => {
-      done();
-    });
-    player.play();
-  });
-
-
   it.skip('playAdNow(adTagUrl: string)', function (done) {
     done();
   });

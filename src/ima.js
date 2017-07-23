@@ -1,6 +1,7 @@
 // @flow
 import ImaMiddleware from './ima-middleware'
 import ImaFSM from './ima-fsm'
+import State from './state'
 import {registerPlugin, BasePlugin} from 'playkit-js'
 import {VERSION} from 'playkit-js'
 import {PLAYER_NAME} from 'playkit-js'
@@ -169,34 +170,6 @@ export default class Ima extends BasePlugin {
   }
 
   /**
-   * Mutes the ad.
-   * @returns {void}
-   */
-  muteAd(): void {
-    this.logger.debug("muteAd");
-    this.setAdVolume(0);
-    this.player.muted = true;
-  }
-
-  /**
-   * Sets a volume to the ad.
-   * @param {number} volume - The new volume to set.
-   * @returns {void}
-   */
-  setAdVolume(volume: number): void {
-    this.logger.debug("setAdVolume: " + volume);
-    if (this._adsManager && typeof volume === 'number') {
-      if (volume > 1) {
-        volume = 1;
-      } else if (volume < 0) {
-        volume = 0;
-      }
-      this._adsManager.setVolume(volume);
-      this.player.volume = volume;
-    }
-  }
-
-  /**
    * Skips on an ad.
    * @returns {void}
    */
@@ -271,6 +244,7 @@ export default class Ima extends BasePlugin {
   destroy(): void {
     this.logger.debug("destroy");
     this.eventManager.destroy();
+    this._stopAdInterval();
     this._hideAdsContainer();
     if (this._adsManager) {
       this._adsManager.destroy();
@@ -640,7 +614,18 @@ export default class Ima extends BasePlugin {
   _startAdInterval(): void {
     this._stopAdInterval();
     this._intervalTimer = setInterval(() => {
-      // let remainingTime = this._adsManager.getRemainingTime();
+      if (this._fsm.is(State.PLAYING)) {
+        let remainingTime = this._adsManager.getRemainingTime();
+        let duration = this._adsManager.getCurrentAd().getDuration();
+        let currentTime = duration - remainingTime;
+        this.dispatchEvent(this.player.Event.AD_PROGRESS, {
+          adProgress: {
+            currentTime: currentTime,
+            remainingTime: remainingTime,
+            duration: duration
+          }
+        });
+      }
     }, 300);
   }
 

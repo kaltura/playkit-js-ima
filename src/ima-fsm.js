@@ -112,7 +112,7 @@ export default class ImaFSM {
         onadpaused: onAdPaused.bind(context),
         onadresumed: onAdEvent.bind(context),
         onadclicked: onAdClicked.bind(context),
-        onadskipped: onAdEvent.bind(context),
+        onadskipped: onAdSkipped.bind(context),
         onadcompleted: onAdCompleted.bind(context),
         onalladscompleted: onAllAdsCompleted.bind(context),
         onadbreakstart: onAdBreakStart.bind(context),
@@ -284,6 +284,18 @@ export default class ImaFSM {
           this.dispatchEvent(this.player.Event.AD_ERROR, normalizeAdError(adError, false));
         }
       }
+    }
+
+    /**
+     * SKIPPED event handler.
+     * @param {Object} options - fsm event data.
+     * @returns {void}
+     */
+    function onAdSkipped(options: Object): void {
+      let adEvent = options.args[0];
+      this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
+      this._stopAdInterval();
+      this.dispatchEvent(options.name);
     }
 
     /**
