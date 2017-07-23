@@ -7,7 +7,7 @@
 		exports["PlaykitJsIma"] = factory(require("playkit-js"));
 	else
 		root["PlaykitJsIma"] = factory(root["Playkit"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_1__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_2__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -102,12 +102,6 @@ module.exports = g;
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports) {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
-
-/***/ }),
-/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -126,6 +120,12 @@ var State = {
 };
 
 exports.default = State;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
 
 /***/ }),
 /* 3 */
@@ -219,7 +219,11 @@ var _imaFsm = __webpack_require__(7);
 
 var _imaFsm2 = _interopRequireDefault(_imaFsm);
 
-var _playkitJs = __webpack_require__(1);
+var _state = __webpack_require__(1);
+
+var _state2 = _interopRequireDefault(_state);
+
+var _playkitJs = __webpack_require__(2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -398,40 +402,6 @@ var Ima = function (_BasePlugin) {
     }
 
     /**
-     * Mutes the ad.
-     * @returns {void}
-     */
-
-  }, {
-    key: 'muteAd',
-    value: function muteAd() {
-      this.logger.debug("muteAd");
-      this.setAdVolume(0);
-      this.player.muted = true;
-    }
-
-    /**
-     * Sets a volume to the ad.
-     * @param {number} volume - The new volume to set.
-     * @returns {void}
-     */
-
-  }, {
-    key: 'setAdVolume',
-    value: function setAdVolume(volume) {
-      this.logger.debug("setAdVolume: " + volume);
-      if (this._adsManager && typeof volume === 'number') {
-        if (volume > 1) {
-          volume = 1;
-        } else if (volume < 0) {
-          volume = 0;
-        }
-        this._adsManager.setVolume(volume);
-        this.player.volume = volume;
-      }
-    }
-
-    /**
      * Skips on an ad.
      * @returns {void}
      */
@@ -527,6 +497,7 @@ var Ima = function (_BasePlugin) {
     value: function destroy() {
       this.logger.debug("destroy");
       this.eventManager.destroy();
+      this._stopAdInterval();
       this._hideAdsContainer();
       if (this._adsManager) {
         this._adsManager.destroy();
@@ -969,9 +940,22 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_startAdInterval',
     value: function _startAdInterval() {
+      var _this4 = this;
+
       this._stopAdInterval();
       this._intervalTimer = setInterval(function () {
-        // let remainingTime = this._adsManager.getRemainingTime();
+        if (_this4._fsm.is(_state2.default.PLAYING)) {
+          var remainingTime = _this4._adsManager.getRemainingTime();
+          var duration = _this4._adsManager.getCurrentAd().getDuration();
+          var currentTime = duration - remainingTime;
+          _this4.dispatchEvent(_this4.player.Event.AD_PROGRESS, {
+            adProgress: {
+              currentTime: currentTime,
+              remainingTime: remainingTime,
+              duration: duration
+            }
+          });
+        }
       }, 300);
     }
 
@@ -1105,9 +1089,9 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _playkitJs = __webpack_require__(1);
+var _playkitJs = __webpack_require__(2);
 
-var _state = __webpack_require__(2);
+var _state = __webpack_require__(1);
 
 var _state2 = _interopRequireDefault(_state);
 
@@ -1230,7 +1214,7 @@ var _fsmAsPromised = __webpack_require__(8);
 
 var _fsmAsPromised2 = _interopRequireDefault(_fsmAsPromised);
 
-var _state = __webpack_require__(2);
+var _state = __webpack_require__(1);
 
 var _state2 = _interopRequireDefault(_state);
 
@@ -1331,7 +1315,7 @@ function ImaFSM(context) {
       onadpaused: onAdPaused.bind(context),
       onadresumed: onAdEvent.bind(context),
       onadclicked: onAdClicked.bind(context),
-      onadskipped: onAdEvent.bind(context),
+      onadskipped: onAdSkipped.bind(context),
       onadcompleted: onAdCompleted.bind(context),
       onalladscompleted: onAllAdsCompleted.bind(context),
       onadbreakstart: onAdBreakStart.bind(context),
@@ -1503,6 +1487,18 @@ function ImaFSM(context) {
         this.dispatchEvent(this.player.Event.AD_ERROR, normalizeAdError(_adError, false));
       }
     }
+  }
+
+  /**
+   * SKIPPED event handler.
+   * @param {Object} options - fsm event data.
+   * @returns {void}
+   */
+  function onAdSkipped(options) {
+    var adEvent = options.args[0];
+    this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
+    this._stopAdInterval();
+    this.dispatchEvent(options.name);
   }
 
   /**
