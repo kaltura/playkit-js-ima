@@ -1338,10 +1338,7 @@ function ImaFSM(context) {
   function onAdLoaded(options) {
     var adEvent = options.args[0];
     this.logger.debug("onAdLoaded: " + adEvent.type.toUpperCase());
-    var playerViewSize = this._getPlayerViewSize();
-    this._adsManager.resize(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
     this.dispatchEvent(options.name, normalizeAdEvent(adEvent));
-    this._maybePreloadContent();
   }
 
   /**
@@ -1351,8 +1348,10 @@ function ImaFSM(context) {
    */
   function onAdStarted(options) {
     var adEvent = options.args[0];
-    var ad = adEvent.getAd();
     this.logger.debug("onAdStarted: " + adEvent.type.toUpperCase());
+    var ad = adEvent.getAd();
+    var playerViewSize = this._getPlayerViewSize();
+    this._adsManager.resize(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
     this._maybeDisplayCompanionAds(ad);
     if (!ad.isLinear()) {
       this._setVideoEndedCallbackEnabled(true);
@@ -1365,6 +1364,7 @@ function ImaFSM(context) {
       this._startAdInterval();
     }
     this.dispatchEvent(options.name);
+    this._maybePreloadContent();
   }
 
   /**
@@ -1495,7 +1495,7 @@ function ImaFSM(context) {
    */
   function onAdSkipped(options) {
     var adEvent = options.args[0];
-    this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
+    this.logger.debug("onAdSkipped: " + adEvent.type.toUpperCase());
     this._stopAdInterval();
     this.dispatchEvent(options.name);
   }

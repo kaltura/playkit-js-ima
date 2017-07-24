@@ -136,10 +136,7 @@ export default class ImaFSM {
     function onAdLoaded(options: Object): void {
       let adEvent = options.args[0];
       this.logger.debug("onAdLoaded: " + adEvent.type.toUpperCase());
-      let playerViewSize = this._getPlayerViewSize();
-      this._adsManager.resize(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
       this.dispatchEvent(options.name, normalizeAdEvent(adEvent));
-      this._maybePreloadContent();
     }
 
     /**
@@ -149,8 +146,10 @@ export default class ImaFSM {
      */
     function onAdStarted(options: Object): void {
       let adEvent = options.args[0];
-      let ad = adEvent.getAd();
       this.logger.debug("onAdStarted: " + adEvent.type.toUpperCase());
+      let ad = adEvent.getAd();
+      let playerViewSize = this._getPlayerViewSize();
+      this._adsManager.resize(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
       this._maybeDisplayCompanionAds(ad);
       if (!ad.isLinear()) {
         this._setVideoEndedCallbackEnabled(true);
@@ -163,6 +162,7 @@ export default class ImaFSM {
         this._startAdInterval();
       }
       this.dispatchEvent(options.name);
+      this._maybePreloadContent();
     }
 
     /**
@@ -202,8 +202,8 @@ export default class ImaFSM {
      */
     function onAdCompleted(options: Object): void {
       let adEvent = options.args[0];
-      let ad = adEvent.getAd();
       this.logger.debug("onAdCompleted: " + adEvent.type.toUpperCase());
+      let ad = adEvent.getAd();
       if (ad.isLinear()) {
         this._stopAdInterval();
       }
@@ -293,7 +293,7 @@ export default class ImaFSM {
      */
     function onAdSkipped(options: Object): void {
       let adEvent = options.args[0];
-      this.logger.debug("onAdEvent: " + adEvent.type.toUpperCase());
+      this.logger.debug("onAdSkipped: " + adEvent.type.toUpperCase());
       this._stopAdInterval();
       this.dispatchEvent(options.name);
     }
