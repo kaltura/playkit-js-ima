@@ -2,11 +2,11 @@
 import ImaMiddleware from './ima-middleware'
 import ImaFSM from './ima-fsm'
 import State from './state'
-// import {registerPlugin, BasePlugin} from 'playkit-js'
-// import {VERSION} from 'playkit-js'
-// import {PLAYER_NAME} from 'playkit-js'
-// import {BaseMiddleware} from 'playkit-js'
-// import {Utils} from 'playkit-js'
+import {registerPlugin, BasePlugin} from 'playkit-js'
+import {VERSION} from 'playkit-js'
+import {PLAYER_NAME} from 'playkit-js'
+import {BaseMiddleware} from 'playkit-js'
+import {Utils} from 'playkit-js'
 
 /**
  * The plugin name.
@@ -715,11 +715,3 @@ export default class Ima extends BasePlugin {
 }
 
 registerPlugin(pluginName, Ima);
-
-import {VERSION} from '../node_modules/playkit-js/src/playkit.js'
-import {PLAYER_NAME} from '../node_modules/playkit-js/src/playkit.js'
-import {registerPlugin, BasePlugin} from '../node_modules/playkit-js/src/playkit.js'
-import {BaseMiddleware} from '../node_modules/playkit-js/src/playkit.js'
-import {Utils} from '../node_modules/playkit-js/src/playkit.js'
-import * as Playkit from '../node_modules/playkit-js/src/playkit.js'
-window.Playkit = Playkit;
