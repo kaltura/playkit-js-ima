@@ -2,11 +2,11 @@
 import ImaMiddleware from './ima-middleware'
 import ImaFSM from './ima-fsm'
 import State from './state'
-import {registerPlugin, BasePlugin} from 'playkit-js'
-import {VERSION} from 'playkit-js'
-import {PLAYER_NAME} from 'playkit-js'
-import {BaseMiddleware} from 'playkit-js'
-import {Utils} from 'playkit-js'
+// import {registerPlugin, BasePlugin} from 'playkit-js'
+// import {VERSION} from 'playkit-js'
+// import {PLAYER_NAME} from 'playkit-js'
+// import {BaseMiddleware} from 'playkit-js'
+// import {Utils} from 'playkit-js'
 
 /**
  * The plugin name.
@@ -308,7 +308,7 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _addBindings(): void {
-    this.eventManager.listen(window, 'resize', this._onResize.bind(this));
+    this.eventManager.listen(this.player.getVideoElement(), 'resize', this._onResize.bind(this));
     this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, this._onLoadedMetadata.bind(this));
     this.eventManager.listen(this.player, this.player.Event.TIME_UPDATE, this._onMediaTimeUpdate.bind(this));
     this.eventManager.listen(this.player, this.player.Event.SEEKING, this._onMediaSeeking.bind(this));
@@ -618,12 +618,14 @@ export default class Ima extends BasePlugin {
         let remainingTime = this._adsManager.getRemainingTime();
         let duration = this._adsManager.getCurrentAd().getDuration();
         let currentTime = duration - remainingTime;
-        this.dispatchEvent(this.player.Event.AD_PROGRESS, {
-          adProgress: {
-            currentTime: currentTime,
-            duration: duration
-          }
-        });
+        if (Utils.Number.isNumber(duration) && Utils.Number.isNumber(currentTime)) {
+          this.dispatchEvent(this.player.Event.AD_PROGRESS, {
+            adProgress: {
+              currentTime: currentTime,
+              duration: duration
+            }
+          });
+        }
       }
     }, 300);
   }
@@ -713,3 +715,11 @@ export default class Ima extends BasePlugin {
 }
 
 registerPlugin(pluginName, Ima);
+
+import {VERSION} from '../node_modules/playkit-js/src/playkit.js'
+import {PLAYER_NAME} from '../node_modules/playkit-js/src/playkit.js'
+import {registerPlugin, BasePlugin} from '../node_modules/playkit-js/src/playkit.js'
+import {BaseMiddleware} from '../node_modules/playkit-js/src/playkit.js'
+import {Utils} from '../node_modules/playkit-js/src/playkit.js'
+import * as Playkit from '../node_modules/playkit-js/src/playkit.js'
+window.Playkit = Playkit;
