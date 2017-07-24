@@ -621,7 +621,6 @@ export default class Ima extends BasePlugin {
         this.dispatchEvent(this.player.Event.AD_PROGRESS, {
           adProgress: {
             currentTime: currentTime,
-            remainingTime: remainingTime,
             duration: duration
           }
         });
