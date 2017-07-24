@@ -1404,8 +1404,8 @@ function ImaFSM(context) {
    */
   function onAdCompleted(options) {
     var adEvent = options.args[0];
-    var ad = adEvent.getAd();
     this.logger.debug("onAdCompleted: " + adEvent.type.toUpperCase());
+    var ad = adEvent.getAd();
     if (ad.isLinear()) {
       this._stopAdInterval();
     }
