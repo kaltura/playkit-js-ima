@@ -951,7 +951,6 @@ var Ima = function (_BasePlugin) {
           _this4.dispatchEvent(_this4.player.Event.AD_PROGRESS, {
             adProgress: {
               currentTime: currentTime,
-              remainingTime: remainingTime,
               duration: duration
             }
           });
