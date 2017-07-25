@@ -308,7 +308,8 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _addBindings(): void {
-    this.eventManager.listen(this.player.getVideoElement(), 'resize', this._onResize.bind(this));
+    this.eventManager.listen(window, 'resize', this._resizeAd.bind(this));
+    this.eventManager.listen(this.player.getVideoElement(), 'resize', this._resizeAd.bind(this));
     this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, this._onLoadedMetadata.bind(this));
     this.eventManager.listen(this.player, this.player.Event.TIME_UPDATE, this._onMediaTimeUpdate.bind(this));
     this.eventManager.listen(this.player, this.player.Event.SEEKING, this._onMediaSeeking.bind(this));
@@ -413,7 +414,7 @@ export default class Ima extends BasePlugin {
    * @private
    * @returns {void}
    */
-  _onResize() {
+  _resizeAd() {
     if (this._sdk && this._adsManager) {
       let playerViewSize = this._getPlayerViewSize();
       this._adsManager.resize(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);

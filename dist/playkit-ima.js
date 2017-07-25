@@ -572,7 +572,7 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_addBindings',
     value: function _addBindings() {
-      this.eventManager.listen(this.player.getVideoElement(), 'resize', this._onResize.bind(this));
+      this.eventManager.listen(this.player.getVideoElement(), 'resize', this._resizeAd.bind(this));
       this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, this._onLoadedMetadata.bind(this));
       this.eventManager.listen(this.player, this.player.Event.TIME_UPDATE, this._onMediaTimeUpdate.bind(this));
       this.eventManager.listen(this.player, this.player.Event.SEEKING, this._onMediaSeeking.bind(this));
@@ -695,8 +695,8 @@ var Ima = function (_BasePlugin) {
      */
 
   }, {
-    key: '_onResize',
-    value: function _onResize() {
+    key: '_resizeAd',
+    value: function _resizeAd() {
       if (this._sdk && this._adsManager) {
         var playerViewSize = this._getPlayerViewSize();
         this._adsManager.resize(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
@@ -1352,8 +1352,7 @@ function ImaFSM(context) {
     var adEvent = options.args[0];
     this.logger.debug("onAdStarted: " + adEvent.type.toUpperCase());
     var ad = adEvent.getAd();
-    var playerViewSize = this._getPlayerViewSize();
-    this._adsManager.resize(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
+    this._resizeAd();
     this._maybeDisplayCompanionAds(ad);
     if (!ad.isLinear()) {
       this._setVideoEndedCallbackEnabled(true);

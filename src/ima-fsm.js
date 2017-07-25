@@ -148,8 +148,7 @@ export default class ImaFSM {
       let adEvent = options.args[0];
       this.logger.debug("onAdStarted: " + adEvent.type.toUpperCase());
       let ad = adEvent.getAd();
-      let playerViewSize = this._getPlayerViewSize();
-      this._adsManager.resize(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
+      this._resizeAd();
       this._maybeDisplayCompanionAds(ad);
       if (!ad.isLinear()) {
         this._setVideoEndedCallbackEnabled(true);
