@@ -572,6 +572,7 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_addBindings',
     value: function _addBindings() {
+      this.eventManager.listen(window, 'resize', this._resizeAd.bind(this));
       this.eventManager.listen(this.player.getVideoElement(), 'resize', this._resizeAd.bind(this));
       this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, this._onLoadedMetadata.bind(this));
       this.eventManager.listen(this.player, this.player.Event.TIME_UPDATE, this._onMediaTimeUpdate.bind(this));
