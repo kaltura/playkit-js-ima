@@ -398,7 +398,7 @@ var Ima = function (_BasePlugin) {
   _createClass(Ima, [{
     key: 'playAdNow',
     value: function playAdNow(adTagUrl) {
-      this.logger.debug("playAdNow", adTagUrl);
+      this.logger.debug("TODO: playAdNow", adTagUrl);
     }
 
     /**
@@ -409,7 +409,7 @@ var Ima = function (_BasePlugin) {
   }, {
     key: 'skipAd',
     value: function skipAd() {
-      this.logger.debug("skipAd");
+      this.logger.debug("Skip ad");
       if (this._adsManager) {
         if (this._adsManager.getAdSkippableState()) {
           this._adsManager.skip();
