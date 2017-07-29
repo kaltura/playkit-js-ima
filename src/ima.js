@@ -166,7 +166,7 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   playAdNow(adTagUrl: string): void {
-    this.logger.debug("playAdNow", adTagUrl);
+    this.logger.debug("TODO: playAdNow", adTagUrl);
   }
 
   /**
@@ -174,7 +174,7 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   skipAd(): void {
-    this.logger.debug("skipAd");
+    this.logger.debug("Skip ad");
     if (this._adsManager) {
       if (this._adsManager.getAdSkippableState()) {
         this._adsManager.skip();
