@@ -175,8 +175,12 @@ export default class Ima extends BasePlugin {
    */
   skipAd(): void {
     this.logger.debug("skipAd");
-    if (this._adsManager && this._adsManager.getAdSkippableState()) {
-      this._adsManager.skip();
+    if (this._adsManager) {
+      if (this._adsManager.getAdSkippableState()) {
+        this._adsManager.skip();
+      } else if (this.config.skipSupport) {
+        this._adsManager.stop();
+      }
     }
   }
 
