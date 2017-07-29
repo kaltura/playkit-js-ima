@@ -410,8 +410,12 @@ var Ima = function (_BasePlugin) {
     key: 'skipAd',
     value: function skipAd() {
       this.logger.debug("skipAd");
-      if (this._adsManager && this._adsManager.getAdSkippableState()) {
-        this._adsManager.skip();
+      if (this._adsManager) {
+        if (this._adsManager.getAdSkippableState()) {
+          this._adsManager.skip();
+        } else if (this.config.skipSupport) {
+          this._adsManager.stop();
+        }
       }
     }
 
