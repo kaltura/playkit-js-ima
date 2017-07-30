@@ -1,4 +1,4 @@
-import {loadPlayerWithAds, maybeDoneTest} from './helpers'
+import {loadPlayerWithAds} from './helpers'
 import * as TestUtils from 'playkit-js/test/src/utils/test-utils'
 // eslint-disable-next-line no-unused-vars
 import Ima from '../../src/ima'
