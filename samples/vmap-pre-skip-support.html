@@ -22,6 +22,7 @@
 <button class="button" onclick="volumeDown()">Volume [-]</button>
 <button class="button" onclick="toggleMute()">Toggle Mute</button>
 <button class="button" onclick="seek()">Seek [+5]</button>
+<button class="button" onclick="skipAd()">Skip Ad</button>
 <script>
   function play() {
     window.player.play();
@@ -47,6 +48,10 @@
     window.player.currentTime += 5;
   }
 
+  function skipAd() {
+    window.player.skipAd();
+  }
+
   window.player = Playkit.loadPlayer('player-placeholder', {
     playback: {
       playsinline: false,
@@ -63,7 +68,11 @@
     },
     plugins: {
       ima: {
-        adTagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator='
+        adTagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=',
+        skipSupport: {
+          skipTimeOffset: 5,
+          label: 'Skip ad'
+        }
       }
     }
   });

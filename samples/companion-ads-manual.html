@@ -16,6 +16,8 @@
 </head>
 <body>
 <div id="player-placeholder" style="width: 640px; height: 360px;"></div>
+<div id="testCompanionLong" style="width: 728px; height:90px"></div>
+<div id="testCompanionSquare" style="width: 300px; height: 250px"></div>
 <button class="button" onclick="play()">Play</button>
 <button class="button" onclick="pause()">Pause</button>
 <button class="button" onclick="volumeUp()">Volume [+]</button>
@@ -63,7 +65,19 @@
     },
     plugins: {
       ima: {
-        adTagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator='
+        adTagUrl: 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=xml_vmap1&unviewed_position_start=1&cust_params=sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=[timestamp]',
+        companions: {
+          testCompanionSquare: {
+            width: 300,
+            height: 250,
+            sizeCriteria: 'SelectExactMatch'
+          },
+          testCompanionLong: {
+            width: 728,
+            height: 90,
+            sizeCriteria: 'SelectExactMatch'
+          }
+        }
       }
     }
   });
