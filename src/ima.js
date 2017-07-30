@@ -1,6 +1,6 @@
 // @flow
 import ImaMiddleware from './ima-middleware'
-import ImaFSM from './ima-fsm'
+import ImaStateMachine from './ima-state-machine'
 import State from './state'
 import {registerPlugin, BasePlugin} from 'playkit-js'
 import {VERSION} from 'playkit-js'
@@ -71,7 +71,7 @@ export default class Ima extends BasePlugin {
    * @member
    * @private
    */
-  _fsm: any;
+  _stateMachine: any;
   /**
    * The sdk api.
    * @member
@@ -150,7 +150,7 @@ export default class Ima extends BasePlugin {
    */
   constructor(name: string, player: Player, config: Object) {
     super(Utils.String.capitlize(name), player, config);
-    this._fsm = new ImaFSM(this);
+    this._stateMachine = new ImaStateMachine(this);
     this._intervalTimer = null;
     this._videoLastCurrentTime = null;
     this._adsManager = null;
@@ -227,7 +227,7 @@ export default class Ima extends BasePlugin {
    * @returns {any} - The state machine.
    */
   getStateMachine(): any {
-    return this._fsm;
+    return this._stateMachine;
   }
 
   /**
@@ -384,7 +384,7 @@ export default class Ima extends BasePlugin {
     this.logger.debug("Init ads loader");
     this._adsLoader = new this._sdk.AdsLoader(this._adDisplayContainer);
     this._adsLoader.addEventListener(this._sdk.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._onAdsManagerLoaded.bind(this));
-    this._adsLoader.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, this._fsm.aderror);
+    this._adsLoader.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, adEvent => this._stateMachine.aderror(adEvent));
   }
 
   /**
@@ -567,7 +567,8 @@ export default class Ima extends BasePlugin {
     this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
     this._attachAdsManagerListeners();
     this._syncPlayerVolume();
-    this._fsm.loaded().then(this.loadPromise.resolve);
+    this._stateMachine.loaded();
+    this.loadPromise.resolve();
   }
 
   /**
@@ -576,24 +577,24 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _attachAdsManagerListeners(): void {
-    this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_PAUSE_REQUESTED, this._fsm.adbreakstart);
-    this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOADED, this._fsm.adloaded);
-    this._adsManager.addEventListener(this._sdk.AdEvent.Type.STARTED, this._fsm.adstarted);
-    this._adsManager.addEventListener(this._sdk.AdEvent.Type.PAUSED, this._fsm.adpaused);
-    this._adsManager.addEventListener(this._sdk.AdEvent.Type.RESUMED, this._fsm.adresumed);
-    this._adsManager.addEventListener(this._sdk.AdEvent.Type.FIRST_QUARTILE, this._fsm.adfirstquartile);
-    this._adsManager.addEventListener(this._sdk.AdEvent.Type.MIDPOINT, this._fsm.admidpoint);
-    this._adsManager.addEventListener(this._sdk.AdEvent.Type.THIRD_QUARTILE, this._fsm.adthirdquartile);
-    this._adsManager.addEventListener(this._sdk.AdEvent.Type.CLICK, this._fsm.adclicked);
-    this._adsManager.addEventListener(this._sdk.AdEvent.Type.SKIPPED, this._fsm.adskipped);
-    this._adsManager.addEventListener(this._sdk.AdEvent.Type.COMPLETE, this._fsm.adcompleted);
-    this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_RESUME_REQUESTED, this._fsm.adbreakend);
-    this._adsManager.addEventListener(this._sdk.AdEvent.Type.ALL_ADS_COMPLETED, this._fsm.alladscompleted);
-    this._adsManager.addEventListener(this._sdk.AdEvent.Type.USER_CLOSE, this._fsm.userclosedad);
-    this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_CHANGED, this._fsm.advolumechanged);
-    this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_MUTED, this._fsm.admuted);
-    this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOG, this._fsm.aderror);
-    this._adsManager.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, this._fsm.aderror);
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_PAUSE_REQUESTED, adEvent => this._stateMachine.adbreakstart(adEvent));
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOADED, adEvent => this._stateMachine.adloaded(adEvent));
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.STARTED, adEvent => this._stateMachine.adstarted(adEvent));
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.PAUSED, adEvent => this._stateMachine.adpaused(adEvent));
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.RESUMED, adEvent => this._stateMachine.adresumed(adEvent));
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.FIRST_QUARTILE, adEvent => this._stateMachine.adfirstquartile(adEvent));
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.MIDPOINT, adEvent => this._stateMachine.admidpoint(adEvent));
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.THIRD_QUARTILE, adEvent => this._stateMachine.adthirdquartile(adEvent));
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.CLICK, adEvent => this._stateMachine.adclicked(adEvent));
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.SKIPPED, adEvent => this._stateMachine.adskipped(adEvent));
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.COMPLETE, adEvent => this._stateMachine.adcompleted(adEvent));
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_RESUME_REQUESTED, adEvent => this._stateMachine.adbreakend(adEvent));
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.ALL_ADS_COMPLETED, adEvent => this._stateMachine.alladscompleted(adEvent));
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.USER_CLOSE, adEvent => this._stateMachine.userclosedad(adEvent));
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_CHANGED, adEvent => this._stateMachine.advolumechanged(adEvent));
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_MUTED, adEvent => this._stateMachine.admuted(adEvent));
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOG, adEvent => this._stateMachine.aderror(adEvent));
+    this._adsManager.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, adEvent => this._stateMachine.aderror(adEvent));
   }
 
   /**
@@ -619,7 +620,7 @@ export default class Ima extends BasePlugin {
   _startAdInterval(): void {
     this._stopAdInterval();
     this._intervalTimer = setInterval(() => {
-      if (this._fsm.is(State.PLAYING)) {
+      if (this._stateMachine.is(State.PLAYING)) {
         let remainingTime = this._adsManager.getRemainingTime();
         let duration = this._adsManager.getCurrentAd().getDuration();
         let currentTime = duration - remainingTime;

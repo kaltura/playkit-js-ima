@@ -91,6 +91,6 @@
   },
   "homepage": "https://github.com/kaltura/playkit-js-ima",
   "dependencies": {
-    "fsm-as-promised": "^0.14.4"
+    "javascript-state-machine": "^3.0.1"
   }
 }

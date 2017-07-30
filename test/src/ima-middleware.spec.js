@@ -11,7 +11,7 @@ describe('Ima Middleware', function () {
     },
     getStateMachine: function () {
       return {
-        current: this.currentState
+        state: this.currentState
       };
     },
     initialUserAction: function () {
