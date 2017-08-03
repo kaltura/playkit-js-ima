@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <style>
+    .button {
+      height: 40px;
+      width: 120px;
+      font-size: 17px;
+      margin: 10px;
+    }
+  </style>
+  <script src="//imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
+  <script src="./playkit-ima.js"></script>
+</head>
+<body>
+<div id="player-placeholder" style="width: 640px; height: 360px;"></div>
+<button class="button" onclick="play()">Play</button>
+<button class="button" onclick="pause()">Pause</button>
+<button class="button" onclick="volumeUp()">Volume [+]</button>
+<button class="button" onclick="volumeDown()">Volume [-]</button>
+<button class="button" onclick="toggleMute()">Toggle Mute</button>
+<button class="button" onclick="seek()">Seek [+5]</button>
+<button class="button" onclick="playAdNow()">Play Ad Now</button>
+<script>
+  function play() {
+    window.player.play();
+  }
+
+  function pause() {
+    window.player.pause();
+  }
+
+  function volumeUp() {
+    window.player.volume += 0.1;
+  }
+
+  function volumeDown() {
+    window.player.volume -= 0.1;
+  }
+
+  function toggleMute() {
+    window.player.muted = !window.player.muted;
+  }
+
+  function seek() {
+    window.player.currentTime += 5;
+  }
+
+  function playAdNow() {
+    window.player.playAdNow('https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpost&cmsid=496&vid=short_onecue&correlator=');
+  }
+
+  window.player = Playkit.loadPlayer('player-placeholder', {
+    playback: {
+      playsinline: false,
+      autoplay: false,
+      muted: false
+    },
+    sources: {
+      progressive: [
+        {
+          "mimetype": "video/mp4",
+          "url": "http://www.html5videoplayer.net/videos/toystory.mp4"
+        }
+      ]
+    },
+    plugins: {
+      ima: {
+        adTagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpost&cmsid=496&vid=short_onecue&correlator='
+      }
+    }
+  });
+</script>
+</body>
+</html>
