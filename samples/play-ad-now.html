@@ -10,6 +10,11 @@
       font-size: 17px;
       margin: 10px;
     }
+
+    .input {
+      height: 30px;
+      width: 720px;
+    }
   </style>
   <script src="//imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
   <script src="./playkit-ima.js"></script>
@@ -22,6 +27,8 @@
 <button class="button" onclick="volumeDown()">Volume [-]</button>
 <button class="button" onclick="toggleMute()">Toggle Mute</button>
 <button class="button" onclick="seek()">Seek [+5]</button>
+<br>
+<input type="text" class="input" placeholder="Ad Tag Url" name="adTagUrl">
 <button class="button" onclick="playAdNow()">Play Ad Now</button>
 <script>
   function play() {
@@ -49,7 +56,10 @@
   }
 
   function playAdNow() {
-    window.player.playAdNow('https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpost&cmsid=496&vid=short_onecue&correlator=');
+    var adTagUrlElement = document.getElementsByName("adTagUrl")[0];
+    if (adTagUrlElement && adTagUrlElement.value) {
+      window.player.playAdNow(adTagUrlElement.value);
+    }
   }
 
   window.player = Playkit.loadPlayer('player-placeholder', {

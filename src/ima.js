@@ -161,7 +161,7 @@ export default class Ima extends BasePlugin {
   }
 
   /**
-   * TODO: playAdNow() impl
+   * Plays ad on demand.
    * @param {string} adTagUrl - The ad tag url to play.
    * @returns {void}
    */
@@ -172,10 +172,7 @@ export default class Ima extends BasePlugin {
     this._addBindings();
     this._initAdsLoader();
     this._requestAds();
-    this.loadPromise.then(() => {
-      this.player.pause();
-      this._startAdsManager();
-    });
+    this.loadPromise.then(this._startAdsManager.bind(this));
   }
 
   /**
@@ -567,7 +564,9 @@ export default class Ima extends BasePlugin {
     this.logger.debug('Ads manager loaded');
     let adsRenderingSettings = new this._sdk.AdsRenderingSettings();
     Object.keys(this.config.adsRenderingSettings).forEach((setting) => {
-      adsRenderingSettings[setting] = this.config.adsRenderingSettings[setting];
+      if (adsRenderingSettings[setting]) {
+        adsRenderingSettings[setting] = this.config.adsRenderingSettings[setting];
+      }
     });
     this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
     this._attachAdsManagerListeners();
