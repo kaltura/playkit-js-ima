@@ -302,7 +302,18 @@ var Ima = function (_BasePlugin) {
   _createClass(Ima, [{
     key: 'playAdNow',
     value: function playAdNow(adTagUrl) {
-      this.logger.debug("TODO: playAdNow", adTagUrl);
+      var _this2 = this;
+
+      _get(Ima.prototype.__proto__ || Object.getPrototypeOf(Ima.prototype), 'updateConfig', this).call(this, { adTagUrl: adTagUrl });
+      this.loadPromise = _playkitJs.Utils.Object.defer();
+      this.destroy();
+      this._addBindings();
+      this._initAdsLoader();
+      this._requestAds();
+      this.loadPromise.then(function () {
+        _this2.player.pause();
+        _this2._startAdsManager();
+      });
     }
 
     /**
@@ -364,7 +375,7 @@ var Ima = function (_BasePlugin) {
     key: 'updateConfig',
     value: function updateConfig(update) {
       _get(Ima.prototype.__proto__ || Object.getPrototypeOf(Ima.prototype), 'updateConfig', this).call(this, update);
-      if (update.adTagUrl) {
+      if (update.adTagUrl && this._stateMachine.is(_state2.default.LOADING)) {
         this._requestAds();
       }
     }
@@ -451,16 +462,16 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_startAdsManager',
     value: function _startAdsManager() {
-      var _this2 = this;
+      var _this3 = this;
 
       var playerViewSize = this._getPlayerViewSize();
       if (this._adsManager.isCustomPlaybackUsed()) {
         this.logger.debug("Waiting for loadedmetada event");
         this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, function () {
-          _this2.logger.debug("Loadedmetada event raised: start ads manager");
-          _this2.eventManager.unlisten(_this2.player, _this2.player.Event.LOADED_METADATA);
-          _this2._adsManager.init(playerViewSize.width, playerViewSize.height, _this2._sdk.ViewMode.NORMAL);
-          _this2._adsManager.start();
+          _this3.logger.debug("Loadedmetada event raised: start ads manager");
+          _this3.eventManager.unlisten(_this3.player, _this3.player.Event.LOADED_METADATA);
+          _this3._adsManager.init(playerViewSize.width, playerViewSize.height, _this3._sdk.ViewMode.NORMAL);
+          _this3._adsManager.start();
         });
         this.logger.debug("Load player");
         this.player.load();
@@ -498,18 +509,18 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_init',
     value: function _init() {
-      var _this3 = this;
+      var _this4 = this;
 
       this.loadPromise = _playkitJs.Utils.Object.defer();
       (window.google && window.google.ima ? Promise.resolve() : _playkitJs.Utils.Dom.loadScriptAsync(this.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL)).then(function () {
-        _this3._sdk = window.google.ima;
-        _this3.logger.debug("IMA SDK version: " + _this3._sdk.VERSION);
-        _this3._initImaSettings();
-        _this3._initAdsContainer();
-        _this3._initAdsLoader();
-        _this3._requestAds();
+        _this4._sdk = window.google.ima;
+        _this4.logger.debug("IMA SDK version: " + _this4._sdk.VERSION);
+        _this4._initImaSettings();
+        _this4._initAdsContainer();
+        _this4._initAdsLoader();
+        _this4._requestAds();
       }).catch(function (e) {
-        _this3.loadPromise.reject(e);
+        _this4.loadPromise.reject(e);
       });
     }
 
@@ -562,13 +573,13 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_initAdsLoader',
     value: function _initAdsLoader() {
-      var _this4 = this;
+      var _this5 = this;
 
       this.logger.debug("Init ads loader");
       this._adsLoader = new this._sdk.AdsLoader(this._adDisplayContainer);
       this._adsLoader.addEventListener(this._sdk.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._onAdsManagerLoaded.bind(this));
       this._adsLoader.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, function (adEvent) {
-        return _this4._stateMachine.aderror(adEvent);
+        return _this5._stateMachine.aderror(adEvent);
       });
     }
 
@@ -782,15 +793,13 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_onAdsManagerLoaded',
     value: function _onAdsManagerLoaded(adsManagerLoadedEvent) {
+      var _this6 = this;
+
       this.logger.debug('Ads manager loaded');
       var adsRenderingSettings = new this._sdk.AdsRenderingSettings();
-      adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
-      /* For now we have issue with this settings: autoplay mobile doesn't works if it sets to true.
-       adsRenderingSettings.enablePreloading = this.config.adsRenderingSettings.enablePreloading; */
-      adsRenderingSettings.useStyledLinearAds = this.config.adsRenderingSettings.useStyledLinearAds;
-      adsRenderingSettings.useStyledNonLinearAds = this.config.adsRenderingSettings.useStyledNonLinearAds;
-      adsRenderingSettings.bitrate = this.config.adsRenderingSettings.bitrate;
-      adsRenderingSettings.autoAlign = this.config.adsRenderingSettings.autoAlign;
+      Object.keys(this.config.adsRenderingSettings).forEach(function (setting) {
+        adsRenderingSettings[setting] = _this6.config.adsRenderingSettings[setting];
+      });
       this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
       this._attachAdsManagerListeners();
       this._syncPlayerVolume();
@@ -807,61 +816,61 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_attachAdsManagerListeners',
     value: function _attachAdsManagerListeners() {
-      var _this5 = this;
+      var _this7 = this;
 
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_PAUSE_REQUESTED, function (adEvent) {
-        return _this5._stateMachine.adbreakstart(adEvent);
+        return _this7._stateMachine.adbreakstart(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOADED, function (adEvent) {
-        return _this5._stateMachine.adloaded(adEvent);
+        return _this7._stateMachine.adloaded(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.STARTED, function (adEvent) {
-        return _this5._stateMachine.adstarted(adEvent);
+        return _this7._stateMachine.adstarted(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.PAUSED, function (adEvent) {
-        return _this5._stateMachine.adpaused(adEvent);
+        return _this7._stateMachine.adpaused(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.RESUMED, function (adEvent) {
-        return _this5._stateMachine.adresumed(adEvent);
+        return _this7._stateMachine.adresumed(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.FIRST_QUARTILE, function (adEvent) {
-        return _this5._stateMachine.adfirstquartile(adEvent);
+        return _this7._stateMachine.adfirstquartile(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.MIDPOINT, function (adEvent) {
-        return _this5._stateMachine.admidpoint(adEvent);
+        return _this7._stateMachine.admidpoint(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.THIRD_QUARTILE, function (adEvent) {
-        return _this5._stateMachine.adthirdquartile(adEvent);
+        return _this7._stateMachine.adthirdquartile(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.CLICK, function (adEvent) {
-        return _this5._stateMachine.adclicked(adEvent);
+        return _this7._stateMachine.adclicked(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.SKIPPED, function (adEvent) {
-        return _this5._stateMachine.adskipped(adEvent);
+        return _this7._stateMachine.adskipped(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.COMPLETE, function (adEvent) {
-        return _this5._stateMachine.adcompleted(adEvent);
+        return _this7._stateMachine.adcompleted(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_RESUME_REQUESTED, function (adEvent) {
-        return _this5._stateMachine.adbreakend(adEvent);
+        return _this7._stateMachine.adbreakend(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.ALL_ADS_COMPLETED, function (adEvent) {
-        return _this5._stateMachine.alladscompleted(adEvent);
+        return _this7._stateMachine.alladscompleted(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.USER_CLOSE, function (adEvent) {
-        return _this5._stateMachine.userclosedad(adEvent);
+        return _this7._stateMachine.userclosedad(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_CHANGED, function (adEvent) {
-        return _this5._stateMachine.advolumechanged(adEvent);
+        return _this7._stateMachine.advolumechanged(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_MUTED, function (adEvent) {
-        return _this5._stateMachine.admuted(adEvent);
+        return _this7._stateMachine.admuted(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOG, function (adEvent) {
-        return _this5._stateMachine.aderror(adEvent);
+        return _this7._stateMachine.aderror(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, function (adEvent) {
-        return _this5._stateMachine.aderror(adEvent);
+        return _this7._stateMachine.aderror(adEvent);
       });
     }
 
@@ -892,16 +901,16 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_startAdInterval',
     value: function _startAdInterval() {
-      var _this6 = this;
+      var _this8 = this;
 
       this._stopAdInterval();
       this._intervalTimer = setInterval(function () {
-        if (_this6._stateMachine.is(_state2.default.PLAYING)) {
-          var remainingTime = _this6._adsManager.getRemainingTime();
-          var duration = _this6._adsManager.getCurrentAd().getDuration();
+        if (_this8._stateMachine.is(_state2.default.PLAYING)) {
+          var remainingTime = _this8._adsManager.getRemainingTime();
+          var duration = _this8._adsManager.getCurrentAd().getDuration();
           var currentTime = duration - remainingTime;
           if (_playkitJs.Utils.Number.isNumber(duration) && _playkitJs.Utils.Number.isNumber(currentTime)) {
-            _this6.dispatchEvent(_this6.player.Event.AD_PROGRESS, {
+            _this8.dispatchEvent(_this8.player.Event.AD_PROGRESS, {
               adProgress: {
                 currentTime: currentTime,
                 duration: duration
@@ -1195,7 +1204,7 @@ function ImaStateMachine(context) {
     init: _state2.default.LOADING,
     transitions: [{
       name: 'loaded',
-      from: _state2.default.LOADING,
+      from: [_state2.default.LOADING, _state2.default.IDLE, _state2.default.DONE],
       to: _state2.default.LOADED
     }, {
       name: context.player.Event.AD_STARTED,
