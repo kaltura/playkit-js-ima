@@ -161,12 +161,18 @@ export default class Ima extends BasePlugin {
   }
 
   /**
-   * TODO: playAdNow() impl
+   * Plays ad on demand.
    * @param {string} adTagUrl - The ad tag url to play.
    * @returns {void}
    */
   playAdNow(adTagUrl: string): void {
-    this.logger.debug("TODO: playAdNow", adTagUrl);
+    super.updateConfig({adTagUrl: adTagUrl});
+    this.loadPromise = Utils.Object.defer();
+    this.destroy();
+    this._addBindings();
+    this._initAdsLoader();
+    this._requestAds();
+    this.loadPromise.then(this._startAdsManager.bind(this));
   }
 
   /**
@@ -216,7 +222,7 @@ export default class Ima extends BasePlugin {
    */
   updateConfig(update: Object): void {
     super.updateConfig(update);
-    if (update.adTagUrl) {
+    if (update.adTagUrl && this._stateMachine.is(State.LOADING)) {
       this._requestAds();
     }
   }
@@ -557,13 +563,11 @@ export default class Ima extends BasePlugin {
   _onAdsManagerLoaded(adsManagerLoadedEvent: any): void {
     this.logger.debug('Ads manager loaded');
     let adsRenderingSettings = new this._sdk.AdsRenderingSettings();
-    adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
-    /* For now we have issue with this settings: autoplay mobile doesn't works if it sets to true.
-     adsRenderingSettings.enablePreloading = this.config.adsRenderingSettings.enablePreloading; */
-    adsRenderingSettings.useStyledLinearAds = this.config.adsRenderingSettings.useStyledLinearAds;
-    adsRenderingSettings.useStyledNonLinearAds = this.config.adsRenderingSettings.useStyledNonLinearAds;
-    adsRenderingSettings.bitrate = this.config.adsRenderingSettings.bitrate;
-    adsRenderingSettings.autoAlign = this.config.adsRenderingSettings.autoAlign;
+    Object.keys(this.config.adsRenderingSettings).forEach((setting) => {
+      if (adsRenderingSettings[setting]) {
+        adsRenderingSettings[setting] = this.config.adsRenderingSettings[setting];
+      }
+    });
     this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
     this._attachAdsManagerListeners();
     this._syncPlayerVolume();
