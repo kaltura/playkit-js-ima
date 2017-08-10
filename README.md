@@ -84,7 +84,7 @@ yarn run test
 You can test individual browsers:
 ```
 yarn run test:chrome
-yarn run test:firefix
+yarn run test:firefox
 yarn run test:safari
 ```
 
