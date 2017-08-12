@@ -1,4 +1,4 @@
-# PlayKit JS IMA - IMA plugin for the PlayKit JS Player
+# PlayKit JS IMA - IMA plugin for the [PlayKit JS Player]
 
 [![Build Status](https://travis-ci.com/kaltura/playkit-js-ima.svg?token=s2ZQw18ukx9Q6ePzDX3F&branch=master)](https://travis-ci.com/kaltura/playkit-js-ima)
 
