@@ -48,14 +48,16 @@ Finally, add the bundle as a script tag in your page, and initialize the player
 <script type="text/javascript" src="/PATH/TO/FILE/playkit.js"></script>                     <!--PlayKit player-->
 <script type="text/javascript" src="//imasdk.googleapis.com/js/sdkloader/ima3.js"></script> <!--IMA SDK for HTML5-->
 <script type="text/javascript" src="/PATH/TO/FILE/playkit-ima.js"></script>                 <!--PlayKit IMA plugin-->
-<div id="videoContainer" style="height:360px;width:640px">
+<div id="videoContainer" style="height:360px; width:640px">
 <script type="text/javascript">
 var config = {
+ ...
  plugins: {
    ima: {
-     adTagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpost&cmsid=496&vid=short_onecue&correlator='
+     adTagUrl: 'YOUR_AD_TAG_URL'
    }
  }
+ ...
 };
 var player = playkit.loadPlayer("videoContainer", config);
 player.play();
@@ -66,15 +68,15 @@ player.play();
 
 | Settings             	| Type    	| Required                                       	| Description                                                                                                                                                                                	|
 |----------------------	|---------	|------------------------------------------------	|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	|
-| debug                	| boolean 	|                                                	| If set to true, load IMA SDK in debug mode                                                                                                                                                 	|
-| adTagUrl             	| string  	| :white_check_mark: (If adsResponse is not set) 	| specifies the ad tag url that is requested from the ad server                                                                                                                              	|
-| adsResponse          	| string  	| :white_check_mark: (If adTagUrl is not set)    	| specifies a VAST 2.0 document to be used as the ads response instead of making a request via an ad tag url                                                                                 	|
-| adsRenderingSettings 	| object  	|                                                	| defines parameters that control the rendering of ads, as described in [IMA SDK docs](https://developers.google.com/interactive-media-ads/docs/sdks/html5/v3/apis#ima.AdsRenderingSettings) 	|
-| skipSupport          	| boolean 	|                                                	| enable force skipping ads by implicitly calling stop. useful for cases where ad is not set as skipable in vast                                                                             	|
+| debug                	| boolean 	|                                                	| If set to true, loads IMA SDK in debug mode                                                                                                                                                 	|
+| adTagUrl             	| string  	| :white_check_mark: (if adsResponse is not set) 	| Specifies the ad tag url that is requested from the ad server                                                                                                                              	|
+| adsResponse          	| string  	| :white_check_mark: (if adTagUrl is not set)    	| Specifies a VAST 2.0 document to be used as the ads response instead of making a request via an ad tag url                                                                                 	|
+| adsRenderingSettings 	| object  	|                                                	| Defines parameters that control the rendering of ads, as described in [IMA SDK docs](https://developers.google.com/interactive-media-ads/docs/sdks/html5/v3/apis#ima.AdsRenderingSettings) 	|
+| skipSupport          	| boolean 	|                                                	| Enable force skipping ads by implicitly calling stop. Useful for cases where ad is not set as skipable in vast                                                                             	|
 
 ## Running the tests
 
-Tests can be run localy via [Karma], which will run on Chrome, Firefox and Safari
+Tests can be run locally via [Karma], which will run on Chrome, Firefox and Safari
 
 [Karma]: https://karma-runner.github.io/1.0/index.html
 ```
