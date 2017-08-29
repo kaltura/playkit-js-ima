@@ -19,7 +19,7 @@ module.exports = function (config) {
     singleRun: true,
     colors: true,
     frameworks: [
-      'mocha',
+      'mocha'
     ],
     files: [
       'test/setup/karma.js'
