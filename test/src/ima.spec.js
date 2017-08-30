@@ -6,7 +6,6 @@ import Ima from '../../src/ima'
 const targetId = 'player-placeholder_ima.spec';
 
 describe('Ima Plugin', function () {
-  this.timeout(100000);
 
   let ima;
   let player;

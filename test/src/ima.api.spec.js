@@ -6,7 +6,6 @@ import Ima from '../../src/ima'
 const targetId = 'player-placeholder_ima.api.spec';
 
 describe('Ima API', function () {
-  this.timeout(20000);
 
   let ima;
   let player;
