@@ -150,10 +150,10 @@ function onAdLoaded(options: Object, adEvent: any): void {
  */
 function onAdStarted(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
-  let ad = adEvent.getAd();
+  this._currentAd = adEvent.getAd();
   this._resizeAd();
-  this._maybeDisplayCompanionAds(ad);
-  if (!ad.isLinear()) {
+  this._maybeDisplayCompanionAds();
+  if (!this._currentAd.isLinear()) {
     this._setVideoEndedCallbackEnabled(true);
     if (this._nextPromise) {
       this._resolveNextPromise();
@@ -205,10 +205,10 @@ function onAdPaused(options: Object, adEvent: any): void {
  */
 function onAdCompleted(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
-  let ad = adEvent.getAd();
-  if (ad.isLinear()) {
+  if (this._currentAd.isLinear()) {
     this._stopAdInterval();
   }
+  this._currentAd = null;
   this.dispatchEvent(options.transition);
 }
 
