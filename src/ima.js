@@ -36,9 +36,10 @@ export default class Ima extends BasePlugin {
     debug: false,
     companions: {},
     adsRenderingSettings: {
+      restoreCustomPlaybackStateOnAdBreakComplete: true,
       enablePreloading: false,
       useStyledLinearAds: false,
-      useStyledNonLinearAds: false,
+      useStyledNonLinearAds: true,
       bitrate: -1,
       autoAlign: true
     }
@@ -131,6 +132,12 @@ export default class Ima extends BasePlugin {
    * @private
    */
   _nextPromise: ?DeferredPromise;
+  /**
+   * The current playing ad.
+   * @member
+   * @private
+   */
+  _currentAd: any;
 
   /**
    * Whether the ima plugin is valid.
@@ -149,7 +156,7 @@ export default class Ima extends BasePlugin {
    * @param {Object} config - The plugin config.
    */
   constructor(name: string, player: Player, config: Object) {
-    super(Utils.String.capitlize(name), player, config);
+    super(name, player, config);
     this._stateMachine = new ImaStateMachine(this);
     this._intervalTimer = null;
     this._videoLastCurrentTime = null;
@@ -259,9 +266,10 @@ export default class Ima extends BasePlugin {
     if (this._adsManager) {
       this._adsManager.destroy();
     }
-    if (this._adsLoader) {
+    if (this._adsLoader && !this._contentComplete) {
       this._adsLoader.contentComplete();
     }
+    this._currentAd = null;
     this._adsManager = null;
     this._adsLoader = null;
     this._contentComplete = false;
@@ -334,7 +342,8 @@ export default class Ima extends BasePlugin {
    */
   _init(): void {
     this.loadPromise = Utils.Object.defer();
-    (window.google && window.google.ima ? Promise.resolve() : Utils.Dom.loadScriptAsync(this.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL))
+    (window.google && window.google.ima && window.google.ima.VERSION
+      ? Promise.resolve() : Utils.Dom.loadScriptAsync(this.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL))
       .then(() => {
         this._sdk = window.google.ima;
         this.logger.debug("IMA SDK version: " + this._sdk.VERSION);
@@ -515,7 +524,7 @@ export default class Ima extends BasePlugin {
    */
   _maybeSetVideoCurrentTime(): void {
     if (this._videoLastCurrentTime) {
-      this.logger.debug("Custom playback used: set current time after ads", this.player.currentTime);
+      this.logger.debug("Custom playback used: set current time after ads", this._videoLastCurrentTime);
       this.player.currentTime = this._videoLastCurrentTime;
       this._videoLastCurrentTime = null;
     }
@@ -530,6 +539,9 @@ export default class Ima extends BasePlugin {
     this.logger.debug("Media ended");
     this._adsLoader.contentComplete();
     this._contentComplete = true;
+    if (!this._currentAd.isLinear()) {
+      this.destroy();
+    }
   }
 
   /**
@@ -564,7 +576,7 @@ export default class Ima extends BasePlugin {
     this.logger.debug('Ads manager loaded');
     let adsRenderingSettings = new this._sdk.AdsRenderingSettings();
     Object.keys(this.config.adsRenderingSettings).forEach((setting) => {
-      if (adsRenderingSettings[setting]) {
+      if (adsRenderingSettings[setting] != null) {
         adsRenderingSettings[setting] = this.config.adsRenderingSettings[setting];
       }
     });
@@ -678,11 +690,10 @@ export default class Ima extends BasePlugin {
 
   /**
    * Displays companion ads using the Ad API.
-   * @param {any} ad - The ad object.
    * @private
    * @returns {void}
    */
-  _maybeDisplayCompanionAds(ad: any): void {
+  _maybeDisplayCompanionAds(): void {
     if (this.config.companions && !window.googletag) {
       let companionsIds = Object.keys(this.config.companions);
       for (let i = 0; i < companionsIds.length; i++) {
@@ -707,7 +718,7 @@ export default class Ima extends BasePlugin {
               selectionCriteria.sizeCriteria = this._sdk.CompanionAdSelectionSettings.SizeCriteria.SELECT_EXACT_MATCH;
               break;
           }
-          companionAds = ad.getCompanionAds(width, height, selectionCriteria);
+          companionAds = this._currentAd.getCompanionAds(width, height, selectionCriteria);
           if (companionAds.length > 0) {
             let companionAd = companionAds[0];
             let content = companionAd.getContent();
