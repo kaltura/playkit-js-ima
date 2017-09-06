@@ -164,7 +164,6 @@ function onAdStarted(options: Object, adEvent: any): void {
     this._startAdInterval();
   }
   this.dispatchEvent(options.transition);
-  this._maybePreloadContent();
 }
 
 /**
