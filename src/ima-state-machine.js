@@ -139,7 +139,6 @@ export default class ImaStateMachine {
  */
 function onAdLoaded(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
-  this._alignAdVideoElement();
   this.dispatchEvent(options.transition, normalizeAdEvent(adEvent));
 }
 

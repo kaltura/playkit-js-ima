@@ -677,21 +677,6 @@ export default class Ima extends BasePlugin {
   }
 
   /**
-   * Align the ad video tag.
-   * Fix for FEC-7058.
-   * @private
-   * @returns {void}
-   */
-  _alignAdVideoElement(): void {
-    if (!this._adsManager.isCustomPlaybackUsed()) {
-      let adVideoElement = this._adsContainerDiv.getElementsByTagName('video')[0];
-      if (adVideoElement) {
-        adVideoElement.style.left = '0px';
-      }
-    }
-  }
-
-  /**
    * Resolves the next promise to let the next handler in the middleware chain start.
    * @private
    * @returns {void}
