@@ -447,6 +447,7 @@ var Ima = function (_BasePlugin) {
         this.logger.debug("Initial user action");
         this._nextPromise = _playkitJs.Utils.Object.defer();
         this._adDisplayContainer.initialize();
+        this.player.load();
         this._startAdsManager();
       } catch (adError) {
         this.logger.error(adError);
@@ -464,24 +465,10 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_startAdsManager',
     value: function _startAdsManager() {
-      var _this2 = this;
-
       var playerViewSize = this._getPlayerViewSize();
-      if (this._adsManager.isCustomPlaybackUsed()) {
-        this.logger.debug("Waiting for loadedmetada event");
-        this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, function () {
-          _this2.logger.debug("Loadedmetada event raised: start ads manager");
-          _this2.eventManager.unlisten(_this2.player, _this2.player.Event.LOADED_METADATA);
-          _this2._adsManager.init(playerViewSize.width, playerViewSize.height, _this2._sdk.ViewMode.NORMAL);
-          _this2._adsManager.start();
-        });
-        this.logger.debug("Load player");
-        this.player.load();
-      } else {
-        this.logger.debug("Start ads manager");
-        this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
-        this._adsManager.start();
-      }
+      this.logger.debug("Start ads manager");
+      this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
+      this._adsManager.start();
     }
 
     /**
@@ -511,18 +498,18 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_init',
     value: function _init() {
-      var _this3 = this;
+      var _this2 = this;
 
       this.loadPromise = _playkitJs.Utils.Object.defer();
       (window.google && window.google.ima && window.google.ima.VERSION ? Promise.resolve() : _playkitJs.Utils.Dom.loadScriptAsync(this.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL)).then(function () {
-        _this3._sdk = window.google.ima;
-        _this3.logger.debug("IMA SDK version: " + _this3._sdk.VERSION);
-        _this3._initImaSettings();
-        _this3._initAdsContainer();
-        _this3._initAdsLoader();
-        _this3._requestAds();
+        _this2._sdk = window.google.ima;
+        _this2.logger.debug("IMA SDK version: " + _this2._sdk.VERSION);
+        _this2._initImaSettings();
+        _this2._initAdsContainer();
+        _this2._initAdsLoader();
+        _this2._requestAds();
       }).catch(function (e) {
-        _this3.loadPromise.reject(e);
+        _this2.loadPromise.reject(e);
       });
     }
 
@@ -575,13 +562,13 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_initAdsLoader',
     value: function _initAdsLoader() {
-      var _this4 = this;
+      var _this3 = this;
 
       this.logger.debug("Init ads loader");
       this._adsLoader = new this._sdk.AdsLoader(this._adDisplayContainer);
       this._adsLoader.addEventListener(this._sdk.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._onAdsManagerLoaded.bind(this));
       this._adsLoader.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, function (adEvent) {
-        return _this4._stateMachine.aderror(adEvent);
+        return _this3._stateMachine.aderror(adEvent);
       });
     }
 
@@ -798,13 +785,13 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_onAdsManagerLoaded',
     value: function _onAdsManagerLoaded(adsManagerLoadedEvent) {
-      var _this5 = this;
+      var _this4 = this;
 
       this.logger.debug('Ads manager loaded');
       var adsRenderingSettings = new this._sdk.AdsRenderingSettings();
       Object.keys(this.config.adsRenderingSettings).forEach(function (setting) {
         if (adsRenderingSettings[setting] != null) {
-          adsRenderingSettings[setting] = _this5.config.adsRenderingSettings[setting];
+          adsRenderingSettings[setting] = _this4.config.adsRenderingSettings[setting];
         }
       });
       this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
@@ -823,61 +810,61 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_attachAdsManagerListeners',
     value: function _attachAdsManagerListeners() {
-      var _this6 = this;
+      var _this5 = this;
 
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_PAUSE_REQUESTED, function (adEvent) {
-        return _this6._stateMachine.adbreakstart(adEvent);
+        return _this5._stateMachine.adbreakstart(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOADED, function (adEvent) {
-        return _this6._stateMachine.adloaded(adEvent);
+        return _this5._stateMachine.adloaded(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.STARTED, function (adEvent) {
-        return _this6._stateMachine.adstarted(adEvent);
+        return _this5._stateMachine.adstarted(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.PAUSED, function (adEvent) {
-        return _this6._stateMachine.adpaused(adEvent);
+        return _this5._stateMachine.adpaused(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.RESUMED, function (adEvent) {
-        return _this6._stateMachine.adresumed(adEvent);
+        return _this5._stateMachine.adresumed(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.FIRST_QUARTILE, function (adEvent) {
-        return _this6._stateMachine.adfirstquartile(adEvent);
+        return _this5._stateMachine.adfirstquartile(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.MIDPOINT, function (adEvent) {
-        return _this6._stateMachine.admidpoint(adEvent);
+        return _this5._stateMachine.admidpoint(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.THIRD_QUARTILE, function (adEvent) {
-        return _this6._stateMachine.adthirdquartile(adEvent);
+        return _this5._stateMachine.adthirdquartile(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.CLICK, function (adEvent) {
-        return _this6._stateMachine.adclicked(adEvent);
+        return _this5._stateMachine.adclicked(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.SKIPPED, function (adEvent) {
-        return _this6._stateMachine.adskipped(adEvent);
+        return _this5._stateMachine.adskipped(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.COMPLETE, function (adEvent) {
-        return _this6._stateMachine.adcompleted(adEvent);
+        return _this5._stateMachine.adcompleted(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_RESUME_REQUESTED, function (adEvent) {
-        return _this6._stateMachine.adbreakend(adEvent);
+        return _this5._stateMachine.adbreakend(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.ALL_ADS_COMPLETED, function (adEvent) {
-        return _this6._stateMachine.alladscompleted(adEvent);
+        return _this5._stateMachine.alladscompleted(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.USER_CLOSE, function (adEvent) {
-        return _this6._stateMachine.userclosedad(adEvent);
+        return _this5._stateMachine.userclosedad(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_CHANGED, function (adEvent) {
-        return _this6._stateMachine.advolumechanged(adEvent);
+        return _this5._stateMachine.advolumechanged(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_MUTED, function (adEvent) {
-        return _this6._stateMachine.admuted(adEvent);
+        return _this5._stateMachine.admuted(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOG, function (adEvent) {
-        return _this6._stateMachine.aderror(adEvent);
+        return _this5._stateMachine.aderror(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, function (adEvent) {
-        return _this6._stateMachine.aderror(adEvent);
+        return _this5._stateMachine.aderror(adEvent);
       });
     }
 
@@ -908,16 +895,16 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_startAdInterval',
     value: function _startAdInterval() {
-      var _this7 = this;
+      var _this6 = this;
 
       this._stopAdInterval();
       this._intervalTimer = setInterval(function () {
-        if (_this7._stateMachine.is(_state2.default.PLAYING)) {
-          var remainingTime = _this7._adsManager.getRemainingTime();
-          var duration = _this7._adsManager.getCurrentAd().getDuration();
+        if (_this6._stateMachine.is(_state2.default.PLAYING)) {
+          var remainingTime = _this6._adsManager.getRemainingTime();
+          var duration = _this6._adsManager.getCurrentAd().getDuration();
           var currentTime = duration - remainingTime;
           if (_playkitJs.Utils.Number.isNumber(duration) && _playkitJs.Utils.Number.isNumber(currentTime)) {
-            _this7.dispatchEvent(_this7.player.Event.AD_PROGRESS, {
+            _this6.dispatchEvent(_this6.player.Event.AD_PROGRESS, {
               adProgress: {
                 currentTime: currentTime,
                 duration: duration
@@ -940,21 +927,6 @@ var Ima = function (_BasePlugin) {
       if (this._intervalTimer) {
         clearInterval(this._intervalTimer);
         this._intervalTimer = null;
-      }
-    }
-
-    /**
-     * Maybe pre loaded the player.
-     * @private
-     * @returns {void}
-     */
-
-  }, {
-    key: '_maybePreloadContent',
-    value: function _maybePreloadContent() {
-      if (!this.player.src && !this._adsManager.isCustomPlaybackUsed()) {
-        this.logger.debug("Preloading content");
-        this.player.load();
       }
     }
 
@@ -1339,7 +1311,6 @@ function onAdStarted(options, adEvent) {
     this._startAdInterval();
   }
   this.dispatchEvent(options.transition);
-  this._maybePreloadContent();
 }
 
 /**
