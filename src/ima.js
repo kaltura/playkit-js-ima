@@ -288,6 +288,7 @@ export default class Ima extends BasePlugin {
       this.logger.debug("Initial user action");
       this._nextPromise = Utils.Object.defer();
       this._adDisplayContainer.initialize();
+      this.player.load();
       this._startAdsManager();
     } catch (adError) {
       this.logger.error(adError);
@@ -303,21 +304,9 @@ export default class Ima extends BasePlugin {
    */
   _startAdsManager(): void {
     let playerViewSize = this._getPlayerViewSize();
-    if (this._adsManager.isCustomPlaybackUsed()) {
-      this.logger.debug("Waiting for loadedmetada event");
-      this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, () => {
-        this.logger.debug("Loadedmetada event raised: start ads manager");
-        this.eventManager.unlisten(this.player, this.player.Event.LOADED_METADATA);
-        this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
-        this._adsManager.start();
-      });
-      this.logger.debug("Load player");
-      this.player.load();
-    } else {
-      this.logger.debug("Start ads manager");
-      this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
-      this._adsManager.start();
-    }
+    this.logger.debug("Start ads manager");
+    this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
+    this._adsManager.start();
   }
 
   /**
@@ -661,18 +650,6 @@ export default class Ima extends BasePlugin {
     if (this._intervalTimer) {
       clearInterval(this._intervalTimer);
       this._intervalTimer = null;
-    }
-  }
-
-  /**
-   * Maybe pre loaded the player.
-   * @private
-   * @returns {void}
-   */
-  _maybePreloadContent(): void {
-    if (!this.player.src && !this._adsManager.isCustomPlaybackUsed()) {
-      this.logger.debug("Preloading content");
-      this.player.load();
     }
   }
 

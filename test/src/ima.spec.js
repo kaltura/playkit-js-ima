@@ -146,7 +146,7 @@ describe('Ima Plugin', function () {
     player.addEventListener(player.Event.AD_STARTED, () => {
       maybeDoneTest(cuePoints, adPodIndex, done);
     });
-    player.addEventListener(player.Event.FIRST_PLAY, () => {
+    player.addEventListener(player.Event.LOADED_METADATA, () => {
       player.currentTime = player.duration - 1;
     });
     player.play();
@@ -164,7 +164,7 @@ describe('Ima Plugin', function () {
     player.addEventListener(player.Event.AD_STARTED, () => {
       maybeDoneTest(cuePoints, adPodIndex, done);
     });
-    player.addEventListener(player.Event.FIRST_PLAY, () => {
+    player.addEventListener(player.Event.LOADED_METADATA, () => {
       player.currentTime = player.duration - 1;
     });
     player.play();
@@ -182,7 +182,7 @@ describe('Ima Plugin', function () {
     player.addEventListener(player.Event.AD_STARTED, () => {
       maybeDoneTest(cuePoints, adPodIndex, done);
     });
-    player.addEventListener(player.Event.FIRST_PLAY, () => {
+    player.addEventListener(player.Event.LOADED_METADATA, () => {
       player.currentTime = player.duration - 1;
     });
     player.play();
