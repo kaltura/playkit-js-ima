@@ -288,13 +288,26 @@ export default class Ima extends BasePlugin {
       this.logger.debug("Initial user action");
       this._nextPromise = Utils.Object.defer();
       this._adDisplayContainer.initialize();
-      this.player.load();
+      this._loadContentPlayer();
       this._startAdsManager();
     } catch (adError) {
       this.logger.error(adError);
       this.destroy();
     }
     return this._nextPromise;
+  }
+
+  /**
+   * Loads content player on user gesture.
+   * @private
+   * @returns {void}
+   */
+  _loadContentPlayer(): void {
+    this.logger.debug("Loads content player");
+    this.player.load();
+    if (this.player.env.device.type === "mobile" && !this._adsManager.isCustomPlaybackUsed()) {
+      this.player.getVideoElement().load();
+    }
   }
 
   /**
