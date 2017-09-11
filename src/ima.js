@@ -288,8 +288,10 @@ export default class Ima extends BasePlugin {
       this.logger.debug("Initial user action");
       this._nextPromise = Utils.Object.defer();
       this._adDisplayContainer.initialize();
+      this.player.ready().then(() => {
+        this._startAdsManager();
+      });
       this.player.load();
-      this._startAdsManager();
     } catch (adError) {
       this.logger.error(adError);
       this.destroy();
