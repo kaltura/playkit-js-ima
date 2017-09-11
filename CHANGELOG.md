@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.1.3"></a>
+## [0.1.3](https://github.com/kaltura/playkit-js-ima/compare/v0.1.2...v0.1.3) (2017-09-11)
+
+
+### Bug Fixes
+
+* start ads manager on player ready ([#10](https://github.com/kaltura/playkit-js-ima/issues/10)) ([e951deb](https://github.com/kaltura/playkit-js-ima/commit/e951deb))
+
+
+
 <a name="0.1.2"></a>
 ## [0.1.2](https://github.com/kaltura/playkit-js-ima/compare/v0.1.0...v0.1.2) (2017-09-07)
 
