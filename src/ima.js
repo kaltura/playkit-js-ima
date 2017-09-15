@@ -319,10 +319,6 @@ export default class Ima extends BasePlugin {
   _addBindings(): void {
     this.eventManager.listen(window, 'resize', this._resizeAd.bind(this));
     this.eventManager.listen(this.player.getVideoElement(), 'resize', this._resizeAd.bind(this));
-    this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, this._onLoadedMetadata.bind(this));
-    this.eventManager.listen(this.player, this.player.Event.TIME_UPDATE, this._onMediaTimeUpdate.bind(this));
-    this.eventManager.listen(this.player, this.player.Event.SEEKING, this._onMediaSeeking.bind(this));
-    this.eventManager.listen(this.player, this.player.Event.SEEKED, this._onMediaSeeked.bind(this));
     this.eventManager.listen(this.player, this.player.Event.VOLUME_CHANGE, this._syncPlayerVolume.bind(this));
   }
 
@@ -461,6 +457,26 @@ export default class Ima extends BasePlugin {
     if (!this._contentPlayheadTracker.seeking) {
       this._contentPlayheadTracker.previousTime = this._contentPlayheadTracker.currentTime;
       this._contentPlayheadTracker.currentTime = this.player.currentTime;
+    }
+  }
+
+  /**
+   * Sets the content playhead tracker events enabled/disabled.
+   * @param {boolean} enabled - Whether do enabled the events.
+   * @private
+   * @returns {void}
+   */
+  _setContentPlayheadTrackerEventsEnabled(enabled: boolean): void {
+    if (enabled) {
+      this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, this._onLoadedMetadata.bind(this));
+      this.eventManager.listen(this.player, this.player.Event.TIME_UPDATE, this._onMediaTimeUpdate.bind(this));
+      this.eventManager.listen(this.player, this.player.Event.SEEKING, this._onMediaSeeking.bind(this));
+      this.eventManager.listen(this.player, this.player.Event.SEEKED, this._onMediaSeeked.bind(this));
+    } else {
+      this.eventManager.unlisten(this.player, this.player.Event.LOADED_METADATA);
+      this.eventManager.unlisten(this.player, this.player.Event.TIME_UPDATE);
+      this.eventManager.unlisten(this.player, this.player.Event.SEEKING);
+      this.eventManager.unlisten(this.player, this.player.Event.SEEKED);
     }
   }
 
