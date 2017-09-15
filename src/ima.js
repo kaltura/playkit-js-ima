@@ -288,10 +288,8 @@ export default class Ima extends BasePlugin {
       this.logger.debug("Initial user action");
       this._nextPromise = Utils.Object.defer();
       this._adDisplayContainer.initialize();
-      this.player.ready().then(() => {
-        this._startAdsManager();
-      });
       this.player.load();
+      this._requestAds();
     } catch (adError) {
       this.logger.error(adError);
       this.destroy();
@@ -333,18 +331,29 @@ export default class Ima extends BasePlugin {
    */
   _init(): void {
     this.loadPromise = Utils.Object.defer();
-    (window.google && window.google.ima && window.google.ima.VERSION
-      ? Promise.resolve() : Utils.Dom.loadScriptAsync(this.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL))
-      .then(() => {
-        this._sdk = window.google.ima;
-        this.logger.debug("IMA SDK version: " + this._sdk.VERSION);
-        this._initImaSettings();
-        this._initAdsContainer();
-        this._initAdsLoader();
-        this._requestAds();
-      }).catch((e) => {
-      this.loadPromise.reject(e);
-    });
+    this._isImaSDKLibLoaded()
+      ? Promise.resolve()
+      : Utils.Dom.loadScriptAsync(this.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL)
+        .then(() => {
+          this._sdk = window.google.ima;
+          this.logger.debug("IMA SDK version: " + this._sdk.VERSION);
+          this._initImaSettings();
+          this._initAdsContainer();
+          this._initAdsLoader();
+          this._stateMachine.loaded();
+          this.loadPromise.resolve();
+        }).catch((e) => {
+          this.loadPromise.reject(e);
+        });
+  }
+
+  /**
+   * Checks for ima sdk lib availability.
+   * @returns {boolean} - Whether ima sdk lib is loaded.
+   * @private
+   */
+  _isImaSDKLibLoaded(): boolean {
+    return (window.google && window.google.ima && window.google.ima.VERSION);
   }
 
   /**
@@ -574,8 +583,9 @@ export default class Ima extends BasePlugin {
     this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
     this._attachAdsManagerListeners();
     this._syncPlayerVolume();
-    this._stateMachine.loaded();
-    this.loadPromise.resolve();
+    this.player.ready().then(() => {
+      this._startAdsManager();
+    });
   }
 
   /**
