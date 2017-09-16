@@ -138,6 +138,12 @@ export default class Ima extends BasePlugin {
    * @private
    */
   _currentAd: any;
+  /**
+   * The content media src.
+   * @member
+   * @private
+   */
+  _contentSrc: string;
 
   /**
    * Whether the ima plugin is valid.
@@ -289,6 +295,9 @@ export default class Ima extends BasePlugin {
       this._nextPromise = Utils.Object.defer();
       this._adDisplayContainer.initialize();
       this.player.ready().then(() => {
+        if (this._adsManager.isCustomPlaybackUsed()) {
+          this._contentSrc = this.player.getVideoElement().src;
+        }
         this._startAdsManager();
       });
       this.player.load();
