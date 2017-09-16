@@ -321,7 +321,8 @@ export default class Ima extends BasePlugin {
       'fullscreenchange',
       'mozfullscreenchange',
       'webkitfullscreenchange'
-    ].forEach((fullScreenEvent) => this.eventManager.listen(document, fullScreenEvent, this._resizeAd.bind(this)));
+    ]
+    .forEach(fullScreenEvent => this.eventManager.listen(document, fullScreenEvent, this._resizeAd.bind(this)));
     this.eventManager.listen(window, 'resize', this._resizeAd.bind(this));
     this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, this._onLoadedMetadata.bind(this));
     this.eventManager.listen(this.player, this.player.Event.TIME_UPDATE, this._onMediaTimeUpdate.bind(this));
