@@ -326,12 +326,13 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _addBindings(): void {
+    [
+      'fullscreenchange',
+      'mozfullscreenchange',
+      'webkitfullscreenchange'
+    ]
+    .forEach(fullScreenEvent => this.eventManager.listen(document, fullScreenEvent, this._resizeAd.bind(this)));
     this.eventManager.listen(window, 'resize', this._resizeAd.bind(this));
-    this.eventManager.listen(this.player.getVideoElement(), 'resize', this._resizeAd.bind(this));
-    this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, this._onLoadedMetadata.bind(this));
-    this.eventManager.listen(this.player, this.player.Event.TIME_UPDATE, this._onMediaTimeUpdate.bind(this));
-    this.eventManager.listen(this.player, this.player.Event.SEEKING, this._onMediaSeeking.bind(this));
-    this.eventManager.listen(this.player, this.player.Event.SEEKED, this._onMediaSeeked.bind(this));
     this.eventManager.listen(this.player, this.player.Event.VOLUME_CHANGE, this._syncPlayerVolume.bind(this));
   }
 
@@ -436,8 +437,22 @@ export default class Ima extends BasePlugin {
   _resizeAd() {
     if (this._sdk && this._adsManager) {
       let playerViewSize = this._getPlayerViewSize();
-      this._adsManager.resize(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
+      let isFullScreen = this._isFullScreen();
+      let viewMode = (isFullScreen ? this._sdk.ViewMode.FULLSCREEN : this._sdk.ViewMode.NORMAL);
+      this._adsManager.resize(playerViewSize.width, playerViewSize.height, viewMode);
     }
+  }
+
+  /**
+   * Helper for checking if the document is in full screen mode.
+   * @private
+   * @returns {boolean} - Whether the document is in full screen mode.
+   */
+  _isFullScreen(): boolean {
+    return typeof document.fullscreenElement !== 'undefined' && Boolean(document.fullscreenElement) ||
+      typeof document.webkitFullscreenElement !== 'undefined' && Boolean(document.webkitFullscreenElement) ||
+      typeof document.mozFullScreenElement !== 'undefined' && Boolean(document.mozFullScreenElement) ||
+      typeof document.msFullscreenElement !== 'undefined' && Boolean(document.msFullscreenElement);
   }
 
   /**
@@ -470,6 +485,26 @@ export default class Ima extends BasePlugin {
     if (!this._contentPlayheadTracker.seeking) {
       this._contentPlayheadTracker.previousTime = this._contentPlayheadTracker.currentTime;
       this._contentPlayheadTracker.currentTime = this.player.currentTime;
+    }
+  }
+
+  /**
+   * Sets the content playhead tracker events enabled/disabled.
+   * @param {boolean} enabled - Whether do enabled the events.
+   * @private
+   * @returns {void}
+   */
+  _setContentPlayheadTrackerEventsEnabled(enabled: boolean): void {
+    if (enabled) {
+      this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, this._onLoadedMetadata.bind(this));
+      this.eventManager.listen(this.player, this.player.Event.TIME_UPDATE, this._onMediaTimeUpdate.bind(this));
+      this.eventManager.listen(this.player, this.player.Event.SEEKING, this._onMediaSeeking.bind(this));
+      this.eventManager.listen(this.player, this.player.Event.SEEKED, this._onMediaSeeked.bind(this));
+    } else {
+      this.eventManager.unlisten(this.player, this.player.Event.LOADED_METADATA);
+      this.eventManager.unlisten(this.player, this.player.Event.TIME_UPDATE);
+      this.eventManager.unlisten(this.player, this.player.Event.SEEKING);
+      this.eventManager.unlisten(this.player, this.player.Event.SEEKED);
     }
   }
 
