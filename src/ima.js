@@ -328,15 +328,10 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _startAdsManager(): void {
-    this.player.ready().then(() => {
-      if (this._adsManager.isCustomPlaybackUsed()) {
-        this._contentSrc = this.player.getVideoElement().src;
-      }
-      let playerViewSize = this._getPlayerViewSize();
-      this.logger.debug("Start ads manager");
-      this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
-      this._adsManager.start();
-    });
+    let playerViewSize = this._getPlayerViewSize();
+    this.logger.debug("Start ads manager");
+    this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
+    this._adsManager.start();
   }
 
   /**
@@ -349,10 +344,12 @@ export default class Ima extends BasePlugin {
       'fullscreenchange',
       'mozfullscreenchange',
       'webkitfullscreenchange'
-    ]
-      .forEach(fullScreenEvent => this.eventManager.listen(document, fullScreenEvent, this._resizeAd.bind(this)));
+    ].forEach(fullScreenEvent => this.eventManager.listen(document, fullScreenEvent, this._resizeAd.bind(this)));
     this.eventManager.listen(window, 'resize', this._resizeAd.bind(this));
     this.eventManager.listen(this.player, this.player.Event.VOLUME_CHANGE, this._syncPlayerVolume.bind(this));
+    this.eventManager.listen(this.player, this.player.Event.SOURCE_SELECTED, (event) => {
+      this._contentSrc = event.payload.selectedSource[0];
+    });
   }
 
   /**
@@ -362,20 +359,31 @@ export default class Ima extends BasePlugin {
    */
   _init(): void {
     this.loadPromise = Utils.Object.defer();
-    (window.google && window.google.ima && window.google.ima.VERSION
-      ? Promise.resolve() : Utils.Dom.loadScriptAsync(this.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL))
-      .then(() => {
-        this._sdk = window.google.ima;
-        this.logger.debug("IMA SDK version: " + this._sdk.VERSION);
-        this._initImaSettings();
-        this._initAdsContainer();
-        this._initAdsLoader();
-        this._requestAds();
-        this._stateMachine.loaded();
-        this.loadPromise.resolve();
-      }).catch((e) => {
-      this.loadPromise.reject(e);
-    });
+    this._isImaSDKLibLoaded()
+      ? Promise.resolve()
+      : Utils.Dom.loadScriptAsync(this.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL)
+        .then(() => {
+          this._sdk = window.google.ima;
+          this.logger.debug("IMA SDK version: " + this._sdk.VERSION);
+          this._initImaSettings();
+          this._initAdsContainer();
+          this._initAdsLoader();
+          this._requestAds();
+          this._stateMachine.loaded();
+          this.loadPromise.resolve();
+        })
+        .catch((e) => {
+          this.loadPromise.reject(e);
+        });
+  }
+
+  /**
+   * Checks for ima sdk lib availability.
+   * @returns {boolean} - Whether ima sdk lib is loaded.
+   * @private
+   */
+  _isImaSDKLibLoaded(): boolean {
+    return (window.google && window.google.ima && window.google.ima.VERSION);
   }
 
   /**
