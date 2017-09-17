@@ -19,6 +19,12 @@ export default class ImaMiddleware extends BaseMiddleware {
    * @private
    */
   _context: any;
+  /**
+   * Whether the player has been loaded.
+   * @member
+   * @private
+   */
+  _isPlayerLoaded: boolean;
 
   /**
    * @constructor
@@ -35,6 +41,11 @@ export default class ImaMiddleware extends BaseMiddleware {
    * @returns {void}
    */
   play(next: Function): void {
+    if (!this._isPlayerLoaded) {
+      this._context.player.load();
+      this._isPlayerLoaded = true;
+      this._context.logger.debug("Player loaded");
+    }
     this._context.loadPromise.then(() => {
       let sm = this._context.getStateMachine();
       switch (sm.state) {
