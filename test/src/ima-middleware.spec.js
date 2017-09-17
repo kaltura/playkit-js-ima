@@ -6,6 +6,10 @@ describe('Ima Middleware', function () {
   let imaMiddleware;
   let fakeContext = {
     loadPromise: Promise.resolve(),
+    player: {
+      load: function () {
+      }
+    },
     setCurrentState: function (state) {
       this.currentState = state;
     },
@@ -27,6 +31,8 @@ describe('Ima Middleware', function () {
     },
     logger: {
       error: function () {
+      },
+      debug: function () {
       }
     }
   };

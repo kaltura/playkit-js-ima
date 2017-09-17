@@ -144,6 +144,18 @@ export default class Ima extends BasePlugin {
    * @private
    */
   _contentSrc: string;
+  /**
+   * Whether an initial user action happened.
+   * @member
+   * @private
+   */
+  _hasUserAction: boolean;
+  /**
+   * Whether the ads manager loaded.
+   * @member
+   * @private
+   */
+  _isAdsManagerLoaded: boolean;
 
   /**
    * Whether the ima plugin is valid.
@@ -168,6 +180,8 @@ export default class Ima extends BasePlugin {
     this._videoLastCurrentTime = null;
     this._adsManager = null;
     this._contentComplete = false;
+    this._hasUserAction = false;
+    this._isAdsManagerLoaded = false;
     this._contentPlayheadTracker = {currentTime: 0, previousTime: 0, seeking: false, duration: 0};
     this._addBindings();
     this._init();
@@ -279,6 +293,8 @@ export default class Ima extends BasePlugin {
     this._adsManager = null;
     this._adsLoader = null;
     this._contentComplete = false;
+    this._hasUserAction = false;
+    this._isAdsManagerLoaded = false;
     this._intervalTimer = null;
     this._videoLastCurrentTime = null;
     this._contentPlayheadTracker = {currentTime: 0, previousTime: 0, seeking: false, duration: 0};
@@ -294,13 +310,11 @@ export default class Ima extends BasePlugin {
       this.logger.debug("Initial user action");
       this._nextPromise = Utils.Object.defer();
       this._adDisplayContainer.initialize();
-      this.player.ready().then(() => {
-        if (this._adsManager.isCustomPlaybackUsed()) {
-          this._contentSrc = this.player.getVideoElement().src;
-        }
+      this._hasUserAction = true;
+      if (this._isAdsManagerLoaded) {
+        this.logger.debug("User action occurred after ads manager loaded");
         this._startAdsManager();
-      });
-      this.player.load();
+      }
     } catch (adError) {
       this.logger.error(adError);
       this.destroy();
@@ -330,10 +344,15 @@ export default class Ima extends BasePlugin {
       'fullscreenchange',
       'mozfullscreenchange',
       'webkitfullscreenchange'
-    ]
-    .forEach(fullScreenEvent => this.eventManager.listen(document, fullScreenEvent, this._resizeAd.bind(this)));
+    ].forEach(fullScreenEvent => this.eventManager.listen(document, fullScreenEvent, this._resizeAd.bind(this)));
     this.eventManager.listen(window, 'resize', this._resizeAd.bind(this));
     this.eventManager.listen(this.player, this.player.Event.VOLUME_CHANGE, this._syncPlayerVolume.bind(this));
+    this.eventManager.listen(this.player, this.player.Event.SOURCE_SELECTED, (event) => {
+      let selectedSource = event.payload.selectedSource;
+      if (selectedSource && selectedSource.length > 0) {
+        this._contentSrc = selectedSource[0].url;
+      }
+    });
   }
 
   /**
@@ -343,8 +362,9 @@ export default class Ima extends BasePlugin {
    */
   _init(): void {
     this.loadPromise = Utils.Object.defer();
-    (window.google && window.google.ima && window.google.ima.VERSION
-      ? Promise.resolve() : Utils.Dom.loadScriptAsync(this.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL))
+    (this._isImaSDKLibLoaded()
+      ? Promise.resolve()
+      : Utils.Dom.loadScriptAsync(this.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL))
       .then(() => {
         this._sdk = window.google.ima;
         this.logger.debug("IMA SDK version: " + this._sdk.VERSION);
@@ -352,9 +372,21 @@ export default class Ima extends BasePlugin {
         this._initAdsContainer();
         this._initAdsLoader();
         this._requestAds();
-      }).catch((e) => {
-      this.loadPromise.reject(e);
-    });
+        this._stateMachine.loaded();
+        this.loadPromise.resolve();
+      })
+      .catch((e) => {
+        this.loadPromise.reject(e);
+      });
+  }
+
+  /**
+   * Checks for ima sdk lib availability.
+   * @returns {boolean} - Whether ima sdk lib is loaded.
+   * @private
+   */
+  _isImaSDKLibLoaded(): boolean {
+    return (window.google && window.google.ima && window.google.ima.VERSION);
   }
 
   /**
@@ -616,10 +648,13 @@ export default class Ima extends BasePlugin {
       }
     });
     this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
+    this._isAdsManagerLoaded = true;
     this._attachAdsManagerListeners();
     this._syncPlayerVolume();
-    this._stateMachine.loaded();
-    this.loadPromise.resolve();
+    if (this._hasUserAction) {
+      this.logger.debug("User action occurred before ads manager loaded");
+      this._startAdsManager();
+    }
   }
 
   /**
