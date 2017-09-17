@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.1.4"></a>
+## [0.1.4](https://github.com/kaltura/playkit-js-ima/compare/v0.1.3...v0.1.4) (2017-09-17)
+
+
+### Bug Fixes
+
+* **FEC-7135:**  fullscreen fix for overlay ad on safari ([#11](https://github.com/kaltura/playkit-js-ima/issues/11)) ([7d50dda](https://github.com/kaltura/playkit-js-ima/commit/7d50dda))
+* **FEC-7150, FEC-7120:** set content src on custom playback with postroll ([#14](https://github.com/kaltura/playkit-js-ima/issues/14)) ([717e6e1](https://github.com/kaltura/playkit-js-ima/commit/717e6e1))
+* **FEC-7158, FEC-7153:** set content playhead tracker events only when ad is idle ([#12](https://github.com/kaltura/playkit-js-ima/issues/12)) ([024643a](https://github.com/kaltura/playkit-js-ima/commit/024643a))
+* **FEC-7166, FEC-7165, FEC-7159, FEC-7119, FEC-7114:** manage races on play ([#15](https://github.com/kaltura/playkit-js-ima/issues/15)) ([75357d2](https://github.com/kaltura/playkit-js-ima/commit/75357d2))
+
+
+
 <a name="0.1.3"></a>
 ## [0.1.3](https://github.com/kaltura/playkit-js-ima/compare/v0.1.2...v0.1.3) (2017-09-11)
 
