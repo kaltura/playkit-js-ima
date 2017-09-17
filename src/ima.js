@@ -348,7 +348,10 @@ export default class Ima extends BasePlugin {
     this.eventManager.listen(window, 'resize', this._resizeAd.bind(this));
     this.eventManager.listen(this.player, this.player.Event.VOLUME_CHANGE, this._syncPlayerVolume.bind(this));
     this.eventManager.listen(this.player, this.player.Event.SOURCE_SELECTED, (event) => {
-      this._contentSrc = event.payload.selectedSource[0];
+      let selectedSource = event.payload.selectedSource;
+      if (selectedSource && selectedSource.length > 0) {
+        this._contentSrc = selectedSource[0].url;
+      }
     });
   }
 
