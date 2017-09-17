@@ -362,22 +362,22 @@ export default class Ima extends BasePlugin {
    */
   _init(): void {
     this.loadPromise = Utils.Object.defer();
-    this._isImaSDKLibLoaded()
+    (this._isImaSDKLibLoaded()
       ? Promise.resolve()
-      : Utils.Dom.loadScriptAsync(this.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL)
-        .then(() => {
-          this._sdk = window.google.ima;
-          this.logger.debug("IMA SDK version: " + this._sdk.VERSION);
-          this._initImaSettings();
-          this._initAdsContainer();
-          this._initAdsLoader();
-          this._requestAds();
-          this._stateMachine.loaded();
-          this.loadPromise.resolve();
-        })
-        .catch((e) => {
-          this.loadPromise.reject(e);
-        });
+      : Utils.Dom.loadScriptAsync(this.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL))
+      .then(() => {
+        this._sdk = window.google.ima;
+        this.logger.debug("IMA SDK version: " + this._sdk.VERSION);
+        this._initImaSettings();
+        this._initAdsContainer();
+        this._initAdsLoader();
+        this._requestAds();
+        this._stateMachine.loaded();
+        this.loadPromise.resolve();
+      })
+      .catch((e) => {
+        this.loadPromise.reject(e);
+      });
   }
 
   /**

@@ -5,7 +5,7 @@ import Ima from '../../src/ima'
 
 const targetId = 'player-placeholder_ima.api.spec';
 
-describe('Ima API', function () {
+describe.only('Ima API', function () {
 
   let ima;
   let player;
