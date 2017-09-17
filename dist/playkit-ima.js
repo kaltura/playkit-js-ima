@@ -250,6 +250,24 @@ var Ima = function (_BasePlugin) {
      * @private
      */
 
+    /**
+     * The content media src.
+     * @member
+     * @private
+     */
+
+    /**
+     * Whether an initial user action happened.
+     * @member
+     * @private
+     */
+
+    /**
+     * Whether the ads manager loaded.
+     * @member
+     * @private
+     */
+
 
     /**
      * The sdk lib url.
@@ -292,6 +310,8 @@ var Ima = function (_BasePlugin) {
     _this._videoLastCurrentTime = null;
     _this._adsManager = null;
     _this._contentComplete = false;
+    _this._hasUserAction = false;
+    _this._isAdsManagerLoaded = false;
     _this._contentPlayheadTracker = { currentTime: 0, previousTime: 0, seeking: false, duration: 0 };
     _this._addBindings();
     _this._init();
@@ -429,6 +449,8 @@ var Ima = function (_BasePlugin) {
       this._adsManager = null;
       this._adsLoader = null;
       this._contentComplete = false;
+      this._hasUserAction = false;
+      this._isAdsManagerLoaded = false;
       this._intervalTimer = null;
       this._videoLastCurrentTime = null;
       this._contentPlayheadTracker = { currentTime: 0, previousTime: 0, seeking: false, duration: 0 };
@@ -443,16 +465,15 @@ var Ima = function (_BasePlugin) {
   }, {
     key: 'initialUserAction',
     value: function initialUserAction() {
-      var _this2 = this;
-
       try {
         this.logger.debug("Initial user action");
         this._nextPromise = _playkitJs.Utils.Object.defer();
         this._adDisplayContainer.initialize();
-        this.player.ready().then(function () {
-          _this2._startAdsManager();
-        });
-        this.player.load();
+        this._hasUserAction = true;
+        if (this._isAdsManagerLoaded) {
+          this.logger.debug("User action occurred after ads manager loaded");
+          this._startAdsManager();
+        }
       } catch (adError) {
         this.logger.error(adError);
         this.destroy();
@@ -484,13 +505,19 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_addBindings',
     value: function _addBindings() {
+      var _this2 = this;
+
+      ['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange'].forEach(function (fullScreenEvent) {
+        return _this2.eventManager.listen(document, fullScreenEvent, _this2._resizeAd.bind(_this2));
+      });
       this.eventManager.listen(window, 'resize', this._resizeAd.bind(this));
-      this.eventManager.listen(this.player.getVideoElement(), 'resize', this._resizeAd.bind(this));
-      this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, this._onLoadedMetadata.bind(this));
-      this.eventManager.listen(this.player, this.player.Event.TIME_UPDATE, this._onMediaTimeUpdate.bind(this));
-      this.eventManager.listen(this.player, this.player.Event.SEEKING, this._onMediaSeeking.bind(this));
-      this.eventManager.listen(this.player, this.player.Event.SEEKED, this._onMediaSeeked.bind(this));
       this.eventManager.listen(this.player, this.player.Event.VOLUME_CHANGE, this._syncPlayerVolume.bind(this));
+      this.eventManager.listen(this.player, this.player.Event.SOURCE_SELECTED, function (event) {
+        var selectedSource = event.payload.selectedSource;
+        if (selectedSource && selectedSource.length > 0) {
+          _this2._contentSrc = selectedSource[0].url;
+        }
+      });
     }
 
     /**
@@ -505,16 +532,30 @@ var Ima = function (_BasePlugin) {
       var _this3 = this;
 
       this.loadPromise = _playkitJs.Utils.Object.defer();
-      (window.google && window.google.ima && window.google.ima.VERSION ? Promise.resolve() : _playkitJs.Utils.Dom.loadScriptAsync(this.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL)).then(function () {
+      (this._isImaSDKLibLoaded() ? Promise.resolve() : _playkitJs.Utils.Dom.loadScriptAsync(this.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL)).then(function () {
         _this3._sdk = window.google.ima;
         _this3.logger.debug("IMA SDK version: " + _this3._sdk.VERSION);
         _this3._initImaSettings();
         _this3._initAdsContainer();
         _this3._initAdsLoader();
         _this3._requestAds();
+        _this3._stateMachine.loaded();
+        _this3.loadPromise.resolve();
       }).catch(function (e) {
         _this3.loadPromise.reject(e);
       });
+    }
+
+    /**
+     * Checks for ima sdk lib availability.
+     * @returns {boolean} - Whether ima sdk lib is loaded.
+     * @private
+     */
+
+  }, {
+    key: '_isImaSDKLibLoaded',
+    value: function _isImaSDKLibLoaded() {
+      return window.google && window.google.ima && window.google.ima.VERSION;
     }
 
     /**
@@ -616,8 +657,22 @@ var Ima = function (_BasePlugin) {
     value: function _resizeAd() {
       if (this._sdk && this._adsManager) {
         var playerViewSize = this._getPlayerViewSize();
-        this._adsManager.resize(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
+        var isFullScreen = this._isFullScreen();
+        var viewMode = isFullScreen ? this._sdk.ViewMode.FULLSCREEN : this._sdk.ViewMode.NORMAL;
+        this._adsManager.resize(playerViewSize.width, playerViewSize.height, viewMode);
       }
+    }
+
+    /**
+     * Helper for checking if the document is in full screen mode.
+     * @private
+     * @returns {boolean} - Whether the document is in full screen mode.
+     */
+
+  }, {
+    key: '_isFullScreen',
+    value: function _isFullScreen() {
+      return typeof document.fullscreenElement !== 'undefined' && Boolean(document.fullscreenElement) || typeof document.webkitFullscreenElement !== 'undefined' && Boolean(document.webkitFullscreenElement) || typeof document.mozFullScreenElement !== 'undefined' && Boolean(document.mozFullScreenElement) || typeof document.msFullscreenElement !== 'undefined' && Boolean(document.msFullscreenElement);
     }
 
     /**
@@ -659,6 +714,29 @@ var Ima = function (_BasePlugin) {
       if (!this._contentPlayheadTracker.seeking) {
         this._contentPlayheadTracker.previousTime = this._contentPlayheadTracker.currentTime;
         this._contentPlayheadTracker.currentTime = this.player.currentTime;
+      }
+    }
+
+    /**
+     * Sets the content playhead tracker events enabled/disabled.
+     * @param {boolean} enabled - Whether do enabled the events.
+     * @private
+     * @returns {void}
+     */
+
+  }, {
+    key: '_setContentPlayheadTrackerEventsEnabled',
+    value: function _setContentPlayheadTrackerEventsEnabled(enabled) {
+      if (enabled) {
+        this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, this._onLoadedMetadata.bind(this));
+        this.eventManager.listen(this.player, this.player.Event.TIME_UPDATE, this._onMediaTimeUpdate.bind(this));
+        this.eventManager.listen(this.player, this.player.Event.SEEKING, this._onMediaSeeking.bind(this));
+        this.eventManager.listen(this.player, this.player.Event.SEEKED, this._onMediaSeeked.bind(this));
+      } else {
+        this.eventManager.unlisten(this.player, this.player.Event.LOADED_METADATA);
+        this.eventManager.unlisten(this.player, this.player.Event.TIME_UPDATE);
+        this.eventManager.unlisten(this.player, this.player.Event.SEEKING);
+        this.eventManager.unlisten(this.player, this.player.Event.SEEKED);
       }
     }
 
@@ -799,10 +877,13 @@ var Ima = function (_BasePlugin) {
         }
       });
       this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
+      this._isAdsManagerLoaded = true;
       this._attachAdsManagerListeners();
       this._syncPlayerVolume();
-      this._stateMachine.loaded();
-      this.loadPromise.resolve();
+      if (this._hasUserAction) {
+        this.logger.debug("User action occurred before ads manager loaded");
+        this._startAdsManager();
+      }
     }
 
     /**
@@ -1065,6 +1146,12 @@ var ImaMiddleware = function (_BaseMiddleware) {
    * @member
    * @private
    */
+
+  /**
+   * Whether the player has been loaded.
+   * @member
+   * @private
+   */
   function ImaMiddleware(context) {
     _classCallCheck(this, ImaMiddleware);
 
@@ -1094,6 +1181,11 @@ var ImaMiddleware = function (_BaseMiddleware) {
     value: function play(next) {
       var _this2 = this;
 
+      if (!this._isPlayerLoaded) {
+        this._context.player.load();
+        this._isPlayerLoaded = true;
+        this._context.logger.debug("Player loaded");
+      }
       this._context.loadPromise.then(function () {
         var sm = _this2._context.getStateMachine();
         switch (sm.state) {
@@ -1305,6 +1397,7 @@ function onAdStarted(options, adEvent) {
   this._resizeAd();
   this._maybeDisplayCompanionAds();
   if (!this._currentAd.isLinear()) {
+    this._setContentPlayheadTrackerEventsEnabled(true);
     this._setVideoEndedCallbackEnabled(true);
     if (this._nextPromise) {
       this._resolveNextPromise();
@@ -1312,6 +1405,7 @@ function onAdStarted(options, adEvent) {
       this.player.play();
     }
   } else {
+    this._setContentPlayheadTrackerEventsEnabled(false);
     this._startAdInterval();
   }
   this.dispatchEvent(options.transition);
@@ -1371,6 +1465,9 @@ function onAdCompleted(options, adEvent) {
 function onAllAdsCompleted(options, adEvent) {
   this.logger.debug(adEvent.type.toUpperCase());
   onAdBreakEnd.call(this, options, adEvent);
+  if (this._adsManager.isCustomPlaybackUsed() && this._contentComplete) {
+    this.player.getVideoElement().src = this._contentSrc;
+  }
   this.destroy();
 }
 
@@ -1398,6 +1495,7 @@ function onAdBreakStart(options, adEvent) {
 function onAdBreakEnd(options, adEvent) {
   this.logger.debug(adEvent.type.toUpperCase());
   this._setVideoEndedCallbackEnabled(true);
+  this._setContentPlayheadTrackerEventsEnabled(true);
   if (!this._contentComplete) {
     this._hideAdsContainer();
     this._maybeSetVideoCurrentTime();
