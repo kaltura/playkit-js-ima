@@ -3,8 +3,6 @@ import ImaMiddleware from './ima-middleware'
 import ImaStateMachine from './ima-state-machine'
 import State from './state'
 import {registerPlugin, BasePlugin} from 'playkit-js'
-import {VERSION} from 'playkit-js'
-import {PLAYER_NAME} from 'playkit-js'
 import {BaseMiddleware} from 'playkit-js'
 import {Utils} from 'playkit-js'
 
@@ -249,7 +247,7 @@ export default class Ima extends BasePlugin {
    */
   updateConfig(update: Object): void {
     super.updateConfig(update);
-    if (update.adTagUrl && this._stateMachine.is(State.LOADING)) {
+    if (update.adTagUrl && this._stateMachine.is(State.LOADED)) {
       this._requestAds();
     }
   }
@@ -395,8 +393,8 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _initImaSettings(): void {
-    this._sdk.settings.setPlayerType(PLAYER_NAME);
-    this._sdk.settings.setPlayerVersion(VERSION);
+    this._sdk.settings.setPlayerType(this.config.playerName);
+    this._sdk.settings.setPlayerVersion(this.config.playerVersion);
     this._sdk.settings.setVpaidAllowed(true);
     this._sdk.settings.setVpaidMode(this._sdk.ImaSdkSettings.VpaidMode.ENABLED);
   }
