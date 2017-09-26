@@ -247,7 +247,7 @@ export default class Ima extends BasePlugin {
    */
   updateConfig(update: Object): void {
     super.updateConfig(update);
-    if (!this.config.adTagUrl && update.adTagUrl && this._stateMachine.is(State.LOADING)) {
+    if (update.adTagUrl && this._stateMachine.is(State.LOADED)) {
       this._requestAds();
     }
   }
