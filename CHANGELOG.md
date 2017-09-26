@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.1.5"></a>
+## [0.1.5](https://github.com/kaltura/playkit-js-ima/compare/v0.1.4...v0.1.5) (2017-09-26)
+
+
+### Bug Fixes
+
+* **FEC-7184:** remove setDisableCustomPlaybackForIOS10Plus flag ([#16](https://github.com/kaltura/playkit-js-ima/issues/16)) ([fa7445d](https://github.com/kaltura/playkit-js-ima/commit/fa7445d))
+
+
+
 <a name="0.1.4"></a>
 ## [0.1.4](https://github.com/kaltura/playkit-js-ima/compare/v0.1.3...v0.1.4) (2017-09-17)
 
