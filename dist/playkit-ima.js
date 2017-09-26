@@ -396,7 +396,7 @@ var Ima = function (_BasePlugin) {
     key: 'updateConfig',
     value: function updateConfig(update) {
       _get(Ima.prototype.__proto__ || Object.getPrototypeOf(Ima.prototype), 'updateConfig', this).call(this, update);
-      if (update.adTagUrl && this._stateMachine.is(_state2.default.LOADING)) {
+      if (update.adTagUrl && this._stateMachine.is(_state2.default.LOADED)) {
         this._requestAds();
       }
     }
@@ -567,11 +567,10 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_initImaSettings',
     value: function _initImaSettings() {
-      this._sdk.settings.setPlayerType(_playkitJs.PLAYER_NAME);
-      this._sdk.settings.setPlayerVersion(_playkitJs.VERSION);
+      this._sdk.settings.setPlayerType(this.config.playerName);
+      this._sdk.settings.setPlayerVersion(this.config.playerVersion);
       this._sdk.settings.setVpaidAllowed(true);
       this._sdk.settings.setVpaidMode(this._sdk.ImaSdkSettings.VpaidMode.ENABLED);
-      this._sdk.settings.setDisableCustomPlaybackForIOS10Plus(true);
     }
 
     /**
