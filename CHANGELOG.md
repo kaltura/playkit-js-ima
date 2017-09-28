@@ -42,7 +42,6 @@ All notable changes to this project will be documented in this file. See [standa
 ### Bug Fixes
 
 * **FEC-7058:** align ad video tag to the left ([#7](https://github.com/kaltura/playkit-js-ima/issues/7)) ([ddf9707](https://github.com/kaltura/playkit-js-ima/commit/ddf9707))
-* **FEC-7076, FEC-7075, FEC-7036:** ios, companions and overlay ad issues ([#6](https://github.com/kaltura/playkit-js-ima/issues/6)) ([fd4519c](https://github.com/kaltura/playkit-js-ima/commit/fd4519c))
 * **FEC-7108, FEC-7057:** preload content player right after user gesture ([#8](https://github.com/kaltura/playkit-js-ima/issues/8)) ([261dcd5](https://github.com/kaltura/playkit-js-ima/commit/261dcd5))
 
 
