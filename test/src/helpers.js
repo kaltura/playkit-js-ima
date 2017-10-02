@@ -23,7 +23,9 @@ function loadPlayerWithAds(targetId, imaConfig, playbackConfig) {
   if (playbackConfig) {
     config.playback = playbackConfig;
   }
-  return loadPlayer(targetId, config);
+  let player = loadPlayer(config);
+  document.getElementById(targetId).appendChild(player.getView());
+  return player;
 }
 
 /**
@@ -84,7 +86,7 @@ function registerCompanionSlots() {
   });
 }
 
-export  {
+export {
   loadPlayerWithAds,
   maybeDoneTest,
   loadGPT,
