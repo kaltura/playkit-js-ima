@@ -101,7 +101,7 @@ export default class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_CLICKED,
-          from: [State.PLAYING, State.PAUSED]
+          from: [State.PLAYING, State.PAUSED, State.IDLE]
         }
       ],
       methods: {
@@ -176,10 +176,10 @@ function onAdStarted(options: Object, adEvent: any): void {
  */
 function onAdClicked(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
-  if (this._stateMachine.is(State.PLAYING)) {
-    this.pauseAd();
+  if (this._currentAd.isLinear()) {
+    this._stateMachine.is(State.PLAYING) ? this.pauseAd() : this.resumeAd();
   } else {
-    this.resumeAd();
+    this.player.paused ? this.player.play() : this.player.pause();
   }
   this.dispatchEvent(options.transition);
 }
