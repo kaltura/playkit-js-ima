@@ -186,18 +186,13 @@ export default class Ima extends BasePlugin {
   }
 
   /**
+   * TODO: Rethink on design and implementation.
    * Plays ad on demand.
    * @param {string} adTagUrl - The ad tag url to play.
    * @returns {void}
    */
   playAdNow(adTagUrl: string): void {
-    super.updateConfig({adTagUrl: adTagUrl});
-    this.loadPromise = Utils.Object.defer();
-    this.destroy();
-    this._addBindings();
-    this._initAdsLoader();
-    this._requestAds();
-    this.loadPromise.then(this._startAdsManager.bind(this));
+    this.logger.warn("playAdNow API is not implemented yet", adTagUrl);
   }
 
   /**
@@ -237,19 +232,6 @@ export default class Ima extends BasePlugin {
     this._nextPromise = Utils.Object.defer();
     this._adsManager.pause();
     return this._nextPromise;
-  }
-
-  /**
-   * Updates the configuration of the plugin.
-   * @param {Object} update - The fully or partially updated configuration.
-   * @override
-   * @returns {void}
-   */
-  updateConfig(update: Object): void {
-    super.updateConfig(update);
-    if (update.adTagUrl && this._stateMachine.is(State.LOADED)) {
-      this._requestAds();
-    }
   }
 
   /**
@@ -397,6 +379,16 @@ export default class Ima extends BasePlugin {
     this._sdk.settings.setPlayerVersion(this.config.playerVersion);
     this._sdk.settings.setVpaidAllowed(true);
     this._sdk.settings.setVpaidMode(this._sdk.ImaSdkSettings.VpaidMode.ENABLED);
+    this._sdk.settings.setDisableCustomPlaybackForIOS10Plus(this._isIOS10Plus());
+  }
+
+  _isIOS10Plus(): boolean {
+    try {
+      const os = this.player.env.os;
+      return (os.name === "iOS" && Number.parseFloat(os.version) >= 10);
+    } catch (e) {
+      return false;
+    }
   }
 
   /**
