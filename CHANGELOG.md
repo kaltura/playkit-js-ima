@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.1.6"></a>
+## [0.1.6](https://github.com/kaltura/playkit-js-ima/compare/v0.1.5...v0.1.6) (2017-10-03)
+
+
+### Bug Fixes
+
+* **FEC-7214, FEC-7217, FEC-7214:** multiple request ads fix ([#20](https://github.com/kaltura/playkit-js-ima/issues/20)) ([7862373](https://github.com/kaltura/playkit-js-ima/commit/7862373))
+* **FEC-7234:** pause playback on overlay ad clicked ([#19](https://github.com/kaltura/playkit-js-ima/issues/19)) ([0def2ab](https://github.com/kaltura/playkit-js-ima/commit/0def2ab))
+* **tests:** fix tests after loadPlayer API changed ([#18](https://github.com/kaltura/playkit-js-ima/issues/18)) ([432af1f](https://github.com/kaltura/playkit-js-ima/commit/432af1f))
+
+
+
 <a name="0.1.5"></a>
 ## [0.1.5](https://github.com/kaltura/playkit-js-ima/compare/v0.1.4...v0.1.5) (2017-09-26)
 
