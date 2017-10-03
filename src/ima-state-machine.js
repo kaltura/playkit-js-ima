@@ -177,9 +177,13 @@ function onAdStarted(options: Object, adEvent: any): void {
 function onAdClicked(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
   if (this._currentAd.isLinear()) {
-    this._stateMachine.is(State.PLAYING) ? this.pauseAd() : this.resumeAd();
+    if (this._stateMachine.is(State.PLAYING)) {
+      this.pauseAd();
+    }
   } else {
-    this.player.paused ? this.player.play() : this.player.pause();
+    if (!this.player.paused) {
+      this.player.pause();
+    }
   }
   this.dispatchEvent(options.transition);
 }
