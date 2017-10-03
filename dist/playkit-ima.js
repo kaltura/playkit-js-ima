@@ -111,8 +111,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _imaMiddleware = __webpack_require__(3);
@@ -319,6 +317,7 @@ var Ima = function (_BasePlugin) {
   }
 
   /**
+   * TODO: Rethink on design and implementation.
    * Plays ad on demand.
    * @param {string} adTagUrl - The ad tag url to play.
    * @returns {void}
@@ -328,13 +327,7 @@ var Ima = function (_BasePlugin) {
   _createClass(Ima, [{
     key: 'playAdNow',
     value: function playAdNow(adTagUrl) {
-      _get(Ima.prototype.__proto__ || Object.getPrototypeOf(Ima.prototype), 'updateConfig', this).call(this, { adTagUrl: adTagUrl });
-      this.loadPromise = _playkitJs.Utils.Object.defer();
-      this.destroy();
-      this._addBindings();
-      this._initAdsLoader();
-      this._requestAds();
-      this.loadPromise.then(this._startAdsManager.bind(this));
+      this.logger.warn("playAdNow API is not implemented yet", adTagUrl);
     }
 
     /**
@@ -383,22 +376,6 @@ var Ima = function (_BasePlugin) {
       this._nextPromise = _playkitJs.Utils.Object.defer();
       this._adsManager.pause();
       return this._nextPromise;
-    }
-
-    /**
-     * Updates the configuration of the plugin.
-     * @param {Object} update - The fully or partially updated configuration.
-     * @override
-     * @returns {void}
-     */
-
-  }, {
-    key: 'updateConfig',
-    value: function updateConfig(update) {
-      _get(Ima.prototype.__proto__ || Object.getPrototypeOf(Ima.prototype), 'updateConfig', this).call(this, update);
-      if (update.adTagUrl && this._stateMachine.is(_state2.default.LOADED)) {
-        this._requestAds();
-      }
     }
 
     /**
@@ -1344,7 +1321,7 @@ function ImaStateMachine(context) {
       from: [_state2.default.PLAYING, _state2.default.PAUSED, _state2.default.LOADED]
     }, {
       name: context.player.Event.AD_CLICKED,
-      from: [_state2.default.PLAYING, _state2.default.PAUSED]
+      from: [_state2.default.PLAYING, _state2.default.PAUSED, _state2.default.IDLE]
     }],
     methods: {
       onAdloaded: onAdLoaded.bind(context),
@@ -1418,10 +1395,14 @@ function onAdStarted(options, adEvent) {
  */
 function onAdClicked(options, adEvent) {
   this.logger.debug(adEvent.type.toUpperCase());
-  if (this._stateMachine.is(_state2.default.PLAYING)) {
-    this.pauseAd();
+  if (this._currentAd.isLinear()) {
+    if (this._stateMachine.is(_state2.default.PLAYING)) {
+      this.pauseAd();
+    }
   } else {
-    this.resumeAd();
+    if (!this.player.paused) {
+      this.player.pause();
+    }
   }
   this.dispatchEvent(options.transition);
 }
