@@ -379,16 +379,6 @@ export default class Ima extends BasePlugin {
     this._sdk.settings.setPlayerVersion(this.config.playerVersion);
     this._sdk.settings.setVpaidAllowed(true);
     this._sdk.settings.setVpaidMode(this._sdk.ImaSdkSettings.VpaidMode.ENABLED);
-    this._sdk.settings.setDisableCustomPlaybackForIOS10Plus(this._isIOS10Plus());
-  }
-
-  _isIOS10Plus(): boolean {
-    try {
-      const os = this.player.env.os;
-      return (os.name === "iOS" && Number.parseFloat(os.version) >= 10);
-    } catch (e) {
-      return false;
-    }
   }
 
   /**
