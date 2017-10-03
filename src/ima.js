@@ -186,18 +186,13 @@ export default class Ima extends BasePlugin {
   }
 
   /**
+   * TODO: Rethink on design and implementation.
    * Plays ad on demand.
    * @param {string} adTagUrl - The ad tag url to play.
    * @returns {void}
    */
   playAdNow(adTagUrl: string): void {
-    super.updateConfig({adTagUrl: adTagUrl});
-    this.loadPromise = Utils.Object.defer();
-    this.destroy();
-    this._addBindings();
-    this._initAdsLoader();
-    this._requestAds();
-    this.loadPromise.then(this._startAdsManager.bind(this));
+    this.logger.warn("playAdNow API is not implemented yet", adTagUrl);
   }
 
   /**
@@ -237,19 +232,6 @@ export default class Ima extends BasePlugin {
     this._nextPromise = Utils.Object.defer();
     this._adsManager.pause();
     return this._nextPromise;
-  }
-
-  /**
-   * Updates the configuration of the plugin.
-   * @param {Object} update - The fully or partially updated configuration.
-   * @override
-   * @returns {void}
-   */
-  updateConfig(update: Object): void {
-    super.updateConfig(update);
-    if (update.adTagUrl && this._stateMachine.is(State.LOADED)) {
-      this._requestAds();
-    }
   }
 
   /**

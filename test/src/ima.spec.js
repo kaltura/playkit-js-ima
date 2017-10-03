@@ -119,6 +119,23 @@ describe('Ima Plugin', function () {
     player.play();
   });
 
+  it('should call requestAds once', (done) => {
+    cuePoints = [0];
+    player = loadPlayerWithAds(targetId, {
+      adTagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator='
+    });
+    ima = player._pluginManager.get('ima');
+    const spy = sinon.spy(ima, "_requestAds");
+    player.addEventListener(player.Event.AD_LOADED, (e) => {
+      adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
+      spy.should.calledOnce;
+    });
+    player.addEventListener(player.Event.AD_STARTED, () => {
+      maybeDoneTest(cuePoints, adPodIndex, done);
+    });
+    player.play();
+  });
+
   it('should play vmap-preroll-bumper', (done) => {
     cuePoints = [0, 0];
     player = loadPlayerWithAds(targetId, {
