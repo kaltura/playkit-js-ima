@@ -18,7 +18,7 @@ export default class ImaStateMachine {
       transitions: [
         {
           name: 'loaded',
-          from: [State.LOADING, State.IDLE, State.DONE],
+          from: [State.LOADING, State.LOADED, State.IDLE, State.PAUSED, State.PLAYING, State.DONE],
           to: State.LOADED
         },
         {
