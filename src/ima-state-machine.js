@@ -156,6 +156,7 @@ function onAdStarted(options: Object, adEvent: any): void {
   if (!this._currentAd.isLinear()) {
     this._setContentPlayheadTrackerEventsEnabled(true);
     this._setVideoEndedCallbackEnabled(true);
+    this._setTogglePlayPauseOnAdsContainer(true);
     if (this._nextPromise) {
       this._resolveNextPromise();
     } else {

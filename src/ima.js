@@ -278,6 +278,7 @@ export default class Ima extends BasePlugin {
     this._intervalTimer = null;
     this._videoLastCurrentTime = null;
     this._contentPlayheadTracker = {currentTime: 0, previousTime: 0, seeking: false, duration: 0};
+    this._setTogglePlayPauseOnAdsContainer(false);
   }
 
   /**
@@ -722,6 +723,25 @@ export default class Ima extends BasePlugin {
     if (this._nextPromise) {
       this._nextPromise.resolve();
       this._nextPromise = null;
+    }
+  }
+
+  /**
+   * Toggle play/pause when click on the ads container.
+   * Relevant only for overlay ads.
+   * @param {boolean} listen - Whether to add or remove the listener.
+   * @private
+   * @returns {void}
+   */
+  _setTogglePlayPauseOnAdsContainer(listen: boolean): void {
+    if (this._adsContainerDiv) {
+      if (listen) {
+        this._adsContainerDiv.addEventListener("click", () => {
+          this.player.paused ? this.player.play() : this.player.pause();
+        });
+      } else {
+        this._adsContainerDiv.removeEventListener("click");
+      }
     }
   }
 
