@@ -265,6 +265,9 @@ export default class Ima extends BasePlugin {
     }
     this._initMembers();
     this._addBindings();
+    if (!this._adsLoader) {
+      this._initAdsLoader();
+    }
     this._requestAds();
     this._stateMachine.loaded();
   }
@@ -351,6 +354,7 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _initMembers(): void {
+    this._nextPromise = null;
     this._currentAd = null;
     this._adsManager = null;
     this._contentComplete = false;

@@ -152,6 +152,7 @@ function onAdStarted(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
   this._currentAd = adEvent.getAd();
   this._resizeAd();
+  this._showAdsContainer();
   this._maybeDisplayCompanionAds();
   if (!this._currentAd.isLinear()) {
     this._setContentPlayheadTrackerEventsEnabled(true);
@@ -240,7 +241,6 @@ function onAllAdsCompleted(options: Object, adEvent: any): void {
  */
 function onAdBreakStart(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
-  this._showAdsContainer();
   this.player.pause();
   this._setVideoEndedCallbackEnabled(false);
   this._maybeSaveVideoCurrentTime();
