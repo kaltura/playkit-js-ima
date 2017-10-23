@@ -50,7 +50,7 @@ export default class ImaMiddleware extends BaseMiddleware {
     ctx.loadPromise.then(() => {
       let sm = ctx.getStateMachine();
       switch (sm.state) {
-        case State.LOADED:
+        case State.LOADED: {
           const initialUserAction = ctx.initialUserAction();
           if (initialUserAction) {
             initialUserAction.then(() => {
@@ -60,7 +60,8 @@ export default class ImaMiddleware extends BaseMiddleware {
             this.callNext(next);
           }
           break;
-        case State.PAUSED:
+        }
+        case State.PAUSED: {
           const resumeAd = ctx.resumeAd();
           if (resumeAd) {
             resumeAd.then(() => {
@@ -70,9 +71,11 @@ export default class ImaMiddleware extends BaseMiddleware {
             this.callNext(next);
           }
           break;
-        default:
+        }
+        default: {
           this.callNext(next);
           break;
+        }
       }
     }).catch((e) => {
       ctx.destroy();
@@ -89,12 +92,14 @@ export default class ImaMiddleware extends BaseMiddleware {
   pause(next: Function): void {
     let sm = ctx.getStateMachine();
     switch (sm.state) {
-      case State.PLAYING:
+      case State.PLAYING: {
         ctx.pauseAd();
         break;
-      default:
+      }
+      default: {
         this.callNext(next);
         break;
+      }
     }
   }
 }
