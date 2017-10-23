@@ -17,7 +17,7 @@ const pluginName: string = "ima";
  * @type {string}
  * @const
  */
-const ADS_CONTAINER_ID: string = "ads-container";
+const ADS_CONTAINER_ID: string = "playkit-ads-container";
 
 /**
  * The ima plugin.
