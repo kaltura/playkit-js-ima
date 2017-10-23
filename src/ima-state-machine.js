@@ -179,6 +179,8 @@ function onAdClicked(options: Object, adEvent: any): void {
   if (this._currentAd.isLinear()) {
     if (this._stateMachine.is(State.PLAYING)) {
       this.pauseAd();
+    } else if (this._stateMachine.is(State.PAUSED)) {
+      this.resumeAd();
     }
   } else {
     if (!this.player.paused) {
@@ -196,9 +198,6 @@ function onAdClicked(options: Object, adEvent: any): void {
  */
 function onAdPaused(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
-  if (this._nextPromise) {
-    this._resolveNextPromise();
-  }
   this.dispatchEvent(options.transition);
 }
 
