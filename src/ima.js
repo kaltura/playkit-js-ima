@@ -154,6 +154,12 @@ export default class Ima extends BasePlugin {
    * @private
    */
   _isAdsManagerLoaded: boolean;
+  /**
+   * The bounded handler of the ads container click.
+   * @member
+   * @private
+   */
+  _togglePlayPauseOnAdsContainerCallback: ?Function;
 
   /**
    * Whether the ima plugin is valid.
@@ -354,6 +360,9 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _initMembers(): void {
+    this._setTogglePlayPauseOnAdsContainerEnabled(false);
+    this._setContentPlayheadTrackerEventsEnabled(false);
+    this._setVideoEndedCallbackEnabled(false);
     this._nextPromise = null;
     this._currentAd = null;
     this._adsManager = null;
@@ -363,6 +372,7 @@ export default class Ima extends BasePlugin {
     this._videoLastCurrentTime = null;
     this._contentPlayheadTracker = {currentTime: 0, previousTime: 0, seeking: false, duration: 0};
     this._hasUserAction = false;
+    this._togglePlayPauseOnAdsContainerCallback = null;
   }
 
   /**
@@ -753,6 +763,32 @@ export default class Ima extends BasePlugin {
       this._nextPromise.resolve();
       this._nextPromise = null;
     }
+  }
+
+  /**
+   * Toggle play/pause when click on the ads container.
+   * Relevant only for overlay ads.
+   * @param {boolean} enable - Whether to add or remove the listener.
+   * @private
+   * @returns {void}
+   */
+  _setTogglePlayPauseOnAdsContainerEnabled(enable: boolean): void {
+    if (this._adsContainerDiv && this._togglePlayPauseOnAdsContainerCallback) {
+      if (enable) {
+        this._adsContainerDiv.addEventListener("click", this._togglePlayPauseOnAdsContainerCallback);
+      } else {
+        this._adsContainerDiv.removeEventListener("click", this._togglePlayPauseOnAdsContainerCallback);
+      }
+    }
+  }
+
+  /**
+   * On ads container click handler.
+   * @private
+   * @returns {void}
+   */
+  _onAdsContainerClicked(): void {
+    this.player.paused ? this.player.play() : this.player.pause();
   }
 
   /**
