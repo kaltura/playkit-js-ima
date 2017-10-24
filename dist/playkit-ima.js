@@ -7,7 +7,7 @@
 		exports["PlaykitJsIma"] = factory(require("playkit-js"));
 	else
 		root["PlaykitJsIma"] = factory(root["Playkit"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_1__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_2__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 1);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -96,12 +96,6 @@ exports.default = State;
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports) {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
-
-/***/ }),
-/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -125,7 +119,7 @@ var _state = __webpack_require__(0);
 
 var _state2 = _interopRequireDefault(_state);
 
-var _playkitJs = __webpack_require__(1);
+var _playkitJs = __webpack_require__(2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -146,7 +140,7 @@ var pluginName = "ima";
  * @type {string}
  * @const
  */
-var ADS_CONTAINER_ID = "ads-container";
+var ADS_CONTAINER_ID = "playkit-ads-container";
 
 /**
  * The ima plugin.
@@ -266,6 +260,12 @@ var Ima = function (_BasePlugin) {
      * @private
      */
 
+    /**
+     * The bounded handler of the ads container click.
+     * @member
+     * @private
+     */
+
 
     /**
      * The sdk lib url.
@@ -304,13 +304,7 @@ var Ima = function (_BasePlugin) {
     var _this = _possibleConstructorReturn(this, (Ima.__proto__ || Object.getPrototypeOf(Ima)).call(this, name, player, config));
 
     _this._stateMachine = new _imaStateMachine2.default(_this);
-    _this._intervalTimer = null;
-    _this._videoLastCurrentTime = null;
-    _this._adsManager = null;
-    _this._contentComplete = false;
-    _this._hasUserAction = false;
-    _this._isAdsManagerLoaded = false;
-    _this._contentPlayheadTracker = { currentTime: 0, previousTime: 0, seeking: false, duration: 0 };
+    _this._initMembers();
     _this._addBindings();
     _this._init();
     return _this;
@@ -403,6 +397,35 @@ var Ima = function (_BasePlugin) {
     }
 
     /**
+     * Resets the plugin.
+     * @override
+     * @public
+     * @returns {void}
+     */
+
+  }, {
+    key: 'reset',
+    value: function reset() {
+      this.logger.debug("reset");
+      this.eventManager.removeAll();
+      this._stopAdInterval();
+      this._hideAdsContainer();
+      if (this._adsManager) {
+        this._adsManager.destroy();
+      }
+      if (this._adsLoader && !this._contentComplete) {
+        this._adsLoader.contentComplete();
+      }
+      this._initMembers();
+      this._addBindings();
+      if (!this._adsLoader) {
+        this._initAdsLoader();
+      }
+      this._requestAds();
+      this._stateMachine.loaded();
+    }
+
+    /**
      * Destroys the plugin.
      * @override
      * @public
@@ -422,15 +445,8 @@ var Ima = function (_BasePlugin) {
       if (this._adsLoader && !this._contentComplete) {
         this._adsLoader.contentComplete();
       }
-      this._currentAd = null;
-      this._adsManager = null;
       this._adsLoader = null;
-      this._contentComplete = false;
-      this._hasUserAction = false;
-      this._isAdsManagerLoaded = false;
-      this._intervalTimer = null;
-      this._videoLastCurrentTime = null;
-      this._contentPlayheadTracker = { currentTime: 0, previousTime: 0, seeking: false, duration: 0 };
+      this._initMembers();
     }
 
     /**
@@ -495,6 +511,30 @@ var Ima = function (_BasePlugin) {
           _this2._contentSrc = selectedSource[0].url;
         }
       });
+    }
+
+    /**
+     * Init the members of the plugin.
+     * @private
+     * @returns {void}
+     */
+
+  }, {
+    key: '_initMembers',
+    value: function _initMembers() {
+      this._setTogglePlayPauseOnAdsContainerEnabled(false);
+      this._setContentPlayheadTrackerEventsEnabled(false);
+      this._setVideoEndedCallbackEnabled(false);
+      this._nextPromise = null;
+      this._currentAd = null;
+      this._adsManager = null;
+      this._contentComplete = false;
+      this._isAdsManagerLoaded = false;
+      this._intervalTimer = null;
+      this._videoLastCurrentTime = null;
+      this._contentPlayheadTracker = { currentTime: 0, previousTime: 0, seeking: false, duration: 0 };
+      this._hasUserAction = false;
+      this._togglePlayPauseOnAdsContainerCallback = null;
     }
 
     /**
@@ -1007,6 +1047,38 @@ var Ima = function (_BasePlugin) {
     }
 
     /**
+     * Toggle play/pause when click on the ads container.
+     * Relevant only for overlay ads.
+     * @param {boolean} enable - Whether to add or remove the listener.
+     * @private
+     * @returns {void}
+     */
+
+  }, {
+    key: '_setTogglePlayPauseOnAdsContainerEnabled',
+    value: function _setTogglePlayPauseOnAdsContainerEnabled(enable) {
+      if (this._adsContainerDiv && this._togglePlayPauseOnAdsContainerCallback) {
+        if (enable) {
+          this._adsContainerDiv.addEventListener("click", this._togglePlayPauseOnAdsContainerCallback);
+        } else {
+          this._adsContainerDiv.removeEventListener("click", this._togglePlayPauseOnAdsContainerCallback);
+        }
+      }
+    }
+
+    /**
+     * On ads container click handler.
+     * @private
+     * @returns {void}
+     */
+
+  }, {
+    key: '_onAdsContainerClicked',
+    value: function _onAdsContainerClicked() {
+      this.player.paused ? this.player.play() : this.player.pause();
+    }
+
+    /**
      * Displays companion ads using the Ad API.
      * @private
      * @returns {void}
@@ -1079,6 +1151,12 @@ exports.default = Ima;
 (0, _playkitJs.registerPlugin)(pluginName, Ima);
 
 /***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
+
+/***/ }),
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1091,7 +1169,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _playkitJs = __webpack_require__(1);
+var _playkitJs = __webpack_require__(2);
+
+var _ima = __webpack_require__(1);
+
+var _ima2 = _interopRequireDefault(_ima);
 
 var _state = __webpack_require__(0);
 
@@ -1114,17 +1196,17 @@ var ImaMiddleware = function (_BaseMiddleware) {
 
   /**
    * @constructor
-   * @param {any} context - The plugin context.
+   * @param {Ima} context - The ima plugin context.
    */
 
   /**
-   * The plugin context.
+   * Whether the player has been loaded.
    * @member
    * @private
    */
 
   /**
-   * Whether the player has been loaded.
+   * The plugin context.
    * @member
    * @private
    */
@@ -1136,6 +1218,9 @@ var ImaMiddleware = function (_BaseMiddleware) {
     _this.id = "ImaMiddleware";
 
     _this._context = context;
+    context.player.addEventListener(context.player.Event.CHANGE_SOURCE_STARTED, function () {
+      return _this._isPlayerLoaded = false;
+    });
     return _this;
   }
 
@@ -1166,18 +1251,34 @@ var ImaMiddleware = function (_BaseMiddleware) {
         var sm = _this2._context.getStateMachine();
         switch (sm.state) {
           case _state2.default.LOADED:
-            _this2._context.initialUserAction().then(function () {
-              _this2.callNext(next);
-            });
-            break;
+            {
+              var initialUserAction = _this2._context.initialUserAction();
+              if (initialUserAction) {
+                initialUserAction.then(function () {
+                  _this2.callNext(next);
+                });
+              } else {
+                _this2.callNext(next);
+              }
+              break;
+            }
           case _state2.default.PAUSED:
-            _this2._context.resumeAd().then(function () {
-              _this2.callNext(next);
-            });
-            break;
+            {
+              var resumeAd = _this2._context.resumeAd();
+              if (resumeAd) {
+                resumeAd.then(function () {
+                  _this2.callNext(next);
+                });
+              } else {
+                _this2.callNext(next);
+              }
+              break;
+            }
           default:
-            _this2.callNext(next);
-            break;
+            {
+              _this2.callNext(next);
+              break;
+            }
         }
       }).catch(function (e) {
         _this2._context.destroy();
@@ -1198,11 +1299,15 @@ var ImaMiddleware = function (_BaseMiddleware) {
       var sm = this._context.getStateMachine();
       switch (sm.state) {
         case _state2.default.PLAYING:
-          this._context.pauseAd();
-          break;
+          {
+            this._context.pauseAd();
+            break;
+          }
         default:
-          this.callNext(next);
-          break;
+          {
+            this.callNext(next);
+            break;
+          }
       }
     }
   }]);
@@ -1255,7 +1360,7 @@ function ImaStateMachine(context) {
     init: _state2.default.LOADING,
     transitions: [{
       name: 'loaded',
-      from: [_state2.default.LOADING, _state2.default.IDLE, _state2.default.DONE],
+      from: [_state2.default.LOADING, _state2.default.LOADED, _state2.default.IDLE, _state2.default.PAUSED, _state2.default.PLAYING, _state2.default.DONE],
       to: _state2.default.LOADED
     }, {
       name: context.player.Event.AD_STARTED,
@@ -1371,10 +1476,13 @@ function onAdStarted(options, adEvent) {
   this.logger.debug(adEvent.type.toUpperCase());
   this._currentAd = adEvent.getAd();
   this._resizeAd();
+  this._showAdsContainer();
   this._maybeDisplayCompanionAds();
   if (!this._currentAd.isLinear()) {
     this._setContentPlayheadTrackerEventsEnabled(true);
     this._setVideoEndedCallbackEnabled(true);
+    this._togglePlayPauseOnAdsContainerCallback = this._onAdsContainerClicked.bind(this);
+    this._setTogglePlayPauseOnAdsContainerEnabled(true);
     if (this._nextPromise) {
       this._resolveNextPromise();
     } else {
@@ -1458,7 +1566,6 @@ function onAllAdsCompleted(options, adEvent) {
  */
 function onAdBreakStart(options, adEvent) {
   this.logger.debug(adEvent.type.toUpperCase());
-  this._showAdsContainer();
   this.player.pause();
   this._setVideoEndedCallbackEnabled(false);
   this._maybeSaveVideoCurrentTime();
