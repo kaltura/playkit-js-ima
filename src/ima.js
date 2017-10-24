@@ -738,7 +738,7 @@ export default class Ima extends BasePlugin {
       if (listen) {
         this._adsContainerDiv.addEventListener("click", this._onAdsContainerClicked.bind(this));
       } else {
-        this._adsContainerDiv.removeEventListener("click", this._onAdsContainerClicked);
+        this._adsContainerDiv.removeEventListener("click", this._onAdsContainerClicked.bind(this));
       }
     }
   }
