@@ -1398,6 +1398,8 @@ function onAdClicked(options, adEvent) {
   if (this._currentAd.isLinear()) {
     if (this._stateMachine.is(_state2.default.PLAYING)) {
       this.pauseAd();
+    } else if (this._stateMachine.is(_state2.default.PAUSED)) {
+      this.resumeAd();
     }
   } else {
     if (!this.player.paused) {
@@ -1415,9 +1417,6 @@ function onAdClicked(options, adEvent) {
  */
 function onAdPaused(options, adEvent) {
   this.logger.debug(adEvent.type.toUpperCase());
-  if (this._nextPromise) {
-    this._resolveNextPromise();
-  }
   this.dispatchEvent(options.transition);
 }
 
