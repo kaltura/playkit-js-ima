@@ -736,13 +736,20 @@ export default class Ima extends BasePlugin {
   _setTogglePlayPauseOnAdsContainer(listen: boolean): void {
     if (this._adsContainerDiv) {
       if (listen) {
-        this._adsContainerDiv.addEventListener("click", () => {
-          this.player.paused ? this.player.play() : this.player.pause();
-        });
+        this._adsContainerDiv.addEventListener("click", this._onAdsContainerClicked.bind(this));
       } else {
-        this._adsContainerDiv.removeEventListener("click");
+        this._adsContainerDiv.removeEventListener("click", this._onAdsContainerClicked);
       }
     }
+  }
+
+  /**
+   * On ads container click handler.
+   * @private
+   * @returns {void}
+   */
+  _onAdsContainerClicked(): void {
+    this.player.paused ? this.player.play() : this.player.pause();
   }
 
   /**
