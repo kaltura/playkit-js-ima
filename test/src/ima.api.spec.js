@@ -23,8 +23,6 @@ describe('Ima API', function () {
     player.destroy();
     player = null;
     TestUtils.removeVideoElementsFromTestPage();
-    let container = document.getElementsByClassName('playkit-container')[0];
-    container.parentNode.removeChild(container);
   });
 
   after(function () {

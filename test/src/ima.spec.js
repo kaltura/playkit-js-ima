@@ -26,8 +26,6 @@ describe('Ima Plugin', function () {
     player = null;
     adPodIndex = null;
     TestUtils.removeVideoElementsFromTestPage();
-    let container = document.getElementsByClassName('playkit-container')[0];
-    container.parentNode.removeChild(container);
   });
 
   after(function () {
