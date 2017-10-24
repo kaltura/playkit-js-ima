@@ -154,6 +154,12 @@ export default class Ima extends BasePlugin {
    * @private
    */
   _isAdsManagerLoaded: boolean;
+  /**
+   * The bounded handler of the ads container click.
+   * @member
+   * @private
+   */
+  _togglePlayPauseOnAdsContainerCallback: Function;
 
   /**
    * Whether the ima plugin is valid.
@@ -174,6 +180,7 @@ export default class Ima extends BasePlugin {
   constructor(name: string, player: Player, config: Object) {
     super(name, player, config);
     this._stateMachine = new ImaStateMachine(this);
+    this._togglePlayPauseOnAdsContainerCallback = this._onAdsContainerClicked.bind(this);
     this._intervalTimer = null;
     this._videoLastCurrentTime = null;
     this._adsManager = null;
@@ -736,9 +743,9 @@ export default class Ima extends BasePlugin {
   _setTogglePlayPauseOnAdsContainer(listen: boolean): void {
     if (this._adsContainerDiv) {
       if (listen) {
-        this._adsContainerDiv.addEventListener("click", this._onAdsContainerClicked.bind(this));
+        this._adsContainerDiv.addEventListener("click", this._togglePlayPauseOnAdsContainerCallback);
       } else {
-        this._adsContainerDiv.removeEventListener("click", this._onAdsContainerClicked);
+        this._adsContainerDiv.removeEventListener("click", this._togglePlayPauseOnAdsContainerCallback);
       }
     }
   }
