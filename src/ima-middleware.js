@@ -4,11 +4,6 @@ import Ima from './ima'
 import State from './state'
 
 /**
- * The plugin context.
- */
-let ctx: Ima;
-
-/**
  * Middleware implementation for ima plugin.
  * @classdesc
  */
@@ -25,6 +20,12 @@ export default class ImaMiddleware extends BaseMiddleware {
    * @private
    */
   _isPlayerLoaded: boolean;
+  /**
+   * The plugin context.
+   * @member
+   * @private
+   */
+  _context: Ima;
 
   /**
    * @constructor
@@ -32,8 +33,8 @@ export default class ImaMiddleware extends BaseMiddleware {
    */
   constructor(context: Ima) {
     super();
-    ctx = context;
-    ctx.player.addEventListener(ctx.player.Event.CHANGE_SOURCE_STARTED, () => this._isPlayerLoaded = false);
+    this._context = context;
+    context.player.addEventListener(context.player.Event.CHANGE_SOURCE_STARTED, () => this._isPlayerLoaded = false);
   }
 
   /**
@@ -43,15 +44,15 @@ export default class ImaMiddleware extends BaseMiddleware {
    */
   play(next: Function): void {
     if (!this._isPlayerLoaded) {
-      ctx.player.load();
+      this._context.player.load();
       this._isPlayerLoaded = true;
-      ctx.logger.debug("Player loaded");
+      this._context.logger.debug("Player loaded");
     }
-    ctx.loadPromise.then(() => {
-      let sm = ctx.getStateMachine();
+    this._context.loadPromise.then(() => {
+      let sm = this._context.getStateMachine();
       switch (sm.state) {
         case State.LOADED: {
-          const initialUserAction = ctx.initialUserAction();
+          const initialUserAction = this._context.initialUserAction();
           if (initialUserAction) {
             initialUserAction.then(() => {
               this.callNext(next);
@@ -62,7 +63,7 @@ export default class ImaMiddleware extends BaseMiddleware {
           break;
         }
         case State.PAUSED: {
-          const resumeAd = ctx.resumeAd();
+          const resumeAd = this._context.resumeAd();
           if (resumeAd) {
             resumeAd.then(() => {
               this.callNext(next);
@@ -78,8 +79,8 @@ export default class ImaMiddleware extends BaseMiddleware {
         }
       }
     }).catch((e) => {
-      ctx.destroy();
-      ctx.logger.error(e);
+      this._context.destroy();
+      this._context.logger.error(e);
       this.callNext(next);
     });
   }
@@ -90,10 +91,10 @@ export default class ImaMiddleware extends BaseMiddleware {
    * @returns {void}
    */
   pause(next: Function): void {
-    let sm = ctx.getStateMachine();
+    let sm = this._context.getStateMachine();
     switch (sm.state) {
       case State.PLAYING: {
-        ctx.pauseAd();
+        this._context.pauseAd();
         break;
       }
       default: {
