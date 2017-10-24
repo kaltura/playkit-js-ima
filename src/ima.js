@@ -159,7 +159,7 @@ export default class Ima extends BasePlugin {
    * @member
    * @private
    */
-  _togglePlayPauseOnAdsContainerCallback: Function;
+  _togglePlayPauseOnAdsContainerCallback: ?Function;
 
   /**
    * Whether the ima plugin is valid.
@@ -773,7 +773,7 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _setTogglePlayPauseOnAdsContainerEnabled(enable: boolean): void {
-    if (this._adsContainerDiv) {
+    if (this._adsContainerDiv && this._togglePlayPauseOnAdsContainerCallback) {
       if (enable) {
         this._adsContainerDiv.addEventListener("click", this._togglePlayPauseOnAdsContainerCallback);
       } else {
