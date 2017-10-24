@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.1.7"></a>
+## [0.1.7](https://github.com/kaltura/playkit-js-ima/compare/v0.1.6...v0.1.7) (2017-10-24)
+
+
+### Bug Fixes
+
+* **FEC-7293:** toggle playback on ad clicked ([#21](https://github.com/kaltura/playkit-js-ima/issues/21)) ([a94599c](https://github.com/kaltura/playkit-js-ima/commit/a94599c))
+
+
+
 <a name="0.1.6"></a>
 ## [0.1.6](https://github.com/kaltura/playkit-js-ima/compare/v0.1.5...v0.1.6) (2017-10-03)
 
