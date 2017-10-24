@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.2.0"></a>
+# [0.2.0](https://github.com/kaltura/playkit-js-ima/compare/v0.1.7...v0.2.0) (2017-10-24)
+
+
+### Bug Fixes
+
+* **FEC-7235:** can't perform pause/play the video with ads overlay ([#23](https://github.com/kaltura/playkit-js-ima/issues/23)) ([bce24a6](https://github.com/kaltura/playkit-js-ima/commit/bce24a6))
+
+
+### Features
+
+* change media ([#22](https://github.com/kaltura/playkit-js-ima/issues/22)) ([5b66b5f](https://github.com/kaltura/playkit-js-ima/commit/5b66b5f))
+
+
+
 <a name="0.1.7"></a>
 ## [0.1.7](https://github.com/kaltura/playkit-js-ima/compare/v0.1.6...v0.1.7) (2017-10-24)
 
