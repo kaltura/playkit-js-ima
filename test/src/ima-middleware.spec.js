@@ -7,7 +7,12 @@ describe('Ima Middleware', function () {
   let fakeContext = {
     loadPromise: Promise.resolve(),
     player: {
+      addEventListener: function () {
+      },
       load: function () {
+      },
+      Event: {
+        CHANGE_SOURCE_STARTED: 'changesourcestarted'
       }
     },
     setCurrentState: function (state) {

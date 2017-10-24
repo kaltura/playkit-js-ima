@@ -17,7 +17,7 @@ const pluginName: string = "ima";
  * @type {string}
  * @const
  */
-const ADS_CONTAINER_ID: string = "ads-container";
+const ADS_CONTAINER_ID: string = "playkit-ads-container";
 
 /**
  * The ima plugin.
@@ -174,13 +174,7 @@ export default class Ima extends BasePlugin {
   constructor(name: string, player: Player, config: Object) {
     super(name, player, config);
     this._stateMachine = new ImaStateMachine(this);
-    this._intervalTimer = null;
-    this._videoLastCurrentTime = null;
-    this._adsManager = null;
-    this._contentComplete = false;
-    this._hasUserAction = false;
-    this._isAdsManagerLoaded = false;
-    this._contentPlayheadTracker = {currentTime: 0, previousTime: 0, seeking: false, duration: 0};
+    this._initMembers();
     this._addBindings();
     this._init();
   }
@@ -253,6 +247,32 @@ export default class Ima extends BasePlugin {
   }
 
   /**
+   * Resets the plugin.
+   * @override
+   * @public
+   * @returns {void}
+   */
+  reset(): void {
+    this.logger.debug("reset");
+    this.eventManager.removeAll();
+    this._stopAdInterval();
+    this._hideAdsContainer();
+    if (this._adsManager) {
+      this._adsManager.destroy();
+    }
+    if (this._adsLoader && !this._contentComplete) {
+      this._adsLoader.contentComplete();
+    }
+    this._initMembers();
+    this._addBindings();
+    if (!this._adsLoader) {
+      this._initAdsLoader();
+    }
+    this._requestAds();
+    this._stateMachine.loaded();
+  }
+
+  /**
    * Destroys the plugin.
    * @override
    * @public
@@ -269,15 +289,8 @@ export default class Ima extends BasePlugin {
     if (this._adsLoader && !this._contentComplete) {
       this._adsLoader.contentComplete();
     }
-    this._currentAd = null;
-    this._adsManager = null;
     this._adsLoader = null;
-    this._contentComplete = false;
-    this._hasUserAction = false;
-    this._isAdsManagerLoaded = false;
-    this._intervalTimer = null;
-    this._videoLastCurrentTime = null;
-    this._contentPlayheadTracker = {currentTime: 0, previousTime: 0, seeking: false, duration: 0};
+    this._initMembers();
   }
 
   /**
@@ -333,6 +346,23 @@ export default class Ima extends BasePlugin {
         this._contentSrc = selectedSource[0].url;
       }
     });
+  }
+
+  /**
+   * Init the members of the plugin.
+   * @private
+   * @returns {void}
+   */
+  _initMembers(): void {
+    this._nextPromise = null;
+    this._currentAd = null;
+    this._adsManager = null;
+    this._contentComplete = false;
+    this._isAdsManagerLoaded = false;
+    this._intervalTimer = null;
+    this._videoLastCurrentTime = null;
+    this._contentPlayheadTracker = {currentTime: 0, previousTime: 0, seeking: false, duration: 0};
+    this._hasUserAction = false;
   }
 
   /**

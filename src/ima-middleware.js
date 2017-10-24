@@ -1,5 +1,6 @@
 // @flow
 import {BaseMiddleware} from 'playkit-js'
+import Ima from './ima'
 import State from './state'
 
 /**
@@ -14,25 +15,26 @@ export default class ImaMiddleware extends BaseMiddleware {
    */
   id: string = "ImaMiddleware";
   /**
-   * The plugin context.
-   * @member
-   * @private
-   */
-  _context: any;
-  /**
    * Whether the player has been loaded.
    * @member
    * @private
    */
   _isPlayerLoaded: boolean;
+  /**
+   * The plugin context.
+   * @member
+   * @private
+   */
+  _context: Ima;
 
   /**
    * @constructor
-   * @param {any} context - The plugin context.
+   * @param {Ima} context - The ima plugin context.
    */
-  constructor(context: any) {
+  constructor(context: Ima) {
     super();
     this._context = context;
+    context.player.addEventListener(context.player.Event.CHANGE_SOURCE_STARTED, () => this._isPlayerLoaded = false);
   }
 
   /**
@@ -49,21 +51,32 @@ export default class ImaMiddleware extends BaseMiddleware {
     this._context.loadPromise.then(() => {
       let sm = this._context.getStateMachine();
       switch (sm.state) {
-        case State.LOADED:
-          this._context.initialUserAction()
-            .then(() => {
+        case State.LOADED: {
+          const initialUserAction = this._context.initialUserAction();
+          if (initialUserAction) {
+            initialUserAction.then(() => {
               this.callNext(next);
             });
+          } else {
+            this.callNext(next);
+          }
           break;
-        case State.PAUSED:
-          this._context.resumeAd()
-            .then(() => {
+        }
+        case State.PAUSED: {
+          const resumeAd = this._context.resumeAd();
+          if (resumeAd) {
+            resumeAd.then(() => {
               this.callNext(next);
             });
+          } else {
+            this.callNext(next);
+          }
           break;
-        default:
+        }
+        default: {
           this.callNext(next);
           break;
+        }
       }
     }).catch((e) => {
       this._context.destroy();
@@ -80,12 +93,14 @@ export default class ImaMiddleware extends BaseMiddleware {
   pause(next: Function): void {
     let sm = this._context.getStateMachine();
     switch (sm.state) {
-      case State.PLAYING:
+      case State.PLAYING: {
         this._context.pauseAd();
         break;
-      default:
+      }
+      default: {
         this.callNext(next);
         break;
+      }
     }
   }
 }
