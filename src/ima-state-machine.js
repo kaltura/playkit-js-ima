@@ -24,7 +24,7 @@ export default class ImaStateMachine {
         {
           name: context.player.Event.AD_STARTED,
           from: [State.LOADED, State.IDLE, State.PAUSED],
-          to: function (adEvent: any): string {
+          to: (adEvent: any): string => {
             let ad = adEvent.getAd();
             if (!ad.isLinear()) {
               return State.IDLE;
@@ -102,6 +102,9 @@ export default class ImaStateMachine {
         {
           name: context.player.Event.AD_CLICKED,
           from: [State.PLAYING, State.PAUSED, State.IDLE]
+        },
+        {
+          name: 'goto', from: '*', to: s => s
         }
       ],
       methods: {

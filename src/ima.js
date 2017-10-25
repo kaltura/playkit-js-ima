@@ -275,7 +275,11 @@ export default class Ima extends BasePlugin {
       this._initAdsLoader();
     }
     this._requestAds();
-    this._stateMachine.loaded();
+    if (this.config.adTagUrl) {
+      this._stateMachine.loaded();
+    } else {
+      this._stateMachine.goto(State.DONE);
+    }
   }
 
   /**
