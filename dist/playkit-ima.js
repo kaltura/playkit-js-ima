@@ -422,7 +422,11 @@ var Ima = function (_BasePlugin) {
         this._initAdsLoader();
       }
       this._requestAds();
-      this._stateMachine.loaded();
+      if (this.config.adTagUrl) {
+        this._stateMachine.loaded();
+      } else {
+        this._stateMachine.goto(_state2.default.DONE);
+      }
     }
 
     /**
@@ -1427,6 +1431,10 @@ function ImaStateMachine(context) {
     }, {
       name: context.player.Event.AD_CLICKED,
       from: [_state2.default.PLAYING, _state2.default.PAUSED, _state2.default.IDLE]
+    }, {
+      name: 'goto', from: '*', to: function to(s) {
+        return s;
+      }
     }],
     methods: {
       onAdloaded: onAdLoaded.bind(context),
