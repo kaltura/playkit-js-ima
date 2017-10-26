@@ -4,7 +4,7 @@
 
 PlayKit JS IMA plugin integrates [IMA SDK for HTML5] with the [PlayKit JS Player].
  
-PlayKit JS IMA is written in [ECMAScript6], statically analaysed using [Flow] and transpiled in ECMAScript5 using [Babel].
+PlayKit JS IMA is written in [ECMAScript6], statically analysed using [Flow] and transpiled in ECMAScript5 using [Babel].
 
 [IMA SDK for HTML5]: https://developers.google.com/interactive-media-ads/docs/sdks/html5/
 [Flow]: https://flow.org/
