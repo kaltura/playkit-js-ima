@@ -592,6 +592,11 @@ var Ima = function (_BasePlugin) {
       this._sdk.settings.setPlayerVersion(this.config.playerVersion);
       this._sdk.settings.setVpaidAllowed(true);
       this._sdk.settings.setVpaidMode(this._sdk.ImaSdkSettings.VpaidMode.ENABLED);
+      if (this.config.setDisableCustomPlaybackForIOS10Plus === 'boolean') {
+        this._sdk.settings.setDisableCustomPlaybackForIOS10Plus(this.config.setDisableCustomPlaybackForIOS10Plus);
+      } else {
+        this._sdk.settings.setDisableCustomPlaybackForIOS10Plus(this.player.config.playback.playsinline);
+      }
     }
 
     /**
@@ -1138,6 +1143,7 @@ var Ima = function (_BasePlugin) {
 Ima.defaultConfig = {
   debug: false,
   companions: {},
+  setDisableCustomPlaybackForIOS10Plus: null,
   adsRenderingSettings: {
     restoreCustomPlaybackStateOnAdBreakComplete: true,
     enablePreloading: false,
