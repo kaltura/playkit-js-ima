@@ -427,7 +427,7 @@ export default class Ima extends BasePlugin {
     if (this.config.setDisableCustomPlaybackForIOS10Plus === 'boolean') {
       this._sdk.settings.setDisableCustomPlaybackForIOS10Plus(this.config.setDisableCustomPlaybackForIOS10Plus);
     } else {
-      this._sdk.settings.setDisableCustomPlaybackForIOS10Plus(this.player.config.playsinline);
+      this._sdk.settings.setDisableCustomPlaybackForIOS10Plus(this.player.config.playback.playsinline);
     }
   }
 
