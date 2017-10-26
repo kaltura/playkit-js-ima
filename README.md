@@ -1,10 +1,10 @@
 # PlayKit JS IMA - IMA plugin for the [PlayKit JS Player]
 
-[![Build Status](https://travis-ci.com/kaltura/playkit-js-ima.svg?token=s2ZQw18ukx9Q6ePzDX3F&branch=master)](https://travis-ci.com/kaltura/playkit-js-ima)
+[![Build Status](https://travis-ci.org/kaltura/playkit-js-ima.svg?branch=master)](https://travis-ci.org/kaltura/playkit-js-ima)
 
 PlayKit JS IMA plugin integrates [IMA SDK for HTML5] with the [PlayKit JS Player].
  
-PlayKit JS IMA is written in [ECMAScript6], statically analysed using [Flow] and transpiled in ECMAScript5 using [Babel].
+PlayKit JS IMA is written in [ECMAScript6], statically analaysed using [Flow] and transpiled in ECMAScript5 using [Babel].
 
 [IMA SDK for HTML5]: https://developers.google.com/interactive-media-ads/docs/sdks/html5/
 [Flow]: https://flow.org/
