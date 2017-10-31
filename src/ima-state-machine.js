@@ -110,7 +110,7 @@ export default class ImaStateMachine {
       methods: {
         onAdloaded: onAdLoaded.bind(context),
         onAdstarted: onAdStarted.bind(context),
-        onAdpaused: onAdPaused.bind(context),
+        onAdpaused: onAdEvent.bind(context),
         onAdresumed: onAdEvent.bind(context),
         onAdclicked: onAdClicked.bind(context),
         onAdskipped: onAdSkipped.bind(context),
@@ -193,17 +193,6 @@ function onAdClicked(options: Object, adEvent: any): void {
       this.player.pause();
     }
   }
-  this.dispatchEvent(options.transition);
-}
-
-/**
- * PAUSED event handler.
- * @param {Object} options - fsm event data.
- * @param {any} adEvent - ima event data.
- * @returns {void}
- */
-function onAdPaused(options: Object, adEvent: any): void {
-  this.logger.debug(adEvent.type.toUpperCase());
   this.dispatchEvent(options.transition);
 }
 
