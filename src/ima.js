@@ -332,9 +332,8 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _startAdsManager(): void {
-    let playerViewSize = this._getPlayerViewSize();
     this.logger.debug("Start ads manager");
-    this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
+    this._adsManager.init(this.player.dimensions.width, this.player.dimensions.height, this._sdk.ViewMode.NORMAL);
     this._adsManager.start();
   }
 
@@ -350,6 +349,7 @@ export default class Ima extends BasePlugin {
       'webkitfullscreenchange'
     ].forEach(fullScreenEvent => this.eventManager.listen(document, fullScreenEvent, this._resizeAd.bind(this)));
     this.eventManager.listen(window, 'resize', this._resizeAd.bind(this));
+    this.eventManager.listen(this.player, this.player.Event.MUTE_CHANGE, this._syncPlayerVolume.bind(this));
     this.eventManager.listen(this.player, this.player.Event.VOLUME_CHANGE, this._syncPlayerVolume.bind(this));
     this.eventManager.listen(this.player, this.player.Event.SOURCE_SELECTED, (event) => {
       let selectedSource = event.payload.selectedSource;
@@ -479,11 +479,10 @@ export default class Ima extends BasePlugin {
       } else {
         adsRequest.adsResponse = this.config.adsResponse;
       }
-      let playerViewSize = this._getPlayerViewSize();
-      adsRequest.linearAdSlotWidth = playerViewSize.width;
-      adsRequest.linearAdSlotHeight = playerViewSize.height;
-      adsRequest.nonLinearAdSlotWidth = playerViewSize.width;
-      adsRequest.nonLinearAdSlotHeight = playerViewSize.height / 3;
+      adsRequest.linearAdSlotWidth = this.player.dimensions.width;
+      adsRequest.linearAdSlotHeight = this.player.dimensions.height;
+      adsRequest.nonLinearAdSlotWidth = this.player.dimensions.width;
+      adsRequest.nonLinearAdSlotHeight = this.player.dimensions.height / 3;
       this._adsLoader.requestAds(adsRequest);
     } else {
       this.logger.warn("Missing ad tag url: create plugin without requesting ads");
@@ -497,10 +496,9 @@ export default class Ima extends BasePlugin {
    */
   _resizeAd() {
     if (this._sdk && this._adsManager) {
-      let playerViewSize = this._getPlayerViewSize();
       let isFullScreen = this._isFullScreen();
       let viewMode = (isFullScreen ? this._sdk.ViewMode.FULLSCREEN : this._sdk.ViewMode.NORMAL);
-      this._adsManager.resize(playerViewSize.width, playerViewSize.height, viewMode);
+      this._adsManager.resize(this.player.dimensions.width, this.player.dimensions.height, viewMode);
     }
   }
 
@@ -514,18 +512,6 @@ export default class Ima extends BasePlugin {
       typeof document.webkitFullscreenElement !== 'undefined' && Boolean(document.webkitFullscreenElement) ||
       typeof document.mozFullScreenElement !== 'undefined' && Boolean(document.mozFullScreenElement) ||
       typeof document.msFullscreenElement !== 'undefined' && Boolean(document.msFullscreenElement);
-  }
-
-  /**
-   * Gets the player view width and height.
-   * @return {Object} - The player sizes.
-   * @private
-   */
-  _getPlayerViewSize(): Object {
-    let playerView = this.player.getView();
-    let width = parseInt(getComputedStyle(playerView).width, 10);
-    let height = parseInt(getComputedStyle(playerView).height, 10);
-    return {width: width, height: height};
   }
 
   /**
@@ -722,7 +708,9 @@ export default class Ima extends BasePlugin {
       if (this.player.muted) {
         this._adsManager.setVolume(0);
       } else {
-        this._adsManager.setVolume(this.player.volume);
+        if (this._adsManager && typeof this.player.volume === 'number' && (this.player.volume !== this._adsManager.getVolume())) {
+          this._adsManager.setVolume(this.player.volume);
+        }
       }
     }
   }
