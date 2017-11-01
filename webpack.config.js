@@ -17,6 +17,10 @@ module.exports = {
   devtool: 'source-map',
   plugins: PROD ? [new webpack.optimize.UglifyJsPlugin({sourceMap: true})] : [],
   module: {
+    loaders: [{
+      test: /\.css$/,
+      loader: "style-loader!css-loader"
+    }],
     rules: [{
       test: /\.js$/,
       use: [{
