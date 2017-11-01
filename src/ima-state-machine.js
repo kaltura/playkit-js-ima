@@ -142,6 +142,11 @@ export default class ImaStateMachine {
  */
 function onAdLoaded(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
+  // When we are using the same video tag on iOS, native captions still
+  // appearing on the video element, so need to hide them before ad start.
+  if (this._adsManager.isCustomPlaybackUsed()) {
+    this.player.hideTextTrack();
+  }
   this.dispatchEvent(options.transition, normalizeAdEvent(adEvent));
 }
 

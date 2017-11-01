@@ -333,8 +333,11 @@ export default class Ima extends BasePlugin {
    */
   _startAdsManager(): void {
     this.logger.debug("Start ads manager");
-    this._adsManager.init(this.player.dimensions.width, this.player.dimensions.height, this._sdk.ViewMode.NORMAL);
-    this._adsManager.start();
+    const readyPromise = this._adsManager.isCustomPlaybackUsed() ? this.player.ready() : Promise.resolve();
+    readyPromise.then(() => {
+      this._adsManager.init(this.player.dimensions.width, this.player.dimensions.height, this._sdk.ViewMode.NORMAL);
+      this._adsManager.start();
+    });
   }
 
   /**
