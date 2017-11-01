@@ -791,8 +791,10 @@ export default class Ima extends BasePlugin {
    */
   _setToggleAdsCover(enable: boolean): void {
     if (enable) {
-      this._adsContainerDiv.appendChild(this._adsCoverDiv);
-      this._isAdsCoverActive = true;
+      if (!this._adsManager.isCustomPlaybackUsed()) {
+        this._adsContainerDiv.appendChild(this._adsCoverDiv);
+        this._isAdsCoverActive = true;
+      }
     } else {
       if (this._isAdsCoverActive) {
         this._adsContainerDiv.removeChild(this._adsCoverDiv);
