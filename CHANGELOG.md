@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.2.3"></a>
+## [0.2.3](https://github.com/kaltura/playkit-js-ima/compare/v0.2.2...v0.2.3) (2017-11-01)
+
+
+### Bug Fixes
+
+* **FEC-7365:** when click again on paused ad the ad resumed but click-through site is open again ([#27](https://github.com/kaltura/playkit-js-ima/issues/27)) ([e611756](https://github.com/kaltura/playkit-js-ima/commit/e611756))
+* **FEC-7372, FEC-7369, FEC-7376, FEC-7386:** fallback to mute issue ([#26](https://github.com/kaltura/playkit-js-ima/issues/26)) ([6a4e1d0](https://github.com/kaltura/playkit-js-ima/commit/6a4e1d0))
+
+
+
 <a name="0.2.2"></a>
 ## [0.2.2](https://github.com/kaltura/playkit-js-ima/compare/v0.2.1...v0.2.2) (2017-10-26)
 
