@@ -5,6 +5,7 @@ import State from './state'
 import {registerPlugin, BasePlugin} from 'playkit-js'
 import {BaseMiddleware} from 'playkit-js'
 import {Utils} from 'playkit-js'
+import './assets/style.css'
 
 /**
  * The plugin name.
@@ -13,11 +14,17 @@ import {Utils} from 'playkit-js'
  */
 const pluginName: string = "ima";
 /**
- * The ads container id.
+ * The ads container class.
  * @type {string}
  * @const
  */
-const ADS_CONTAINER_ID: string = "playkit-ads-container";
+const ADS_CONTAINER_CLASS: string = "playkit-ads-container";
+/**
+ * The ads cover class.
+ * @type {string}
+ * @const
+ */
+const ADS_COVER_CLASS: string = "playkit-ads-cover";
 
 /**
  * The ima plugin.
@@ -84,6 +91,12 @@ export default class Ima extends BasePlugin {
    * @private
    */
   _adsContainerDiv: HTMLElement;
+  /**
+   * The ads cover dom element.
+   * @member
+   * @private
+   */
+  _adsCoverDiv: HTMLElement;
   /**
    * The ima ads container object.
    */
@@ -161,6 +174,12 @@ export default class Ima extends BasePlugin {
    * @private
    */
   _togglePlayPauseOnAdsContainerCallback: ?Function;
+  /**
+   * Whether the ads cover overlay is active.
+   * @member
+   * @private
+   */
+  _isAdsCoverActive: boolean;
 
   /**
    * Whether the ima plugin is valid.
@@ -441,17 +460,18 @@ export default class Ima extends BasePlugin {
    */
   _initAdsContainer(): void {
     this.logger.debug("Init ads container");
-    let adsContainerDiv = Utils.Dom.getElementById(ADS_CONTAINER_ID);
-    if (!adsContainerDiv) {
-      let playerView = this.player.getView();
-      this._adsContainerDiv = Utils.Dom.createElement('div');
-      this._adsContainerDiv.id = ADS_CONTAINER_ID + playerView.id;
-      this._adsContainerDiv.style.position = "absolute";
-      this._adsContainerDiv.style.top = "0px";
-      Utils.Dom.appendChild(playerView, this._adsContainerDiv);
-    } else {
-      this._adsContainerDiv = adsContainerDiv;
-    }
+    const playerView = this.player.getView();
+    // Create ads container
+    this._adsContainerDiv = Utils.Dom.createElement('div');
+    this._adsContainerDiv.id = ADS_CONTAINER_CLASS + playerView.id;
+    this._adsContainerDiv.className = ADS_CONTAINER_CLASS;
+    // Create ads cover
+    this._adsCoverDiv = Utils.Dom.createElement('div');
+    this._adsCoverDiv.id = ADS_COVER_CLASS + playerView.id;
+    this._adsCoverDiv.className = ADS_COVER_CLASS;
+    this._adsCoverDiv.onclick = () => this.resumeAd();
+    // Append the ads container to the dom
+    Utils.Dom.appendChild(playerView, this._adsContainerDiv);
     this._adDisplayContainer = new this._sdk.AdDisplayContainer(this._adsContainerDiv, this.player.getVideoElement());
   }
 
@@ -763,6 +783,26 @@ export default class Ima extends BasePlugin {
     if (this._nextPromise) {
       this._nextPromise.resolve();
       this._nextPromise = null;
+    }
+  }
+
+  /**
+   * Toggle the ads cover div.
+   * @param {boolean} enable - Whether to add or remove the ads cover.
+   * @private
+   * @returns {void}
+   */
+  _setToggleAdsCover(enable: boolean): void {
+    if (enable) {
+      if (!this._adsManager.isCustomPlaybackUsed()) {
+        this._adsContainerDiv.appendChild(this._adsCoverDiv);
+        this._isAdsCoverActive = true;
+      }
+    } else {
+      if (this._isAdsCoverActive) {
+        this._adsContainerDiv.removeChild(this._adsCoverDiv);
+        this._isAdsCoverActive = false;
+      }
     }
   }
 
