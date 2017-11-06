@@ -121,6 +121,8 @@ var _state2 = _interopRequireDefault(_state);
 
 var _playkitJs = __webpack_require__(2);
 
+__webpack_require__(7);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -136,11 +138,17 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  */
 var pluginName = "ima";
 /**
- * The ads container id.
+ * The ads container class.
  * @type {string}
  * @const
  */
-var ADS_CONTAINER_ID = "playkit-ads-container";
+var ADS_CONTAINER_CLASS = "playkit-ads-container";
+/**
+ * The ads cover class.
+ * @type {string}
+ * @const
+ */
+var ADS_COVER_CLASS = "playkit-ads-cover";
 
 /**
  * The ima plugin.
@@ -185,6 +193,12 @@ var Ima = function (_BasePlugin) {
 
     /**
      * The ads container dom element.
+     * @member
+     * @private
+     */
+
+    /**
+     * The ads cover dom element.
      * @member
      * @private
      */
@@ -262,6 +276,12 @@ var Ima = function (_BasePlugin) {
 
     /**
      * The bounded handler of the ads container click.
+     * @member
+     * @private
+     */
+
+    /**
+     * Whether the ads cover overlay is active.
      * @member
      * @private
      */
@@ -487,9 +507,8 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_startAdsManager',
     value: function _startAdsManager() {
-      var playerViewSize = this._getPlayerViewSize();
       this.logger.debug("Start ads manager");
-      this._adsManager.init(playerViewSize.width, playerViewSize.height, this._sdk.ViewMode.NORMAL);
+      this._adsManager.init(this.player.dimensions.width, this.player.dimensions.height, this._sdk.ViewMode.NORMAL);
       this._adsManager.start();
     }
 
@@ -508,6 +527,7 @@ var Ima = function (_BasePlugin) {
         return _this2.eventManager.listen(document, fullScreenEvent, _this2._resizeAd.bind(_this2));
       });
       this.eventManager.listen(window, 'resize', this._resizeAd.bind(this));
+      this.eventManager.listen(this.player, this.player.Event.MUTE_CHANGE, this._syncPlayerVolume.bind(this));
       this.eventManager.listen(this.player, this.player.Event.VOLUME_CHANGE, this._syncPlayerVolume.bind(this));
       this.eventManager.listen(this.player, this.player.Event.SOURCE_SELECTED, function (event) {
         var selectedSource = event.payload.selectedSource;
@@ -608,18 +628,23 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_initAdsContainer',
     value: function _initAdsContainer() {
+      var _this4 = this;
+
       this.logger.debug("Init ads container");
-      var adsContainerDiv = _playkitJs.Utils.Dom.getElementById(ADS_CONTAINER_ID);
-      if (!adsContainerDiv) {
-        var playerView = this.player.getView();
-        this._adsContainerDiv = _playkitJs.Utils.Dom.createElement('div');
-        this._adsContainerDiv.id = ADS_CONTAINER_ID + playerView.id;
-        this._adsContainerDiv.style.position = "absolute";
-        this._adsContainerDiv.style.top = "0px";
-        _playkitJs.Utils.Dom.appendChild(playerView, this._adsContainerDiv);
-      } else {
-        this._adsContainerDiv = adsContainerDiv;
-      }
+      var playerView = this.player.getView();
+      // Create ads container
+      this._adsContainerDiv = _playkitJs.Utils.Dom.createElement('div');
+      this._adsContainerDiv.id = ADS_CONTAINER_CLASS + playerView.id;
+      this._adsContainerDiv.className = ADS_CONTAINER_CLASS;
+      // Create ads cover
+      this._adsCoverDiv = _playkitJs.Utils.Dom.createElement('div');
+      this._adsCoverDiv.id = ADS_COVER_CLASS + playerView.id;
+      this._adsCoverDiv.className = ADS_COVER_CLASS;
+      this._adsCoverDiv.onclick = function () {
+        return _this4.resumeAd();
+      };
+      // Append the ads container to the dom
+      _playkitJs.Utils.Dom.appendChild(playerView, this._adsContainerDiv);
       this._adDisplayContainer = new this._sdk.AdDisplayContainer(this._adsContainerDiv, this.player.getVideoElement());
     }
 
@@ -632,13 +657,13 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_initAdsLoader',
     value: function _initAdsLoader() {
-      var _this4 = this;
+      var _this5 = this;
 
       this.logger.debug("Init ads loader");
       this._adsLoader = new this._sdk.AdsLoader(this._adDisplayContainer);
       this._adsLoader.addEventListener(this._sdk.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._onAdsManagerLoaded.bind(this));
       this._adsLoader.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, function (adEvent) {
-        return _this4._stateMachine.aderror(adEvent);
+        return _this5._stateMachine.aderror(adEvent);
       });
     }
 
@@ -660,11 +685,10 @@ var Ima = function (_BasePlugin) {
         } else {
           adsRequest.adsResponse = this.config.adsResponse;
         }
-        var playerViewSize = this._getPlayerViewSize();
-        adsRequest.linearAdSlotWidth = playerViewSize.width;
-        adsRequest.linearAdSlotHeight = playerViewSize.height;
-        adsRequest.nonLinearAdSlotWidth = playerViewSize.width;
-        adsRequest.nonLinearAdSlotHeight = playerViewSize.height / 3;
+        adsRequest.linearAdSlotWidth = this.player.dimensions.width;
+        adsRequest.linearAdSlotHeight = this.player.dimensions.height;
+        adsRequest.nonLinearAdSlotWidth = this.player.dimensions.width;
+        adsRequest.nonLinearAdSlotHeight = this.player.dimensions.height / 3;
         this._adsLoader.requestAds(adsRequest);
       } else {
         this.logger.warn("Missing ad tag url: create plugin without requesting ads");
@@ -681,10 +705,9 @@ var Ima = function (_BasePlugin) {
     key: '_resizeAd',
     value: function _resizeAd() {
       if (this._sdk && this._adsManager) {
-        var playerViewSize = this._getPlayerViewSize();
         var isFullScreen = this._isFullScreen();
         var viewMode = isFullScreen ? this._sdk.ViewMode.FULLSCREEN : this._sdk.ViewMode.NORMAL;
-        this._adsManager.resize(playerViewSize.width, playerViewSize.height, viewMode);
+        this._adsManager.resize(this.player.dimensions.width, this.player.dimensions.height, viewMode);
       }
     }
 
@@ -698,21 +721,6 @@ var Ima = function (_BasePlugin) {
     key: '_isFullScreen',
     value: function _isFullScreen() {
       return typeof document.fullscreenElement !== 'undefined' && Boolean(document.fullscreenElement) || typeof document.webkitFullscreenElement !== 'undefined' && Boolean(document.webkitFullscreenElement) || typeof document.mozFullScreenElement !== 'undefined' && Boolean(document.mozFullScreenElement) || typeof document.msFullscreenElement !== 'undefined' && Boolean(document.msFullscreenElement);
-    }
-
-    /**
-     * Gets the player view width and height.
-     * @return {Object} - The player sizes.
-     * @private
-     */
-
-  }, {
-    key: '_getPlayerViewSize',
-    value: function _getPlayerViewSize() {
-      var playerView = this.player.getView();
-      var width = parseInt(getComputedStyle(playerView).width, 10);
-      var height = parseInt(getComputedStyle(playerView).height, 10);
-      return { width: width, height: height };
     }
 
     /**
@@ -892,13 +900,13 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_onAdsManagerLoaded',
     value: function _onAdsManagerLoaded(adsManagerLoadedEvent) {
-      var _this5 = this;
+      var _this6 = this;
 
       this.logger.debug('Ads manager loaded');
       var adsRenderingSettings = new this._sdk.AdsRenderingSettings();
       Object.keys(this.config.adsRenderingSettings).forEach(function (setting) {
         if (adsRenderingSettings[setting] != null) {
-          adsRenderingSettings[setting] = _this5.config.adsRenderingSettings[setting];
+          adsRenderingSettings[setting] = _this6.config.adsRenderingSettings[setting];
         }
       });
       this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
@@ -920,61 +928,61 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_attachAdsManagerListeners',
     value: function _attachAdsManagerListeners() {
-      var _this6 = this;
+      var _this7 = this;
 
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_PAUSE_REQUESTED, function (adEvent) {
-        return _this6._stateMachine.adbreakstart(adEvent);
+        return _this7._stateMachine.adbreakstart(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOADED, function (adEvent) {
-        return _this6._stateMachine.adloaded(adEvent);
+        return _this7._stateMachine.adloaded(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.STARTED, function (adEvent) {
-        return _this6._stateMachine.adstarted(adEvent);
+        return _this7._stateMachine.adstarted(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.PAUSED, function (adEvent) {
-        return _this6._stateMachine.adpaused(adEvent);
+        return _this7._stateMachine.adpaused(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.RESUMED, function (adEvent) {
-        return _this6._stateMachine.adresumed(adEvent);
+        return _this7._stateMachine.adresumed(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.FIRST_QUARTILE, function (adEvent) {
-        return _this6._stateMachine.adfirstquartile(adEvent);
+        return _this7._stateMachine.adfirstquartile(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.MIDPOINT, function (adEvent) {
-        return _this6._stateMachine.admidpoint(adEvent);
+        return _this7._stateMachine.admidpoint(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.THIRD_QUARTILE, function (adEvent) {
-        return _this6._stateMachine.adthirdquartile(adEvent);
+        return _this7._stateMachine.adthirdquartile(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.CLICK, function (adEvent) {
-        return _this6._stateMachine.adclicked(adEvent);
+        return _this7._stateMachine.adclicked(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.SKIPPED, function (adEvent) {
-        return _this6._stateMachine.adskipped(adEvent);
+        return _this7._stateMachine.adskipped(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.COMPLETE, function (adEvent) {
-        return _this6._stateMachine.adcompleted(adEvent);
+        return _this7._stateMachine.adcompleted(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_RESUME_REQUESTED, function (adEvent) {
-        return _this6._stateMachine.adbreakend(adEvent);
+        return _this7._stateMachine.adbreakend(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.ALL_ADS_COMPLETED, function (adEvent) {
-        return _this6._stateMachine.alladscompleted(adEvent);
+        return _this7._stateMachine.alladscompleted(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.USER_CLOSE, function (adEvent) {
-        return _this6._stateMachine.userclosedad(adEvent);
+        return _this7._stateMachine.userclosedad(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_CHANGED, function (adEvent) {
-        return _this6._stateMachine.advolumechanged(adEvent);
+        return _this7._stateMachine.advolumechanged(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_MUTED, function (adEvent) {
-        return _this6._stateMachine.admuted(adEvent);
+        return _this7._stateMachine.admuted(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOG, function (adEvent) {
-        return _this6._stateMachine.aderror(adEvent);
+        return _this7._stateMachine.aderror(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, function (adEvent) {
-        return _this6._stateMachine.aderror(adEvent);
+        return _this7._stateMachine.aderror(adEvent);
       });
     }
 
@@ -991,7 +999,9 @@ var Ima = function (_BasePlugin) {
         if (this.player.muted) {
           this._adsManager.setVolume(0);
         } else {
-          this._adsManager.setVolume(this.player.volume);
+          if (this._adsManager && typeof this.player.volume === 'number' && this.player.volume !== this._adsManager.getVolume()) {
+            this._adsManager.setVolume(this.player.volume);
+          }
         }
       }
     }
@@ -1005,16 +1015,16 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_startAdInterval',
     value: function _startAdInterval() {
-      var _this7 = this;
+      var _this8 = this;
 
       this._stopAdInterval();
       this._intervalTimer = setInterval(function () {
-        if (_this7._stateMachine.is(_state2.default.PLAYING)) {
-          var remainingTime = _this7._adsManager.getRemainingTime();
-          var duration = _this7._adsManager.getCurrentAd().getDuration();
+        if (_this8._stateMachine.is(_state2.default.PLAYING)) {
+          var remainingTime = _this8._adsManager.getRemainingTime();
+          var duration = _this8._adsManager.getCurrentAd().getDuration();
           var currentTime = duration - remainingTime;
           if (_playkitJs.Utils.Number.isNumber(duration) && _playkitJs.Utils.Number.isNumber(currentTime)) {
-            _this7.dispatchEvent(_this7.player.Event.AD_PROGRESS, {
+            _this8.dispatchEvent(_this8.player.Event.AD_PROGRESS, {
               adProgress: {
                 currentTime: currentTime,
                 duration: duration
@@ -1052,6 +1062,29 @@ var Ima = function (_BasePlugin) {
       if (this._nextPromise) {
         this._nextPromise.resolve();
         this._nextPromise = null;
+      }
+    }
+
+    /**
+     * Toggle the ads cover div.
+     * @param {boolean} enable - Whether to add or remove the ads cover.
+     * @private
+     * @returns {void}
+     */
+
+  }, {
+    key: '_setToggleAdsCover',
+    value: function _setToggleAdsCover(enable) {
+      if (enable) {
+        if (!this._adsManager.isCustomPlaybackUsed()) {
+          this._adsContainerDiv.appendChild(this._adsCoverDiv);
+          this._isAdsCoverActive = true;
+        }
+      } else {
+        if (this._isAdsCoverActive) {
+          this._adsContainerDiv.removeChild(this._adsCoverDiv);
+          this._isAdsCoverActive = false;
+        }
       }
     }
 
@@ -1445,8 +1478,8 @@ function ImaStateMachine(context) {
     methods: {
       onAdloaded: onAdLoaded.bind(context),
       onAdstarted: onAdStarted.bind(context),
-      onAdpaused: onAdPaused.bind(context),
-      onAdresumed: onAdEvent.bind(context),
+      onAdpaused: onAdEvent.bind(context),
+      onAdresumed: onAdResumed.bind(context),
       onAdclicked: onAdClicked.bind(context),
       onAdskipped: onAdSkipped.bind(context),
       onAdcompleted: onAdCompleted.bind(context),
@@ -1520,8 +1553,7 @@ function onAdClicked(options, adEvent) {
   if (this._currentAd.isLinear()) {
     if (this._stateMachine.is(_state2.default.PLAYING)) {
       this.pauseAd();
-    } else if (this._stateMachine.is(_state2.default.PAUSED)) {
-      this.resumeAd();
+      this._setToggleAdsCover(true);
     }
   } else {
     if (!this.player.paused) {
@@ -1532,13 +1564,14 @@ function onAdClicked(options, adEvent) {
 }
 
 /**
- * PAUSED event handler.
+ * RESUMED event handler.
  * @param {Object} options - fsm event data.
  * @param {any} adEvent - ima event data.
  * @returns {void}
  */
-function onAdPaused(options, adEvent) {
+function onAdResumed(options, adEvent) {
   this.logger.debug(adEvent.type.toUpperCase());
+  this._setToggleAdsCover(false);
   this.dispatchEvent(options.transition);
 }
 
@@ -2587,6 +2620,587 @@ module.exports = function(options) { options = options || {};
 /***/ })
 /******/ ]);
 });
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(8);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(10)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../node_modules/css-loader/index.js!./style.css", function() {
+			var newContent = require("!!../../node_modules/css-loader/index.js!./style.css");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(9)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, ".playkit-ads-cover {\n  position: fixed;\n  cursor: pointer;\n  width: 100%;\n  height: 100%;\n  background-color: rgba(0, 0, 0, 0);\n}\n\n.playkit-ads-container {\n  position: absolute;\n  top: 0;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+// css base code, injected by the css-loader
+module.exports = function(useSourceMap) {
+	var list = [];
+
+	// return the list of modules as css string
+	list.toString = function toString() {
+		return this.map(function (item) {
+			var content = cssWithMappingToString(item, useSourceMap);
+			if(item[2]) {
+				return "@media " + item[2] + "{" + content + "}";
+			} else {
+				return content;
+			}
+		}).join("");
+	};
+
+	// import a list of modules into the list
+	list.i = function(modules, mediaQuery) {
+		if(typeof modules === "string")
+			modules = [[null, modules, ""]];
+		var alreadyImportedModules = {};
+		for(var i = 0; i < this.length; i++) {
+			var id = this[i][0];
+			if(typeof id === "number")
+				alreadyImportedModules[id] = true;
+		}
+		for(i = 0; i < modules.length; i++) {
+			var item = modules[i];
+			// skip already imported module
+			// this implementation is not 100% perfect for weird media query combinations
+			//  when a module is imported multiple times with different media queries.
+			//  I hope this will never occur (Hey this way we have smaller bundles)
+			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+				if(mediaQuery && !item[2]) {
+					item[2] = mediaQuery;
+				} else if(mediaQuery) {
+					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+				}
+				list.push(item);
+			}
+		}
+	};
+	return list;
+};
+
+function cssWithMappingToString(item, useSourceMap) {
+	var content = item[1] || '';
+	var cssMapping = item[3];
+	if (!cssMapping) {
+		return content;
+	}
+
+	if (useSourceMap && typeof btoa === 'function') {
+		var sourceMapping = toComment(cssMapping);
+		var sourceURLs = cssMapping.sources.map(function (source) {
+			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
+		});
+
+		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
+	}
+
+	return [content].join('\n');
+}
+
+// Adapted from convert-source-map (MIT)
+function toComment(sourceMap) {
+	// eslint-disable-next-line no-undef
+	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
+	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
+
+	return '/*# ' + data + ' */';
+}
+
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+
+var stylesInDom = {};
+
+var	memoize = function (fn) {
+	var memo;
+
+	return function () {
+		if (typeof memo === "undefined") memo = fn.apply(this, arguments);
+		return memo;
+	};
+};
+
+var isOldIE = memoize(function () {
+	// Test for IE <= 9 as proposed by Browserhacks
+	// @see http://browserhacks.com/#hack-e71d8692f65334173fee715c222cb805
+	// Tests for existence of standard globals is to allow style-loader
+	// to operate correctly into non-standard environments
+	// @see https://github.com/webpack-contrib/style-loader/issues/177
+	return window && document && document.all && !window.atob;
+});
+
+var getElement = (function (fn) {
+	var memo = {};
+
+	return function(selector) {
+		if (typeof memo[selector] === "undefined") {
+			memo[selector] = fn.call(this, selector);
+		}
+
+		return memo[selector]
+	};
+})(function (target) {
+	return document.querySelector(target)
+});
+
+var singleton = null;
+var	singletonCounter = 0;
+var	stylesInsertedAtTop = [];
+
+var	fixUrls = __webpack_require__(11);
+
+module.exports = function(list, options) {
+	if (typeof DEBUG !== "undefined" && DEBUG) {
+		if (typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
+	}
+
+	options = options || {};
+
+	options.attrs = typeof options.attrs === "object" ? options.attrs : {};
+
+	// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+	// tags it will allow on a page
+	if (!options.singleton) options.singleton = isOldIE();
+
+	// By default, add <style> tags to the <head> element
+	if (!options.insertInto) options.insertInto = "head";
+
+	// By default, add <style> tags to the bottom of the target
+	if (!options.insertAt) options.insertAt = "bottom";
+
+	var styles = listToStyles(list, options);
+
+	addStylesToDom(styles, options);
+
+	return function update (newList) {
+		var mayRemove = [];
+
+		for (var i = 0; i < styles.length; i++) {
+			var item = styles[i];
+			var domStyle = stylesInDom[item.id];
+
+			domStyle.refs--;
+			mayRemove.push(domStyle);
+		}
+
+		if(newList) {
+			var newStyles = listToStyles(newList, options);
+			addStylesToDom(newStyles, options);
+		}
+
+		for (var i = 0; i < mayRemove.length; i++) {
+			var domStyle = mayRemove[i];
+
+			if(domStyle.refs === 0) {
+				for (var j = 0; j < domStyle.parts.length; j++) domStyle.parts[j]();
+
+				delete stylesInDom[domStyle.id];
+			}
+		}
+	};
+};
+
+function addStylesToDom (styles, options) {
+	for (var i = 0; i < styles.length; i++) {
+		var item = styles[i];
+		var domStyle = stylesInDom[item.id];
+
+		if(domStyle) {
+			domStyle.refs++;
+
+			for(var j = 0; j < domStyle.parts.length; j++) {
+				domStyle.parts[j](item.parts[j]);
+			}
+
+			for(; j < item.parts.length; j++) {
+				domStyle.parts.push(addStyle(item.parts[j], options));
+			}
+		} else {
+			var parts = [];
+
+			for(var j = 0; j < item.parts.length; j++) {
+				parts.push(addStyle(item.parts[j], options));
+			}
+
+			stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
+		}
+	}
+}
+
+function listToStyles (list, options) {
+	var styles = [];
+	var newStyles = {};
+
+	for (var i = 0; i < list.length; i++) {
+		var item = list[i];
+		var id = options.base ? item[0] + options.base : item[0];
+		var css = item[1];
+		var media = item[2];
+		var sourceMap = item[3];
+		var part = {css: css, media: media, sourceMap: sourceMap};
+
+		if(!newStyles[id]) styles.push(newStyles[id] = {id: id, parts: [part]});
+		else newStyles[id].parts.push(part);
+	}
+
+	return styles;
+}
+
+function insertStyleElement (options, style) {
+	var target = getElement(options.insertInto)
+
+	if (!target) {
+		throw new Error("Couldn't find a style target. This probably means that the value for the 'insertInto' parameter is invalid.");
+	}
+
+	var lastStyleElementInsertedAtTop = stylesInsertedAtTop[stylesInsertedAtTop.length - 1];
+
+	if (options.insertAt === "top") {
+		if (!lastStyleElementInsertedAtTop) {
+			target.insertBefore(style, target.firstChild);
+		} else if (lastStyleElementInsertedAtTop.nextSibling) {
+			target.insertBefore(style, lastStyleElementInsertedAtTop.nextSibling);
+		} else {
+			target.appendChild(style);
+		}
+		stylesInsertedAtTop.push(style);
+	} else if (options.insertAt === "bottom") {
+		target.appendChild(style);
+	} else {
+		throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
+	}
+}
+
+function removeStyleElement (style) {
+	if (style.parentNode === null) return false;
+	style.parentNode.removeChild(style);
+
+	var idx = stylesInsertedAtTop.indexOf(style);
+	if(idx >= 0) {
+		stylesInsertedAtTop.splice(idx, 1);
+	}
+}
+
+function createStyleElement (options) {
+	var style = document.createElement("style");
+
+	options.attrs.type = "text/css";
+
+	addAttrs(style, options.attrs);
+	insertStyleElement(options, style);
+
+	return style;
+}
+
+function createLinkElement (options) {
+	var link = document.createElement("link");
+
+	options.attrs.type = "text/css";
+	options.attrs.rel = "stylesheet";
+
+	addAttrs(link, options.attrs);
+	insertStyleElement(options, link);
+
+	return link;
+}
+
+function addAttrs (el, attrs) {
+	Object.keys(attrs).forEach(function (key) {
+		el.setAttribute(key, attrs[key]);
+	});
+}
+
+function addStyle (obj, options) {
+	var style, update, remove, result;
+
+	// If a transform function was defined, run it on the css
+	if (options.transform && obj.css) {
+	    result = options.transform(obj.css);
+
+	    if (result) {
+	    	// If transform returns a value, use that instead of the original css.
+	    	// This allows running runtime transformations on the css.
+	    	obj.css = result;
+	    } else {
+	    	// If the transform function returns a falsy value, don't add this css.
+	    	// This allows conditional loading of css
+	    	return function() {
+	    		// noop
+	    	};
+	    }
+	}
+
+	if (options.singleton) {
+		var styleIndex = singletonCounter++;
+
+		style = singleton || (singleton = createStyleElement(options));
+
+		update = applyToSingletonTag.bind(null, style, styleIndex, false);
+		remove = applyToSingletonTag.bind(null, style, styleIndex, true);
+
+	} else if (
+		obj.sourceMap &&
+		typeof URL === "function" &&
+		typeof URL.createObjectURL === "function" &&
+		typeof URL.revokeObjectURL === "function" &&
+		typeof Blob === "function" &&
+		typeof btoa === "function"
+	) {
+		style = createLinkElement(options);
+		update = updateLink.bind(null, style, options);
+		remove = function () {
+			removeStyleElement(style);
+
+			if(style.href) URL.revokeObjectURL(style.href);
+		};
+	} else {
+		style = createStyleElement(options);
+		update = applyToTag.bind(null, style);
+		remove = function () {
+			removeStyleElement(style);
+		};
+	}
+
+	update(obj);
+
+	return function updateStyle (newObj) {
+		if (newObj) {
+			if (
+				newObj.css === obj.css &&
+				newObj.media === obj.media &&
+				newObj.sourceMap === obj.sourceMap
+			) {
+				return;
+			}
+
+			update(obj = newObj);
+		} else {
+			remove();
+		}
+	};
+}
+
+var replaceText = (function () {
+	var textStore = [];
+
+	return function (index, replacement) {
+		textStore[index] = replacement;
+
+		return textStore.filter(Boolean).join('\n');
+	};
+})();
+
+function applyToSingletonTag (style, index, remove, obj) {
+	var css = remove ? "" : obj.css;
+
+	if (style.styleSheet) {
+		style.styleSheet.cssText = replaceText(index, css);
+	} else {
+		var cssNode = document.createTextNode(css);
+		var childNodes = style.childNodes;
+
+		if (childNodes[index]) style.removeChild(childNodes[index]);
+
+		if (childNodes.length) {
+			style.insertBefore(cssNode, childNodes[index]);
+		} else {
+			style.appendChild(cssNode);
+		}
+	}
+}
+
+function applyToTag (style, obj) {
+	var css = obj.css;
+	var media = obj.media;
+
+	if(media) {
+		style.setAttribute("media", media)
+	}
+
+	if(style.styleSheet) {
+		style.styleSheet.cssText = css;
+	} else {
+		while(style.firstChild) {
+			style.removeChild(style.firstChild);
+		}
+
+		style.appendChild(document.createTextNode(css));
+	}
+}
+
+function updateLink (link, options, obj) {
+	var css = obj.css;
+	var sourceMap = obj.sourceMap;
+
+	/*
+		If convertToAbsoluteUrls isn't defined, but sourcemaps are enabled
+		and there is no publicPath defined then lets turn convertToAbsoluteUrls
+		on by default.  Otherwise default to the convertToAbsoluteUrls option
+		directly
+	*/
+	var autoFixUrls = options.convertToAbsoluteUrls === undefined && sourceMap;
+
+	if (options.convertToAbsoluteUrls || autoFixUrls) {
+		css = fixUrls(css);
+	}
+
+	if (sourceMap) {
+		// http://stackoverflow.com/a/26603875
+		css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
+	}
+
+	var blob = new Blob([css], { type: "text/css" });
+
+	var oldSrc = link.href;
+
+	link.href = URL.createObjectURL(blob);
+
+	if(oldSrc) URL.revokeObjectURL(oldSrc);
+}
+
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports) {
+
+
+/**
+ * When source maps are enabled, `style-loader` uses a link element with a data-uri to
+ * embed the css on the page. This breaks all relative urls because now they are relative to a
+ * bundle instead of the current page.
+ *
+ * One solution is to only use full urls, but that may be impossible.
+ *
+ * Instead, this function "fixes" the relative urls to be absolute according to the current page location.
+ *
+ * A rudimentary test suite is located at `test/fixUrls.js` and can be run via the `npm test` command.
+ *
+ */
+
+module.exports = function (css) {
+  // get current location
+  var location = typeof window !== "undefined" && window.location;
+
+  if (!location) {
+    throw new Error("fixUrls requires window.location");
+  }
+
+	// blank or null?
+	if (!css || typeof css !== "string") {
+	  return css;
+  }
+
+  var baseUrl = location.protocol + "//" + location.host;
+  var currentDir = baseUrl + location.pathname.replace(/\/[^\/]*$/, "/");
+
+	// convert each url(...)
+	/*
+	This regular expression is just a way to recursively match brackets within
+	a string.
+
+	 /url\s*\(  = Match on the word "url" with any whitespace after it and then a parens
+	   (  = Start a capturing group
+	     (?:  = Start a non-capturing group
+	         [^)(]  = Match anything that isn't a parentheses
+	         |  = OR
+	         \(  = Match a start parentheses
+	             (?:  = Start another non-capturing groups
+	                 [^)(]+  = Match anything that isn't a parentheses
+	                 |  = OR
+	                 \(  = Match a start parentheses
+	                     [^)(]*  = Match anything that isn't a parentheses
+	                 \)  = Match a end parentheses
+	             )  = End Group
+              *\) = Match anything and then a close parens
+          )  = Close non-capturing group
+          *  = Match anything
+       )  = Close capturing group
+	 \)  = Match a close parens
+
+	 /gi  = Get all matches, not the first.  Be case insensitive.
+	 */
+	var fixedCss = css.replace(/url\s*\(((?:[^)(]|\((?:[^)(]+|\([^)(]*\))*\))*)\)/gi, function(fullMatch, origUrl) {
+		// strip quotes (if they exist)
+		var unquotedOrigUrl = origUrl
+			.trim()
+			.replace(/^"(.*)"$/, function(o, $1){ return $1; })
+			.replace(/^'(.*)'$/, function(o, $1){ return $1; });
+
+		// already a full url? no change
+		if (/^(#|data:|http:\/\/|https:\/\/|file:\/\/\/)/i.test(unquotedOrigUrl)) {
+		  return fullMatch;
+		}
+
+		// convert the url to a full url
+		var newUrl;
+
+		if (unquotedOrigUrl.indexOf("//") === 0) {
+		  	//TODO: should we add protocol?
+			newUrl = unquotedOrigUrl;
+		} else if (unquotedOrigUrl.indexOf("/") === 0) {
+			// path should be relative to the base url
+			newUrl = baseUrl + unquotedOrigUrl; // already starts with '/'
+		} else {
+			// path should be relative to current directory
+			newUrl = currentDir + unquotedOrigUrl.replace(/^\.\//, ""); // Strip leading './'
+		}
+
+		// send back the fixed url(...)
+		return "url(" + JSON.stringify(newUrl) + ")";
+	});
+
+	// send back the fixed css
+	return fixedCss;
+};
+
 
 /***/ })
 /******/ ]);

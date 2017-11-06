@@ -111,7 +111,7 @@ export default class ImaStateMachine {
         onAdloaded: onAdLoaded.bind(context),
         onAdstarted: onAdStarted.bind(context),
         onAdpaused: onAdEvent.bind(context),
-        onAdresumed: onAdEvent.bind(context),
+        onAdresumed: onAdResumed.bind(context),
         onAdclicked: onAdClicked.bind(context),
         onAdskipped: onAdSkipped.bind(context),
         onAdcompleted: onAdCompleted.bind(context),
@@ -190,14 +190,25 @@ function onAdClicked(options: Object, adEvent: any): void {
   if (this._currentAd.isLinear()) {
     if (this._stateMachine.is(State.PLAYING)) {
       this.pauseAd();
-    } else if (this._stateMachine.is(State.PAUSED)) {
-      this.resumeAd();
+      this._setToggleAdsCover(true);
     }
   } else {
     if (!this.player.paused) {
       this.player.pause();
     }
   }
+  this.dispatchEvent(options.transition);
+}
+
+/**
+ * RESUMED event handler.
+ * @param {Object} options - fsm event data.
+ * @param {any} adEvent - ima event data.
+ * @returns {void}
+ */
+function onAdResumed(options: Object, adEvent: any): void {
+  this.logger.debug(adEvent.type.toUpperCase());
+  this._setToggleAdsCover(false);
   this.dispatchEvent(options.transition);
 }
 
