@@ -352,8 +352,11 @@ export default class Ima extends BasePlugin {
    */
   _startAdsManager(): void {
     this.logger.debug("Start ads manager");
-    this._adsManager.init(this.player.dimensions.width, this.player.dimensions.height, this._sdk.ViewMode.NORMAL);
-    this._adsManager.start();
+    const readyPromise = this._adsManager.isCustomPlaybackUsed() ? this.player.ready() : Promise.resolve();
+    readyPromise.then(() => {
+      this._adsManager.init(this.player.dimensions.width, this.player.dimensions.height, this._sdk.ViewMode.NORMAL);
+      this._adsManager.start();
+    });
   }
 
   /**
@@ -516,22 +519,9 @@ export default class Ima extends BasePlugin {
    */
   _resizeAd() {
     if (this._sdk && this._adsManager) {
-      let isFullScreen = this._isFullScreen();
-      let viewMode = (isFullScreen ? this._sdk.ViewMode.FULLSCREEN : this._sdk.ViewMode.NORMAL);
+      let viewMode = (this.player.isFullscreen() ? this._sdk.ViewMode.FULLSCREEN : this._sdk.ViewMode.NORMAL);
       this._adsManager.resize(this.player.dimensions.width, this.player.dimensions.height, viewMode);
     }
-  }
-
-  /**
-   * Helper for checking if the document is in full screen mode.
-   * @private
-   * @returns {boolean} - Whether the document is in full screen mode.
-   */
-  _isFullScreen(): boolean {
-    return typeof document.fullscreenElement !== 'undefined' && Boolean(document.fullscreenElement) ||
-      typeof document.webkitFullscreenElement !== 'undefined' && Boolean(document.webkitFullscreenElement) ||
-      typeof document.mozFullScreenElement !== 'undefined' && Boolean(document.mozFullScreenElement) ||
-      typeof document.msFullscreenElement !== 'undefined' && Boolean(document.msFullscreenElement);
   }
 
   /**
