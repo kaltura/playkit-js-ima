@@ -265,7 +265,8 @@ describe('Ima Plugin', function () {
     player.play();
   });
 
-  it('should play single-non-linear-inline', (done) => {
+  // TODO: Remove skip after ad tag will be fixed
+  it.skip('should play single-non-linear-inline', (done) => {
     cuePoints = [0];
     player = loadPlayerWithAds(targetId, {
       adTagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=480x70&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dnonlinear&correlator='
