@@ -507,9 +507,14 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_startAdsManager',
     value: function _startAdsManager() {
+      var _this2 = this;
+
       this.logger.debug("Start ads manager");
-      this._adsManager.init(this.player.dimensions.width, this.player.dimensions.height, this._sdk.ViewMode.NORMAL);
-      this._adsManager.start();
+      var readyPromise = this._adsManager.isCustomPlaybackUsed() ? this.player.ready() : Promise.resolve();
+      readyPromise.then(function () {
+        _this2._adsManager.init(_this2.player.dimensions.width, _this2.player.dimensions.height, _this2._sdk.ViewMode.NORMAL);
+        _this2._adsManager.start();
+      });
     }
 
     /**
@@ -521,10 +526,10 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_addBindings',
     value: function _addBindings() {
-      var _this2 = this;
+      var _this3 = this;
 
       ['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange'].forEach(function (fullScreenEvent) {
-        return _this2.eventManager.listen(document, fullScreenEvent, _this2._resizeAd.bind(_this2));
+        return _this3.eventManager.listen(document, fullScreenEvent, _this3._resizeAd.bind(_this3));
       });
       this.eventManager.listen(window, 'resize', this._resizeAd.bind(this));
       this.eventManager.listen(this.player, this.player.Event.MUTE_CHANGE, this._syncPlayerVolume.bind(this));
@@ -532,7 +537,7 @@ var Ima = function (_BasePlugin) {
       this.eventManager.listen(this.player, this.player.Event.SOURCE_SELECTED, function (event) {
         var selectedSource = event.payload.selectedSource;
         if (selectedSource && selectedSource.length > 0) {
-          _this2._contentSrc = selectedSource[0].url;
+          _this3._contentSrc = selectedSource[0].url;
         }
       });
     }
@@ -570,20 +575,20 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_init',
     value: function _init() {
-      var _this3 = this;
+      var _this4 = this;
 
       this.loadPromise = _playkitJs.Utils.Object.defer();
       (this._isImaSDKLibLoaded() ? Promise.resolve() : _playkitJs.Utils.Dom.loadScriptAsync(this.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL)).then(function () {
-        _this3._sdk = window.google.ima;
-        _this3.logger.debug("IMA SDK version: " + _this3._sdk.VERSION);
-        _this3._initImaSettings();
-        _this3._initAdsContainer();
-        _this3._initAdsLoader();
-        _this3._requestAds();
-        _this3._stateMachine.loaded();
-        _this3.loadPromise.resolve();
+        _this4._sdk = window.google.ima;
+        _this4.logger.debug("IMA SDK version: " + _this4._sdk.VERSION);
+        _this4._initImaSettings();
+        _this4._initAdsContainer();
+        _this4._initAdsLoader();
+        _this4._requestAds();
+        _this4._stateMachine.loaded();
+        _this4.loadPromise.resolve();
       }).catch(function (e) {
-        _this3.loadPromise.reject(e);
+        _this4.loadPromise.reject(e);
       });
     }
 
@@ -628,7 +633,7 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_initAdsContainer',
     value: function _initAdsContainer() {
-      var _this4 = this;
+      var _this5 = this;
 
       this.logger.debug("Init ads container");
       var playerView = this.player.getView();
@@ -641,7 +646,7 @@ var Ima = function (_BasePlugin) {
       this._adsCoverDiv.id = ADS_COVER_CLASS + playerView.id;
       this._adsCoverDiv.className = ADS_COVER_CLASS;
       this._adsCoverDiv.onclick = function () {
-        return _this4.resumeAd();
+        return _this5.resumeAd();
       };
       // Append the ads container to the dom
       _playkitJs.Utils.Dom.appendChild(playerView, this._adsContainerDiv);
@@ -657,13 +662,13 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_initAdsLoader',
     value: function _initAdsLoader() {
-      var _this5 = this;
+      var _this6 = this;
 
       this.logger.debug("Init ads loader");
       this._adsLoader = new this._sdk.AdsLoader(this._adDisplayContainer);
       this._adsLoader.addEventListener(this._sdk.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._onAdsManagerLoaded.bind(this));
       this._adsLoader.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, function (adEvent) {
-        return _this5._stateMachine.aderror(adEvent);
+        return _this6._stateMachine.aderror(adEvent);
       });
     }
 
@@ -705,22 +710,9 @@ var Ima = function (_BasePlugin) {
     key: '_resizeAd',
     value: function _resizeAd() {
       if (this._sdk && this._adsManager) {
-        var isFullScreen = this._isFullScreen();
-        var viewMode = isFullScreen ? this._sdk.ViewMode.FULLSCREEN : this._sdk.ViewMode.NORMAL;
+        var viewMode = this.player.isFullscreen() ? this._sdk.ViewMode.FULLSCREEN : this._sdk.ViewMode.NORMAL;
         this._adsManager.resize(this.player.dimensions.width, this.player.dimensions.height, viewMode);
       }
-    }
-
-    /**
-     * Helper for checking if the document is in full screen mode.
-     * @private
-     * @returns {boolean} - Whether the document is in full screen mode.
-     */
-
-  }, {
-    key: '_isFullScreen',
-    value: function _isFullScreen() {
-      return typeof document.fullscreenElement !== 'undefined' && Boolean(document.fullscreenElement) || typeof document.webkitFullscreenElement !== 'undefined' && Boolean(document.webkitFullscreenElement) || typeof document.mozFullScreenElement !== 'undefined' && Boolean(document.mozFullScreenElement) || typeof document.msFullscreenElement !== 'undefined' && Boolean(document.msFullscreenElement);
     }
 
     /**
@@ -900,13 +892,13 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_onAdsManagerLoaded',
     value: function _onAdsManagerLoaded(adsManagerLoadedEvent) {
-      var _this6 = this;
+      var _this7 = this;
 
       this.logger.debug('Ads manager loaded');
       var adsRenderingSettings = new this._sdk.AdsRenderingSettings();
       Object.keys(this.config.adsRenderingSettings).forEach(function (setting) {
         if (adsRenderingSettings[setting] != null) {
-          adsRenderingSettings[setting] = _this6.config.adsRenderingSettings[setting];
+          adsRenderingSettings[setting] = _this7.config.adsRenderingSettings[setting];
         }
       });
       this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
@@ -928,61 +920,61 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_attachAdsManagerListeners',
     value: function _attachAdsManagerListeners() {
-      var _this7 = this;
+      var _this8 = this;
 
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_PAUSE_REQUESTED, function (adEvent) {
-        return _this7._stateMachine.adbreakstart(adEvent);
+        return _this8._stateMachine.adbreakstart(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOADED, function (adEvent) {
-        return _this7._stateMachine.adloaded(adEvent);
+        return _this8._stateMachine.adloaded(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.STARTED, function (adEvent) {
-        return _this7._stateMachine.adstarted(adEvent);
+        return _this8._stateMachine.adstarted(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.PAUSED, function (adEvent) {
-        return _this7._stateMachine.adpaused(adEvent);
+        return _this8._stateMachine.adpaused(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.RESUMED, function (adEvent) {
-        return _this7._stateMachine.adresumed(adEvent);
+        return _this8._stateMachine.adresumed(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.FIRST_QUARTILE, function (adEvent) {
-        return _this7._stateMachine.adfirstquartile(adEvent);
+        return _this8._stateMachine.adfirstquartile(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.MIDPOINT, function (adEvent) {
-        return _this7._stateMachine.admidpoint(adEvent);
+        return _this8._stateMachine.admidpoint(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.THIRD_QUARTILE, function (adEvent) {
-        return _this7._stateMachine.adthirdquartile(adEvent);
+        return _this8._stateMachine.adthirdquartile(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.CLICK, function (adEvent) {
-        return _this7._stateMachine.adclicked(adEvent);
+        return _this8._stateMachine.adclicked(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.SKIPPED, function (adEvent) {
-        return _this7._stateMachine.adskipped(adEvent);
+        return _this8._stateMachine.adskipped(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.COMPLETE, function (adEvent) {
-        return _this7._stateMachine.adcompleted(adEvent);
+        return _this8._stateMachine.adcompleted(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_RESUME_REQUESTED, function (adEvent) {
-        return _this7._stateMachine.adbreakend(adEvent);
+        return _this8._stateMachine.adbreakend(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.ALL_ADS_COMPLETED, function (adEvent) {
-        return _this7._stateMachine.alladscompleted(adEvent);
+        return _this8._stateMachine.alladscompleted(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.USER_CLOSE, function (adEvent) {
-        return _this7._stateMachine.userclosedad(adEvent);
+        return _this8._stateMachine.userclosedad(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_CHANGED, function (adEvent) {
-        return _this7._stateMachine.advolumechanged(adEvent);
+        return _this8._stateMachine.advolumechanged(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_MUTED, function (adEvent) {
-        return _this7._stateMachine.admuted(adEvent);
+        return _this8._stateMachine.admuted(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOG, function (adEvent) {
-        return _this7._stateMachine.aderror(adEvent);
+        return _this8._stateMachine.aderror(adEvent);
       });
       this._adsManager.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, function (adEvent) {
-        return _this7._stateMachine.aderror(adEvent);
+        return _this8._stateMachine.aderror(adEvent);
       });
     }
 
@@ -1015,16 +1007,16 @@ var Ima = function (_BasePlugin) {
   }, {
     key: '_startAdInterval',
     value: function _startAdInterval() {
-      var _this8 = this;
+      var _this9 = this;
 
       this._stopAdInterval();
       this._intervalTimer = setInterval(function () {
-        if (_this8._stateMachine.is(_state2.default.PLAYING)) {
-          var remainingTime = _this8._adsManager.getRemainingTime();
-          var duration = _this8._adsManager.getCurrentAd().getDuration();
+        if (_this9._stateMachine.is(_state2.default.PLAYING)) {
+          var remainingTime = _this9._adsManager.getRemainingTime();
+          var duration = _this9._adsManager.getCurrentAd().getDuration();
           var currentTime = duration - remainingTime;
           if (_playkitJs.Utils.Number.isNumber(duration) && _playkitJs.Utils.Number.isNumber(currentTime)) {
-            _this8.dispatchEvent(_this8.player.Event.AD_PROGRESS, {
+            _this9.dispatchEvent(_this9.player.Event.AD_PROGRESS, {
               adProgress: {
                 currentTime: currentTime,
                 duration: duration
@@ -1510,6 +1502,11 @@ function ImaStateMachine(context) {
 exports.default = ImaStateMachine;
 function onAdLoaded(options, adEvent) {
   this.logger.debug(adEvent.type.toUpperCase());
+  // When we are using the same video element on iOS, native captions still
+  // appearing on the video element, so need to hide them before ad start.
+  if (this._adsManager.isCustomPlaybackUsed()) {
+    this.player.hideTextTrack();
+  }
   this.dispatchEvent(options.transition, normalizeAdEvent(adEvent));
 }
 
