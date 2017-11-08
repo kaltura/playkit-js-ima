@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.2.4"></a>
+## [0.2.4](https://github.com/kaltura/playkit-js-ima/compare/v0.2.3...v0.2.4) (2017-11-07)
+
+
+### Bug Fixes
+
+* **FEC-7387:** native captions are stuck on midroll and then new captions are displayed above the stuck one ([#28](https://github.com/kaltura/playkit-js-ima/issues/28)) ([0ce9963](https://github.com/kaltura/playkit-js-ima/commit/0ce9963))
+
+
+
 <a name="0.2.3"></a>
 ## [0.2.3](https://github.com/kaltura/playkit-js-ima/compare/v0.2.2...v0.2.3) (2017-11-01)
 
