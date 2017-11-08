@@ -2,17 +2,11 @@
 import ImaMiddleware from './ima-middleware'
 import ImaStateMachine from './ima-state-machine'
 import State from './state'
-import {registerPlugin, BasePlugin} from 'playkit-js'
+import {BasePlugin} from 'playkit-js'
 import {BaseMiddleware} from 'playkit-js'
 import {Utils} from 'playkit-js'
 import './assets/style.css'
 
-/**
- * The plugin name.
- * @type {string}
- * @const
- */
-const pluginName: string = "ima";
 /**
  * The ads container class.
  * @type {string}
@@ -865,5 +859,3 @@ export default class Ima extends BasePlugin {
     }
   }
 }
-
-registerPlugin(pluginName, Ima);
