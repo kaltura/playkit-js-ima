@@ -7,7 +7,7 @@
 		exports["PlaykitJsIma"] = factory(require("playkit-js"));
 	else
 		root["PlaykitJsIma"] = factory(root["Playkit"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_2__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_0__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -70,11 +70,17 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE_0__;
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -95,7 +101,7 @@ var State = {
 exports.default = State;
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -107,21 +113,21 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _imaMiddleware = __webpack_require__(3);
+var _imaMiddleware = __webpack_require__(4);
 
 var _imaMiddleware2 = _interopRequireDefault(_imaMiddleware);
 
-var _imaStateMachine = __webpack_require__(4);
+var _imaStateMachine = __webpack_require__(5);
 
 var _imaStateMachine2 = _interopRequireDefault(_imaStateMachine);
 
-var _state = __webpack_require__(0);
+var _state = __webpack_require__(1);
 
 var _state2 = _interopRequireDefault(_state);
 
-var _playkitJs = __webpack_require__(2);
+var _playkitJs = __webpack_require__(0);
 
-__webpack_require__(7);
+__webpack_require__(8);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -131,12 +137,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-/**
- * The plugin name.
- * @type {string}
- * @const
- */
-var pluginName = "ima";
 /**
  * The ads container class.
  * @type {string}
@@ -1182,17 +1182,42 @@ Ima.IMA_SDK_LIB_URL = "//imasdk.googleapis.com/js/sdkloader/ima3.js";
 Ima.IMA_SDK_DEBUG_LIB_URL = "//imasdk.googleapis.com/js/sdkloader/ima3_debug.js";
 exports.default = Ima;
 
-
-(0, _playkitJs.registerPlugin)(pluginName, Ima);
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports) {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
-
 /***/ }),
 /* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.NAME = exports.VERSION = undefined;
+
+var _playkitJs = __webpack_require__(0);
+
+var _ima = __webpack_require__(2);
+
+var _ima2 = _interopRequireDefault(_ima);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = _ima2.default;
+exports.VERSION = "0.3.0";
+exports.NAME = "playkit-js-ima";
+
+/**
+ * The plugin name.
+ * @type {string}
+ * @const
+ */
+
+var pluginName = "ima";
+
+(0, _playkitJs.registerPlugin)(pluginName, _ima2.default);
+
+/***/ }),
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1204,13 +1229,13 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _playkitJs = __webpack_require__(2);
+var _playkitJs = __webpack_require__(0);
 
-var _ima = __webpack_require__(1);
+var _ima = __webpack_require__(2);
 
 var _ima2 = _interopRequireDefault(_ima);
 
-var _state = __webpack_require__(0);
+var _state = __webpack_require__(1);
 
 var _state2 = _interopRequireDefault(_state);
 
@@ -1353,7 +1378,7 @@ var ImaMiddleware = function (_BaseMiddleware) {
 exports.default = ImaMiddleware;
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1363,15 +1388,15 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _javascriptStateMachine = __webpack_require__(5);
+var _javascriptStateMachine = __webpack_require__(6);
 
 var _javascriptStateMachine2 = _interopRequireDefault(_javascriptStateMachine);
 
-var _history = __webpack_require__(6);
+var _history = __webpack_require__(7);
 
 var _history2 = _interopRequireDefault(_history);
 
-var _state = __webpack_require__(0);
+var _state = __webpack_require__(1);
 
 var _state2 = _interopRequireDefault(_state);
 
@@ -1729,7 +1754,7 @@ function normalizeAdEvent(adEvent) {
 }
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -2403,7 +2428,7 @@ module.exports = function(message, transition, from, to, current) {
 });
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -2619,13 +2644,13 @@ module.exports = function(options) { options = options || {};
 });
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(8);
+var content = __webpack_require__(9);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -2633,7 +2658,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(10)(content, options);
+var update = __webpack_require__(11)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -2650,10 +2675,10 @@ if(false) {
 }
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(9)(undefined);
+exports = module.exports = __webpack_require__(10)(undefined);
 // imports
 
 
@@ -2664,7 +2689,7 @@ exports.push([module.i, ".playkit-ads-cover {\n  position: fixed;\n  cursor: poi
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports) {
 
 /*
@@ -2746,7 +2771,7 @@ function toComment(sourceMap) {
 
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -2792,7 +2817,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(11);
+var	fixUrls = __webpack_require__(12);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -3105,7 +3130,7 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports) {
 
 
