@@ -305,11 +305,13 @@ describe('Ima Plugin', function () {
     player = loadPlayerWithAds(targetId, {
       adTagUrl: 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=xml_vmap1&unviewed_position_start=1&cust_params=sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=[timestamp]',
       companions: {
-        testCompanionSquare: {
-          width: 300,
-          height: 250,
-          sizeCriteria: 'SelectExactMatch'
-        }
+        ads: {
+          testCompanionSquare: {
+            width: 300,
+            height: 250,
+          }
+        },
+        sizeCriteria: 'SELECT_EXACT_MATCH'
       }
     });
     ima = player._pluginManager.get('ima');
