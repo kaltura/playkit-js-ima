@@ -33,7 +33,6 @@ export default class Ima extends BasePlugin {
    */
   static defaultConfig: Object = {
     debug: false,
-    companions: {},
     setDisableCustomPlaybackForIOS10Plus: null,
     adsRenderingSettings: {
       restoreCustomPlaybackStateOnAdBreakComplete: true,
@@ -42,7 +41,11 @@ export default class Ima extends BasePlugin {
       useStyledNonLinearAds: true,
       bitrate: -1,
       autoAlign: true
-    }
+    },
+    companions: {
+      ads: null,
+      sizeCriteria: 'SELECT_EXACT_MATCH'
+    },
   };
 
   /**
@@ -819,41 +822,37 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _maybeDisplayCompanionAds(): void {
-    if (this.config.companions && !window.googletag) {
-      let companionsIds = Object.keys(this.config.companions);
+    if (this.config.companions && this.config.companions.ads && !window.googletag) {
+      const selectionCriteria = new this._sdk.CompanionAdSelectionSettings();
+      selectionCriteria.resourceType = this._sdk.CompanionAdSelectionSettings.ResourceType.ALL;
+      selectionCriteria.creativeType = this._sdk.CompanionAdSelectionSettings.CreativeType.ALL;
+      const sizeCriteria = this.config.companions.sizeCriteria;
+      switch (sizeCriteria) {
+        case 'SELECT_NEAR_MATCH':
+          selectionCriteria.sizeCriteria = this._sdk.CompanionAdSelectionSettings.SizeCriteria.SELECT_NEAR_MATCH;
+          break;
+        case 'IGNORE':
+          selectionCriteria.sizeCriteria = this._sdk.CompanionAdSelectionSettings.SizeCriteria.IGNORE;
+          break;
+        case 'SELECT_EXACT_MATCH':
+        default:
+          selectionCriteria.sizeCriteria = this._sdk.CompanionAdSelectionSettings.SizeCriteria.SELECT_EXACT_MATCH;
+          break;
+      }
+      const companionsIds = Object.keys(this.config.companions.ads);
       for (let i = 0; i < companionsIds.length; i++) {
-        let id = companionsIds[i];
-        let width = this.config.companions[id].width;
-        let height = this.config.companions[id].height;
-        let sizeCriteria = this.config.companions[id].sizeCriteria || '';
-        let companionAds = [];
-        try {
-          let selectionCriteria = new this._sdk.CompanionAdSelectionSettings();
-          selectionCriteria.resourceType = this._sdk.CompanionAdSelectionSettings.ResourceType.ALL;
-          selectionCriteria.creativeType = this._sdk.CompanionAdSelectionSettings.CreativeType.ALL;
-          switch (sizeCriteria.toLowerCase()) {
-            case 'selectnearmatch':
-              selectionCriteria.sizeCriteria = this._sdk.CompanionAdSelectionSettings.SizeCriteria.SELECT_NEAR_MATCH;
-              break;
-            case 'ignore':
-              selectionCriteria.sizeCriteria = this._sdk.CompanionAdSelectionSettings.SizeCriteria.IGNORE;
-              break;
-            case 'selectexactmatch':
-            default:
-              selectionCriteria.sizeCriteria = this._sdk.CompanionAdSelectionSettings.SizeCriteria.SELECT_EXACT_MATCH;
-              break;
+        const id = companionsIds[i];
+        const ad = this.config.companions.ads[id];
+        const width = ad.width;
+        const height = ad.height;
+        const companionAds = this._currentAd.getCompanionAds(width, height, selectionCriteria);
+        if (companionAds.length > 0) {
+          const companionAd = companionAds[0];
+          const content = companionAd.getContent();
+          const el = Utils.Dom.getElementById(id);
+          if (el) {
+            el.innerHTML = content;
           }
-          companionAds = this._currentAd.getCompanionAds(width, height, selectionCriteria);
-          if (companionAds.length > 0) {
-            let companionAd = companionAds[0];
-            let content = companionAd.getContent();
-            let el = Utils.Dom.getElementById(id);
-            if (el) {
-              el.innerHTML = content;
-            }
-          }
-        } catch (e) {
-          this.logger.error(e);
         }
       }
     }
