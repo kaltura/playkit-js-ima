@@ -38,6 +38,16 @@ export default class ImaMiddleware extends BaseMiddleware {
   }
 
   /**
+   * load middleware handler.
+   * @param {Function} next - The next load handler in the middleware chain.
+   * @returns {void}
+   */
+  load(next: Function): void{
+    this._isPlayerLoaded = true;
+    this.callNext(next);
+  }
+
+  /**
    * Play middleware handler.
    * @param {Function} next - The next play handler in the middleware chain.
    * @returns {void}
@@ -49,36 +59,37 @@ export default class ImaMiddleware extends BaseMiddleware {
       this._context.logger.debug("Player loaded");
     }
     this._context.loadPromise.then(() => {
-      let sm = this._context.getStateMachine();
-      switch (sm.state) {
-        case State.LOADED: {
-          const initialUserAction = this._context.initialUserAction();
-          if (initialUserAction) {
-            initialUserAction.then(() => {
+        let sm = this._context.getStateMachine();
+        switch (sm.state) {
+          case State.LOADED: {
+            const initialUserAction = this._context.initialUserAction();
+            if (initialUserAction) {
+              return initialUserAction.then(() => {
+                this.callNext(next);
+              })
+            } else {
               this.callNext(next);
-            });
-          } else {
-            this.callNext(next);
+            }
+            break;
           }
-          break;
-        }
-        case State.PAUSED: {
-          const resumeAd = this._context.resumeAd();
-          if (resumeAd) {
-            resumeAd.then(() => {
+          case State.PAUSED: {
+            const resumeAd = this._context.resumeAd();
+            if (resumeAd) {
+              return resumeAd.then(() => {
+                this.callNext(next);
+              });
+            } else {
               this.callNext(next);
-            });
-          } else {
-            this.callNext(next);
+            }
+            break;
           }
-          break;
-        }
-        default: {
-          this.callNext(next);
-          break;
+          default: {
+            this.callNext(next);
+            break;
+          }
         }
       }
-    }).catch((e) => {
+    ).catch((e) => {
       this._context.destroy();
       this._context.logger.error(e);
       this.callNext(next);
