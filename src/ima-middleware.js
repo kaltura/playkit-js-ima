@@ -54,7 +54,7 @@ export default class ImaMiddleware extends BaseMiddleware {
         case State.LOADED: {
           const initialUserAction = this._context.initialUserAction();
           if (initialUserAction) {
-            initialUserAction.then(() => {
+            return initialUserAction.then(() => {
               this.callNext(next);
             });
           } else {
