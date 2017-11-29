@@ -65,7 +65,7 @@ export default class ImaMiddleware extends BaseMiddleware {
         case State.PAUSED: {
           const resumeAd = this._context.resumeAd();
           if (resumeAd) {
-            resumeAd.then(() => {
+            return resumeAd.then(() => {
               this.callNext(next);
             });
           } else {
