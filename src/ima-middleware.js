@@ -54,7 +54,7 @@ export default class ImaMiddleware extends BaseMiddleware {
         case State.LOADED: {
           const initialUserAction = this._context.initialUserAction();
           if (initialUserAction) {
-            initialUserAction.then(() => {
+            return initialUserAction.then(() => {
               this.callNext(next);
             });
           } else {
@@ -65,7 +65,7 @@ export default class ImaMiddleware extends BaseMiddleware {
         case State.PAUSED: {
           const resumeAd = this._context.resumeAd();
           if (resumeAd) {
-            resumeAd.then(() => {
+            return resumeAd.then(() => {
               this.callNext(next);
             });
           } else {
