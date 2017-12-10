@@ -18,7 +18,7 @@ if (PROD) {
 
 module.exports = {
   context: __dirname + "/src",
-  entry: PROD ? {"playkit-ima.min": "index.js"} : {"playkit-ima": "index.js"},
+  entry: {"playkit-ima": "index.js"},
   output: {
     path: __dirname + "/dist",
     filename: '[name].js',

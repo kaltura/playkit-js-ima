@@ -63,6 +63,18 @@ describe('Ima Middleware', function () {
       });
     });
 
+    it('should destory adsManager and resume playback in case of error', function (done) {
+      let spy = sandbox.spy(fakeContext, 'destroy');
+      fakeContext.setCurrentState(State.LOADED);
+      fakeContext.initialUserAction = Promise.reject();
+      imaMiddleware = new ImaMiddleware(fakeContext);
+      imaMiddleware.play(function () {
+        spy.should.have.been.calledOnce;
+        fakeContext.initialUserAction = Promise.resolve();
+        done();
+      });
+    });
+
     it('should resumeAd', function (done) {
       let spy = sandbox.spy(fakeContext, 'resumeAd');
       fakeContext.setCurrentState(State.PAUSED);
