@@ -827,18 +827,7 @@ export default class Ima extends BasePlugin {
       selectionCriteria.resourceType = this._sdk.CompanionAdSelectionSettings.ResourceType.ALL;
       selectionCriteria.creativeType = this._sdk.CompanionAdSelectionSettings.CreativeType.ALL;
       const sizeCriteria = this.config.companions.sizeCriteria;
-      switch (sizeCriteria) {
-        case 'SELECT_NEAR_MATCH':
-          selectionCriteria.sizeCriteria = this._sdk.CompanionAdSelectionSettings.SizeCriteria.SELECT_NEAR_MATCH;
-          break;
-        case 'IGNORE':
-          selectionCriteria.sizeCriteria = this._sdk.CompanionAdSelectionSettings.SizeCriteria.IGNORE;
-          break;
-        case 'SELECT_EXACT_MATCH':
-        default:
-          selectionCriteria.sizeCriteria = this._sdk.CompanionAdSelectionSettings.SizeCriteria.SELECT_EXACT_MATCH;
-          break;
-      }
+      selectionCriteria.sizeCriteria = this._sdk.CompanionAdSelectionSettings.SizeCriteria[sizeCriteria] || this._sdk.CompanionAdSelectionSettings.SizeCriteria.SELECT_EXACT_MATCH;
       const companionsIds = Object.keys(this.config.companions.ads);
       for (let i = 0; i < companionsIds.length; i++) {
         const id = companionsIds[i];
