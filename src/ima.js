@@ -332,7 +332,7 @@ export default class Ima extends BasePlugin {
       this._adDisplayContainer.initialize();
       this._hasUserAction = true;
       if (!this.config.adTagUrl) {
-        this._nextPromise.resolve();
+        this._resolveNextPromise();
       }
       if (this._isAdsManagerLoaded) {
         this.logger.debug("User action occurred after ads manager loaded");
