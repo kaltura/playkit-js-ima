@@ -368,4 +368,13 @@ describe('Ima Plugin', function () {
     });
     player.play();
   });
+
+  it('should play the content immediately for empty config', (done) => {
+    player = loadPlayerWithAds(targetId, {});
+    ima = player._pluginManager.get('ima');
+    player.addEventListener(player.Event.PLAYING, () => {
+      done();
+    });
+    player.play();
+  });
 });
