@@ -48,8 +48,9 @@ Finally, add the bundle as a script tag in your page, and initialize the player
 <script type="text/javascript" src="/PATH/TO/FILE/playkit.js"></script>                     <!--PlayKit player-->
 <script type="text/javascript" src="//imasdk.googleapis.com/js/sdkloader/ima3.js"></script> <!--IMA SDK for HTML5-->
 <script type="text/javascript" src="/PATH/TO/FILE/playkit-ima.js"></script>                 <!--PlayKit IMA plugin-->
-<div id="videoContainer" style="height:360px; width:640px">
+<div id="player-placeholder" style="height:360px; width:640px">
 <script type="text/javascript">
+var playerContainer = document.querySelector("#player-placeholder");
 var config = {
  ...
  plugins: {
@@ -59,7 +60,8 @@ var config = {
  }
  ...
 };
-var player = playkit.loadPlayer("videoContainer", config);
+var player = playkit.core.loadPlayer(config);
+playerContainer.appendChild(player.getView());
 player.play();
 </script>
 ```

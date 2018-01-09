@@ -22,7 +22,7 @@ module.exports = {
   output: {
     path: __dirname + "/dist",
     filename: '[name].js',
-    library: "PlaykitJsIma",
+    library: ["playkit", "ima"],
     libraryTarget: "umd",
     devtoolModuleFilenameTemplate: "./ima/[resource-path]",
   },
