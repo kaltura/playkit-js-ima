@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.3.3"></a>
+## [0.3.3](https://github.com/kaltura/playkit-js-ima/compare/v0.3.2...v0.3.3) (2018-01-10)
+
+
+### Bug Fixes
+
+* **FEC-7516:** player gets stuck when ima plugin is empty ([#37](https://github.com/kaltura/playkit-js-ima/issues/37)) ([fa12158](https://github.com/kaltura/playkit-js-ima/commit/fa12158))
+* update env (docs and namespace) ([62ff0a1](https://github.com/kaltura/playkit-js-ima/commit/62ff0a1))
+
+
+
 <a name="0.3.2"></a>
 ## [0.3.2](https://github.com/kaltura/playkit-js-ima/compare/v0.3.1...v0.3.2) (2017-12-12)
 
