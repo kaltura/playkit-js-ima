@@ -189,7 +189,7 @@ function onAdClicked(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
   if (this._currentAd.isLinear()) {
     if (this._stateMachine.is(State.PLAYING)) {
-      this.pauseAd();
+      this._adsManager.pause();
       this._setToggleAdsCover(true);
     }
   } else {
