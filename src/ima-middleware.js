@@ -51,6 +51,8 @@ export default class ImaMiddleware extends BaseMiddleware {
     this._context.loadPromise.then(() => {
       let sm = this._context.getStateMachine();
       switch (sm.state) {
+        case State.PLAYING:
+          break;
         case State.LOADED: {
           const initialUserAction = this._context.initialUserAction();
           if (initialUserAction) {
@@ -93,6 +95,8 @@ export default class ImaMiddleware extends BaseMiddleware {
   pause(next: Function): void {
     let sm = this._context.getStateMachine();
     switch (sm.state) {
+      case State.PAUSED:
+        break;
       case State.PLAYING: {
         this._context.pauseAd();
         break;

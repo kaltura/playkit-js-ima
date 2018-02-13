@@ -469,7 +469,7 @@ export default class Ima extends BasePlugin {
     this._adsCoverDiv = Utils.Dom.createElement('div');
     this._adsCoverDiv.id = ADS_COVER_CLASS + playerView.id;
     this._adsCoverDiv.className = ADS_COVER_CLASS;
-    this._adsCoverDiv.onclick = () => this.resumeAd();
+    this._adsCoverDiv.onclick = () => this._onAdsCoverClicked();
     // Append the ads container to the dom
     Utils.Dom.appendChild(playerView, this._adsContainerDiv);
     this._adDisplayContainer = new this._sdk.AdDisplayContainer(this._adsContainerDiv, this.player.getVideoElement());
@@ -817,6 +817,18 @@ export default class Ima extends BasePlugin {
    */
   _onAdsContainerClicked(): void {
     this.player.paused ? this.player.play() : this.player.pause();
+  }
+
+
+  /**
+   * On ads cover click handler.
+   * @private
+   * @returns {void}
+   */
+  _onAdsCoverClicked(): void {
+    if (this._adsManager) {
+      this._adsManager.resume();
+    }
   }
 
   /**
