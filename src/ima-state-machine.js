@@ -190,8 +190,8 @@ function onAdClicked(options: Object, adEvent: any): void {
   if (this._currentAd.isLinear()) {
     if (this._stateMachine.is(State.PLAYING)) {
       this.pauseAd();
-      this._setToggleAdsCover(true);
     }
+    this._setToggleAdsCover(true);
   } else {
     if (!this.player.paused) {
       this.player.pause();
