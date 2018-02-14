@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.3.5"></a>
+## [0.3.5](https://github.com/kaltura/playkit-js-ima/compare/v0.3.4...v0.3.5) (2018-02-14)
+
+
+### Bug Fixes
+
+* **FEC-7502, FEC-7455:** Video stuck after the ad ,In case user was selecting learn more during ad and select Play (big icon) ([#39](https://github.com/kaltura/playkit-js-ima/issues/39)) ([2db6cef](https://github.com/kaltura/playkit-js-ima/commit/2db6cef))
+* **FEC-7898:** After pausing ad, each time clicking on the Ad area Ad info displayed (and video is not playing) ([#40](https://github.com/kaltura/playkit-js-ima/issues/40)) ([2451c82](https://github.com/kaltura/playkit-js-ima/commit/2451c82))
+
+
+
 <a name="0.3.4"></a>
 ## [0.3.4](https://github.com/kaltura/playkit-js-ima/compare/v0.3.2...v0.3.4) (2018-02-06)
 
