@@ -827,7 +827,16 @@ export default class Ima extends BasePlugin {
    */
   _onAdsCoverClicked(): void {
     if (this._adsManager) {
-      this._adsManager.resume();
+      switch (this._stateMachine.state) {
+        case State.PAUSED:
+          this._adsManager.resume();
+          break;
+        case State.PLAYING:
+          this._adsManager.pause();
+          break;
+        default:
+          break;
+      }
     }
   }
 
