@@ -104,7 +104,7 @@ export default class ImaMiddleware extends BaseMiddleware {
    */
   _maybePreloadPlayer(): void {
     const ctx = this._context;
-    if (ctx.isFallbackToMutedAutoPlay && !ctx.isPlayerLoaded) {
+    if (!ctx.isFallbackToMutedAutoPlay && !ctx.isPlayerLoaded) {
       ctx.player.load();
       ctx.isPlayerLoaded = true;
       ctx.logger.debug("Player loaded via middleware");
