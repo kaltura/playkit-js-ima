@@ -183,19 +183,48 @@ export default class Ima extends BasePlugin {
    * @private
    */
   _isAdsCoverActive: boolean;
-
+  /**
+   * Indicates whether we are on muted auto play mode.
+   * @member
+   * @private
+   */
   _isFallbackToMutedAutoPlay: boolean;
-
+  /**
+   * Indicates whether the content player is pre loaded.
+   * @member
+   * @private
+   */
   _isPlayerLoaded: boolean;
+  /**
+   * Indicates whether we need programmatically pause ad to enforce user gesture on resume event.
+   * @member
+   * @private
+   */
+  _waitingForAdsContainerClick: boolean;
+  /**
+   * Indicates whether an ads container click has been triggered the resume event.
+   * @member
+   * @private
+   */
+  _adsContainerClicked: boolean;
 
+  /**
+   * @param {boolean} value - Preload value.
+   */
   set isPlayerLoaded(value: boolean): void {
     this._isPlayerLoaded = value;
   }
 
+  /**
+   * @returns {boolean} - Whether the content player is pre loaded.
+   */
   get isPlayerLoaded(): boolean {
     return this._isPlayerLoaded;
   }
 
+  /**
+   * @returns {boolean} - Whether we are on muted auto play mode.
+   */
   get isFallbackToMutedAutoPlay(): boolean {
     return this._isFallbackToMutedAutoPlay;
   }
