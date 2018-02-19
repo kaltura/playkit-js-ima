@@ -15,12 +15,6 @@ export default class ImaMiddleware extends BaseMiddleware {
    */
   id: string = "ImaMiddleware";
   /**
-   * Whether the player has been loaded.
-   * @member
-   * @private
-   */
-  _isPlayerLoaded: boolean;
-  /**
    * The plugin context.
    * @member
    * @private
@@ -34,7 +28,6 @@ export default class ImaMiddleware extends BaseMiddleware {
   constructor(context: Ima) {
     super();
     this._context = context;
-    context.player.addEventListener(context.player.Event.CHANGE_SOURCE_STARTED, () => this._isPlayerLoaded = false);
   }
 
   /**
@@ -43,11 +36,7 @@ export default class ImaMiddleware extends BaseMiddleware {
    * @returns {void}
    */
   play(next: Function): void {
-    if (!this._isPlayerLoaded) {
-      this._context.player.load();
-      this._isPlayerLoaded = true;
-      this._context.logger.debug("Player loaded");
-    }
+    this._maybePreloadPlayer();
     this._context.loadPromise.then(() => {
       let sm = this._context.getStateMachine();
       switch (sm.state) {
@@ -105,6 +94,20 @@ export default class ImaMiddleware extends BaseMiddleware {
         this.callNext(next);
         break;
       }
+    }
+  }
+
+  /**
+   * Maybe preload the content player.
+   * @private
+   * @returns {void}
+   */
+  _maybePreloadPlayer(): void {
+    const ctx = this._context;
+    if (!ctx.isFallbackToMutedAutoPlay && !ctx.isPlayerLoaded) {
+      ctx.player.load();
+      ctx.isPlayerLoaded = true;
+      ctx.logger.debug("Player loaded via middleware");
     }
   }
 }

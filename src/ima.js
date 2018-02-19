@@ -8,6 +8,12 @@ import {Utils} from 'playkit-js'
 import './assets/style.css'
 
 /**
+ * The full screen events list.
+ * @type {Array<string>}
+ * @const
+ */
+const FULL_SCREEN_EVENTS = ['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange'];
+/**
  * The ads container class.
  * @type {string}
  * @const
@@ -177,6 +183,51 @@ export default class Ima extends BasePlugin {
    * @private
    */
   _isAdsCoverActive: boolean;
+  /**
+   * Indicates whether we are on muted auto play mode.
+   * @member
+   * @private
+   */
+  _isFallbackToMutedAutoPlay: boolean;
+  /**
+   * Indicates whether the content player is pre loaded.
+   * @member
+   * @private
+   */
+  _isPlayerLoaded: boolean;
+  /**
+   * Indicates whether we need programmatically pause ad to enforce user gesture on resume event.
+   * @member
+   * @private
+   */
+  _waitingForAdsContainerClick: boolean;
+  /**
+   * Indicates whether an ads container click has been triggered the resume event.
+   * @member
+   * @private
+   */
+  _adsContainerClicked: boolean;
+
+  /**
+   * @param {boolean} value - Preload value.
+   */
+  set isPlayerLoaded(value: boolean): void {
+    this._isPlayerLoaded = value;
+  }
+
+  /**
+   * @returns {boolean} - Whether the content player is pre loaded.
+   */
+  get isPlayerLoaded(): boolean {
+    return this._isPlayerLoaded;
+  }
+
+  /**
+   * @returns {boolean} - Whether we are on muted auto play mode.
+   */
+  get isFallbackToMutedAutoPlay(): boolean {
+    return this._isFallbackToMutedAutoPlay;
+  }
 
   /**
    * Whether the ima plugin is valid.
@@ -246,9 +297,7 @@ export default class Ima extends BasePlugin {
    */
   pauseAd(): ?DeferredPromise {
     this.logger.debug("Pause ad");
-    this._nextPromise = Utils.Object.defer();
     this._adsManager.pause();
-    return this._nextPromise;
   }
 
   /**
@@ -365,14 +414,12 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _addBindings(): void {
-    [
-      'fullscreenchange',
-      'mozfullscreenchange',
-      'webkitfullscreenchange'
-    ].forEach(fullScreenEvent => this.eventManager.listen(document, fullScreenEvent, this._resizeAd.bind(this)));
+    FULL_SCREEN_EVENTS.forEach(fullScreenEvent => this.eventManager.listen(document, fullScreenEvent, this._resizeAd.bind(this)));
     this.eventManager.listen(window, 'resize', this._resizeAd.bind(this));
-    this.eventManager.listen(this.player, this.player.Event.MUTE_CHANGE, this._syncPlayerVolume.bind(this));
-    this.eventManager.listen(this.player, this.player.Event.VOLUME_CHANGE, this._syncPlayerVolume.bind(this));
+    this.eventManager.listen(this.player, this.player.Event.FALLBACK_TO_MUTED_AUTOPLAY, () => this._isFallbackToMutedAutoPlay = true);
+    this.eventManager.listen(this.player, this.player.Event.CHANGE_SOURCE_STARTED, () => this._isPlayerLoaded = false);
+    this.eventManager.listen(this.player, this.player.Event.MUTE_CHANGE, () => this._syncPlayerVolume());
+    this.eventManager.listen(this.player, this.player.Event.VOLUME_CHANGE, () => this._syncPlayerVolume());
     this.eventManager.listen(this.player, this.player.Event.SOURCE_SELECTED, (event) => {
       let selectedSource = event.payload.selectedSource;
       if (selectedSource && selectedSource.length > 0) {
@@ -819,7 +866,6 @@ export default class Ima extends BasePlugin {
     this.player.paused ? this.player.play() : this.player.pause();
   }
 
-
   /**
    * On ads cover click handler.
    * @private
@@ -868,6 +914,58 @@ export default class Ima extends BasePlugin {
           }
         }
       }
+    }
+  }
+
+  /**
+   * Attach the ads container div a listener which pre loads the content player.
+   * Only relevant on auto play mode.
+   * @private
+   * @returns {void}
+   */
+  _maybePreloadPlayerOnAdsContainerClick(): void {
+    if (!this._isPlayerLoaded && this._isFallbackToMutedAutoPlay) {
+      this._waitingForAdsContainerClick = true;
+      const onAdsContainerClicked = () => {
+        this._adsContainerClicked = true;
+        this.player.load();
+        this._isPlayerLoaded = true;
+        this.logger.debug("Player load as a result of ads container clicked");
+      };
+      setTimeout(() => {
+        this.eventManager.listenOnce(this._adsContainerDiv, "click", onAdsContainerClicked);
+      }, 0);
+    }
+  }
+
+  /**
+   * If RESUME event is not triggered as a result of user gesture
+   * we need to pause the ad to enforce user gesture.
+   * Only relevant on auto play mode.
+   * @private
+   * @returns {void}
+   */
+  _maybeForceAdPause(): void {
+    if (!this._isPlayerLoaded && this._isFallbackToMutedAutoPlay) {
+      if (this._waitingForAdsContainerClick && !this._adsContainerClicked) {
+        this._adsManager.pause();
+        this._adsContainerClicked = true;
+        this._waitingForAdsContainerClick = false;
+      }
+    }
+  }
+
+  /**
+   * Pre loads the content player if ad break ended and we didn't got user gesture.
+   * Only relevant on auto play mode.
+   * @private
+   * @returns {void}
+   */
+  _maybePreloadPlayerWhenAdBreakEnd(): void {
+    if (!this._isPlayerLoaded && this._isFallbackToMutedAutoPlay) {
+      this.player.load();
+      this._isPlayerLoaded = true;
+      this.logger.debug("Player load on ad break end");
     }
   }
 }
