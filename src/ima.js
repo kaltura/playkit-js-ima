@@ -297,9 +297,7 @@ export default class Ima extends BasePlugin {
    */
   pauseAd(): ?DeferredPromise {
     this.logger.debug("Pause ad");
-    this._nextPromise = Utils.Object.defer();
     this._adsManager.pause();
-    return this._nextPromise;
   }
 
   /**
