@@ -870,4 +870,18 @@ export default class Ima extends BasePlugin {
       }
     }
   }
+
+  /**
+   * On Chrome-Android we're ignoring LearnMore click to enable
+   * video element manipulation only on user gesture.
+   * @private
+   * @returns {void}
+   */
+  _maybeIgnoreClickOnAd(): void {
+    const isAndroid = () => this.player.env.os.name === 'Android';
+    const isChrome = () => this.player.env.browser.name === 'Chrome';
+    if (isAndroid() && isChrome()) {
+      this.eventManager.listenOnce(this.player.getView(), 'click', e => e.stopPropagation());
+    }
+  }
 }
