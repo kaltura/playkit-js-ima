@@ -188,9 +188,8 @@ function onAdStarted(options: Object, adEvent: any): void {
 function onAdClicked(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
   if (this._currentAd.isLinear()) {
-    if (this._stateMachine.is(State.PLAYING)) {
-      this._adsManager.pause();
-    }
+    this._maybePreloadPlayerOnAdsContainerClick();
+    this._adsManager.pause();
     this._setToggleAdsCover(true);
   } else {
     if (!this.player.paused) {
@@ -208,6 +207,7 @@ function onAdClicked(options: Object, adEvent: any): void {
  */
 function onAdResumed(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
+  this._maybeForceAdPause();
   this._setToggleAdsCover(false);
   this.dispatchEvent(options.transition);
 }
@@ -267,6 +267,7 @@ function onAdBreakEnd(options: Object, adEvent: any): void {
   this._setVideoEndedCallbackEnabled(true);
   this._setContentPlayheadTrackerEventsEnabled(true);
   if (!this._contentComplete) {
+    this._maybePreloadPlayerWhenAdBreakEnd();
     this._hideAdsContainer();
     this._maybeSetVideoCurrentTime();
     if (this._nextPromise) {
