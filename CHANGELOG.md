@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.3.6"></a>
+## [0.3.6](https://github.com/kaltura/playkit-js-ima/compare/v0.3.5...v0.3.6) (2018-02-19)
+
+
+### Bug Fixes
+
+* **FEC-7915:** When selecting learn more (long press) on pre-roll the ad page is opening and video continues to play ([#41](https://github.com/kaltura/playkit-js-ima/issues/41)) ([00dae30](https://github.com/kaltura/playkit-js-ima/commit/00dae30))
+* **FEC-7403:** When tapping on learn more on a pre roll, then closing the new opened tab, the video is not playing ([#43](https://github.com/kaltura/playkit-js-ima/issues/43)) ([0595959](https://github.com/kaltura/playkit-js-ima/commit/0595959))
+
+
 <a name="0.3.5"></a>
 ## [0.3.5](https://github.com/kaltura/playkit-js-ima/compare/v0.3.4...v0.3.5) (2018-02-14)
 
