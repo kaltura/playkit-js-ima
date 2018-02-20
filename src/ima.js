@@ -8,6 +8,16 @@ import {Utils} from 'playkit-js'
 import './assets/style.css'
 
 /**
+ * The full screen events..
+ * @type {Array<string>}
+ * @const
+ */
+const FULL_SCREEN_EVENTS: Array<string> = [
+  'fullscreenchange',
+  'mozfullscreenchange',
+  'webkitfullscreenchange'
+];
+/**
  * The ads container class.
  * @type {string}
  * @const
@@ -246,9 +256,7 @@ export default class Ima extends BasePlugin {
    */
   pauseAd(): ?DeferredPromise {
     this.logger.debug("Pause ad");
-    this._nextPromise = Utils.Object.defer();
     this._adsManager.pause();
-    return this._nextPromise;
   }
 
   /**
@@ -365,14 +373,10 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _addBindings(): void {
-    [
-      'fullscreenchange',
-      'mozfullscreenchange',
-      'webkitfullscreenchange'
-    ].forEach(fullScreenEvent => this.eventManager.listen(document, fullScreenEvent, this._resizeAd.bind(this)));
-    this.eventManager.listen(window, 'resize', this._resizeAd.bind(this));
-    this.eventManager.listen(this.player, this.player.Event.MUTE_CHANGE, this._syncPlayerVolume.bind(this));
-    this.eventManager.listen(this.player, this.player.Event.VOLUME_CHANGE, this._syncPlayerVolume.bind(this));
+    FULL_SCREEN_EVENTS.forEach(fullScreenEvent => this.eventManager.listen(document, fullScreenEvent, () => this._resizeAd()));
+    this.eventManager.listen(window, 'resize', () => this._resizeAd());
+    this.eventManager.listen(this.player, this.player.Event.MUTE_CHANGE, () => this._syncPlayerVolume());
+    this.eventManager.listen(this.player, this.player.Event.VOLUME_CHANGE, () => this._syncPlayerVolume());
     this.eventManager.listen(this.player, this.player.Event.SOURCE_SELECTED, (event) => {
       let selectedSource = event.payload.selectedSource;
       if (selectedSource && selectedSource.length > 0) {
@@ -483,7 +487,7 @@ export default class Ima extends BasePlugin {
   _initAdsLoader(): void {
     this.logger.debug("Init ads loader");
     this._adsLoader = new this._sdk.AdsLoader(this._adDisplayContainer);
-    this._adsLoader.addEventListener(this._sdk.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._onAdsManagerLoaded.bind(this));
+    this._adsLoader.addEventListener(this._sdk.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, adsManagerLoadedEvent => this._onAdsManagerLoaded(adsManagerLoadedEvent));
     this._adsLoader.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, adEvent => this._stateMachine.aderror(adEvent));
   }
 
@@ -553,10 +557,10 @@ export default class Ima extends BasePlugin {
    */
   _setContentPlayheadTrackerEventsEnabled(enabled: boolean): void {
     if (enabled) {
-      this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, this._onLoadedMetadata.bind(this));
-      this.eventManager.listen(this.player, this.player.Event.TIME_UPDATE, this._onMediaTimeUpdate.bind(this));
-      this.eventManager.listen(this.player, this.player.Event.SEEKING, this._onMediaSeeking.bind(this));
-      this.eventManager.listen(this.player, this.player.Event.SEEKED, this._onMediaSeeked.bind(this));
+      this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, () => this._onLoadedMetadata());
+      this.eventManager.listen(this.player, this.player.Event.TIME_UPDATE, () => this._onMediaTimeUpdate());
+      this.eventManager.listen(this.player, this.player.Event.SEEKING, () => this._onMediaSeeking());
+      this.eventManager.listen(this.player, this.player.Event.SEEKED, () => this._onMediaSeeked());
     } else {
       this.eventManager.unlisten(this.player, this.player.Event.LOADED_METADATA);
       this.eventManager.unlisten(this.player, this.player.Event.TIME_UPDATE);
@@ -591,7 +595,7 @@ export default class Ima extends BasePlugin {
    */
   _setVideoEndedCallbackEnabled(enable: boolean): void {
     if (enable) {
-      this.eventManager.listen(this.player, this.player.Event.ENDED, this._onMediaEnded.bind(this));
+      this.eventManager.listen(this.player, this.player.Event.ENDED, () => this._onMediaEnded());
     } else {
       this.eventManager.unlisten(this.player, this.player.Event.ENDED);
     }
