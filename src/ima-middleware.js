@@ -44,9 +44,7 @@ export default class ImaMiddleware extends BaseMiddleware {
    */
   play(next: Function): void {
     if (!this._isPlayerLoaded) {
-      this._context.player.load();
-      this._isPlayerLoaded = true;
-      this._context.logger.debug("Player loaded");
+      this._loadPlayer();
     }
     this._context.loadPromise.then(() => {
       let sm = this._context.getStateMachine();
@@ -105,6 +103,24 @@ export default class ImaMiddleware extends BaseMiddleware {
         this.callNext(next);
         break;
       }
+    }
+  }
+
+  /**
+   * Load the player.
+   * @returns {void}
+   * @private
+   */
+  _loadPlayer(): void {
+    const loadPlayer = () => {
+      this._context.logger.debug("Load player by ima middleware");
+      this._context.player.load();
+      this._isPlayerLoaded = true;
+    };
+    if (this._context.player.engineType) { // player has source to play
+      loadPlayer();
+    } else {
+      this._context.player.addEventListener(this._context.player.Event.SOURCE_SELECTED, () => loadPlayer());
     }
   }
 }
