@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.3.7"></a>
+## [0.3.7](https://github.com/kaltura/playkit-js-ima/compare/v0.3.6...v0.3.7) (2018-02-26)
+
+
+### Bug Fixes
+
+* code cleanups ([#44](https://github.com/kaltura/playkit-js-ima/issues/44)) ([a8ddea5](https://github.com/kaltura/playkit-js-ima/commit/a8ddea5))
+* wait for source before preloading the entry  ([#45](https://github.com/kaltura/playkit-js-ima/issues/45)) ([bd286c9](https://github.com/kaltura/playkit-js-ima/commit/bd286c9))
+
+
+
 <a name="0.3.6"></a>
 ## [0.3.6](https://github.com/kaltura/playkit-js-ima/compare/v0.3.5...v0.3.6) (2018-02-19)
 
