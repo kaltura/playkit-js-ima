@@ -2,6 +2,7 @@ import {loadPlayerWithAds, maybeDoneTest, loadGPT, registerCompanionSlots} from 
 import * as TestUtils from 'playkit-js/test/src/utils/test-utils'
 // eslint-disable-next-line no-unused-vars
 import Ima from '../../src/ima'
+import AdType from "../../src/ad-type";
 
 const targetId = 'player-placeholder_ima.spec';
 
@@ -110,6 +111,7 @@ describe('Ima Plugin', function () {
     ima = player._pluginManager.get('ima');
     player.addEventListener(player.Event.AD_LOADED, (e) => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
+      e.payload.adType.should.equal(AdType.PRE_ROLL);
     });
     player.addEventListener(player.Event.AD_STARTED, () => {
       maybeDoneTest(cuePoints, adPodIndex, done);
@@ -126,6 +128,7 @@ describe('Ima Plugin', function () {
     const spy = sinon.spy(ima, "_requestAds");
     player.addEventListener(player.Event.AD_LOADED, (e) => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
+      e.payload.adType.should.equal(AdType.PRE_ROLL);
       spy.should.calledOnce;
     });
     player.addEventListener(player.Event.AD_STARTED, () => {
@@ -142,6 +145,7 @@ describe('Ima Plugin', function () {
     ima = player._pluginManager.get('ima');
     player.addEventListener(player.Event.AD_LOADED, (e) => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
+      e.payload.adType.should.equal(AdType.PRE_ROLL);
     });
     player.addEventListener(player.Event.AD_STARTED, () => {
       maybeDoneTest(cuePoints, adPodIndex, done);
@@ -157,6 +161,19 @@ describe('Ima Plugin', function () {
     ima = player._pluginManager.get('ima');
     player.addEventListener(player.Event.AD_LOADED, (e) => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
+      let adType = '';
+      switch (adPodIndex) {
+        case 0:
+          adType = AdType.PRE_ROLL;
+          break;
+        case 1:
+          adType = AdType.MID_ROLL;
+          break;
+        case -1:
+          adType = AdType.POST_ROLL;
+          break;
+      }
+      e.payload.adType.should.equal(adType);
     });
     player.addEventListener(player.Event.AD_STARTED, () => {
       maybeDoneTest(cuePoints, adPodIndex, done);
@@ -175,6 +192,7 @@ describe('Ima Plugin', function () {
     ima = player._pluginManager.get('ima');
     player.addEventListener(player.Event.AD_LOADED, (e) => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
+      e.payload.adType.should.equal(AdType.POST_ROLL);
     });
     player.addEventListener(player.Event.AD_STARTED, () => {
       maybeDoneTest(cuePoints, adPodIndex, done);
@@ -193,6 +211,7 @@ describe('Ima Plugin', function () {
     ima = player._pluginManager.get('ima');
     player.addEventListener(player.Event.AD_LOADED, (e) => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
+      e.payload.adType.should.equal(AdType.POST_ROLL);
     });
     player.addEventListener(player.Event.AD_STARTED, () => {
       maybeDoneTest(cuePoints, adPodIndex, done);
@@ -211,6 +230,7 @@ describe('Ima Plugin', function () {
     ima = player._pluginManager.get('ima');
     player.addEventListener(player.Event.AD_LOADED, (e) => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
+      e.payload.adType.should.equal(AdType.PRE_ROLL);
     });
     player.addEventListener(player.Event.AD_STARTED, () => {
       maybeDoneTest(cuePoints, adPodIndex);
@@ -232,6 +252,7 @@ describe('Ima Plugin', function () {
     ima = player._pluginManager.get('ima');
     player.addEventListener(player.Event.AD_LOADED, (e) => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
+      e.payload.adType.should.equal(AdType.PRE_ROLL);
     });
     player.addEventListener(player.Event.AD_STARTED, () => {
       maybeDoneTest(cuePoints, adPodIndex, done);
@@ -258,6 +279,7 @@ describe('Ima Plugin', function () {
     ima = player._pluginManager.get('ima');
     player.addEventListener(player.Event.AD_LOADED, (e) => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
+      e.payload.adType.should.equal(AdType.PRE_ROLL);
     });
     player.addEventListener(player.Event.AD_STARTED, () => {
       maybeDoneTest(cuePoints, adPodIndex, done);
@@ -265,8 +287,7 @@ describe('Ima Plugin', function () {
     player.play();
   });
 
-  // TODO: Remove skip after ad tag will be fixed
-  it.skip('should play single-non-linear-inline', (done) => {
+  it('should play single-non-linear-inline', (done) => {
     cuePoints = [0];
     player = loadPlayerWithAds(targetId, {
       adTagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=480x70&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dnonlinear&correlator=[timestamp]'
@@ -275,6 +296,7 @@ describe('Ima Plugin', function () {
     player.addEventListener(player.Event.AD_LOADED, (e) => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
       e.payload.ad.isLinear().should.be.false;
+      e.payload.adType.should.equal(AdType.OVERLAY);
     });
     player.addEventListener(player.Event.AD_STARTED, () => {
       maybeDoneTest(cuePoints, adPodIndex, done);

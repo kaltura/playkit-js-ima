@@ -2,6 +2,7 @@
 import StateMachine from 'javascript-state-machine'
 import StateMachineHistory from 'javascript-state-machine/lib/history'
 import State from './state'
+import AdType from './ad-type'
 
 /**
  * Finite state machine for ima plugin.
@@ -365,7 +366,29 @@ function normalizeAdError(adError: any, fatal: boolean): Object {
 function normalizeAdEvent(adEvent: any): Object {
   return {
     ad: adEvent.getAd(),
+    adType: getAdType(adEvent),
     extraAdData: adEvent.getAdData()
   };
 }
 
+/**
+ * Gets the ad type.
+ * @param {any} adEvent - The ima ad object.
+ * @returns {string} - The ad type.
+ */
+function getAdType(adEvent: any): string {
+  const ad = adEvent.getAd();
+  const podInfo = ad.getAdPodInfo();
+  const podIndex = podInfo.getPodIndex();
+  if (!ad.isLinear()) {
+    return AdType.OVERLAY;
+  }
+  switch (podIndex) {
+    case 0:
+      return AdType.PRE_ROLL;
+    case -1:
+      return AdType.POST_ROLL;
+    default:
+      return AdType.MID_ROLL;
+  }
+}
