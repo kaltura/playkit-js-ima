@@ -288,6 +288,9 @@ export default class Ima extends BasePlugin {
     this.eventManager.removeAll();
     this._stopAdInterval();
     this._hideAdsContainer();
+    if (!this._isImaSDKLibLoaded()){
+      return;
+    }
     if (this._adsManager) {
       this._adsManager.destroy();
     }
