@@ -66,15 +66,10 @@ player.play();
 </script>
 ```
 
-## Configuration
+## Documentation
 
-| Settings             	| Type    	| Required                                       	| Description                                                                                                                                                                                	|
-|----------------------	|---------	|------------------------------------------------	|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	|
-| debug                	| boolean 	|                                                	| If set to true, loads IMA SDK in debug mode                                                                                                                                                 	|
-| adTagUrl             	| string  	| :white_check_mark: (if adsResponse is not set) 	| Specifies the ad tag url that is requested from the ad server                                                                                                                              	|
-| adsResponse          	| string  	| :white_check_mark: (if adTagUrl is not set)    	| Specifies a VAST 2.0 document to be used as the ads response instead of making a request via an ad tag url                                                                                 	|
-| adsRenderingSettings 	| object  	|                                                	| Defines parameters that control the rendering of ads, as described in [IMA SDK docs](https://developers.google.com/interactive-media-ads/docs/sdks/html5/v3/apis#ima.AdsRenderingSettings) 	|
-| skipSupport          	| boolean 	|                                                	| Enable force skipping ads by implicitly calling stop. Useful for cases where ad is not set as skipable in vast                                                                             	|
+- **[Configuration](docs/configuration.md)**
+- **Events**
 
 ## Running the tests
 

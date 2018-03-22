@@ -5,6 +5,7 @@ describe('Ima Middleware', function () {
   let sandbox;
   let imaMiddleware;
   let fakeContext = {
+    config: {},
     loadPromise: Promise.resolve(),
     player: {
       addEventListener: function () {
