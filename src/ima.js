@@ -45,7 +45,7 @@ export default class Ima extends BasePlugin {
     debug: false,
     setDisableCustomPlaybackForIOS10Plus: null,
     adsRenderingSettings: {
-      restoreCustomPlaybackStateOnAdBreakComplete: true,
+      restoreCustomPlaybackStateOnAdBreakComplete: false,
       enablePreloading: false,
       useStyledLinearAds: false,
       useStyledNonLinearAds: true,
@@ -363,11 +363,11 @@ export default class Ima extends BasePlugin {
    */
   _startAdsManager(): void {
     this.logger.debug("Start ads manager");
-    const readyPromise = this._adsManager.isCustomPlaybackUsed() ? this.player.ready() : Promise.resolve();
-    readyPromise.then(() => {
+    // const readyPromise = this._adsManager.isCustomPlaybackUsed() ? this.player.ready() : Promise.resolve();
+    // readyPromise.then(() => {
       this._adsManager.init(this.player.dimensions.width, this.player.dimensions.height, this._sdk.ViewMode.NORMAL);
       this._adsManager.start();
-    });
+    // });
   }
 
   /**

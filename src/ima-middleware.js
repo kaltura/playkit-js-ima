@@ -44,7 +44,7 @@ export default class ImaMiddleware extends BaseMiddleware {
    */
   play(next: Function): void {
     if (!this._isPlayerLoaded) {
-      this._loadPlayer();
+      // this._loadPlayer();
     }
     this._context.loadPromise.then(() => {
       let sm = this._context.getStateMachine();
