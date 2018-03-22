@@ -2,9 +2,7 @@
 import ImaMiddleware from './ima-middleware'
 import ImaStateMachine from './ima-state-machine'
 import State from './state'
-import {BasePlugin} from 'playkit-js'
-import {BaseMiddleware} from 'playkit-js'
-import {Utils} from 'playkit-js'
+import {BaseMiddleware, BasePlugin, Utils} from 'playkit-js'
 import './assets/style.css'
 
 /**
@@ -43,9 +41,10 @@ export default class Ima extends BasePlugin {
    */
   static defaultConfig: Object = {
     debug: false,
+    disablePlaybackPreload: false,
     setDisableCustomPlaybackForIOS10Plus: null,
     adsRenderingSettings: {
-      restoreCustomPlaybackStateOnAdBreakComplete: false,
+      restoreCustomPlaybackStateOnAdBreakComplete: true,
       enablePreloading: false,
       useStyledLinearAds: false,
       useStyledNonLinearAds: true,
@@ -288,7 +287,7 @@ export default class Ima extends BasePlugin {
     this.eventManager.removeAll();
     this._stopAdInterval();
     this._hideAdsContainer();
-    if (!this._isImaSDKLibLoaded()){
+    if (!this._isImaSDKLibLoaded()) {
       return;
     }
     if (this._adsManager) {
@@ -363,11 +362,13 @@ export default class Ima extends BasePlugin {
    */
   _startAdsManager(): void {
     this.logger.debug("Start ads manager");
-    // const readyPromise = this._adsManager.isCustomPlaybackUsed() ? this.player.ready() : Promise.resolve();
-    // readyPromise.then(() => {
+    const readyPromise = this._adsManager.isCustomPlaybackUsed() && !this.config.disablePlaybackPreload
+      ? this.player.ready()
+      : Promise.resolve();
+    readyPromise.then(() => {
       this._adsManager.init(this.player.dimensions.width, this.player.dimensions.height, this._sdk.ViewMode.NORMAL);
       this._adsManager.start();
-    // });
+    });
   }
 
   /**
@@ -679,6 +680,9 @@ export default class Ima extends BasePlugin {
         adsRenderingSettings[setting] = this.config.adsRenderingSettings[setting];
       }
     });
+    if (this.config.disablePlaybackPreload) {
+      adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = false;
+    }
     this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
     this._isAdsManagerLoaded = true;
     this._attachAdsManagerListeners();

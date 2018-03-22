@@ -43,8 +43,8 @@ export default class ImaMiddleware extends BaseMiddleware {
    * @returns {void}
    */
   play(next: Function): void {
-    if (!this._isPlayerLoaded) {
-      // this._loadPlayer();
+    if (!this._isPlayerLoaded && !this._context.config.disablePlaybackPreload) {
+      this._loadPlayer();
     }
     this._context.loadPromise.then(() => {
       let sm = this._context.getStateMachine();
