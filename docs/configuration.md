@@ -65,6 +65,7 @@ The configuration uses the following structure:
 >##### Default: `false`
 >##### Description: Whether to disable media pre loading while ad is playing.
 >If set to `true`, the player will start loading the content media just after the ad break will end (incase of preroll ad).
+>This will also overrides `config.adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete` no matters its value and sets it to `false`.
 ##
 >### config.adsRenderingSettings
 >##### Type: `Object`
