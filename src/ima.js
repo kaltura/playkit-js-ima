@@ -830,7 +830,6 @@ export default class Ima extends BasePlugin {
     this.player.paused ? this.player.play() : this.player.pause();
   }
 
-
   /**
    * On ads cover click handler.
    * @private
