@@ -41,7 +41,7 @@ export default class Ima extends BasePlugin {
    */
   static defaultConfig: Object = {
     debug: false,
-    disablePlaybackPreload: false,
+    disableMediaPreload: false,
     setDisableCustomPlaybackForIOS10Plus: null,
     adsRenderingSettings: {
       restoreCustomPlaybackStateOnAdBreakComplete: true,
@@ -362,7 +362,7 @@ export default class Ima extends BasePlugin {
    */
   _startAdsManager(): void {
     this.logger.debug("Start ads manager");
-    const readyPromise = this._adsManager.isCustomPlaybackUsed() && !this.config.disablePlaybackPreload
+    const readyPromise = this._adsManager.isCustomPlaybackUsed() && !this.config.disableMediaPreload
       ? this.player.ready()
       : Promise.resolve();
     readyPromise.then(() => {
@@ -680,7 +680,7 @@ export default class Ima extends BasePlugin {
         adsRenderingSettings[setting] = this.config.adsRenderingSettings[setting];
       }
     });
-    if (this.config.disablePlaybackPreload) {
+    if (this.config.disableMediaPreload) {
       adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = false;
     }
     this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
