@@ -54,7 +54,7 @@ export default class Ima extends BasePlugin {
     companions: {
       ads: null,
       sizeCriteria: 'SELECT_EXACT_MATCH'
-    },
+    }
   };
 
   /**
