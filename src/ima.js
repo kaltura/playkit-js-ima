@@ -2,7 +2,7 @@
 import ImaMiddleware from './ima-middleware'
 import ImaStateMachine from './ima-state-machine'
 import State from './state'
-import {BaseMiddleware, BasePlugin, Utils} from 'playkit-js'
+import {BaseMiddleware, BasePlugin, Utils, getCapabilities, EngineType} from 'playkit-js'
 import './assets/style.css'
 
 /**
@@ -514,7 +514,38 @@ export default class Ima extends BasePlugin {
       adsRequest.linearAdSlotHeight = this.player.dimensions.height;
       adsRequest.nonLinearAdSlotWidth = this.player.dimensions.width;
       adsRequest.nonLinearAdSlotHeight = this.player.dimensions.height / 3;
-      this._adsLoader.requestAds(adsRequest);
+
+      const muted = this.player.muted || (this.player.volume === 0);
+      adsRequest.setAdWillPlayMuted(muted);
+
+      const adWillAutoPlay = this.config.adWillAutoPlay;
+      const playerWillAutoPlay = this.player.config.playback.autoplay;
+      const allowMutedAutoPlay = this.player.config.playback.allowMutedAutoPlay;
+
+      //Pass signal to IMA SDK if ad will autoplay with sound
+      //First let application config this, otherwise if player is configured
+      // to autoplay then try to autodetect if unmuted autoplay is supported
+      if (typeof(adWillAutoPlay) === "boolean"){
+        adsRequest.setAdWillAutoPlay(adWillAutoPlay);
+        this._adsLoader.requestAds(adsRequest);
+      } else if (playerWillAutoPlay){
+        getCapabilities(EngineType.HTML5).then(capabilities => {
+          if (capabilities.autoplay) {
+            adsRequest.setAdWillAutoPlay(true);
+          }
+          else if (allowMutedAutoPlay && capabilities.mutedAutoPlay){
+            adsRequest.setAdWillAutoPlay(true);
+            adsRequest.setAdWillPlayMuted(true);
+          } else {
+            adsRequest.setAdWillAutoPlay(false);
+            adsRequest.setAdWillPlayMuted(false);
+          }
+          this._adsLoader.requestAds(adsRequest);
+        })
+      } else {
+        adsRequest.setAdWillAutoPlay(false);
+        this._adsLoader.requestAds(adsRequest);
+      }
     } else {
       this.logger.warn("Missing ad tag url: create plugin without requesting ads");
     }
