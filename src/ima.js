@@ -525,22 +525,22 @@ export default class Ima extends BasePlugin {
       //Pass signal to IMA SDK if ad will autoplay with sound
       //First let application config this, otherwise if player is configured
       // to autoplay then try to autodetect if unmuted autoplay is supported
-      if (typeof(adWillAutoPlay) === "boolean"){
+      if (typeof(adWillAutoPlay) === "boolean") {
         adsRequest.setAdWillAutoPlay(adWillAutoPlay);
         this._adsLoader.requestAds(adsRequest);
-      } else if (playerWillAutoPlay){
+      } else if (playerWillAutoPlay) {
         getCapabilities(EngineType.HTML5).then(capabilities => {
           if (capabilities.autoplay) {
             adsRequest.setAdWillAutoPlay(true);
           }
-          else if (allowMutedAutoPlay && capabilities.mutedAutoPlay){
+          else if (allowMutedAutoPlay && capabilities.mutedAutoPlay) {
             adsRequest.setAdWillAutoPlay(true);
             adsRequest.setAdWillPlayMuted(true);
           } else {
             adsRequest.setAdWillAutoPlay(false);
           }
           this._adsLoader.requestAds(adsRequest);
-        })
+        });
       } else {
         adsRequest.setAdWillAutoPlay(false);
         this._adsLoader.requestAds(adsRequest);
