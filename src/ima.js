@@ -538,7 +538,6 @@ export default class Ima extends BasePlugin {
             adsRequest.setAdWillPlayMuted(true);
           } else {
             adsRequest.setAdWillAutoPlay(false);
-            adsRequest.setAdWillPlayMuted(false);
           }
           this._adsLoader.requestAds(adsRequest);
         })
