@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.5.0"></a>
+# [0.5.0](https://github.com/kaltura/playkit-js-ima/compare/v0.4.1...v0.5.0) (2018-03-27)
+
+
+### Bug Fixes
+
+* kaios issues ([#48](https://github.com/kaltura/playkit-js-ima/issues/48)) ([44d046c](https://github.com/kaltura/playkit-js-ima/commit/44d046c))
+
+
+### Features
+
+* **FEC-7814:** add setAdWillAutoPlay and setAdWillPlayMuted support ([#49](https://github.com/kaltura/playkit-js-ima/issues/49)) ([ef84d7f](https://github.com/kaltura/playkit-js-ima/commit/ef84d7f))
+
+
+
 <a name="0.4.1"></a>
 ## [0.4.1](https://github.com/kaltura/playkit-js-ima/compare/v0.4.0...v0.4.1) (2018-03-21)
 
