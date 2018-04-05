@@ -454,7 +454,7 @@ export default class Ima extends BasePlugin {
     this._sdk.settings.setPlayerVersion(this.config.playerVersion);
     this._sdk.settings.setVpaidAllowed(true);
     this._sdk.settings.setVpaidMode(this._sdk.ImaSdkSettings.VpaidMode.ENABLED);
-    if (this.config.setDisableCustomPlaybackForIOS10Plus === 'boolean') {
+    if (typeof this.config.setDisableCustomPlaybackForIOS10Plus === 'boolean') {
       this._sdk.settings.setDisableCustomPlaybackForIOS10Plus(this.config.setDisableCustomPlaybackForIOS10Plus);
     } else {
       this._sdk.settings.setDisableCustomPlaybackForIOS10Plus(this.player.config.playback.playsinline);
