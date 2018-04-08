@@ -706,7 +706,7 @@ export default class Ima extends BasePlugin {
     this.logger.debug('Ads manager loaded');
     let adsRenderingSettings = new this._sdk.AdsRenderingSettings();
     Object.keys(this.config.adsRenderingSettings).forEach((setting) => {
-      if (adsRenderingSettings[setting] != undefined) {
+      if (adsRenderingSettings[setting] !== undefined) {
         adsRenderingSettings[setting] = this.config.adsRenderingSettings[setting];
       } else {
         this.logger.warn("unsupported adsRenderingSettings was set:", setting);
