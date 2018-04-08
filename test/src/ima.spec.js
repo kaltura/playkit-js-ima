@@ -103,6 +103,28 @@ describe('Ima Plugin', function () {
     player.play();
   });
 
+  it('should support setting adsRenderingSettings config object', (done) => {
+    player = loadPlayerWithAds(targetId, {
+      adTagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=[timestamp]',
+      adsRenderingSettings: {uiElements: ["countdown"]}
+    });
+
+    ima = player._pluginManager.get('ima');
+    player.addEventListener(player.Event.AD_LOADED, () => {
+
+      let refAdsRenderingSettings = new ima._sdk.AdsRenderingSettings();
+      refAdsRenderingSettings["uiElements"] = ["countdown"];
+      const adsRenderingSettings = ima._getAdsRenderingSetting();
+      try {
+        adsRenderingSettings["uiElements"][0].should.equals(refAdsRenderingSettings["uiElements"][0]);
+        done();
+      } catch (e){
+        done(e);
+      }
+    });
+    player.play();
+  });
+
   it('should play vmap-preroll', (done) => {
     cuePoints = [0];
     player = loadPlayerWithAds(targetId, {
