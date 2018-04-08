@@ -704,6 +704,23 @@ export default class Ima extends BasePlugin {
    */
   _onAdsManagerLoaded(adsManagerLoadedEvent: any): void {
     this.logger.debug('Ads manager loaded');
+    const adsRenderingSettings = this._getAdsRenderingSetting();
+    this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
+    this._isAdsManagerLoaded = true;
+    this._attachAdsManagerListeners();
+    this._syncPlayerVolume();
+    if (this._hasUserAction) {
+      this.logger.debug("User action occurred before ads manager loaded");
+      this._startAdsManager();
+    }
+  }
+
+  /**
+   * returns the ads rendering settings configuration for IMA with plugin config applied
+   * @returns {Object} - IMA AdsRenderingSettings object
+   * @private
+   */
+  _getAdsRenderingSetting(): Object {
     let adsRenderingSettings = new this._sdk.AdsRenderingSettings();
     Object.keys(this.config.adsRenderingSettings).forEach((setting) => {
       if (adsRenderingSettings[setting] !== undefined) {
@@ -715,14 +732,7 @@ export default class Ima extends BasePlugin {
     if (this.config.disableMediaPreload) {
       adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = false;
     }
-    this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
-    this._isAdsManagerLoaded = true;
-    this._attachAdsManagerListeners();
-    this._syncPlayerVolume();
-    if (this._hasUserAction) {
-      this.logger.debug("User action occurred before ads manager loaded");
-      this._startAdsManager();
-    }
+    return adsRenderingSettings;
   }
 
   /**
