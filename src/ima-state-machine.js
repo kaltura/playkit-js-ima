@@ -254,6 +254,7 @@ function onAdBreakStart(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
   this.player.pause();
   this._setVideoEndedCallbackEnabled(false);
+  this._maybeForceExitFullScreen();
   this._maybeSaveVideoCurrentTime();
   this.dispatchEvent(options.transition);
 }

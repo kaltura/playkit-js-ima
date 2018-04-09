@@ -2,7 +2,7 @@
 import ImaMiddleware from './ima-middleware'
 import ImaStateMachine from './ima-state-machine'
 import State from './state'
-import {BaseMiddleware, BasePlugin, Utils, getCapabilities, EngineType} from 'playkit-js'
+import {BaseMiddleware, BasePlugin, EngineType, getCapabilities, Utils} from 'playkit-js'
 import './assets/style.css'
 
 /**
@@ -42,7 +42,6 @@ export default class Ima extends BasePlugin {
   static defaultConfig: Object = {
     debug: false,
     disableMediaPreload: false,
-    setDisableCustomPlaybackForIOS10Plus: null,
     adsRenderingSettings: {
       restoreCustomPlaybackStateOnAdBreakComplete: true,
       enablePreloading: false,
@@ -934,6 +933,20 @@ export default class Ima extends BasePlugin {
     const isChrome = () => this.player.env.browser.name === 'Chrome';
     if (isAndroid() && isChrome()) {
       this.eventManager.listenOnce(this.player.getView(), 'click', e => e.stopPropagation());
+    }
+  }
+
+  /**
+   * When playing with different video tags on iOS ads are not
+   * supported in native full screen, so need to exist full screen before ads started.
+   * @private
+   * @returns {void}
+   */
+  _maybeForceExitFullScreen(): void {
+    const isIOS = () => this.player.env.os.name === 'iOS';
+    if (isIOS() && !this._adsManager.isCustomPlaybackUsed()
+      && this.player.isFullscreen()) {
+      this.player.exitFullscreen();
     }
   }
 }
