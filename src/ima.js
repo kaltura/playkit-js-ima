@@ -453,7 +453,7 @@ export default class Ima extends BasePlugin {
     this._sdk.settings.setPlayerVersion(this.config.playerVersion);
     this._sdk.settings.setVpaidAllowed(true);
     this._sdk.settings.setVpaidMode(this._sdk.ImaSdkSettings.VpaidMode.ENABLED);
-    if (this.config.setDisableCustomPlaybackForIOS10Plus === 'boolean') {
+    if (typeof this.config.setDisableCustomPlaybackForIOS10Plus === 'boolean') {
       this._sdk.settings.setDisableCustomPlaybackForIOS10Plus(this.config.setDisableCustomPlaybackForIOS10Plus);
     } else {
       this._sdk.settings.setDisableCustomPlaybackForIOS10Plus(this.player.config.playback.playsinline);
@@ -703,15 +703,7 @@ export default class Ima extends BasePlugin {
    */
   _onAdsManagerLoaded(adsManagerLoadedEvent: any): void {
     this.logger.debug('Ads manager loaded');
-    let adsRenderingSettings = new this._sdk.AdsRenderingSettings();
-    Object.keys(this.config.adsRenderingSettings).forEach((setting) => {
-      if (adsRenderingSettings[setting] != null) {
-        adsRenderingSettings[setting] = this.config.adsRenderingSettings[setting];
-      }
-    });
-    if (this.config.disableMediaPreload) {
-      adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = false;
-    }
+    const adsRenderingSettings = this._getAdsRenderingSetting();
     this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
     this._isAdsManagerLoaded = true;
     this._attachAdsManagerListeners();
@@ -720,6 +712,26 @@ export default class Ima extends BasePlugin {
       this.logger.debug("User action occurred before ads manager loaded");
       this._startAdsManager();
     }
+  }
+
+  /**
+   * returns the ads rendering settings configuration for IMA with plugin config applied
+   * @returns {Object} - IMA AdsRenderingSettings object
+   * @private
+   */
+  _getAdsRenderingSetting(): Object {
+    let adsRenderingSettings = new this._sdk.AdsRenderingSettings();
+    Object.keys(this.config.adsRenderingSettings).forEach((setting) => {
+      if (adsRenderingSettings[setting] !== undefined) {
+        adsRenderingSettings[setting] = this.config.adsRenderingSettings[setting];
+      } else {
+        this.logger.warn("unsupported adsRenderingSettings was set:", setting);
+      }
+    });
+    if (this.config.disableMediaPreload) {
+      adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = false;
+    }
+    return adsRenderingSettings;
   }
 
   /**
