@@ -65,7 +65,7 @@ export default class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_ERROR,
-          from: [State.LOADED, State.PLAYING, State.PAUSED, State.LOADING],
+          from: [State.IDLE, State.LOADED, State.PLAYING, State.PAUSED, State.LOADING],
           to: State.IDLE
         },
         {
