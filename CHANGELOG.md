@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.5.1"></a>
+## [0.5.1](https://github.com/kaltura/playkit-js-ima/compare/v0.5.0...v0.5.1) (2018-04-09)
+
+
+### Bug Fixes
+
+* **FEC-8097:** adsRenderingSettings aren’t applied ([#50](https://github.com/kaltura/playkit-js-ima/issues/50)) ([88d2713](https://github.com/kaltura/playkit-js-ima/commit/88d2713))
+* **FEC-8107:** ad video fails to play and only ad audio plays in full screen mode ([#51](https://github.com/kaltura/playkit-js-ima/issues/51)) ([0b2f455](https://github.com/kaltura/playkit-js-ima/commit/0b2f455))
+* **FEC-8109:** unhandled error - transition is invalid in current state ([#52](https://github.com/kaltura/playkit-js-ima/issues/52)) ([c76317f](https://github.com/kaltura/playkit-js-ima/commit/c76317f))
+
+
+
 <a name="0.5.0"></a>
 # [0.5.0](https://github.com/kaltura/playkit-js-ima/compare/v0.4.1...v0.5.0) (2018-03-27)
 
