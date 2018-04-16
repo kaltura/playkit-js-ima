@@ -17,7 +17,7 @@ const FULL_SCREEN_EVENTS: Array<string> = [
 ];
 
 /**
- * The overlay ad height offset.
+ * The overlay ad margin.
  * @type {number}
  * @const
  */
