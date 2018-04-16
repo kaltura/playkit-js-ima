@@ -479,6 +479,8 @@ export default class Ima extends BasePlugin {
     this._adsCoverDiv.onclick = () => this._onAdsCoverClicked();
     // Append the ads container to the dom
     Utils.Dom.appendChild(playerView, this._adsContainerDiv);
+    // Hides the ads container after appending it to the DOM
+    this._hideAdsContainer();
     this._adDisplayContainer = new this._sdk.AdDisplayContainer(this._adsContainerDiv, this.player.getVideoElement());
   }
 
@@ -557,7 +559,7 @@ export default class Ima extends BasePlugin {
   _resizeAd() {
     if (this._sdk && this._adsManager) {
       let viewMode = (this.player.isFullscreen() ? this._sdk.ViewMode.FULLSCREEN : this._sdk.ViewMode.NORMAL);
-      this._adsManager.resize(this.player.dimensions.width, this.player.dimensions.height, viewMode);
+        this._adsManager.resize(this.player.dimensions.width, this.player.dimensions.height, viewMode);
     }
   }
 
