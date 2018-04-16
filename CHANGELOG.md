@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.5.2"></a>
+## [0.5.2](https://github.com/kaltura/playkit-js-ima/compare/v0.5.1...v0.5.2) (2018-04-16)
+
+
+### Bug Fixes
+
+* **FEC-8013:** Play/Pause actions are not working when tapping the up… ([#55](https://github.com/kaltura/playkit-js-ima/issues/55)) ([ec31244](https://github.com/kaltura/playkit-js-ima/commit/ec31244))
+* **FEC-8111, FEC-8022:** set ads container dimensions according to the ad width/height ([#54](https://github.com/kaltura/playkit-js-ima/issues/54)) ([693b234](https://github.com/kaltura/playkit-js-ima/commit/693b234))
+
+
+
 <a name="0.5.1"></a>
 ## [0.5.1](https://github.com/kaltura/playkit-js-ima/compare/v0.5.0...v0.5.1) (2018-04-09)
 
