@@ -15,6 +15,13 @@ const FULL_SCREEN_EVENTS: Array<string> = [
   'mozfullscreenchange',
   'webkitfullscreenchange'
 ];
+
+/**
+ * The overlay ad height offset.
+ * @type {number}
+ * @const
+ */
+const OVERLAY_AD_HEIGHT_OFFSET: number = 8;
 /**
  * The ads container class.
  * @type {string}
@@ -559,11 +566,20 @@ export default class Ima extends BasePlugin {
       if (this._currentAd.isLinear()) {
         this._adsManager.resize(this.player.dimensions.width, this.player.dimensions.height, viewMode);
       } else {
-        this._adsContainerDiv.style.bottom = this._currentAd.getHeight() + 8 + 'px';
-        this._adsContainerDiv.style.left = (this.player.dimensions.width - this._currentAd.getWidth()) / 2 + 'px';
-        this._adsManager.resize(this._currentAd.getWidth() + 8, this._currentAd.getHeight() + 8, viewMode);
+        this._alignAdsContainerSizeForOverlayAd();
+        this._adsManager.resize(this._currentAd.getWidth() + OVERLAY_AD_HEIGHT_OFFSET, this._currentAd.getHeight() + OVERLAY_AD_HEIGHT_OFFSET, viewMode);
       }
     }
+  }
+
+  /**
+   * Align the size for the ads container when overlay ad is displaying.
+   * @private
+   * @returns {void}
+   */
+  _alignAdsContainerSizeForOverlayAd(): void {
+    this._adsContainerDiv.style.bottom = this._currentAd.getHeight() + OVERLAY_AD_HEIGHT_OFFSET + 'px';
+    this._adsContainerDiv.style.left = (this.player.dimensions.width - this._currentAd.getWidth()) / 2 + 'px';
   }
 
   /**
