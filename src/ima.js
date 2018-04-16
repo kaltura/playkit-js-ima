@@ -15,6 +15,13 @@ const FULL_SCREEN_EVENTS: Array<string> = [
   'mozfullscreenchange',
   'webkitfullscreenchange'
 ];
+
+/**
+ * The overlay ad margin.
+ * @type {number}
+ * @const
+ */
+const OVERLAY_AD_MARGIN: number = 8;
 /**
  * The ads container class.
  * @type {string}
@@ -394,7 +401,6 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _initMembers(): void {
-    this._setTogglePlayPauseOnAdsContainerEnabled(false);
     this._setContentPlayheadTrackerEventsEnabled(false);
     this._setVideoEndedCallbackEnabled(false);
     this._nextPromise = null;
@@ -555,10 +561,25 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _resizeAd() {
-    if (this._sdk && this._adsManager) {
+    if (this._sdk && this._adsManager && this._currentAd) {
       let viewMode = (this.player.isFullscreen() ? this._sdk.ViewMode.FULLSCREEN : this._sdk.ViewMode.NORMAL);
+      if (this._currentAd.isLinear()) {
         this._adsManager.resize(this.player.dimensions.width, this.player.dimensions.height, viewMode);
+      } else {
+        this._alignAdsContainerSizeForOverlayAd();
+        this._adsManager.resize(this._currentAd.getWidth() + OVERLAY_AD_MARGIN, this._currentAd.getHeight() + OVERLAY_AD_MARGIN, viewMode);
+      }
     }
+  }
+
+  /**
+   * Align the size for the ads container when overlay ad is displaying.
+   * @private
+   * @returns {void}
+   */
+  _alignAdsContainerSizeForOverlayAd(): void {
+    this._adsContainerDiv.style.bottom = this._currentAd.getHeight() + OVERLAY_AD_MARGIN + 'px';
+    this._adsContainerDiv.style.left = (this.player.dimensions.width - this._currentAd.getWidth()) / 2 + 'px';
   }
 
   /**
@@ -843,32 +864,6 @@ export default class Ima extends BasePlugin {
         this._isAdsCoverActive = false;
       }
     }
-  }
-
-  /**
-   * Toggle play/pause when click on the ads container.
-   * Relevant only for overlay ads.
-   * @param {boolean} enable - Whether to add or remove the listener.
-   * @private
-   * @returns {void}
-   */
-  _setTogglePlayPauseOnAdsContainerEnabled(enable: boolean): void {
-    if (this._adsContainerDiv && this._togglePlayPauseOnAdsContainerCallback) {
-      if (enable) {
-        this._adsContainerDiv.addEventListener("click", this._togglePlayPauseOnAdsContainerCallback);
-      } else {
-        this._adsContainerDiv.removeEventListener("click", this._togglePlayPauseOnAdsContainerCallback);
-      }
-    }
-  }
-
-  /**
-   * On ads container click handler.
-   * @private
-   * @returns {void}
-   */
-  _onAdsContainerClicked(): void {
-    this.player.paused ? this.player.play() : this.player.pause();
   }
 
   /**
