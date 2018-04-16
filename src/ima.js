@@ -478,8 +478,6 @@ export default class Ima extends BasePlugin {
     this._adsCoverDiv.onclick = () => this._onAdsCoverClicked();
     // Append the ads container to the dom
     Utils.Dom.appendChild(playerView, this._adsContainerDiv);
-    // Hides the ads container after appending it to the DOM
-    this._hideAdsContainer();
     this._adDisplayContainer = new this._sdk.AdDisplayContainer(this._adsContainerDiv, this.player.getVideoElement());
   }
 
@@ -687,7 +685,7 @@ export default class Ima extends BasePlugin {
    */
   _showAdsContainer(): void {
     if (this._adsContainerDiv) {
-      this._adsContainerDiv.style.display = "";
+      this._adsContainerDiv.style.visibility = "visible";
     }
   }
 
@@ -698,7 +696,7 @@ export default class Ima extends BasePlugin {
    */
   _hideAdsContainer(): void {
     if (this._adsContainerDiv) {
-      this._adsContainerDiv.style.display = "none";
+      this._adsContainerDiv.style.visibility = "hidden";
     }
   }
 

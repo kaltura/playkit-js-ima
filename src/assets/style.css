@@ -7,5 +7,6 @@
 }
 
 .playkit-ads-container {
+  visibility: hidden;
   position: absolute;
 }
