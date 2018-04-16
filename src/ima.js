@@ -21,7 +21,7 @@ const FULL_SCREEN_EVENTS: Array<string> = [
  * @type {number}
  * @const
  */
-const OVERLAY_AD_HEIGHT_OFFSET: number = 8;
+const OVERLAY_AD_MARGIN: number = 8;
 /**
  * The ads container class.
  * @type {string}
@@ -567,7 +567,7 @@ export default class Ima extends BasePlugin {
         this._adsManager.resize(this.player.dimensions.width, this.player.dimensions.height, viewMode);
       } else {
         this._alignAdsContainerSizeForOverlayAd();
-        this._adsManager.resize(this._currentAd.getWidth() + OVERLAY_AD_HEIGHT_OFFSET, this._currentAd.getHeight() + OVERLAY_AD_HEIGHT_OFFSET, viewMode);
+        this._adsManager.resize(this._currentAd.getWidth() + OVERLAY_AD_MARGIN, this._currentAd.getHeight() + OVERLAY_AD_MARGIN, viewMode);
       }
     }
   }
@@ -578,7 +578,7 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _alignAdsContainerSizeForOverlayAd(): void {
-    this._adsContainerDiv.style.bottom = this._currentAd.getHeight() + OVERLAY_AD_HEIGHT_OFFSET + 'px';
+    this._adsContainerDiv.style.bottom = this._currentAd.getHeight() + OVERLAY_AD_MARGIN + 'px';
     this._adsContainerDiv.style.left = (this.player.dimensions.width - this._currentAd.getWidth()) / 2 + 'px';
   }
 
