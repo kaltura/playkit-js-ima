@@ -59,7 +59,7 @@ export default class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_BREAK_END,
-          from: [State.IDLE, State.LOADED],
+          from: [State.IDLE, State.PLAYING, State.LOADED],
           to: State.IDLE
         },
         {
