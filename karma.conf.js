@@ -10,15 +10,15 @@ const isMacOS = /^darwin/.test(process.platform);
 const customLaunchers = {
   Chrome_travis_ci: {
     base: 'Chrome',
-    flags: ['--no-sandbox']
+    flags: ['--no-sandbox', '--autoplay-policy=no-user-gesture-required']
   }
 };
 
 module.exports = function (config) {
   let karmaConf = {
     logLevel: config.LOG_INFO,
-    browserDisconnectTimeout:30000,    
-    browserNoActivityTimeout:60000,
+    browserDisconnectTimeout: 30000,
+    browserNoActivityTimeout: 60000,
     browsers: [
       'Chrome',
       'Firefox'
