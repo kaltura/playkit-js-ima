@@ -48,6 +48,7 @@ export default class Ima extends BasePlugin {
    */
   static defaultConfig: Object = {
     debug: false,
+    delayInitUntilSourceSelected: false,
     disableMediaPreload: false,
     adsRenderingSettings: {
       restoreCustomPlaybackStateOnAdBreakComplete: true,
@@ -423,9 +424,8 @@ export default class Ima extends BasePlugin {
    */
   _init(): void {
     this.loadPromise = Utils.Object.defer();
-    (this._isImaSDKLibLoaded()
-      ? Promise.resolve()
-      : Utils.Dom.loadScriptAsync(this.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL))
+    this._maybeDelayInitUntilSourceSelected()
+      .then(() => this._loadImaSDKLib())
       .then(() => {
         this._sdk = window.google.ima;
         this.logger.debug("IMA SDK version: " + this._sdk.VERSION);
@@ -436,9 +436,42 @@ export default class Ima extends BasePlugin {
         this._stateMachine.loaded();
         this.loadPromise.resolve();
       })
-      .catch((e) => {
+      .catch(e => {
         this.loadPromise.reject(e);
       });
+  }
+
+  /**
+   * If configured, wait until source selected before will continue the initialization of the plugin.
+   * @returns {Promise<*>} -
+   * @private
+   */
+  _maybeDelayInitUntilSourceSelected(): Promise<*> {
+    if (this.config.delayInitUntilSourceSelected) {
+      return new Promise((resolve, reject) => {
+        if (this._contentSrc) { // Source selected event already dispatched
+          resolve();
+        } else {
+          this.eventManager.listenOnce(this.player, this.player.Event.SOURCE_SELECTED, resolve);
+          this.eventManager.listenOnce(this.player, this.player.Event.ERROR, reject);
+        }
+      });
+    } else {
+      return Promise.resolve();
+    }
+  }
+
+  /**
+   * Loads the ima sdk lib.
+   * @returns {Promise<*>} - The promise result for the load operation.
+   * @private
+   */
+  _loadImaSDKLib(): Promise<*> {
+    return (
+      this._isImaSDKLibLoaded()
+        ? Promise.resolve()
+        : Utils.Dom.loadScriptAsync(this.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL)
+    );
   }
 
   /**
@@ -528,8 +561,8 @@ export default class Ima extends BasePlugin {
       const playerWillAutoPlay = this.player.config.playback.autoplay;
       const allowMutedAutoPlay = this.player.config.playback.allowMutedAutoPlay;
 
-      //Pass signal to IMA SDK if ad will autoplay with sound
-      //First let application config this, otherwise if player is configured
+      // Pass signal to IMA SDK if ad will autoplay with sound
+      // First let application config this, otherwise if player is configured
       // to autoplay then try to autodetect if unmuted autoplay is supported
       if (typeof(adWillAutoPlay) === "boolean") {
         adsRequest.setAdWillAutoPlay(adWillAutoPlay);
