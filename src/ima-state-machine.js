@@ -24,7 +24,7 @@ export default class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_STARTED,
-          from: [State.LOADED, State.IDLE, State.PAUSED],
+          from: [State.LOADED, State.IDLE, State.PAUSED, State.PLAYING],
           to: (adEvent: any): string => {
             let ad = adEvent.getAd();
             if (!ad.isLinear()) {
@@ -69,7 +69,7 @@ export default class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_LOADED,
-          from: [State.IDLE, State.LOADED]
+          from: [State.IDLE, State.LOADED, State.PLAYING]
         },
         {
           name: context.player.Event.AD_FIRST_QUARTILE,
