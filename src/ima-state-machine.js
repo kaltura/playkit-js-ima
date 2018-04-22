@@ -50,8 +50,7 @@ export default class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_COMPLETED,
-          from: State.PLAYING,
-          to: State.IDLE
+          from: State.PLAYING
         },
         {
           name: context.player.Event.ALL_ADS_COMPLETED,
@@ -60,7 +59,7 @@ export default class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_BREAK_END,
-          from: [State.IDLE, State.LOADED],
+          from: [State.IDLE, State.PLAYING, State.LOADED],
           to: State.IDLE
         },
         {
