@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.5.3"></a>
+## [0.5.3](https://github.com/kaltura/playkit-js-ima/compare/v0.5.2...v0.5.3) (2018-04-22)
+
+
+### Bug Fixes
+
+* **FEC-8092:** playback start while ad is playing when calling play on ad completed ([#57](https://github.com/kaltura/playkit-js-ima/issues/57)) ([569f381](https://github.com/kaltura/playkit-js-ima/commit/569f381))
+* **FEC-8129:** playback starts while ad is playing if only adsResponse is configured ([#56](https://github.com/kaltura/playkit-js-ima/issues/56)) ([806f0ea](https://github.com/kaltura/playkit-js-ima/commit/806f0ea))
+* **FEC-8131:** skippable ads fail on iOS ([#58](https://github.com/kaltura/playkit-js-ima/issues/58)) ([64aeb21](https://github.com/kaltura/playkit-js-ima/commit/64aeb21))
+
+
+
 <a name="0.5.2"></a>
 ## [0.5.2](https://github.com/kaltura/playkit-js-ima/compare/v0.5.1...v0.5.2) (2018-04-16)
 
