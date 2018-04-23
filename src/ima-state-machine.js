@@ -3,6 +3,7 @@ import StateMachine from 'javascript-state-machine'
 import StateMachineHistory from 'javascript-state-machine/lib/history'
 import State from './state'
 import AdType from './ad-type'
+import {Utils} from 'playkit-js';
 
 /**
  * Finite state machine for ima plugin.
@@ -142,6 +143,7 @@ export default class ImaStateMachine {
  */
 function onAdLoaded(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
+  Utils.Dom.setAttribute(this._adsContainerDiv, 'data-adtype', getAdType(adEvent));
   // When we are using the same video element on iOS, native captions still
   // appearing on the video element, so need to hide them before ad start.
   if (this._adsManager.isCustomPlaybackUsed()) {
