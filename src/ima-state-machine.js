@@ -6,12 +6,6 @@ import AdType from './ad-type'
 import {Utils} from 'playkit-js';
 
 /**
- * The overlay ad class.
- * @type {string}
- * @const
- */
-const OVERLAY_AD_CLASS: string = "playkit-overlay-ad";
-/**
  * Finite state machine for ima plugin.
  * @classdesc
  */
@@ -149,6 +143,7 @@ export default class ImaStateMachine {
  */
 function onAdLoaded(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
+  Utils.Dom.setAttribute(this._adsContainerDiv, 'data-adType', getAdType(adEvent));
   // When we are using the same video element on iOS, native captions still
   // appearing on the video element, so need to hide them before ad start.
   if (this._adsManager.isCustomPlaybackUsed()) {
@@ -170,7 +165,6 @@ function onAdStarted(options: Object, adEvent: any): void {
   this._showAdsContainer();
   this._maybeDisplayCompanionAds();
   if (!this._currentAd.isLinear()) {
-    Utils.Dom.addClassName(this._adsContainerDiv, OVERLAY_AD_CLASS);
     this._setContentPlayheadTrackerEventsEnabled(true);
     this._setVideoEndedCallbackEnabled(true);
     if (this._nextPromise) {
