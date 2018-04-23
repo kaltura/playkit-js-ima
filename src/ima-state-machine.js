@@ -3,7 +3,14 @@ import StateMachine from 'javascript-state-machine'
 import StateMachineHistory from 'javascript-state-machine/lib/history'
 import State from './state'
 import AdType from './ad-type'
+import {Utils} from 'playkit-js';
 
+/**
+ * The overlay ad class.
+ * @type {string}
+ * @const
+ */
+const OVERLAY_AD_CLASS: string = "playkit-overlay-ad";
 /**
  * Finite state machine for ima plugin.
  * @classdesc
@@ -163,6 +170,7 @@ function onAdStarted(options: Object, adEvent: any): void {
   this._showAdsContainer();
   this._maybeDisplayCompanionAds();
   if (!this._currentAd.isLinear()) {
+    Utils.Dom.addClassName(this._adsContainerDiv, OVERLAY_AD_CLASS);
     this._setContentPlayheadTrackerEventsEnabled(true);
     this._setVideoEndedCallbackEnabled(true);
     if (this._nextPromise) {
