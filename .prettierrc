@@ -8,6 +8,13 @@
   "bracketSpacing": false,
   "jsxBracketSameLine": true,
   "arrowParens": "avoid",
-  "parser": "flow",
-  "proseWrap": "preserve"
+  "proseWrap": "preserve",
+  "overrides": [
+    {
+      "files": "*.json",
+      "options": {
+        "printWidth": 200
+      }
+    }
+  ]
 }
