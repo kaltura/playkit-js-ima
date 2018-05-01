@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.5.5"></a>
+## [0.5.5](https://github.com/kaltura/playkit-js-ima/compare/v0.5.4...v0.5.5) (2018-05-01)
+
+
+### Bug Fixes
+
+* **FEC-7406:** preroll doesn't played on change media while unmute the previous media [#60](https://github.com/kaltura/playkit-js-ima/issues/60) ([29f5752](https://github.com/kaltura/playkit-js-ima/commit/29f5752))
+
+
+
 <a name="0.5.4"></a>
 ## [0.5.4](https://github.com/kaltura/playkit-js-ima/compare/v0.5.3...v0.5.4) (2018-04-23)
 
