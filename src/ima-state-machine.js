@@ -236,11 +236,10 @@ function onAdCompleted(options: Object, adEvent: any): void {
  */
 function onAllAdsCompleted(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
-  onAdBreakEnd.call(this, options, adEvent);
   if (this._adsManager.isCustomPlaybackUsed() && this._contentComplete) {
     this.player.getVideoElement().src = this._contentSrc;
   }
-  this.destroy();
+  onAdBreakEnd.call(this, options, adEvent);
 }
 
 /**
