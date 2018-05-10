@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.6.0"></a>
+# [0.6.0](https://github.com/kaltura/playkit-js-ima/compare/v0.5.5...v0.6.0) (2018-05-10)
+
+
+### Features
+
+* serve ima as external bundle ([#61](https://github.com/kaltura/playkit-js-ima/issues/61)) ([43de7c5](https://github.com/kaltura/playkit-js-ima/commit/43de7c5))
+
+
+
 <a name="0.5.5"></a>
 ## [0.5.5](https://github.com/kaltura/playkit-js-ima/compare/v0.5.4...v0.5.5) (2018-05-01)
 
