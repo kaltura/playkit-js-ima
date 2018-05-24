@@ -569,6 +569,10 @@ export default class Ima extends BasePlugin {
         this._adsLoader.requestAds(adsRequest);
       } else if (playerWillAutoPlay) {
         getCapabilities(EngineType.HTML5).then(capabilities => {
+          // If the plugin has been destroyed while calling this promise
+          // the adsLoader will no longer exists
+          if (!this._adsLoader) return;
+
           if (capabilities.autoplay) {
             adsRequest.setAdWillAutoPlay(true);
           }
