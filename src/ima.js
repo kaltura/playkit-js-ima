@@ -39,7 +39,7 @@ const ADS_COVER_CLASS: string = "playkit-ads-cover";
  * The ima plugin.
  * @classdesc
  */
-export default class Ima extends BasePlugin {
+class Ima extends BasePlugin {
 
   /**
    * The default configuration of the plugin.
@@ -979,3 +979,5 @@ export default class Ima extends BasePlugin {
     }
   }
 }
+
+export {Ima as Plugin}
