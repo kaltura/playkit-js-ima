@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.6.1"></a>
+## [0.6.1](https://github.com/kaltura/playkit-js-ima/compare/v0.6.0...v0.6.1) (2018-05-26)
+
+
+### Bug Fixes
+
+* **FEC-8239:** IMA exception when calling reset followed by destroy ([#62](https://github.com/kaltura/playkit-js-ima/issues/62)) ([0903675](https://github.com/kaltura/playkit-js-ima/commit/0903675))
+
+
+
+<a name="0.6.0"></a>
+# [0.6.0](https://github.com/kaltura/playkit-js-ima/compare/v0.5.5...v0.6.0) (2018-05-10)
+
+
+### Features
+
+* serve ima as external bundle ([#61](https://github.com/kaltura/playkit-js-ima/issues/61)) ([43de7c5](https://github.com/kaltura/playkit-js-ima/commit/43de7c5))
+
+
+
+<a name="0.5.5"></a>
+## [0.5.5](https://github.com/kaltura/playkit-js-ima/compare/v0.5.4...v0.5.5) (2018-05-01)
+
+
+### Bug Fixes
+
+* **FEC-7406:** preroll doesn't played on change media while unmute the previous media [#60](https://github.com/kaltura/playkit-js-ima/issues/60) ([29f5752](https://github.com/kaltura/playkit-js-ima/commit/29f5752))
+
+
+
 <a name="0.5.4"></a>
 ## [0.5.4](https://github.com/kaltura/playkit-js-ima/compare/v0.5.3...v0.5.4) (2018-04-23)
 
