@@ -1,4 +1,4 @@
-import loadPlayer from 'playkit-js'
+import loadPlayer from 'playkit-js';
 
 /**
  * @param {string} targetId _
@@ -11,8 +11,8 @@ function loadPlayerWithAds(targetId, imaConfig, playbackConfig) {
     sources: {
       progressive: [
         {
-          "mimetype": "video/mp4",
-          "url": "http://www.html5videoplayer.net/videos/toystory.mp4"
+          mimetype: 'video/mp4',
+          url: 'http://www.html5videoplayer.net/videos/toystory.mp4'
         }
       ]
     },
@@ -50,7 +50,7 @@ function maybeDoneTest(array, value, done) {
 function loadGPT() {
   window.googletag = window.googletag || {};
   window.googletag.cmd = window.googletag.cmd || [];
-  (function () {
+  (function() {
     var gads = document.createElement('script');
     gads.async = true;
     gads.type = 'text/javascript';
@@ -64,12 +64,14 @@ function loadGPT() {
  * @returns {void}
  */
 function registerCompanionSlots() {
-  window.googletag.cmd.push(function () {
+  window.googletag.cmd.push(function() {
     // Supply YOUR_NETWORK and YOUR_UNIT_PATH.
-    window.googletag.defineSlot('/YOUR_NETWORK/YOUR_UNIT_PATH', [728, 90], 'testCompanionLong')
+    window.googletag
+      .defineSlot('/YOUR_NETWORK/YOUR_UNIT_PATH', [728, 90], 'testCompanionLong')
       .addService(window.googletag.companionAds())
       .addService(window.googletag.pubads());
-    window.googletag.defineSlot('/YOUR_NETWORK/YOUR_UNIT_PATH', [300, 250], 'testCompanionSquare')
+    window.googletag
+      .defineSlot('/YOUR_NETWORK/YOUR_UNIT_PATH', [300, 250], 'testCompanionSquare')
       .addService(window.googletag.companionAds())
       .addService(window.googletag.pubads());
     window.googletag.companionAds().setRefreshUnfilledSlots(true);
@@ -77,18 +79,13 @@ function registerCompanionSlots() {
     window.googletag.enableServices();
   });
 
-  window.googletag.cmd.push(function () {
+  window.googletag.cmd.push(function() {
     window.googletag.display('testCompanionLong');
   });
 
-  window.googletag.cmd.push(function () {
+  window.googletag.cmd.push(function() {
     window.googletag.display('testCompanionSquare');
   });
 }
 
-export {
-  loadPlayerWithAds,
-  maybeDoneTest,
-  loadGPT,
-  registerCompanionSlots
-};
+export {loadPlayerWithAds, maybeDoneTest, loadGPT, registerCompanionSlots};

@@ -1,20 +1,16 @@
 // @flow
-import ImaMiddleware from './ima-middleware'
-import ImaStateMachine from './ima-state-machine'
-import State from './state'
-import {BaseMiddleware, BasePlugin, EngineType, getCapabilities, Utils} from 'playkit-js'
-import './assets/style.css'
+import ImaMiddleware from './ima-middleware';
+import ImaStateMachine from './ima-state-machine';
+import State from './state';
+import {BaseMiddleware, BasePlugin, EngineType, getCapabilities, Utils} from 'playkit-js';
+import './assets/style.css';
 
 /**
  * The full screen events..
  * @type {Array<string>}
  * @const
  */
-const FULL_SCREEN_EVENTS: Array<string> = [
-  'fullscreenchange',
-  'mozfullscreenchange',
-  'webkitfullscreenchange'
-];
+const FULL_SCREEN_EVENTS: Array<string> = ['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange'];
 
 /**
  * The overlay ad margin.
@@ -27,20 +23,19 @@ const OVERLAY_AD_MARGIN: number = 8;
  * @type {string}
  * @const
  */
-const ADS_CONTAINER_CLASS: string = "playkit-ads-container";
+const ADS_CONTAINER_CLASS: string = 'playkit-ads-container';
 /**
  * The ads cover class.
  * @type {string}
  * @const
  */
-const ADS_COVER_CLASS: string = "playkit-ads-cover";
+const ADS_COVER_CLASS: string = 'playkit-ads-cover';
 
 /**
  * The ima plugin.
  * @classdesc
  */
 export default class Ima extends BasePlugin {
-
   /**
    * The default configuration of the plugin.
    * @type {Object}
@@ -69,13 +64,13 @@ export default class Ima extends BasePlugin {
    * @type {string}
    * @static
    */
-  static IMA_SDK_LIB_URL: string = "//imasdk.googleapis.com/js/sdkloader/ima3.js";
+  static IMA_SDK_LIB_URL: string = '//imasdk.googleapis.com/js/sdkloader/ima3.js';
   /**
    * The debug sdk lib url.
    * @type {string}
    * @static
    */
-  static IMA_SDK_DEBUG_LIB_URL: string = "//imasdk.googleapis.com/js/sdkloader/ima3_debug.js";
+  static IMA_SDK_DEBUG_LIB_URL: string = '//imasdk.googleapis.com/js/sdkloader/ima3_debug.js';
   /**
    * Promise for loading the plugin.
    * Will be resolved after:
@@ -225,7 +220,7 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   playAdNow(adTagUrl: string): void {
-    this.logger.warn("playAdNow API is not implemented yet", adTagUrl);
+    this.logger.warn('playAdNow API is not implemented yet', adTagUrl);
   }
 
   /**
@@ -233,7 +228,7 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   skipAd(): void {
-    this.logger.debug("Skip ad");
+    this.logger.debug('Skip ad');
     if (this._adsManager) {
       if (this._adsManager.getAdSkippableState()) {
         this._adsManager.skip();
@@ -249,7 +244,7 @@ export default class Ima extends BasePlugin {
    * @returns {DeferredPromise} - The promise which when resolved starts the next handler in the middleware chain.
    */
   resumeAd(): ?DeferredPromise {
-    this.logger.debug("Resume ad");
+    this.logger.debug('Resume ad');
     this._nextPromise = Utils.Object.defer();
     this._adsManager.resume();
     return this._nextPromise;
@@ -261,7 +256,7 @@ export default class Ima extends BasePlugin {
    * @returns {DeferredPromise} - The promise which when resolved starts the next handler in the middleware chain.
    */
   pauseAd(): ?DeferredPromise {
-    this.logger.debug("Pause ad");
+    this.logger.debug('Pause ad');
     this._adsManager.pause();
   }
 
@@ -290,7 +285,7 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   reset(): void {
-    this.logger.debug("reset");
+    this.logger.debug('reset');
     this.eventManager.removeAll();
     this._stopAdInterval();
     this._hideAdsContainer();
@@ -323,7 +318,7 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   destroy(): void {
-    this.logger.debug("destroy");
+    this.logger.debug('destroy');
     this.eventManager.destroy();
     this._stopAdInterval();
     this._hideAdsContainer();
@@ -344,7 +339,7 @@ export default class Ima extends BasePlugin {
    */
   initialUserAction(): ?DeferredPromise {
     try {
-      this.logger.debug("Initial user action");
+      this.logger.debug('Initial user action');
       this._nextPromise = Utils.Object.defer();
       this._adDisplayContainer.initialize();
       this._hasUserAction = true;
@@ -353,7 +348,7 @@ export default class Ima extends BasePlugin {
         return this._nextPromise;
       }
       if (this._isAdsManagerLoaded) {
-        this.logger.debug("User action occurred after ads manager loaded");
+        this.logger.debug('User action occurred after ads manager loaded');
         this._startAdsManager();
       }
     } catch (adError) {
@@ -369,10 +364,8 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _startAdsManager(): void {
-    this.logger.debug("Start ads manager");
-    const readyPromise = this._adsManager.isCustomPlaybackUsed() && !this.config.disableMediaPreload
-      ? this.player.ready()
-      : Promise.resolve();
+    this.logger.debug('Start ads manager');
+    const readyPromise = this._adsManager.isCustomPlaybackUsed() && !this.config.disableMediaPreload ? this.player.ready() : Promise.resolve();
     readyPromise.then(() => {
       this._adsManager.init(this.player.dimensions.width, this.player.dimensions.height, this._sdk.ViewMode.NORMAL);
       this._adsManager.start();
@@ -389,7 +382,7 @@ export default class Ima extends BasePlugin {
     this.eventManager.listen(window, 'resize', () => this._resizeAd());
     this.eventManager.listen(this.player, this.player.Event.MUTE_CHANGE, () => this._syncPlayerVolume());
     this.eventManager.listen(this.player, this.player.Event.VOLUME_CHANGE, () => this._syncPlayerVolume());
-    this.eventManager.listen(this.player, this.player.Event.SOURCE_SELECTED, (event) => {
+    this.eventManager.listen(this.player, this.player.Event.SOURCE_SELECTED, event => {
       let selectedSource = event.payload.selectedSource;
       if (selectedSource && selectedSource.length > 0) {
         this._contentSrc = selectedSource[0].url;
@@ -428,7 +421,7 @@ export default class Ima extends BasePlugin {
       .then(() => this._loadImaSDKLib())
       .then(() => {
         this._sdk = window.google.ima;
-        this.logger.debug("IMA SDK version: " + this._sdk.VERSION);
+        this.logger.debug('IMA SDK version: ' + this._sdk.VERSION);
         this._initImaSettings();
         this._initAdsContainer();
         this._initAdsLoader();
@@ -449,7 +442,8 @@ export default class Ima extends BasePlugin {
   _maybeDelayInitUntilSourceSelected(): Promise<*> {
     if (this.config.delayInitUntilSourceSelected) {
       return new Promise((resolve, reject) => {
-        if (this._contentSrc) { // Source selected event already dispatched
+        if (this._contentSrc) {
+          // Source selected event already dispatched
           resolve();
         } else {
           this.eventManager.listenOnce(this.player, this.player.Event.SOURCE_SELECTED, resolve);
@@ -467,11 +461,9 @@ export default class Ima extends BasePlugin {
    * @private
    */
   _loadImaSDKLib(): Promise<*> {
-    return (
-      this._isImaSDKLibLoaded()
-        ? Promise.resolve()
-        : Utils.Dom.loadScriptAsync(this.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL)
-    );
+    return this._isImaSDKLibLoaded()
+      ? Promise.resolve()
+      : Utils.Dom.loadScriptAsync(this.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL);
   }
 
   /**
@@ -480,7 +472,7 @@ export default class Ima extends BasePlugin {
    * @private
    */
   _isImaSDKLibLoaded(): boolean {
-    return (window.google && window.google.ima && window.google.ima.VERSION);
+    return window.google && window.google.ima && window.google.ima.VERSION;
   }
 
   /**
@@ -506,7 +498,7 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _initAdsContainer(): void {
-    this.logger.debug("Init ads container");
+    this.logger.debug('Init ads container');
     const playerView = this.player.getView();
     // Create ads container
     this._adsContainerDiv = Utils.Dom.createElement('div');
@@ -528,9 +520,11 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _initAdsLoader(): void {
-    this.logger.debug("Init ads loader");
+    this.logger.debug('Init ads loader');
     this._adsLoader = new this._sdk.AdsLoader(this._adDisplayContainer);
-    this._adsLoader.addEventListener(this._sdk.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, adsManagerLoadedEvent => this._onAdsManagerLoaded(adsManagerLoadedEvent));
+    this._adsLoader.addEventListener(this._sdk.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, adsManagerLoadedEvent =>
+      this._onAdsManagerLoaded(adsManagerLoadedEvent)
+    );
     this._adsLoader.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, adEvent => this._stateMachine.aderror(adEvent));
   }
 
@@ -541,7 +535,7 @@ export default class Ima extends BasePlugin {
    */
   _requestAds(): void {
     if (this.config.adTagUrl || this.config.adsResponse) {
-      this.logger.debug("Request ads");
+      this.logger.debug('Request ads');
       // Request video ads
       let adsRequest = new this._sdk.AdsRequest();
       if (this.config.adTagUrl) {
@@ -554,7 +548,7 @@ export default class Ima extends BasePlugin {
       adsRequest.nonLinearAdSlotWidth = this.player.dimensions.width;
       adsRequest.nonLinearAdSlotHeight = this.player.dimensions.height / 3;
 
-      const muted = this.player.muted || (this.player.volume === 0);
+      const muted = this.player.muted || this.player.volume === 0;
       adsRequest.setAdWillPlayMuted(muted);
 
       const adWillAutoPlay = this.config.adWillAutoPlay;
@@ -564,7 +558,7 @@ export default class Ima extends BasePlugin {
       // Pass signal to IMA SDK if ad will autoplay with sound
       // First let application config this, otherwise if player is configured
       // to autoplay then try to autodetect if unmuted autoplay is supported
-      if (typeof(adWillAutoPlay) === "boolean") {
+      if (typeof adWillAutoPlay === 'boolean') {
         adsRequest.setAdWillAutoPlay(adWillAutoPlay);
         this._adsLoader.requestAds(adsRequest);
       } else if (playerWillAutoPlay) {
@@ -575,8 +569,7 @@ export default class Ima extends BasePlugin {
 
           if (capabilities.autoplay) {
             adsRequest.setAdWillAutoPlay(true);
-          }
-          else if (allowMutedAutoPlay && capabilities.mutedAutoPlay) {
+          } else if (allowMutedAutoPlay && capabilities.mutedAutoPlay) {
             adsRequest.setAdWillAutoPlay(true);
             adsRequest.setAdWillPlayMuted(true);
           } else {
@@ -589,7 +582,7 @@ export default class Ima extends BasePlugin {
         this._adsLoader.requestAds(adsRequest);
       }
     } else {
-      this.logger.warn("Missing ad tag url: create plugin without requesting ads");
+      this.logger.warn('Missing ad tag url: create plugin without requesting ads');
     }
   }
 
@@ -600,7 +593,7 @@ export default class Ima extends BasePlugin {
    */
   _resizeAd() {
     if (this._sdk && this._adsManager && this._currentAd) {
-      let viewMode = (this.player.isFullscreen() ? this._sdk.ViewMode.FULLSCREEN : this._sdk.ViewMode.NORMAL);
+      let viewMode = this.player.isFullscreen() ? this._sdk.ViewMode.FULLSCREEN : this._sdk.ViewMode.NORMAL;
       if (this._currentAd.isLinear()) {
         this._adsManager.resize(this.player.dimensions.width, this.player.dimensions.height, viewMode);
       } else {
@@ -700,7 +693,7 @@ export default class Ima extends BasePlugin {
    */
   _maybeSaveVideoCurrentTime(): void {
     if (this._adsManager.isCustomPlaybackUsed() && this.player.currentTime && this.player.currentTime > 0) {
-      this.logger.debug("Custom playback used: save current time before ads", this.player.currentTime);
+      this.logger.debug('Custom playback used: save current time before ads', this.player.currentTime);
       this._videoLastCurrentTime = this.player.currentTime;
     }
   }
@@ -712,7 +705,7 @@ export default class Ima extends BasePlugin {
    */
   _maybeSetVideoCurrentTime(): void {
     if (this._videoLastCurrentTime) {
-      this.logger.debug("Custom playback used: set current time after ads", this._videoLastCurrentTime);
+      this.logger.debug('Custom playback used: set current time after ads', this._videoLastCurrentTime);
       this.player.currentTime = this._videoLastCurrentTime;
       this._videoLastCurrentTime = null;
     }
@@ -724,7 +717,7 @@ export default class Ima extends BasePlugin {
    * @returns {void}
    */
   _onMediaEnded(): void {
-    this.logger.debug("Media ended");
+    this.logger.debug('Media ended');
     this._adsLoader.contentComplete();
     this._contentComplete = true;
     if (!this._currentAd.isLinear()) {
@@ -739,7 +732,7 @@ export default class Ima extends BasePlugin {
    */
   _showAdsContainer(): void {
     if (this._adsContainerDiv) {
-      this._adsContainerDiv.style.visibility = "visible";
+      this._adsContainerDiv.style.visibility = 'visible';
     }
   }
 
@@ -750,7 +743,7 @@ export default class Ima extends BasePlugin {
    */
   _hideAdsContainer(): void {
     if (this._adsContainerDiv) {
-      this._adsContainerDiv.style.visibility = "hidden";
+      this._adsContainerDiv.style.visibility = 'hidden';
     }
   }
 
@@ -768,7 +761,7 @@ export default class Ima extends BasePlugin {
     this._attachAdsManagerListeners();
     this._syncPlayerVolume();
     if (this._hasUserAction) {
-      this.logger.debug("User action occurred before ads manager loaded");
+      this.logger.debug('User action occurred before ads manager loaded');
       this._startAdsManager();
     }
   }
@@ -780,11 +773,11 @@ export default class Ima extends BasePlugin {
    */
   _getAdsRenderingSetting(): Object {
     let adsRenderingSettings = new this._sdk.AdsRenderingSettings();
-    Object.keys(this.config.adsRenderingSettings).forEach((setting) => {
+    Object.keys(this.config.adsRenderingSettings).forEach(setting => {
       if (adsRenderingSettings[setting] !== undefined) {
         adsRenderingSettings[setting] = this.config.adsRenderingSettings[setting];
       } else {
-        this.logger.warn("unsupported adsRenderingSettings was set:", setting);
+        this.logger.warn('unsupported adsRenderingSettings was set:', setting);
       }
     });
     if (this.config.disableMediaPreload) {
@@ -829,7 +822,7 @@ export default class Ima extends BasePlugin {
       if (this.player.muted) {
         this._adsManager.setVolume(0);
       } else {
-        if (this._adsManager && typeof this.player.volume === 'number' && (this.player.volume !== this._adsManager.getVolume())) {
+        if (this._adsManager && typeof this.player.volume === 'number' && this.player.volume !== this._adsManager.getVolume()) {
           this._adsManager.setVolume(this.player.volume);
         }
       }
@@ -935,7 +928,8 @@ export default class Ima extends BasePlugin {
       selectionCriteria.resourceType = this._sdk.CompanionAdSelectionSettings.ResourceType.ALL;
       selectionCriteria.creativeType = this._sdk.CompanionAdSelectionSettings.CreativeType.ALL;
       const sizeCriteria = this.config.companions.sizeCriteria;
-      selectionCriteria.sizeCriteria = this._sdk.CompanionAdSelectionSettings.SizeCriteria[sizeCriteria] || this._sdk.CompanionAdSelectionSettings.SizeCriteria.SELECT_EXACT_MATCH;
+      selectionCriteria.sizeCriteria =
+        this._sdk.CompanionAdSelectionSettings.SizeCriteria[sizeCriteria] || this._sdk.CompanionAdSelectionSettings.SizeCriteria.SELECT_EXACT_MATCH;
       const companionsIds = Object.keys(this.config.companions.ads);
       for (let i = 0; i < companionsIds.length; i++) {
         const id = companionsIds[i];
@@ -977,8 +971,7 @@ export default class Ima extends BasePlugin {
    */
   _maybeForceExitFullScreen(): void {
     const isIOS = () => this.player.env.os.name === 'iOS';
-    if (isIOS() && !this._adsManager.isCustomPlaybackUsed()
-      && this.player.isFullscreen()) {
+    if (isIOS() && !this._adsManager.isCustomPlaybackUsed() && this.player.isFullscreen()) {
       this.player.exitFullscreen();
     }
   }

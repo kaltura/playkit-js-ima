@@ -1,7 +1,7 @@
 // @flow
-import {BaseMiddleware} from 'playkit-js'
-import Ima from './ima'
-import State from './state'
+import {BaseMiddleware} from 'playkit-js';
+import Ima from './ima';
+import State from './state';
 
 /**
  * Middleware implementation for ima plugin.
@@ -13,7 +13,7 @@ export default class ImaMiddleware extends BaseMiddleware {
    * @type {string}
    * @public
    */
-  id: string = "ImaMiddleware";
+  id: string = 'ImaMiddleware';
   /**
    * Whether the player has been loaded.
    * @member
@@ -34,7 +34,7 @@ export default class ImaMiddleware extends BaseMiddleware {
   constructor(context: Ima) {
     super();
     this._context = context;
-    context.player.addEventListener(context.player.Event.CHANGE_SOURCE_STARTED, () => this._isPlayerLoaded = false);
+    context.player.addEventListener(context.player.Event.CHANGE_SOURCE_STARTED, () => (this._isPlayerLoaded = false));
   }
 
   /**
@@ -46,43 +46,45 @@ export default class ImaMiddleware extends BaseMiddleware {
     if (!this._isPlayerLoaded && !this._context.config.disableMediaPreload) {
       this._loadPlayer();
     }
-    this._context.loadPromise.then(() => {
-      let sm = this._context.getStateMachine();
-      switch (sm.state) {
-        case State.PLAYING:
-          break;
-        case State.LOADED: {
-          const initialUserAction = this._context.initialUserAction();
-          if (initialUserAction) {
-            return initialUserAction.then(() => {
+    this._context.loadPromise
+      .then(() => {
+        let sm = this._context.getStateMachine();
+        switch (sm.state) {
+          case State.PLAYING:
+            break;
+          case State.LOADED: {
+            const initialUserAction = this._context.initialUserAction();
+            if (initialUserAction) {
+              return initialUserAction.then(() => {
+                this.callNext(next);
+              });
+            } else {
               this.callNext(next);
-            });
-          } else {
-            this.callNext(next);
+            }
+            break;
           }
-          break;
-        }
-        case State.PAUSED: {
-          const resumeAd = this._context.resumeAd();
-          if (resumeAd) {
-            return resumeAd.then(() => {
+          case State.PAUSED: {
+            const resumeAd = this._context.resumeAd();
+            if (resumeAd) {
+              return resumeAd.then(() => {
+                this.callNext(next);
+              });
+            } else {
               this.callNext(next);
-            });
-          } else {
-            this.callNext(next);
+            }
+            break;
           }
-          break;
+          default: {
+            this.callNext(next);
+            break;
+          }
         }
-        default: {
-          this.callNext(next);
-          break;
-        }
-      }
-    }).catch((e) => {
-      this._context.destroy();
-      this._context.logger.error(e);
-      this.callNext(next);
-    });
+      })
+      .catch(e => {
+        this._context.destroy();
+        this._context.logger.error(e);
+        this.callNext(next);
+      });
   }
 
   /**
@@ -113,11 +115,12 @@ export default class ImaMiddleware extends BaseMiddleware {
    */
   _loadPlayer(): void {
     const loadPlayer = () => {
-      this._context.logger.debug("Load player by ima middleware");
+      this._context.logger.debug('Load player by ima middleware');
       this._context.player.load();
       this._isPlayerLoaded = true;
     };
-    if (this._context.player.engineType) { // player has source to play
+    if (this._context.player.engineType) {
+      // player has source to play
       loadPlayer();
     } else {
       this._context.player.addEventListener(this._context.player.Event.SOURCE_SELECTED, () => loadPlayer());

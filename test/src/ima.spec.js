@@ -1,26 +1,25 @@
-import {loadPlayerWithAds, maybeDoneTest, loadGPT, registerCompanionSlots} from './helpers'
-import * as TestUtils from 'playkit-js/test/src/utils/test-utils'
+import {loadPlayerWithAds, maybeDoneTest, loadGPT, registerCompanionSlots} from './helpers';
+import * as TestUtils from 'playkit-js/test/src/utils/test-utils';
 // eslint-disable-next-line no-unused-vars
-import Ima from '../../src/ima'
-import AdType from "../../src/ad-type";
+import Ima from '../../src/ima';
+import AdType from '../../src/ad-type';
 
 const targetId = 'player-placeholder_ima.spec';
 
-describe('Ima Plugin', function () {
-
+describe('Ima Plugin', function() {
   let ima;
   let player;
   let adPodIndex;
   let cuePoints;
 
-  before(function () {
+  before(function() {
     TestUtils.createElement('DIV', targetId);
     let el = document.getElementById(targetId);
     el.style.height = '360px';
     el.style.width = '640px';
   });
 
-  afterEach(function () {
+  afterEach(function() {
     ima.destroy();
     ima = null;
     player.destroy();
@@ -29,13 +28,14 @@ describe('Ima Plugin', function () {
     TestUtils.removeVideoElementsFromTestPage();
   });
 
-  after(function () {
+  after(function() {
     TestUtils.removeElement(targetId);
   });
 
-  it('should fire all ads events', (done) => {
+  it('should fire all ads events', done => {
     player = loadPlayerWithAds(targetId, {
-      adTagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=[timestamp]'
+      adTagUrl:
+        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=[timestamp]'
     });
     ima = player._pluginManager.get('ima');
     let adsEvents = [
@@ -103,35 +103,36 @@ describe('Ima Plugin', function () {
     player.play();
   });
 
-  it('should support setting adsRenderingSettings config object', (done) => {
+  it('should support setting adsRenderingSettings config object', done => {
     player = loadPlayerWithAds(targetId, {
-      adTagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=[timestamp]',
-      adsRenderingSettings: {uiElements: ["countdown"]}
+      adTagUrl:
+        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=[timestamp]',
+      adsRenderingSettings: {uiElements: ['countdown']}
     });
 
     ima = player._pluginManager.get('ima');
     player.addEventListener(player.Event.AD_LOADED, () => {
-
       let refAdsRenderingSettings = new ima._sdk.AdsRenderingSettings();
-      refAdsRenderingSettings["uiElements"] = ["countdown"];
+      refAdsRenderingSettings['uiElements'] = ['countdown'];
       const adsRenderingSettings = ima._getAdsRenderingSetting();
       try {
-        adsRenderingSettings["uiElements"][0].should.equals(refAdsRenderingSettings["uiElements"][0]);
+        adsRenderingSettings['uiElements'][0].should.equals(refAdsRenderingSettings['uiElements'][0]);
         done();
-      } catch (e){
+      } catch (e) {
         done(e);
       }
     });
     player.play();
   });
 
-  it('should play vmap-preroll', (done) => {
+  it('should play vmap-preroll', done => {
     cuePoints = [0];
     player = loadPlayerWithAds(targetId, {
-      adTagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=[timestamp]'
+      adTagUrl:
+        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=[timestamp]'
     });
     ima = player._pluginManager.get('ima');
-    player.addEventListener(player.Event.AD_LOADED, (e) => {
+    player.addEventListener(player.Event.AD_LOADED, e => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
       e.payload.adType.should.equal(AdType.PRE_ROLL);
     });
@@ -141,14 +142,15 @@ describe('Ima Plugin', function () {
     player.play();
   });
 
-  it('should call requestAds once', (done) => {
+  it('should call requestAds once', done => {
     cuePoints = [0];
     player = loadPlayerWithAds(targetId, {
-      adTagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=[timestamp]'
+      adTagUrl:
+        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=[timestamp]'
     });
     ima = player._pluginManager.get('ima');
-    const spy = sinon.spy(ima, "_requestAds");
-    player.addEventListener(player.Event.AD_LOADED, (e) => {
+    const spy = sinon.spy(ima, '_requestAds');
+    player.addEventListener(player.Event.AD_LOADED, e => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
       e.payload.adType.should.equal(AdType.PRE_ROLL);
       spy.should.calledOnce;
@@ -159,13 +161,14 @@ describe('Ima Plugin', function () {
     player.play();
   });
 
-  it('should play vmap-preroll-bumper', (done) => {
+  it('should play vmap-preroll-bumper', done => {
     cuePoints = [0, 0];
     player = loadPlayerWithAds(targetId, {
-      adTagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonlybumper&cmsid=496&vid=short_onecue&correlator=[timestamp]'
+      adTagUrl:
+        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonlybumper&cmsid=496&vid=short_onecue&correlator=[timestamp]'
     });
     ima = player._pluginManager.get('ima');
-    player.addEventListener(player.Event.AD_LOADED, (e) => {
+    player.addEventListener(player.Event.AD_LOADED, e => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
       e.payload.adType.should.equal(AdType.PRE_ROLL);
     });
@@ -175,13 +178,14 @@ describe('Ima Plugin', function () {
     player.play();
   });
 
-  it('should play vmap-preroll-midroll-postroll', (done) => {
+  it('should play vmap-preroll-midroll-postroll', done => {
     cuePoints = [0, 1, -1];
     player = loadPlayerWithAds(targetId, {
-      adTagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpost&cmsid=496&vid=short_onecue&correlator=[timestamp]'
+      adTagUrl:
+        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpost&cmsid=496&vid=short_onecue&correlator=[timestamp]'
     });
     ima = player._pluginManager.get('ima');
-    player.addEventListener(player.Event.AD_LOADED, (e) => {
+    player.addEventListener(player.Event.AD_LOADED, e => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
       let adType = '';
       switch (adPodIndex) {
@@ -206,13 +210,14 @@ describe('Ima Plugin', function () {
     player.play();
   });
 
-  it('should play vmap-postroll', (done) => {
+  it('should play vmap-postroll', done => {
     cuePoints = [-1];
     player = loadPlayerWithAds(targetId, {
-      adTagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpostonly&cmsid=496&vid=short_onecue&correlator=[timestamp]'
+      adTagUrl:
+        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpostonly&cmsid=496&vid=short_onecue&correlator=[timestamp]'
     });
     ima = player._pluginManager.get('ima');
-    player.addEventListener(player.Event.AD_LOADED, (e) => {
+    player.addEventListener(player.Event.AD_LOADED, e => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
       e.payload.adType.should.equal(AdType.POST_ROLL);
     });
@@ -225,13 +230,14 @@ describe('Ima Plugin', function () {
     player.play();
   });
 
-  it('should play vmap-postroll-bumper', (done) => {
+  it('should play vmap-postroll-bumper', done => {
     cuePoints = [-1, -1];
     player = loadPlayerWithAds(targetId, {
-      adTagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpostonlybumper&cmsid=496&vid=short_onecue&correlator=[timestamp]'
+      adTagUrl:
+        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpostonlybumper&cmsid=496&vid=short_onecue&correlator=[timestamp]'
     });
     ima = player._pluginManager.get('ima');
-    player.addEventListener(player.Event.AD_LOADED, (e) => {
+    player.addEventListener(player.Event.AD_LOADED, e => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
       e.payload.adType.should.equal(AdType.POST_ROLL);
     });
@@ -244,19 +250,20 @@ describe('Ima Plugin', function () {
     player.play();
   });
 
-  it('should play single-skippable-inline', (done) => {
+  it('should play single-skippable-inline', done => {
     cuePoints = [0];
     player = loadPlayerWithAds(targetId, {
-      adTagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=[timestamp]'
+      adTagUrl:
+        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=[timestamp]'
     });
     ima = player._pluginManager.get('ima');
-    player.addEventListener(player.Event.AD_LOADED, (e) => {
+    player.addEventListener(player.Event.AD_LOADED, e => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
       e.payload.adType.should.equal(AdType.PRE_ROLL);
     });
     player.addEventListener(player.Event.AD_STARTED, () => {
       maybeDoneTest(cuePoints, adPodIndex);
-      setTimeout(function () {
+      setTimeout(function() {
         ima.skipAd();
       }, 6000);
     });
@@ -266,13 +273,14 @@ describe('Ima Plugin', function () {
     player.play();
   });
 
-  it('should play single-redirect-linear', (done) => {
+  it('should play single-redirect-linear', done => {
     cuePoints = [0];
     player = loadPlayerWithAds(targetId, {
-      adTagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dredirectlinear&correlator=[timestamp]'
+      adTagUrl:
+        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dredirectlinear&correlator=[timestamp]'
     });
     ima = player._pluginManager.get('ima');
-    player.addEventListener(player.Event.AD_LOADED, (e) => {
+    player.addEventListener(player.Event.AD_LOADED, e => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
       e.payload.adType.should.equal(AdType.PRE_ROLL);
     });
@@ -282,9 +290,10 @@ describe('Ima Plugin', function () {
     player.play();
   });
 
-  it('should throw error because single-redirect-error', (done) => {
+  it('should throw error because single-redirect-error', done => {
     player = loadPlayerWithAds(targetId, {
-      adTagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dredirecterror&nofb=1&correlator=[timestamp]'
+      adTagUrl:
+        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dredirecterror&nofb=1&correlator=[timestamp]'
     });
     ima = player._pluginManager.get('ima');
     player.addEventListener(player.Event.AD_ERROR, () => {
@@ -293,13 +302,14 @@ describe('Ima Plugin', function () {
     player.play();
   });
 
-  it('should play single-redirect-broken(fallback)', (done) => {
+  it('should play single-redirect-broken(fallback)', done => {
     cuePoints = [0];
     player = loadPlayerWithAds(targetId, {
-      adTagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dredirecterror&correlator=[timestamp]'
+      adTagUrl:
+        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dredirecterror&correlator=[timestamp]'
     });
     ima = player._pluginManager.get('ima');
-    player.addEventListener(player.Event.AD_LOADED, (e) => {
+    player.addEventListener(player.Event.AD_LOADED, e => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
       e.payload.adType.should.equal(AdType.PRE_ROLL);
     });
@@ -309,13 +319,14 @@ describe('Ima Plugin', function () {
     player.play();
   });
 
-  it('should play single-non-linear-inline', (done) => {
+  it('should play single-non-linear-inline', done => {
     cuePoints = [0];
     player = loadPlayerWithAds(targetId, {
-      adTagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=480x70&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dnonlinear&correlator=[timestamp]'
+      adTagUrl:
+        'https://pubads.g.doubleclick.net/gampad/ads?sz=480x70&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dnonlinear&correlator=[timestamp]'
     });
     ima = player._pluginManager.get('ima');
-    player.addEventListener(player.Event.AD_LOADED, (e) => {
+    player.addEventListener(player.Event.AD_LOADED, e => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
       e.payload.ad.isLinear().should.be.false;
       e.payload.adType.should.equal(AdType.OVERLAY);
@@ -326,13 +337,14 @@ describe('Ima Plugin', function () {
     player.play();
   });
 
-  it('should play single-inline-linear', (done) => {
+  it('should play single-inline-linear', done => {
     cuePoints = [0];
     player = loadPlayerWithAds(targetId, {
-      adTagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=[timestamp]'
+      adTagUrl:
+        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=[timestamp]'
     });
     ima = player._pluginManager.get('ima');
-    player.addEventListener(player.Event.AD_LOADED, (e) => {
+    player.addEventListener(player.Event.AD_LOADED, e => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
     });
     player.addEventListener(player.Event.AD_STARTED, () => {
@@ -341,18 +353,19 @@ describe('Ima Plugin', function () {
     player.play();
   });
 
-  it('should display companion-ads-manual', (done) => {
+  it('should display companion-ads-manual', done => {
     TestUtils.createElement('DIV', 'testCompanionSquare');
     let testCompanionSquare = document.getElementById('testCompanionSquare');
     testCompanionSquare.style.height = '250px';
     testCompanionSquare.style.width = '300px';
     player = loadPlayerWithAds(targetId, {
-      adTagUrl: 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=xml_vmap1&unviewed_position_start=1&cust_params=sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=[timestamp]',
+      adTagUrl:
+        'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=xml_vmap1&unviewed_position_start=1&cust_params=sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=[timestamp]',
       companions: {
         ads: {
           testCompanionSquare: {
             width: 300,
-            height: 250,
+            height: 250
           }
         },
         sizeCriteria: 'SELECT_EXACT_MATCH'
@@ -367,7 +380,7 @@ describe('Ima Plugin', function () {
     player.play();
   });
 
-  it('should display companion-ads-automatic', (done) => {
+  it('should display companion-ads-automatic', done => {
     TestUtils.createElement('DIV', 'testCompanionSquare');
     let testCompanionSquare = document.getElementById('testCompanionSquare');
     testCompanionSquare.style.height = '250px';
@@ -377,7 +390,8 @@ describe('Ima Plugin', function () {
     testCompanionLong.style.height = '90px';
     testCompanionLong.style.width = '728px';
     player = loadPlayerWithAds(targetId, {
-      adTagUrl: 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=xml_vmap1&unviewed_position_start=1&cust_params=sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=[timestamp]',
+      adTagUrl:
+        'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=xml_vmap1&unviewed_position_start=1&cust_params=sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=[timestamp]'
     });
     loadGPT();
     registerCompanionSlots();
@@ -392,13 +406,18 @@ describe('Ima Plugin', function () {
     player.play();
   });
 
-  it('should play ads and then content with preload="auto"', (done) => {
+  it('should play ads and then content with preload="auto"', done => {
     let adPlayed = false;
-    player = loadPlayerWithAds(targetId, {
-      adTagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=[timestamp]'
-    }, {
-      preload: "auto"
-    });
+    player = loadPlayerWithAds(
+      targetId,
+      {
+        adTagUrl:
+          'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=[timestamp]'
+      },
+      {
+        preload: 'auto'
+      }
+    );
     ima = player._pluginManager.get('ima');
     player.addEventListener(player.Event.AD_STARTED, () => {
       adPlayed = true;
@@ -407,13 +426,13 @@ describe('Ima Plugin', function () {
       if (adPlayed) {
         done();
       } else {
-        done(new Error("Content start without ads"));
+        done(new Error('Content start without ads'));
       }
     });
     player.play();
   });
 
-  it('should play the content immediately for empty config', (done) => {
+  it('should play the content immediately for empty config', done => {
     player = loadPlayerWithAds(targetId, {});
     ima = player._pluginManager.get('ima');
     player.addEventListener(player.Event.PLAYING, () => {

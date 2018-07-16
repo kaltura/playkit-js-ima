@@ -1,5 +1,5 @@
 // @flow
-const AdType: { [type: string]: string } = {
+const AdType: {[type: string]: string} = {
   PRE_ROLL: 'preroll',
   MID_ROLL: 'midroll',
   POST_ROLL: 'postroll',
