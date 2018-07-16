@@ -20,11 +20,6 @@
     "*.{js,jsx}": ["eslint --fix", "git add"],
     "*.{json,md,scss}": ["prettier --write", "git add"]
   },
-  "standard-version": {
-    "scripts": {
-      "postbump": "yarn run build && npm run commit:dist"
-    }
-  },
   "devDependencies": {
     "babel-cli": "^6.18.0",
     "babel-core": "^6.18.2",
@@ -63,7 +58,6 @@
     "mocha": "^3.2.0",
     "mocha-cli": "^1.0.1",
     "playkit-js": "https://github.com/kaltura/playkit-js.git#v0.28.0",
-    "pre-push": "^0.1.1",
     "prettier": "^1.12.1",
     "sinon": "^2.0.0",
     "sinon-chai": "^2.8.0",
