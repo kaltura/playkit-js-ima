@@ -1,8 +1,8 @@
 // @flow
-import StateMachine from 'javascript-state-machine'
-import StateMachineHistory from 'javascript-state-machine/lib/history'
-import State from './state'
-import AdType from './ad-type'
+import StateMachine from 'javascript-state-machine';
+import StateMachineHistory from 'javascript-state-machine/lib/history';
+import State from './state';
+import AdType from './ad-type';
 import {Utils} from 'playkit-js';
 
 /**
@@ -105,7 +105,9 @@ export default class ImaStateMachine {
           from: [State.PLAYING, State.PAUSED, State.IDLE]
         },
         {
-          name: 'goto', from: '*', to: s => s
+          name: 'goto',
+          from: '*',
+          to: s => s
         }
       ],
       methods: {
@@ -126,11 +128,9 @@ export default class ImaStateMachine {
         onUserclosedad: onAdEvent.bind(context),
         onAdvolumechanged: onAdEvent.bind(context),
         onAdmuted: onAdEvent.bind(context),
-        onEnterState: onEnterState.bind(context),
+        onEnterState: onEnterState.bind(context)
       },
-      plugins: [
-        new StateMachineHistory()
-      ]
+      plugins: [new StateMachineHistory()]
     });
   }
 }
@@ -286,7 +286,7 @@ function onAdBreakEnd(options: Object, adEvent: any): void {
  * @returns {void}
  */
 function onAdError(options: Object, adEvent: any): void {
-  if (adEvent.type === "adError") {
+  if (adEvent.type === 'adError') {
     this.logger.debug(adEvent.type.toUpperCase());
     let adError = adEvent.getError();
     if (this.loadPromise) {
@@ -337,7 +337,7 @@ function onAdEvent(options: Object, adEvent: any): void {
  */
 function onEnterState(options: Object): void {
   if (options.from !== options.to) {
-    this.logger.debug("Change state: " + options.from + " => " + options.to);
+    this.logger.debug('Change state: ' + options.from + ' => ' + options.to);
   }
 }
 
