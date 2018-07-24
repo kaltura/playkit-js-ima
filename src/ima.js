@@ -2,7 +2,7 @@
 import ImaMiddleware from './ima-middleware';
 import ImaStateMachine from './ima-state-machine';
 import State from './state';
-import {BaseMiddleware, BasePlugin, EngineType, getCapabilities, Utils} from 'playkit-js';
+import {BaseMiddleware, BasePlugin, EngineType, getCapabilities, Utils, Error} from 'playkit-js';
 import './assets/style.css';
 
 /**
@@ -386,6 +386,11 @@ export default class Ima extends BasePlugin {
       let selectedSource = event.payload.selectedSource;
       if (selectedSource && selectedSource.length > 0) {
         this._contentSrc = selectedSource[0].url;
+      }
+    });
+    this.eventManager.listen(this.player, this.player.Event.ERROR, event => {
+      if (event.payload && event.payload.severity === Error.Severity.CRITICAL) {
+        this.destroy();
       }
     });
   }
