@@ -1,5 +1,6 @@
 import {loadPlayerWithAds, maybeDoneTest, loadGPT, registerCompanionSlots} from './helpers';
 import * as TestUtils from 'playkit-js/test/src/utils/test-utils';
+import {FakeEvent} from 'playkit-js';
 // eslint-disable-next-line no-unused-vars
 import Ima from '../../src/ima';
 import AdType from '../../src/ad-type';
@@ -439,5 +440,16 @@ describe('Ima Plugin', function() {
       done();
     });
     player.play();
+  });
+
+  it('should be reset on a critical error', done => {
+    player = loadPlayerWithAds(targetId, {});
+    ima = player._pluginManager.get('ima');
+    const spy = sinon.spy(ima, 'reset');
+    player.addEventListener(player.Event.ERROR, () => {
+      spy.should.calledOnce;
+      done();
+    });
+    player.dispatchEvent(new FakeEvent(player.Event.ERROR, {severity: 2}));
   });
 });
