@@ -390,7 +390,7 @@ export default class Ima extends BasePlugin {
     });
     this.eventManager.listen(this.player, this.player.Event.ERROR, event => {
       if (event.payload && event.payload.severity === Error.Severity.CRITICAL) {
-        this.destroy();
+        this.reset();
       }
     });
   }

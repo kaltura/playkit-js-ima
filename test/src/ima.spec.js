@@ -442,10 +442,10 @@ describe('Ima Plugin', function() {
     player.play();
   });
 
-  it('should be destroyed on a critical error', done => {
+  it('should be reset on a critical error', done => {
     player = loadPlayerWithAds(targetId, {});
     ima = player._pluginManager.get('ima');
-    const spy = sinon.spy(ima, 'destroy');
+    const spy = sinon.spy(ima, 'reset');
     player.addEventListener(player.Event.ERROR, () => {
       spy.should.calledOnce;
       done();
