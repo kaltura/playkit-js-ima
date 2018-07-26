@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.7.0"></a>
+# [0.7.0](https://github.com/kaltura/playkit-js-ima/compare/v0.6.0...v0.7.0) (2018-07-26)
+
+
+### Bug Fixes
+
+* **FEC-8239:** IMA exception when calling reset followed by destroy ([#62](https://github.com/kaltura/playkit-js-ima/issues/62)) ([0903675](https://github.com/kaltura/playkit-js-ima/commit/0903675))
+
+
+### Features
+
+* **FEC-8295:** Show error UI on network error while playing ads ([#64](https://github.com/kaltura/playkit-js-ima/issues/64)) ([d335c37](https://github.com/kaltura/playkit-js-ima/commit/d335c37))
+
+
+
 <a name="0.6.1"></a>
 ## [0.6.1](https://github.com/kaltura/playkit-js-ima/compare/v0.6.0...v0.6.1) (2018-05-26)
 
