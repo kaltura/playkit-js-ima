@@ -2,7 +2,7 @@
 import ImaMiddleware from './ima-middleware';
 import ImaStateMachine from './ima-state-machine';
 import State from './state';
-import {BaseMiddleware, BasePlugin, EngineType, getCapabilities, Utils, Error} from 'playkit-js';
+import {BaseMiddleware, BasePlugin, EngineType, Error, getCapabilities, Utils} from 'playkit-js';
 import './assets/style.css';
 
 /**
@@ -941,14 +941,18 @@ export default class Ima extends BasePlugin {
         const ad = this.config.companions.ads[id];
         const width = ad.width;
         const height = ad.height;
-        const companionAds = this._currentAd.getCompanionAds(width, height, selectionCriteria);
-        if (companionAds.length > 0) {
-          const companionAd = companionAds[0];
-          const content = companionAd.getContent();
-          const el = Utils.Dom.getElementById(id);
-          if (el) {
-            el.innerHTML = content;
+        try {
+          const companionAds = this._currentAd.getCompanionAds(width, height, selectionCriteria);
+          if (companionAds.length > 0) {
+            const companionAd = companionAds[0];
+            const content = companionAd.getContent();
+            const el = Utils.Dom.getElementById(id);
+            if (el) {
+              el.innerHTML = content;
+            }
           }
+        } catch (e) {
+          this.logger.error('Error occurred while extracting companion ad', e);
         }
       }
     }
