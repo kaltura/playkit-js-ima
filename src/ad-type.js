@@ -6,4 +6,4 @@ const AdType: {[type: string]: string} = {
   OVERLAY: 'overlay'
 };
 
-export default AdType;
+export {AdType};

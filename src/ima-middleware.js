@@ -1,13 +1,13 @@
 // @flow
 import {BaseMiddleware} from 'playkit-js';
-import Ima from './ima';
-import State from './state';
+import {Ima} from './ima';
+import {State} from './state';
 
 /**
  * Middleware implementation for ima plugin.
  * @classdesc
  */
-export default class ImaMiddleware extends BaseMiddleware {
+class ImaMiddleware extends BaseMiddleware {
   /**
    * The id of the ima middleware.
    * @type {string}
@@ -127,3 +127,5 @@ export default class ImaMiddleware extends BaseMiddleware {
     }
   }
 }
+
+export {ImaMiddleware};

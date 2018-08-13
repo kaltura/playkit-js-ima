@@ -1,4 +1,4 @@
-import State from '../../src/state';
+import {State} from '../../src/state';
 
 describe('Ima Plugin State', function() {
   it('should equals possible ima plugin states', () => {

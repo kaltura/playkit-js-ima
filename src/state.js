@@ -13,4 +13,4 @@ const State: {[state: string]: string} = {
   DONE: 'done'
 };
 
-export default State;
+export {State};

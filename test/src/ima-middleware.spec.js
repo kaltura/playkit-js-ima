@@ -1,5 +1,5 @@
-import ImaMiddleware from '../../src/ima-middleware';
-import State from '../../src/state';
+import {ImaMiddleware} from '../../src/ima-middleware';
+import {State} from '../../src/state';
 
 describe('Ima Middleware', function() {
   let sandbox;

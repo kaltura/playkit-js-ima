@@ -1,7 +1,7 @@
 // @flow
-import ImaMiddleware from './ima-middleware';
-import ImaStateMachine from './ima-state-machine';
-import State from './state';
+import {ImaMiddleware} from './ima-middleware';
+import {ImaStateMachine} from './ima-state-machine';
+import {State} from './state';
 import {BaseMiddleware, BasePlugin, EngineType, Error, getCapabilities, Utils} from 'playkit-js';
 import './assets/style.css';
 
@@ -35,7 +35,7 @@ const ADS_COVER_CLASS: string = 'playkit-ads-cover';
  * The ima plugin.
  * @classdesc
  */
-export default class Ima extends BasePlugin {
+class Ima extends BasePlugin {
   /**
    * The default configuration of the plugin.
    * @type {Object}
@@ -985,3 +985,5 @@ export default class Ima extends BasePlugin {
     }
   }
 }
+
+export {Ima};
