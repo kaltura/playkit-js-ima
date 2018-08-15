@@ -1,5 +1,5 @@
 {
-  "name": "playkit-js-ima",
+  "name": "@playkit-js/playkit-js-ima",
   "version": "0.7.1",
   "main": "dist/playkit-ima.js",
   "scripts": {
@@ -10,15 +10,17 @@
     "watch": "webpack --progress --colors --watch",
     "test": "NODE_ENV=test karma start --color",
     "release": "standard-version",
-    "publish": "git push --follow-tags --no-verify origin master",
+    "pushTaggedRelease": "git push --follow-tags --no-verify origin master",
     "eslint": "eslint . --color",
     "flow": "flow check",
-    "commit:dist": "git add --force --all dist && (git commit -m 'chore: update dist' || exit 0)",
     "precommit": "lint-staged"
   },
   "lint-staged": {
     "*.{js,jsx}": ["eslint --fix", "git add"],
     "*.{json,md,scss}": ["prettier --write", "git add"]
+  },
+  "dependencies": {
+    "javascript-state-machine": "^3.0.1"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
@@ -75,13 +77,10 @@
     "type": "git",
     "url": "https://github.com/kaltura/playkit-js-ima"
   },
-  "keywords": [],
+  "keywords": ["ad", "vast", "vmap", "ima", "ads", "monetization", "kaltura", "player", "playkit-js", "playkit-js-ima", "html5 player"],
   "license": "AGPL-3.0",
   "bugs": {
     "url": "https://github.com/kaltura/playkit-js-ima/issues"
   },
-  "homepage": "https://github.com/kaltura/playkit-js-ima",
-  "dependencies": {
-    "javascript-state-machine": "^3.0.1"
-  }
+  "homepage": "https://github.com/kaltura/playkit-js-ima"
 }
