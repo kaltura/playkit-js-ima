@@ -19,6 +19,9 @@
     "*.{js,jsx}": ["eslint --fix", "git add"],
     "*.{json,md,scss}": ["prettier --write", "git add"]
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "javascript-state-machine": "^3.0.1"
   },
@@ -82,5 +85,8 @@
   "bugs": {
     "url": "https://github.com/kaltura/playkit-js-ima/issues"
   },
-  "homepage": "https://github.com/kaltura/playkit-js-ima"
+  "homepage": "https://github.com/kaltura/playkit-js-ima",
+  "kcc": {
+    "name": "playkit-ima"
+  }
 }
