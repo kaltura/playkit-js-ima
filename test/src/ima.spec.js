@@ -2,8 +2,8 @@ import {loadPlayerWithAds, maybeDoneTest, loadGPT, registerCompanionSlots} from 
 import * as TestUtils from 'playkit-js/test/src/utils/test-utils';
 import {FakeEvent} from 'playkit-js';
 // eslint-disable-next-line no-unused-vars
-import Ima from '../../src/ima';
-import AdType from '../../src/ad-type';
+import {Ima} from '../../src/ima';
+import {AdType} from '../../src/ad-type';
 
 const targetId = 'player-placeholder_ima.spec';
 

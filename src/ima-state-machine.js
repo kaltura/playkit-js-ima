@@ -1,15 +1,15 @@
 // @flow
 import StateMachine from 'javascript-state-machine';
 import StateMachineHistory from 'javascript-state-machine/lib/history';
-import State from './state';
-import AdType from './ad-type';
+import {State} from './state';
+import {AdType} from './ad-type';
 import {Utils} from 'playkit-js';
 
 /**
  * Finite state machine for ima plugin.
  * @classdesc
  */
-export default class ImaStateMachine {
+class ImaStateMachine {
   /**
    * @constructor
    * @param {any} context - The plugin context.
@@ -391,3 +391,5 @@ function getAdType(adEvent: any): string {
       return AdType.MID_ROLL;
   }
 }
+
+export {ImaStateMachine};
