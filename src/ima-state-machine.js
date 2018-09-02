@@ -154,7 +154,7 @@ function onAdLoaded(options: Object, adEvent: any): void {
     this.player.hideTextTrack();
   }
   const adOptions = getAdOptions(adEvent);
-  const ad = new Ad(adOptions);
+  const ad = new Ad(adEvent.getAd().getAdId(), adOptions);
   this.dispatchEvent(options.transition, {ad: ad});
 }
 
@@ -407,7 +407,7 @@ function getAdOptions(adEvent: any): Object {
 function getAdBreakOptions(adEvent: any): Object {
   const adBreakOptions = {};
   adBreakOptions.numAds = adEvent
-    .getAds()
+    .getAd()
     .getAdPodInfo()
     .getTotalAds();
   adBreakOptions.position = this.player.currentTime === this.player.duration ? -1 : this.player.currentTime;
