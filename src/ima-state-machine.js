@@ -257,7 +257,7 @@ function onAllAdsCompleted(options: Object, adEvent: any): void {
 function onAdBreakStart(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
   this.player.pause();
-  const adBreakOptions = getAdBreakOptions(adEvent);
+  const adBreakOptions = getAdBreakOptions.apply(this, adEvent);
   const adBreak = new AdBreak(adBreakOptions);
   this._setVideoEndedCallbackEnabled(false);
   this._maybeForceExitFullScreen();
