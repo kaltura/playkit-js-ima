@@ -298,17 +298,9 @@ class Ima extends BasePlugin {
     if (this._adsLoader && !this._contentComplete) {
       this._adsLoader.contentComplete();
     }
+    this._stateMachine.goto(State.DONE);
     this._initMembers();
     this._addBindings();
-    if (!this._adsLoader) {
-      this._initAdsLoader();
-    }
-    this._requestAds();
-    if (this.config.adTagUrl) {
-      this._stateMachine.loaded();
-    } else {
-      this._stateMachine.goto(State.DONE);
-    }
   }
 
   /**
@@ -393,6 +385,11 @@ class Ima extends BasePlugin {
         this.reset();
       }
     });
+    this.eventManager.listenOnce(this.player, this.player.Event.CHANGE_SOURCE_STARTED, () => {
+      this.loadPromise.then(() => {
+        this._requestAds();
+      });
+    });
   }
 
   /**
@@ -429,9 +426,9 @@ class Ima extends BasePlugin {
         this.logger.debug('IMA SDK version: ' + this._sdk.VERSION);
         this._initImaSettings();
         this._initAdsContainer();
-        this._initAdsLoader();
-        this._requestAds();
-        this._stateMachine.loaded();
+        if (!this._adsLoader) {
+          this._initAdsLoader();
+        }
         this.loadPromise.resolve();
       })
       .catch(e => {
@@ -586,6 +583,7 @@ class Ima extends BasePlugin {
         adsRequest.setAdWillAutoPlay(false);
         this._adsLoader.requestAds(adsRequest);
       }
+      this._stateMachine.loaded();
     } else {
       this.logger.warn('Missing ad tag url: create plugin without requesting ads');
     }
