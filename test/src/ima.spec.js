@@ -1,5 +1,5 @@
 import {loadPlayerWithAds, maybeDoneTest, loadGPT, registerCompanionSlots} from './helpers';
-import * as TestUtils from '@playkit-js/playkit-js/test/src/utils/test-utils';
+import * as TestUtils from './utils/test-utils';
 import {FakeEvent} from '@playkit-js/playkit-js';
 // eslint-disable-next-line no-unused-vars
 import {Ima} from '../../src/ima';
@@ -206,7 +206,7 @@ describe('Ima Plugin', function() {
       maybeDoneTest(cuePoints, adPodIndex, done);
     });
     player.addEventListener(player.Event.LOADED_METADATA, () => {
-      player.currentTime = player.duration - 1;
+      // player.currentTime = player.duration - 1;
     });
     player.play();
   });
