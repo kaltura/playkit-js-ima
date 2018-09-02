@@ -8,7 +8,6 @@ import loadPlayer from '@playkit-js/playkit-js';
  */
 function loadPlayerWithAds(targetId, imaConfig, playbackConfig) {
   let config = {
-    logLevel: 'DEBUG',
     sources: {
       progressive: [
         {
