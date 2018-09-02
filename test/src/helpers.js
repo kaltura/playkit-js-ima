@@ -1,4 +1,4 @@
-import loadPlayer from 'playkit-js';
+import loadPlayer from '@playkit-js/playkit-js';
 
 /**
  * @param {string} targetId _
@@ -8,6 +8,7 @@ import loadPlayer from 'playkit-js';
  */
 function loadPlayerWithAds(targetId, imaConfig, playbackConfig) {
   let config = {
+    logLevel: 'DEBUG',
     sources: {
       progressive: [
         {

@@ -2,7 +2,7 @@
 import {ImaMiddleware} from './ima-middleware';
 import {ImaStateMachine} from './ima-state-machine';
 import {State} from './state';
-import {BaseMiddleware, BasePlugin, EngineType, Error, getCapabilities, Utils} from 'playkit-js';
+import {BaseMiddleware, BasePlugin, EngineType, Error, getCapabilities, Utils} from '@playkit-js/playkit-js';
 import './assets/style.css';
 
 /**

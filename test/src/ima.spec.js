@@ -1,6 +1,6 @@
 import {loadPlayerWithAds, maybeDoneTest, loadGPT, registerCompanionSlots} from './helpers';
-import * as TestUtils from 'playkit-js/test/src/utils/test-utils';
-import {FakeEvent} from 'playkit-js';
+import * as TestUtils from '@playkit-js/playkit-js/test/src/utils/test-utils';
+import {FakeEvent} from '@playkit-js/playkit-js';
 // eslint-disable-next-line no-unused-vars
 import {Ima} from '../../src/ima';
 import {AdType} from '../../src/ad-type';
