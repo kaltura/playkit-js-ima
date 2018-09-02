@@ -2,7 +2,7 @@
 import StateMachine from 'javascript-state-machine';
 import StateMachineHistory from 'javascript-state-machine/lib/history';
 import {State} from './state';
-import {Ad, AdBreak, AdBreakType, Utils} from 'playkit-js';
+import {Ad, AdBreak, AdBreakType, AdError, Utils} from 'playkit-js';
 
 /**
  * Finite state machine for ima plugin.
@@ -303,14 +303,14 @@ function onAdError(options: Object, adEvent: any): void {
     if (this._nextPromise) {
       this._nextPromise.reject(adError);
     }
-    this.dispatchEvent(options.transition, normalizeAdError(adError, true));
+    this.dispatchEvent(options.transition, {adError: getAdError(adError, true)});
   } else {
     this.logger.debug(adEvent.type.toUpperCase());
     let adData = adEvent.getAdData();
     let adError = adData.adError;
     if (adData.adError) {
       this.logger.error('Non-fatal error occurred: ' + adError.getMessage());
-      this.dispatchEvent(this.player.Event.AD_ERROR, normalizeAdError(adError, false));
+      this.dispatchEvent(this.player.Event.AD_ERROR, {adError: getAdError(adError, false)});
     }
   }
 }
@@ -363,19 +363,16 @@ function onEnterState(options: Object): void {
 }
 
 /**
- * Normalize the ima ad error object.
+ * Gets the ad error object.
  * @param {any} adError - The ima ad error object.
  * @param {boolean} fatal - Whether the error is fatal.
  * @returns {Object} - The normalized ad error object.
  */
-function normalizeAdError(adError: any, fatal: boolean): Object {
-  return {
-    fatal: fatal,
-    error: {
-      code: adError.getErrorCode(),
-      message: adError.getMessage()
-    }
-  };
+function getAdError(adError: any, fatal: boolean): Object {
+  const adErrorOptions = {};
+  adErrorOptions.code = adError.getErrorCode();
+  adErrorOptions.message = adError.getMessage();
+  return new AdError(fatal, adErrorOptions);
 }
 
 /**
