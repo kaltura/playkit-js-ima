@@ -206,7 +206,7 @@ describe('Ima Plugin', function() {
       maybeDoneTest(cuePoints, adPodIndex, done);
     });
     player.addEventListener(player.Event.LOADED_METADATA, () => {
-      // player.currentTime = player.duration - 1;
+      player.currentTime = player.duration - 1;
     });
     player.play();
   });
