@@ -2,8 +2,7 @@
 import StateMachine from 'javascript-state-machine';
 import StateMachineHistory from 'javascript-state-machine/lib/history';
 import {State} from './state';
-import {AdType} from './ad-type';
-import {Utils} from 'playkit-js';
+import {Ad, AdBreak, AdBreakType, Utils} from 'playkit-js';
 
 /**
  * Finite state machine for ima plugin.
@@ -105,6 +104,10 @@ class ImaStateMachine {
           from: [State.PLAYING, State.PAUSED, State.IDLE]
         },
         {
+          name: context.player.Event.AD_CAN_SKIP,
+          from: [State.PLAYING, State.PAUSED]
+        },
+        {
           name: 'goto',
           from: '*',
           to: s => s
@@ -119,6 +122,7 @@ class ImaStateMachine {
         onAdskipped: onAdSkipped.bind(context),
         onAdcompleted: onAdCompleted.bind(context),
         onAlladscompleted: onAllAdsCompleted.bind(context),
+        onAdcanskip: onAdCanSkip.bind(context),
         onAdbreakstart: onAdBreakStart.bind(context),
         onAdbreakend: onAdBreakEnd.bind(context),
         onAdfirstquartile: onAdEvent.bind(context),
@@ -143,13 +147,15 @@ class ImaStateMachine {
  */
 function onAdLoaded(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
-  Utils.Dom.setAttribute(this._adsContainerDiv, 'data-adtype', getAdType(adEvent));
+  Utils.Dom.setAttribute(this._adsContainerDiv, 'data-adtype', getAdBreakType(adEvent));
   // When we are using the same video element on iOS, native captions still
   // appearing on the video element, so need to hide them before ad start.
   if (this._adsManager.isCustomPlaybackUsed()) {
     this.player.hideTextTrack();
   }
-  this.dispatchEvent(options.transition, normalizeAdEvent(adEvent));
+  const adOptions = getAdOptions(adEvent);
+  const ad = new Ad(adOptions);
+  this.dispatchEvent(options.transition, {ad: ad});
 }
 
 /**
@@ -251,10 +257,12 @@ function onAllAdsCompleted(options: Object, adEvent: any): void {
 function onAdBreakStart(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
   this.player.pause();
+  const adBreakOptions = getAdBreakOptions(adEvent);
+  const adBreak = new AdBreak(adBreakOptions);
   this._setVideoEndedCallbackEnabled(false);
   this._maybeForceExitFullScreen();
   this._maybeSaveVideoCurrentTime();
-  this.dispatchEvent(options.transition);
+  this.dispatchEvent(options.transition, {adBreak: adBreak});
 }
 
 /**
@@ -320,6 +328,19 @@ function onAdSkipped(options: Object, adEvent: any): void {
 }
 
 /**
+ * SKIPPABLE_STATE_CHANGED event handler.
+ * @param {Object} options - fsm event data.
+ * @param {any} adEvent - ima event data.
+ * @returns {void}
+ */
+function onAdCanSkip(options: Object, adEvent: any): void {
+  this.logger.debug(adEvent.type.toUpperCase());
+  if (this._adsManager.getAdSkippableState()) {
+    this.dispatchEvent(options.transition);
+  }
+}
+
+/**
  * General event handler.
  * @param {Object} options - fsm event data.
  * @param {any} adEvent - ima event data.
@@ -358,37 +379,61 @@ function normalizeAdError(adError: any, fatal: boolean): Object {
 }
 
 /**
- * Normalize the ima ad event object.
- * @param {any} adEvent - The ima ad error object.
- * @returns {Object} - The normalized ad event object.
+ * Gets the ad options.
+ * @param {any} adEvent - The ima ad event object.
+ * @returns {string} - The ad options.
  */
-function normalizeAdEvent(adEvent: any): Object {
-  return {
-    ad: adEvent.getAd(),
-    adType: getAdType(adEvent),
-    extraAdData: adEvent.getAdData()
-  };
+function getAdOptions(adEvent: any): Object {
+  const adOptions = {};
+  const ad = adEvent.getAd();
+  const adData = adEvent.getAdData();
+  const podInfo = ad.getAdPodInfo();
+  adOptions.url = ad.getMediaUrl();
+  adOptions.clickThroughUrl = adData.clickThroughUrl;
+  adOptions.contentType = ad.getContentType();
+  adOptions.duration = ad.getDuration();
+  adOptions.position = podInfo.getAdPosition();
+  adOptions.title = ad.getTitle();
+  adOptions.linear = ad.isLinear();
+  adOptions.skipOffset = ad.getSkipTimeOffset();
+  return adOptions;
 }
 
 /**
- * Gets the ad type.
- * @param {any} adEvent - The ima ad object.
- * @returns {string} - The ad type.
+ * Gets the ad break options.
+ * @param {any} adEvent - The ima ad event object.
+ * @returns {string} - The ad break options.
  */
-function getAdType(adEvent: any): string {
+function getAdBreakOptions(adEvent: any): Object {
+  const adBreakOptions = {};
+  adBreakOptions.numAds = adEvent
+    .getAds()
+    .getAdPodInfo()
+    .getTotalAds();
+  adBreakOptions.position = this.player.currentTime === this.player.duration ? -1 : this.player.currentTime;
+  adBreakOptions.type = getAdBreakType(adEvent);
+  return adBreakOptions;
+}
+
+/**
+ * Gets the ad break type.
+ * @param {any} adEvent - The ima ad event object.
+ * @returns {string} - The ad break type.
+ */
+function getAdBreakType(adEvent: any): string {
   const ad = adEvent.getAd();
   const podInfo = ad.getAdPodInfo();
   const podIndex = podInfo.getPodIndex();
   if (!ad.isLinear()) {
-    return AdType.OVERLAY;
+    return AdBreakType.OVERLAY;
   }
   switch (podIndex) {
     case 0:
-      return AdType.PRE_ROLL;
+      return AdBreakType.PRE;
     case -1:
-      return AdType.POST_ROLL;
+      return AdBreakType.POST;
     default:
-      return AdType.MID_ROLL;
+      return AdBreakType.MID;
   }
 }
 
