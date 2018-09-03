@@ -2,7 +2,7 @@
 import StateMachine from 'javascript-state-machine';
 import StateMachineHistory from 'javascript-state-machine/lib/history';
 import {State} from './state';
-import {Ad, AdBreak, AdBreakType, AdError, Utils} from 'playkit-js';
+import {Ad, AdBreak, AdBreakType, Error, Utils} from 'playkit-js';
 
 /**
  * Finite state machine for ima plugin.
@@ -147,15 +147,21 @@ class ImaStateMachine {
  */
 function onAdLoaded(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
-  Utils.Dom.setAttribute(this._adsContainerDiv, 'data-adtype', getAdBreakType(adEvent));
   // When we are using the same video element on iOS, native captions still
   // appearing on the video element, so need to hide them before ad start.
   if (this._adsManager.isCustomPlaybackUsed()) {
     this.player.hideTextTrack();
   }
+  const adBreakType = getAdBreakType(adEvent);
   const adOptions = getAdOptions(adEvent);
   const ad = new Ad(adEvent.getAd().getAdId(), adOptions);
-  this.dispatchEvent(options.transition, {ad: ad});
+  Utils.Dom.setAttribute(this._adsContainerDiv, 'data-adtype', adBreakType);
+  this.logger.warn(`adType and extraAdData fields will be deprecated soon from AD_LOADED event payload. See docs for more information`);
+  this.dispatchEvent(options.transition, {
+    ad: ad,
+    adType: adBreakType, // for backward compatibility
+    extraAdData: adEvent.getAdData() // for backward compatibility
+  });
 }
 
 /**
@@ -303,14 +309,14 @@ function onAdError(options: Object, adEvent: any): void {
     if (this._nextPromise) {
       this._nextPromise.reject(adError);
     }
-    this.dispatchEvent(options.transition, {adError: getAdError(adError, true)});
+    this.dispatchEvent(options.transition, getAdError(adError, true));
   } else {
     this.logger.debug(adEvent.type.toUpperCase());
     let adData = adEvent.getAdData();
     let adError = adData.adError;
     if (adData.adError) {
       this.logger.error('Non-fatal error occurred: ' + adError.getMessage());
-      this.dispatchEvent(this.player.Event.AD_ERROR, {adError: getAdError(adError, false)});
+      this.dispatchEvent(this.player.Event.AD_ERROR, getAdError(adError, false));
     }
   }
 }
@@ -369,10 +375,22 @@ function onEnterState(options: Object): void {
  * @returns {Object} - The normalized ad error object.
  */
 function getAdError(adError: any, fatal: boolean): Object {
-  const adErrorOptions = {};
-  adErrorOptions.code = adError.getErrorCode();
-  adErrorOptions.message = adError.getMessage();
-  return new AdError(fatal, adErrorOptions);
+  const severity = fatal ? Error.Severity.CRITICAL : Error.Severity.RECOVERABLE;
+  let code;
+  try {
+    if (adError.getVastErrorCode() !== 900) {
+      code = parseInt(Error.Category.ADS + adError.getVastErrorCode());
+    } else {
+      code = Error.Code.UNDEFINED_ERROR;
+    }
+  } catch (e) {
+    code = Error.Code.UNDEFINED_ERROR;
+  }
+  return new Error(
+    new Error(severity, Error.Category.ADS, code, {
+      innerError: adError
+    })
+  );
 }
 
 /**
