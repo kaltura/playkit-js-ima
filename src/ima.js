@@ -1,8 +1,9 @@
 // @flow
 import {ImaMiddleware} from './ima-middleware';
+import {AdsController} from './ads-controller';
 import {ImaStateMachine} from './ima-state-machine';
 import {State} from './state';
-import {BaseMiddleware, AdsPlugin, EngineType, Error, getCapabilities, Utils} from 'playkit-js';
+import {BaseMiddleware, BasePlugin, EngineType, Error, getCapabilities, Utils} from 'playkit-js';
 import './assets/style.css';
 
 /**
@@ -35,7 +36,7 @@ const ADS_COVER_CLASS: string = 'playkit-ads-cover';
  * The ima plugin.
  * @classdesc
  */
-class Ima extends AdsPlugin {
+class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvider {
   /**
    * The default configuration of the plugin.
    * @type {Object}
@@ -276,6 +277,15 @@ class Ima extends AdsPlugin {
    */
   getMiddlewareImpl(): BaseMiddleware {
     return new ImaMiddleware(this);
+  }
+
+  /**
+   * Gets the ads controller.
+   * @public
+   * @returns {IAdsController} - The ads api.
+   */
+  getAdsController(): IAdsController {
+    return new AdsController(this);
   }
 
   /**
