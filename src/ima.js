@@ -426,9 +426,7 @@ class Ima extends BasePlugin {
         this.logger.debug('IMA SDK version: ' + this._sdk.VERSION);
         this._initImaSettings();
         this._initAdsContainer();
-        if (!this._adsLoader) {
-          this._initAdsLoader();
-        }
+        this._initAdsLoader();
         this.loadPromise.resolve();
       })
       .catch(e => {
