@@ -376,6 +376,7 @@ function onEnterState(options: Object): void {
  */
 function getAdError(adError: any, fatal: boolean): Object {
   const severity = fatal ? Error.Severity.CRITICAL : Error.Severity.RECOVERABLE;
+  const category = Error.Category.ADS;
   let code;
   try {
     if (adError.getVastErrorCode() !== 900) {
@@ -386,11 +387,9 @@ function getAdError(adError: any, fatal: boolean): Object {
   } catch (e) {
     code = Error.Code.UNDEFINED_ERROR;
   }
-  return new Error(
-    new Error(severity, Error.Category.ADS, code, {
-      innerError: adError
-    })
-  );
+  return new Error(severity, category, code, {
+    innerError: adError
+  });
 }
 
 /**
