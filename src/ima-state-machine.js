@@ -372,9 +372,9 @@ function onEnterState(options: Object): void {
  * Gets the ad error object.
  * @param {any} adError - The ima ad error object.
  * @param {boolean} fatal - Whether the error is fatal.
- * @returns {Object} - The normalized ad error object.
+ * @returns {Error} - The ad error object.
  */
-function getAdError(adError: any, fatal: boolean): Object {
+function getAdError(adError: any, fatal: boolean): Error {
   const severity = fatal ? Error.Severity.CRITICAL : Error.Severity.RECOVERABLE;
   const category = Error.Category.ADS;
   let code;
@@ -395,7 +395,7 @@ function getAdError(adError: any, fatal: boolean): Object {
 /**
  * Gets the ad options.
  * @param {any} adEvent - The ima ad event object.
- * @returns {string} - The ad options.
+ * @returns {Object} - The ad options.
  */
 function getAdOptions(adEvent: any): Object {
   const adOptions = {};
@@ -416,7 +416,7 @@ function getAdOptions(adEvent: any): Object {
 /**
  * Gets the ad break options.
  * @param {any} adEvent - The ima ad event object.
- * @returns {string} - The ad break options.
+ * @returns {Object} - The ad break options.
  */
 function getAdBreakOptions(adEvent: any): Object {
   const adBreakOptions = {};
