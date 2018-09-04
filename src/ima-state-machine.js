@@ -424,7 +424,7 @@ function getAdBreakOptions(adEvent: any): Object {
     .getAd()
     .getAdPodInfo()
     .getTotalAds();
-  adBreakOptions.position = this.player.currentTime === this.player.duration ? -1 : this.player.currentTime;
+  adBreakOptions.position = this.player.ended ? -1 : this.player.currentTime;
   adBreakOptions.type = getAdBreakType(adEvent);
   return adBreakOptions;
 }
