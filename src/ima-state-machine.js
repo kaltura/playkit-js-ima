@@ -382,10 +382,10 @@ function getAdError(adError: any, fatal: boolean): Object {
     if (adError.getVastErrorCode() !== 900) {
       code = parseInt(Error.Category.ADS + adError.getVastErrorCode());
     } else {
-      code = Error.Code.UNDEFINED_ERROR;
+      code = Error.Code.AD_UNDEFINED_ERROR;
     }
   } catch (e) {
-    code = Error.Code.UNDEFINED_ERROR;
+    code = Error.Code.AD_UNDEFINED_ERROR;
   }
   return new Error(severity, category, code, {
     innerError: adError
