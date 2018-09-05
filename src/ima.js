@@ -758,6 +758,11 @@ class Ima extends BasePlugin {
     this.logger.debug('Ads manager loaded');
     const adsRenderingSettings = this._getAdsRenderingSetting();
     this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
+    const cuePoints = this._adsManager.getCuePoints();
+    if (!cuePoints.length) {
+      cuePoints.push(0);
+    }
+    this.dispatchEvent(this.player.Event.AD_MANIFEST_LOADED, {adBreaksPosition: cuePoints});
     this._isAdsManagerLoaded = true;
     this._attachAdsManagerListeners();
     this._syncPlayerVolume();
@@ -810,6 +815,7 @@ class Ima extends BasePlugin {
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_CHANGED, adEvent => this._stateMachine.advolumechanged(adEvent));
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_MUTED, adEvent => this._stateMachine.admuted(adEvent));
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOG, adEvent => this._stateMachine.aderror(adEvent));
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.SKIPPABLE_STATE_CHANGED, adEvent => this._stateMachine.adcanskip(adEvent));
     this._adsManager.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, adEvent => this._stateMachine.aderror(adEvent));
   }
 
