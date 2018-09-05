@@ -2,7 +2,7 @@
 import StateMachine from 'javascript-state-machine';
 import StateMachineHistory from 'javascript-state-machine/lib/history';
 import {State} from './state';
-import {Ad, AdBreak, AdBreakType, Error, Utils} from 'playkit-js';
+import {Ad, AdBreak, AdBreakType, Error, Utils} from '@playkit-js/playkit-js';
 
 /**
  * Finite state machine for ima plugin.
