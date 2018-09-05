@@ -1,9 +1,7 @@
 import {loadPlayerWithAds, maybeDoneTest, loadGPT, registerCompanionSlots} from './helpers';
-import * as TestUtils from 'playkit-js/test/src/utils/test-utils';
-import {FakeEvent} from 'playkit-js';
-// eslint-disable-next-line no-unused-vars
-import {Ima} from '../../src/ima';
-import {AdType} from '../../src/ad-type';
+import * as TestUtils from './utils/test-utils';
+import {FakeEvent} from '@playkit-js/playkit-js';
+import {AdBreakType} from '@playkit-js/playkit-js';
 
 const targetId = 'player-placeholder_ima.spec';
 
@@ -135,7 +133,7 @@ describe('Ima Plugin', function() {
     ima = player._pluginManager.get('ima');
     player.addEventListener(player.Event.AD_LOADED, e => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
-      e.payload.adType.should.equal(AdType.PRE_ROLL);
+      e.payload.adType.should.equal(AdBreakType.PRE_ROLL);
     });
     player.addEventListener(player.Event.AD_STARTED, () => {
       maybeDoneTest(cuePoints, adPodIndex, done);
@@ -153,7 +151,7 @@ describe('Ima Plugin', function() {
     const spy = sinon.spy(ima, '_requestAds');
     player.addEventListener(player.Event.AD_LOADED, e => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
-      e.payload.adType.should.equal(AdType.PRE_ROLL);
+      e.payload.adType.should.equal(AdBreakType.PRE_ROLL);
       spy.should.calledOnce;
     });
     player.addEventListener(player.Event.AD_STARTED, () => {
@@ -171,7 +169,7 @@ describe('Ima Plugin', function() {
     ima = player._pluginManager.get('ima');
     player.addEventListener(player.Event.AD_LOADED, e => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
-      e.payload.adType.should.equal(AdType.PRE_ROLL);
+      e.payload.adType.should.equal(AdBreakType.PRE_ROLL);
     });
     player.addEventListener(player.Event.AD_STARTED, () => {
       maybeDoneTest(cuePoints, adPodIndex, done);
@@ -191,13 +189,13 @@ describe('Ima Plugin', function() {
       let adType = '';
       switch (adPodIndex) {
         case 0:
-          adType = AdType.PRE_ROLL;
+          adType = AdBreakType.PRE_ROLL;
           break;
         case 1:
-          adType = AdType.MID_ROLL;
+          adType = AdBreakType.MID_ROLL;
           break;
         case -1:
-          adType = AdType.POST_ROLL;
+          adType = AdBreakType.POST_ROLL;
           break;
       }
       e.payload.adType.should.equal(adType);
@@ -220,7 +218,7 @@ describe('Ima Plugin', function() {
     ima = player._pluginManager.get('ima');
     player.addEventListener(player.Event.AD_LOADED, e => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
-      e.payload.adType.should.equal(AdType.POST_ROLL);
+      e.payload.adType.should.equal(AdBreakType.POST_ROLL);
     });
     player.addEventListener(player.Event.AD_STARTED, () => {
       maybeDoneTest(cuePoints, adPodIndex, done);
@@ -240,7 +238,7 @@ describe('Ima Plugin', function() {
     ima = player._pluginManager.get('ima');
     player.addEventListener(player.Event.AD_LOADED, e => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
-      e.payload.adType.should.equal(AdType.POST_ROLL);
+      e.payload.adType.should.equal(AdBreakType.POST_ROLL);
     });
     player.addEventListener(player.Event.AD_STARTED, () => {
       maybeDoneTest(cuePoints, adPodIndex, done);
@@ -260,7 +258,7 @@ describe('Ima Plugin', function() {
     ima = player._pluginManager.get('ima');
     player.addEventListener(player.Event.AD_LOADED, e => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
-      e.payload.adType.should.equal(AdType.PRE_ROLL);
+      e.payload.adType.should.equal(AdBreakType.PRE_ROLL);
     });
     player.addEventListener(player.Event.AD_STARTED, () => {
       maybeDoneTest(cuePoints, adPodIndex);
@@ -283,7 +281,7 @@ describe('Ima Plugin', function() {
     ima = player._pluginManager.get('ima');
     player.addEventListener(player.Event.AD_LOADED, e => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
-      e.payload.adType.should.equal(AdType.PRE_ROLL);
+      e.payload.adType.should.equal(AdBreakType.PRE_ROLL);
     });
     player.addEventListener(player.Event.AD_STARTED, () => {
       maybeDoneTest(cuePoints, adPodIndex, done);
@@ -312,7 +310,7 @@ describe('Ima Plugin', function() {
     ima = player._pluginManager.get('ima');
     player.addEventListener(player.Event.AD_LOADED, e => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
-      e.payload.adType.should.equal(AdType.PRE_ROLL);
+      e.payload.adType.should.equal(AdBreakType.PRE_ROLL);
     });
     player.addEventListener(player.Event.AD_STARTED, () => {
       maybeDoneTest(cuePoints, adPodIndex, done);
@@ -330,7 +328,7 @@ describe('Ima Plugin', function() {
     player.addEventListener(player.Event.AD_LOADED, e => {
       adPodIndex = e.payload.extraAdData.adPodInfo.podIndex;
       e.payload.ad.isLinear().should.be.false;
-      e.payload.adType.should.equal(AdType.OVERLAY);
+      e.payload.adType.should.equal(AdBreakType.OVERLAY);
     });
     player.addEventListener(player.Event.AD_STARTED, () => {
       maybeDoneTest(cuePoints, adPodIndex, done);

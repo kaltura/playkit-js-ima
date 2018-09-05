@@ -26,6 +26,7 @@
     "javascript-state-machine": "^3.0.1"
   },
   "devDependencies": {
+    "@playkit-js/playkit-js": "^0.36.0",
     "babel-cli": "^6.18.0",
     "babel-core": "^6.18.2",
     "babel-eslint": "^7.1.1",
@@ -63,7 +64,6 @@
     "lint-staged": "7.0.5",
     "mocha": "^3.2.0",
     "mocha-cli": "^1.0.1",
-    "playkit-js": "https://github.com/kaltura/playkit-js.git#master",
     "prettier": "^1.12.1",
     "sinon": "^2.0.0",
     "sinon-chai": "^2.8.0",
@@ -74,7 +74,7 @@
     "webpack-dev-server": "latest"
   },
   "peerDependencies": {
-    "playkit-js": "https://github.com/kaltura/playkit-js.git#master"
+    "@playkit-js/playkit-js": "^0.36.0"
   },
   "repository": {
     "type": "git",

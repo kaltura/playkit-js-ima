@@ -2,7 +2,7 @@
 import StateMachine from 'javascript-state-machine';
 import StateMachineHistory from 'javascript-state-machine/lib/history';
 import {State} from './state';
-import {Ad, AdBreak, AdBreakType, Error, Utils} from 'playkit-js';
+import {Ad, AdBreak, AdBreakType, Error, Utils} from '@playkit-js/playkit-js';
 
 /**
  * Finite state machine for ima plugin.
@@ -372,9 +372,9 @@ function onEnterState(options: Object): void {
  * Gets the ad error object.
  * @param {any} adError - The ima ad error object.
  * @param {boolean} fatal - Whether the error is fatal.
- * @returns {Object} - The normalized ad error object.
+ * @returns {Error} - The ad error object.
  */
-function getAdError(adError: any, fatal: boolean): Object {
+function getAdError(adError: any, fatal: boolean): Error {
   const severity = fatal ? Error.Severity.CRITICAL : Error.Severity.RECOVERABLE;
   const category = Error.Category.ADS;
   let code;
@@ -382,10 +382,10 @@ function getAdError(adError: any, fatal: boolean): Object {
     if (adError.getVastErrorCode() !== 900) {
       code = parseInt(Error.Category.ADS + adError.getVastErrorCode());
     } else {
-      code = Error.Code.UNDEFINED_ERROR;
+      code = Error.Code.AD_UNDEFINED_ERROR;
     }
   } catch (e) {
-    code = Error.Code.UNDEFINED_ERROR;
+    code = Error.Code.AD_UNDEFINED_ERROR;
   }
   return new Error(severity, category, code, {
     innerError: adError
@@ -395,7 +395,7 @@ function getAdError(adError: any, fatal: boolean): Object {
 /**
  * Gets the ad options.
  * @param {any} adEvent - The ima ad event object.
- * @returns {string} - The ad options.
+ * @returns {Object} - The ad options.
  */
 function getAdOptions(adEvent: any): Object {
   const adOptions = {};
@@ -416,7 +416,7 @@ function getAdOptions(adEvent: any): Object {
 /**
  * Gets the ad break options.
  * @param {any} adEvent - The ima ad event object.
- * @returns {string} - The ad break options.
+ * @returns {Object} - The ad break options.
  */
 function getAdBreakOptions(adEvent: any): Object {
   const adBreakOptions = {};
@@ -424,7 +424,7 @@ function getAdBreakOptions(adEvent: any): Object {
     .getAd()
     .getAdPodInfo()
     .getTotalAds();
-  adBreakOptions.position = this.player.currentTime === this.player.duration ? -1 : this.player.currentTime;
+  adBreakOptions.position = this.player.ended ? -1 : this.player.currentTime;
   adBreakOptions.type = getAdBreakType(adEvent);
   return adBreakOptions;
 }
