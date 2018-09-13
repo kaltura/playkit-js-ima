@@ -5,7 +5,7 @@ import {Ima} from './ima';
  * Controller for ima plugin.
  * @classdesc
  */
-class AdsController implements IAdsController {
+class ImaController implements IAdsController {
   /**
    * The plugin context.
    * @member
@@ -41,4 +41,4 @@ class AdsController implements IAdsController {
   }
 }
 
-export {AdsController};
+export {ImaController};
