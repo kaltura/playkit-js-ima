@@ -20,6 +20,25 @@ class AdsController implements IAdsController {
   constructor(context: Ima) {
     this._context = context;
   }
+
+  /**
+   * Skip on an ad.
+   * @public
+   * @returns {void}
+   */
+  skipAd(): void {
+    this._context.skipAd();
+  }
+
+  /**
+   * Play an ad on demand.
+   * @param {string} adTagUrl - The ad tag url to play.
+   * @public
+   * @returns {void}
+   */
+  playAdNow(adTagUrl: string): void {
+    this._context.playAdNow(adTagUrl);
+  }
 }
 
 export {AdsController};
