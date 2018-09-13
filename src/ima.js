@@ -1,6 +1,6 @@
 // @flow
 import {ImaMiddleware} from './ima-middleware';
-import {ImaController} from './ima-controller';
+import {ImaAdsController} from './ima-ads-controller';
 import {ImaStateMachine} from './ima-state-machine';
 import {State} from './state';
 import {BaseMiddleware, BasePlugin, EngineType, Error, getCapabilities, Utils} from '@playkit-js/playkit-js';
@@ -285,7 +285,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @returns {IAdsController} - The ads api.
    */
   getAdsController(): IAdsController {
-    return new ImaController(this);
+    return new ImaAdsController(this);
   }
 
   /**
