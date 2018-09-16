@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
-* ads controller ([#69](https://github.com/kaltura/playkit-js-ima/issues/69)) ([e1f5e0c](https://github.com/kaltura/playkit-js-ima/commit/e1f5e0c))
+* **FEC-8103:** ads controller ([#69](https://github.com/kaltura/playkit-js-ima/issues/69)) ([e1f5e0c](https://github.com/kaltura/playkit-js-ima/commit/e1f5e0c))
 
 
 
