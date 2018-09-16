@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.8.0"></a>
+# [0.8.0](https://github.com/kaltura/playkit-js-ima/compare/v0.7.2...v0.8.0) (2018-09-16)
+
+
+### Features
+
+* ads controller ([#69](https://github.com/kaltura/playkit-js-ima/issues/69)) ([e1f5e0c](https://github.com/kaltura/playkit-js-ima/commit/e1f5e0c))
+
+
+
 <a name="0.7.2"></a>
 ## [0.7.2](https://github.com/kaltura/playkit-js-ima/compare/v0.7.1...v0.7.2) (2018-09-05)
 
