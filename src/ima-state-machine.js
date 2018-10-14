@@ -132,7 +132,8 @@ class ImaStateMachine {
         onUserclosedad: onAdEvent.bind(context),
         onAdvolumechanged: onAdEvent.bind(context),
         onAdmuted: onAdEvent.bind(context),
-        onEnterState: onEnterState.bind(context)
+        onEnterState: onEnterState.bind(context),
+        onPendingTransition: onPendingTransition.bind(context)
       },
       plugins: [new StateMachineHistory()]
     });
@@ -366,6 +367,17 @@ function onEnterState(options: Object): void {
   if (options.from !== options.to) {
     this.logger.debug('Change state: ' + options.from + ' => ' + options.to);
   }
+}
+
+/**
+ * onPendingTransition handler
+ * @param {string} transition - transition
+ * @param {string} from - from
+ * @param {string} to - to
+ * @returns {void}
+ */
+function onPendingTransition(transition: string, from: string, to: string): void {
+  this.logger.warn('The previous transition is still in progress', {transition, from, to});
 }
 
 /**
