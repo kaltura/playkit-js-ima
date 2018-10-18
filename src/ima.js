@@ -856,7 +856,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._intervalTimer = setInterval(() => {
       if (this._stateMachine.is(State.PLAYING)) {
         let remainingTime = this._adsManager.getRemainingTime();
-        let duration = this._adsManager.getCurrentAd().getDuration();
+        let duration = this._currentAd.getDuration();
         let currentTime = duration - remainingTime;
         if (Utils.Number.isNumber(duration) && Utils.Number.isNumber(currentTime)) {
           this.dispatchEvent(this.player.Event.AD_PROGRESS, {
