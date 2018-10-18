@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.8.2"></a>
+## [0.8.2](https://github.com/kaltura/playkit-js-ima/compare/v0.8.1...v0.8.2) (2018-10-18)
+
+
+### Bug Fixes
+
+* **FEC-8599:** ads counter is not running when any ad playing ([#75](https://github.com/kaltura/playkit-js-ima/issues/75)) ([c8df633](https://github.com/kaltura/playkit-js-ima/commit/c8df633))
+
+
+
 <a name="0.8.1"></a>
 ## [0.8.1](https://github.com/kaltura/playkit-js-ima/compare/v0.8.0...v0.8.1) (2018-10-14)
 
