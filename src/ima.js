@@ -10,6 +10,7 @@ import './assets/style.css';
  * The full screen events..
  * @type {Array<string>}
  * @const
+ * @private
  */
 const FULL_SCREEN_EVENTS: Array<string> = ['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange'];
 
@@ -17,30 +18,40 @@ const FULL_SCREEN_EVENTS: Array<string> = ['fullscreenchange', 'mozfullscreencha
  * The overlay ad margin.
  * @type {number}
  * @const
+ * @private
  */
 const OVERLAY_AD_MARGIN: number = 8;
 /**
  * The ads container class.
  * @type {string}
  * @const
+ * @private
  */
 const ADS_CONTAINER_CLASS: string = 'playkit-ads-container';
 /**
  * The ads cover class.
  * @type {string}
  * @const
+ * @private
  */
 const ADS_COVER_CLASS: string = 'playkit-ads-cover';
 
 /**
  * The ima plugin.
- * @classdesc
+ * @class Ima
+ * @param {string} name - The plugin name.
+ * @param {Player} player - The player instance.
+ * @param {ImaConfigObject} config - The plugin config.
+ * @implements {IMiddlewareProvider}
+ * @implements {IAdsControllerProvider}
+ * @extends BasePlugin
  */
 class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvider {
   /**
    * The default configuration of the plugin.
    * @type {Object}
    * @static
+   * @memberof Ima
    */
   static defaultConfig: Object = {
     debug: false,
@@ -64,12 +75,16 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * The sdk lib url.
    * @type {string}
    * @static
+   * @private
+   * @memberof Ima
    */
   static IMA_SDK_LIB_URL: string = '//imasdk.googleapis.com/js/sdkloader/ima3.js';
   /**
    * The debug sdk lib url.
    * @type {string}
    * @static
+   * @private
+   * @memberof Ima
    */
   static IMA_SDK_DEBUG_LIB_URL: string = '//imasdk.googleapis.com/js/sdkloader/ima3_debug.js';
   /**
@@ -80,64 +95,76 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @type {Promise<*>}
    * @member
    * @public
+   * @memberof Ima
    */
   loadPromise: DeferredPromise;
   /**
    * The finite state machine of the plugin.
    * @member
    * @private
+   * @memberof Ima
    */
   _stateMachine: any;
   /**
    * The sdk api.
    * @member
    * @private
+   * @memberof Ima
    */
   _sdk: any;
   /**
    * The ads container dom element.
    * @member
    * @private
+   * @memberof Ima
    */
   _adsContainerDiv: HTMLElement;
   /**
    * The ads cover dom element.
    * @member
    * @private
+   * @memberof Ima
    */
   _adsCoverDiv: HTMLElement;
   /**
    * The ima ads container object.
+   * @private
+   * @memberof Ima
    */
   _adDisplayContainer: any;
   /**
    * The ima ads manager.
    * @member
    * @private
+   * @memberof Ima
    */
   _adsManager: any;
   /**
    * The ima ads loader.
    * @member
    * @private
+   * @memberof Ima
    */
   _adsLoader: any;
   /**
    * The content tracker.
    * @member
    * @private
+   * @memberof Ima
    */
   _contentPlayheadTracker: Object;
   /**
    * Flag to know when content complete.
    * @member
    * @private
+   * @memberof Ima
    */
   _contentComplete: boolean;
   /**
    * The ad interval timer.
    * @member
    * @private
+   * @memberof Ima
    */
   _intervalTimer: ?number;
   /**
@@ -145,48 +172,56 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * On custom playback when only one video tag playing, save the video current time.
    * @member
    * @private
+   * @memberof Ima
    */
   _videoLastCurrentTime: ?number;
   /**
    * The promise which when resolved starts the next handler in the middleware chain.
    * @member
    * @private
+   * @memberof Ima
    */
   _nextPromise: ?DeferredPromise;
   /**
    * The current playing ad.
    * @member
    * @private
+   * @memberof Ima
    */
   _currentAd: any;
   /**
    * The content media src.
    * @member
    * @private
+   * @memberof Ima
    */
   _contentSrc: string;
   /**
    * Whether an initial user action happened.
    * @member
    * @private
+   * @memberof Ima
    */
   _hasUserAction: boolean;
   /**
    * Whether the ads manager loaded.
    * @member
    * @private
+   * @memberof Ima
    */
   _isAdsManagerLoaded: boolean;
   /**
    * The bounded handler of the ads container click.
    * @member
    * @private
+   * @memberof Ima
    */
   _togglePlayPauseOnAdsContainerCallback: ?Function;
   /**
    * Whether the ads cover overlay is active.
    * @member
    * @private
+   * @memberof Ima
    */
   _isAdsCoverActive: boolean;
 
@@ -195,17 +230,12 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @static
    * @override
    * @public
+   * @memberof Ima
    */
   static isValid() {
     return true;
   }
 
-  /**
-   * @constructor
-   * @param {string} name - The plugin name.
-   * @param {Player} player - The player instance.
-   * @param {Object} config - The plugin config.
-   */
   constructor(name: string, player: Player, config: Object) {
     super(name, player, config);
     this._stateMachine = new ImaStateMachine(this);
@@ -219,6 +249,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Plays ad on demand.
    * @param {string} adTagUrl - The ad tag url to play.
    * @returns {void}
+   * @private
+   * @instance
+   * @memberof Ima
    */
   playAdNow(adTagUrl: string): void {
     this.logger.warn('playAdNow API is not implemented yet', adTagUrl);
@@ -227,6 +260,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   /**
    * Skips on an ad.
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   skipAd(): void {
     this.logger.debug('Skip ad');
@@ -243,6 +278,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Resuming the ad.
    * @public
    * @returns {DeferredPromise} - The promise which when resolved starts the next handler in the middleware chain.
+   * @instance
+   * @memberof Ima
    */
   resumeAd(): ?DeferredPromise {
     this.logger.debug('Resume ad');
@@ -255,6 +292,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Pausing the ad.
    * @public
    * @returns {DeferredPromise} - The promise which when resolved starts the next handler in the middleware chain.
+   * @instance
+   * @memberof Ima
    */
   pauseAd(): ?DeferredPromise {
     this.logger.debug('Pause ad');
@@ -265,6 +304,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Gets the state machine.
    * @public
    * @returns {any} - The state machine.
+   * @instance
+   * @memberof Ima
    */
   getStateMachine(): any {
     return this._stateMachine;
@@ -274,6 +315,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Gets the middleware.
    * @public
    * @returns {ImaMiddleware} - The middleware api.
+   * @instance
+   * @memberof Ima
    */
   getMiddlewareImpl(): BaseMiddleware {
     return new ImaMiddleware(this);
@@ -283,6 +326,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Gets the ads controller.
    * @public
    * @returns {IAdsController} - The ads api.
+   * @instance
+   * @memberof Ima
    */
   getAdsController(): IAdsController {
     return new ImaAdsController(this);
@@ -293,6 +338,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @override
    * @public
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   reset(): void {
     this.logger.debug('reset');
@@ -318,6 +365,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @override
    * @public
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   destroy(): void {
     this.logger.debug('destroy');
@@ -338,6 +387,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Initialize the ads for the first time.
    * @public
    * @returns {?DeferredPromise} - The promise which when resolved starts the next handler in the middleware chain.
+   * @instance
+   * @memberof Ima
    */
   initialUserAction(): ?DeferredPromise {
     try {
@@ -364,6 +415,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Starts the ads manager.
    * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   _startAdsManager(): void {
     this.logger.debug('Start ads manager');
@@ -376,8 +429,10 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
 
   /**
    * Adding bindings.
-   * @private_addBindings
+   * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   _addBindings(): void {
     FULL_SCREEN_EVENTS.forEach(fullScreenEvent => this.eventManager.listen(document, fullScreenEvent, () => this._resizeAd()));
@@ -406,6 +461,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Init the members of the plugin.
    * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   _initMembers(): void {
     this._setContentPlayheadTrackerEventsEnabled(false);
@@ -426,6 +483,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Initializing the plugin.
    * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   _init(): void {
     this.loadPromise = Utils.Object.defer();
@@ -448,6 +507,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * If configured, wait until source selected before will continue the initialization of the plugin.
    * @returns {Promise<*>} -
    * @private
+   * @instance
+   * @memberof Ima
    */
   _maybeDelayInitUntilSourceSelected(): Promise<*> {
     if (this.config.delayInitUntilSourceSelected) {
@@ -469,6 +530,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Loads the ima sdk lib.
    * @returns {Promise<*>} - The promise result for the load operation.
    * @private
+   * @instance
+   * @memberof Ima
    */
   _loadImaSDKLib(): Promise<*> {
     return this._isImaSDKLibLoaded()
@@ -480,6 +543,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Checks for ima sdk lib availability.
    * @returns {boolean} - Whether ima sdk lib is loaded.
    * @private
+   * @instance
+   * @memberof Ima
    */
   _isImaSDKLibLoaded(): boolean {
     return window.google && window.google.ima && window.google.ima.VERSION;
@@ -489,6 +554,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Init ima settings.
    * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   _initImaSettings(): void {
     this._sdk.settings.setPlayerType(this.config.playerName);
@@ -506,6 +573,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Initializing the ad container.
    * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   _initAdsContainer(): void {
     this.logger.debug('Init ads container');
@@ -528,6 +597,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Initializing the ads loader.
    * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   _initAdsLoader(): void {
     this.logger.debug('Init ads loader');
@@ -542,6 +613,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Requests the ads from the ads loader.
    * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   _requestAds(): void {
     if (this.config.adTagUrl || this.config.adsResponse) {
@@ -601,6 +674,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Resize event handler.
    * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   _resizeAd() {
     if (this._sdk && this._adsManager && this._currentAd) {
@@ -618,6 +693,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Align the size for the ads container when overlay ad is displaying.
    * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   _alignAdsContainerSizeForOverlayAd(): void {
     this._adsContainerDiv.style.bottom = this._currentAd.getHeight() + OVERLAY_AD_MARGIN + 'px';
@@ -628,6 +705,10 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Loadedmetada event handler.
    * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
+   * @instance
+   * @memberof Ima
    */
   _onLoadedMetadata(): void {
     this._contentPlayheadTracker.duration = this.player.duration;
@@ -637,6 +718,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Timeupdate event handler.
    * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   _onMediaTimeUpdate(): void {
     if (!this._contentPlayheadTracker.seeking) {
@@ -650,6 +733,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @param {boolean} enabled - Whether do enabled the events.
    * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   _setContentPlayheadTrackerEventsEnabled(enabled: boolean): void {
     if (enabled) {
@@ -669,6 +754,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Seeking event handler.
    * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   _onMediaSeeking(): void {
     this._contentPlayheadTracker.seeking = true;
@@ -678,6 +765,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Seeked event handler.
    * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   _onMediaSeeked(): void {
     this._contentPlayheadTracker.seeking = false;
@@ -688,6 +777,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @param {boolean} enable - Whether to enable the event listener or not.
    * @private
    * @return {void}
+   * @instance
+   * @memberof Ima
    */
   _setVideoEndedCallbackEnabled(enable: boolean): void {
     if (enable) {
@@ -701,6 +792,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Maybe save the video current time before ads starts (on ios this is necessary).
    * @private
    * @return {void}
+   * @instance
+   * @memberof Ima
    */
   _maybeSaveVideoCurrentTime(): void {
     if (this._adsManager.isCustomPlaybackUsed() && this.player.currentTime && this.player.currentTime > 0) {
@@ -713,6 +806,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Maybe sets the video current time after ads finished (on ios this is necessary).
    * @private
    * @return {void}
+   * @instance
+   * @memberof Ima
    */
   _maybeSetVideoCurrentTime(): void {
     if (this._videoLastCurrentTime) {
@@ -726,6 +821,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Ended event handler.
    * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   _onMediaEnded(): void {
     this.logger.debug('Media ended');
@@ -740,6 +837,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Shows the ads container.
    * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   _showAdsContainer(): void {
     if (this._adsContainerDiv) {
@@ -751,6 +850,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Hides the ads container.
    * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   _hideAdsContainer(): void {
     if (this._adsContainerDiv) {
@@ -763,6 +864,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @param {any} adsManagerLoadedEvent - The event data.
    * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   _onAdsManagerLoaded(adsManagerLoadedEvent: any): void {
     this.logger.debug('Ads manager loaded');
@@ -786,6 +889,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * returns the ads rendering settings configuration for IMA with plugin config applied
    * @returns {Object} - IMA AdsRenderingSettings object
    * @private
+   * @instance
+   * @memberof Ima
    */
   _getAdsRenderingSetting(): Object {
     let adsRenderingSettings = new this._sdk.AdsRenderingSettings();
@@ -806,6 +911,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Attach the ads manager listeners.
    * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   _attachAdsManagerListeners(): void {
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_PAUSE_REQUESTED, adEvent => this._stateMachine.adbreakstart(adEvent));
@@ -833,6 +940,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Syncs the player volume.
    * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   _syncPlayerVolume(): void {
     if (this._adsManager) {
@@ -850,6 +959,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Starts ad interval timer.
    * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   _startAdInterval(): void {
     this._stopAdInterval();
@@ -874,6 +985,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Stops ads interval timer.
    * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   _stopAdInterval(): void {
     if (this._intervalTimer) {
@@ -886,6 +999,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Resolves the next promise to let the next handler in the middleware chain start.
    * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   _resolveNextPromise(): void {
     if (this._nextPromise) {
@@ -899,6 +1014,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @param {boolean} enable - Whether to add or remove the ads cover.
    * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   _setToggleAdsCover(enable: boolean): void {
     if (enable) {
@@ -918,6 +1035,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * On ads cover click handler.
    * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   _onAdsCoverClicked(): void {
     if (this._adsManager) {
@@ -938,6 +1057,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Displays companion ads using the Ad API.
    * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   _maybeDisplayCompanionAds(): void {
     if (this.config.companions && this.config.companions.ads && !window.googletag) {
@@ -975,6 +1096,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * video element manipulation only on user gesture.
    * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   _maybeIgnoreClickOnAd(): void {
     const isAndroid = () => this.player.env.os.name === 'Android';
@@ -989,6 +1112,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * supported in native full screen, so need to exist full screen before ads started.
    * @private
    * @returns {void}
+   * @instance
+   * @memberof Ima
    */
   _maybeForceExitFullScreen(): void {
     const isIOS = () => this.player.env.os.name === 'iOS';

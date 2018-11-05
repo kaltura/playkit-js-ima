@@ -5,32 +5,33 @@ import {State} from './state';
 
 /**
  * Middleware implementation for ima plugin.
- * @classdesc
+ * @class ImaMiddleware
+ * @param {Ima} context - The ima plugin context.
+ * @private
  */
 class ImaMiddleware extends BaseMiddleware {
   /**
    * The id of the ima middleware.
    * @type {string}
    * @public
+   * @memberof ImaMiddleware
    */
   id: string = 'ImaMiddleware';
   /**
    * Whether the player has been loaded.
    * @member
    * @private
+   * @memberof ImaMiddleware
    */
   _isPlayerLoaded: boolean;
   /**
    * The plugin context.
    * @member
    * @private
+   * @memberof ImaMiddleware
    */
   _context: Ima;
 
-  /**
-   * @constructor
-   * @param {Ima} context - The ima plugin context.
-   */
   constructor(context: Ima) {
     super();
     this._context = context;
@@ -41,6 +42,7 @@ class ImaMiddleware extends BaseMiddleware {
    * Play middleware handler.
    * @param {Function} next - The next play handler in the middleware chain.
    * @returns {void}
+   * @memberof ImaMiddleware
    */
   play(next: Function): void {
     if (!this._isPlayerLoaded && !this._context.config.disableMediaPreload) {
@@ -91,6 +93,7 @@ class ImaMiddleware extends BaseMiddleware {
    * Pause middleware handler.
    * @param {Function} next - The next pause handler in the middleware chain.
    * @returns {void}
+   * @memberof ImaMiddleware
    */
   pause(next: Function): void {
     let sm = this._context.getStateMachine();
@@ -112,6 +115,7 @@ class ImaMiddleware extends BaseMiddleware {
    * Load the player.
    * @returns {void}
    * @private
+   * @memberof ImaMiddleware
    */
   _loadPlayer(): void {
     const loadPlayer = () => {

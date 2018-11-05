@@ -8,11 +8,6 @@ declare var __NAME__: string;
 export {Ima as Plugin};
 export {__VERSION__ as VERSION, __NAME__ as NAME};
 
-/**
- * The plugin name.
- * @type {string}
- * @const
- */
 const pluginName: string = 'ima';
 
 registerPlugin(pluginName, Ima);

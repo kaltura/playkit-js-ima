@@ -6,13 +6,12 @@ import {Ad, AdBreak, AdBreakType, Error, Utils} from '@playkit-js/playkit-js';
 
 /**
  * Finite state machine for ima plugin.
+ * @class ImaStateMachine
+ * @private
+ * @param {any} context - The plugin context.
  * @classdesc
  */
 class ImaStateMachine {
-  /**
-   * @constructor
-   * @param {any} context - The plugin context.
-   */
   constructor(context: any) {
     return new StateMachine({
       init: State.LOADING,
@@ -145,6 +144,8 @@ class ImaStateMachine {
  * @param {Object} options - fsm event data.
  * @param {any} adEvent - ima event data.
  * @returns {void}
+ * @private
+ * @memberof ImaStateMachine
  */
 function onAdLoaded(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
@@ -170,6 +171,8 @@ function onAdLoaded(options: Object, adEvent: any): void {
  * @param {Object} options - fsm event data.
  * @param {any} adEvent - ima event data.
  * @returns {void}
+ * @private
+ * @memberof ImaStateMachine
  */
 function onAdStarted(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
@@ -197,6 +200,8 @@ function onAdStarted(options: Object, adEvent: any): void {
  * @param {Object} options - fsm event data.
  * @param {any} adEvent - ima event data.
  * @returns {void}
+ * @private
+ * @memberof ImaStateMachine
  */
 function onAdClicked(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
@@ -219,6 +224,8 @@ function onAdClicked(options: Object, adEvent: any): void {
  * @param {Object} options - fsm event data.
  * @param {any} adEvent - ima event data.
  * @returns {void}
+ * @private
+ * @memberof ImaStateMachine
  */
 function onAdResumed(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
@@ -231,6 +238,8 @@ function onAdResumed(options: Object, adEvent: any): void {
  * @param {Object} options - fsm event data.
  * @param {any} adEvent - ima event data.
  * @returns {void}
+ * @private
+ * @memberof ImaStateMachine
  */
 function onAdCompleted(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
@@ -246,6 +255,8 @@ function onAdCompleted(options: Object, adEvent: any): void {
  * @param {Object} options - fsm event data.
  * @param {any} adEvent - ima event data.
  * @returns {void}
+ * @private
+ * @memberof ImaStateMachine
  */
 function onAllAdsCompleted(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
@@ -260,6 +271,8 @@ function onAllAdsCompleted(options: Object, adEvent: any): void {
  * @param {Object} options - fsm event data.
  * @param {any} adEvent - ima event data.
  * @returns {void}
+ * @private
+ * @memberof ImaStateMachine
  */
 function onAdBreakStart(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
@@ -277,6 +290,8 @@ function onAdBreakStart(options: Object, adEvent: any): void {
  * @param {Object} options - fsm event data.
  * @param {any} adEvent - ima event data.
  * @returns {void}
+ * @private
+ * @memberof ImaStateMachine
  */
 function onAdBreakEnd(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
@@ -299,6 +314,8 @@ function onAdBreakEnd(options: Object, adEvent: any): void {
  * @param {Object} options - fsm event data.
  * @param {any} adEvent - ima event data.
  * @returns {void}
+ * @private
+ * @memberof ImaStateMachine
  */
 function onAdError(options: Object, adEvent: any): void {
   if (adEvent.type === 'adError') {
@@ -327,6 +344,8 @@ function onAdError(options: Object, adEvent: any): void {
  * @param {Object} options - fsm event data.
  * @param {any} adEvent - ima event data.
  * @returns {void}
+ * @private
+ * @memberof ImaStateMachine
  */
 function onAdSkipped(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
@@ -339,6 +358,8 @@ function onAdSkipped(options: Object, adEvent: any): void {
  * @param {Object} options - fsm event data.
  * @param {any} adEvent - ima event data.
  * @returns {void}
+ * @private
+ * @memberof ImaStateMachine
  */
 function onAdCanSkip(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
@@ -352,6 +373,8 @@ function onAdCanSkip(options: Object, adEvent: any): void {
  * @param {Object} options - fsm event data.
  * @param {any} adEvent - ima event data.
  * @returns {void}
+ * @private
+ * @memberof ImaStateMachine
  */
 function onAdEvent(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
@@ -362,6 +385,8 @@ function onAdEvent(options: Object, adEvent: any): void {
  * Enter state handler.
  * @param {Object} options - fsm event data.
  * @returns {void}
+ * @private
+ * @memberof ImaStateMachine
  */
 function onEnterState(options: Object): void {
   if (options.from !== options.to) {
@@ -375,6 +400,8 @@ function onEnterState(options: Object): void {
  * @param {string} from - from
  * @param {string} to - to
  * @returns {void}
+ * @private
+ * @memberof ImaStateMachine
  */
 function onPendingTransition(transition: string, from: string, to: string): void {
   this.logger.warn('The previous transition is still in progress', {transition, from, to});
@@ -385,6 +412,8 @@ function onPendingTransition(transition: string, from: string, to: string): void
  * @param {any} adError - The ima ad error object.
  * @param {boolean} fatal - Whether the error is fatal.
  * @returns {Error} - The ad error object.
+ * @private
+ * @memberof ImaStateMachine
  */
 function getAdError(adError: any, fatal: boolean): Error {
   const severity = fatal ? Error.Severity.CRITICAL : Error.Severity.RECOVERABLE;
@@ -408,6 +437,8 @@ function getAdError(adError: any, fatal: boolean): Error {
  * Gets the ad options.
  * @param {any} adEvent - The ima ad event object.
  * @returns {Object} - The ad options.
+ * @private
+ * @memberof ImaStateMachine
  */
 function getAdOptions(adEvent: any): Object {
   const adOptions = {};
@@ -429,6 +460,8 @@ function getAdOptions(adEvent: any): Object {
  * Gets the ad break options.
  * @param {any} adEvent - The ima ad event object.
  * @returns {Object} - The ad break options.
+ * @private
+ * @memberof ImaStateMachine
  */
 function getAdBreakOptions(adEvent: any): Object {
   const adBreakOptions = {};
@@ -445,6 +478,8 @@ function getAdBreakOptions(adEvent: any): Object {
  * Gets the ad break type.
  * @param {any} adEvent - The ima ad event object.
  * @returns {string} - The ad break type.
+ * @private
+ * @memberof ImaStateMachine
  */
 function getAdBreakType(adEvent: any): string {
   const ad = adEvent.getAd();
