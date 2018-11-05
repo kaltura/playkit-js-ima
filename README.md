@@ -72,7 +72,7 @@ player.play();
 ## Documentation
 
 * **[Configuration & API](docs/configuration-api.md)**
-* **[Guides](docs/vpaid.md)**
+* **[Guides](docs/guides.md)**
 
 ## Running the tests
 
