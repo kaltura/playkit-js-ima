@@ -52,22 +52,22 @@ Finally, add the bundle as a script tag in your page, and initialize the player
 <div id="player-placeholder" style="height:360px; width:640px">
 <script type="text/javascript">
 var config = {
- provider: {
-   partnerId: {YOUR_PARTNER_ID}
-   ...
- },
- ...
- plugins: {
-   ima: {
-     adTagUrl: 'YOUR_AD_TAG_URL'
-   }
- }
- ...
+  provider: {
+    partnerId: {YOUR_PARTNER_ID}
+    ...
+  },
+  ...
+  plugins: {
+    ima: {
+      adTagUrl: 'YOUR_AD_TAG_URL'
+    }
+  }
+  ...
 };
 var player = KalturaPlayer.setup(config);
 player.play();
 </script>
-``
+`
 
 ## Documentation
 
