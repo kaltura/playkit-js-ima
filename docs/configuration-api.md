@@ -248,5 +248,3 @@ Whether the ima plugin is valid.
 [38]: #ima
 [39]: #imaconfigobject
 [40]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
-
-Done in 3.97s.
