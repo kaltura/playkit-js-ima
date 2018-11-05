@@ -1,9 +1,9 @@
-# PlayKit JS IMA - IMA plugin for the [PlayKit JS Player]
+# PlayKit JS IMA - IMA Plugin for the [Kaltura Player JS]
 
 [![Build Status](https://travis-ci.org/kaltura/playkit-js-ima.svg?branch=master)](https://travis-ci.org/kaltura/playkit-js-ima)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
-PlayKit JS IMA plugin integrates [IMA SDK for HTML5] with the [PlayKit JS Player].
+PlayKit JS IMA plugin integrates [IMA SDK for HTML5] with the [Kaltura Player JS].
 
 PlayKit JS IMA is written in [ECMAScript6], statically analysed using [Flow] and transpiled in ECMAScript5 using [Babel].
 
@@ -11,16 +11,15 @@ PlayKit JS IMA is written in [ECMAScript6], statically analysed using [Flow] and
 [flow]: https://flow.org/
 [ecmascript6]: https://github.com/ericdouglas/ES6-Learning#articles--tutorials
 [babel]: https://babeljs.io
+[kaltura player js]: https://github.com/kaltura/kaltura-player-js
 
 ## Getting Started
 
 ### Prerequisites
 
-The plugin requires [PlayKit JS Player] to be loaded first.
+The plugin requires [Kaltura Player JS] to be loaded first.
 
 The plugin uses the [IMA SDK for HTML5] Javascript SDK, if the SDK is already loaded on the page the plugin will use it, and if it's not then it will load it.
-
-[playkit js player]: https://github.com/kaltura/playkit-js
 
 ### Installing
 
@@ -47,13 +46,16 @@ yarn run build
 Finally, add the bundle as a script tag in your page, and initialize the player
 
 ```html
-<script type="text/javascript" src="/PATH/TO/FILE/playkit.js"></script>                     <!--PlayKit player-->
+<script type="text/javascript" src="/PATH/TO/FILE/kaltura-{ovp/ott}-player.js"></script>                     <!--PlayKit player-->
 <script type="text/javascript" src="//imasdk.googleapis.com/js/sdkloader/ima3.js"></script> <!--IMA SDK for HTML5-->
 <script type="text/javascript" src="/PATH/TO/FILE/playkit-ima.js"></script>                 <!--PlayKit IMA plugin-->
 <div id="player-placeholder" style="height:360px; width:640px">
 <script type="text/javascript">
-var playerContainer = document.querySelector("#player-placeholder");
 var config = {
+  provider: {
+    partnerId: {YOUR_PARTNER_ID}
+    ...
+  },
  ...
  plugins: {
    ima: {
@@ -62,16 +64,15 @@ var config = {
  }
  ...
 };
-var player = playkit.core.loadPlayer(config);
-playerContainer.appendChild(player.getView());
+var player = KalturaPlayer.setup(config);
 player.play();
 </script>
 ```
 
 ## Documentation
 
-* **[Configuration](docs/configuration.md)**
-* **Events**
+* **[Configuration & API](docs/configuration-api.md)**
+* **[Guides](docs/vpaid.md)**
 
 ## Running the tests
 

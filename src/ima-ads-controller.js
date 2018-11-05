@@ -3,20 +3,18 @@ import {Ima} from './ima';
 
 /**
  * Controller for ima plugin.
- * @classdesc
+ * @class ImaAdsController
+ * @param {Ima} context - The ima plugin context.
  */
 class ImaAdsController implements IAdsController {
   /**
    * The plugin context.
    * @member
    * @private
+   * @memberof ImaAdsController
    */
   _context: Ima;
 
-  /**
-   * @constructor
-   * @param {Ima} context - The ima plugin context.
-   */
   constructor(context: Ima) {
     this._context = context;
   }
@@ -25,6 +23,7 @@ class ImaAdsController implements IAdsController {
    * Skip on an ad.
    * @public
    * @returns {void}
+   * @memberof ImaAdsController
    */
   skipAd(): void {
     this._context.skipAd();
@@ -33,8 +32,9 @@ class ImaAdsController implements IAdsController {
   /**
    * Play an ad on demand.
    * @param {string} adTagUrl - The ad tag url to play.
-   * @public
+   * @private
    * @returns {void}
+   * @memberof ImaAdsController
    */
   playAdNow(adTagUrl: string): void {
     this._context.playAdNow(adTagUrl);
