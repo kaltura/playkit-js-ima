@@ -85,7 +85,8 @@ Type: [Object][28]
 * `debug` **[boolean][35]?** If set to true, loads IMA SDK in debug mode.
 * `disableMediaPreload` **[number][32]?** Whether to disable media pre loading while ad is playing. If set to `true`, the player will start loading the content media just after the ad break will end (incase of preroll ad). This will also overrides `config.adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete` no matters its value and sets it to `false`.
 * `adsRenderingSettings` **[google.ima.AdsRenderingSettings][36]?** Defines parameters that control the rendering of ads.
-* `companions` **[CompanionsConfigObject][37]?** Defines the companion ads.
+  * `adsRenderingSettings.useStyledLinearAds` **[boolean][35]?** See usage also in [Handling VPAID Ads][37]
+* `companions` **[CompanionsConfigObject][38]?** Defines the companion ads.
 
 ### Examples
 
@@ -114,7 +115,7 @@ Controller for ima plugin.
 
 ### Parameters
 
-* `context` **[Ima][38]** The ima plugin context.
+* `context` **[Ima][39]** The ima plugin context.
 
 ### skipAd
 
@@ -132,7 +133,7 @@ The ima plugin.
 
 * `name` **[string][34]** The plugin name.
 * `player` **Player** The player instance.
-* `config` **[ImaConfigObject][39]** The plugin config.
+* `config` **[ImaConfigObject][40]** The plugin config.
 
 ### skipAd
 
@@ -202,7 +203,7 @@ Will be resolved after:
 1.  Ima script has been loaded in the page.
 2.  The ads manager has been loaded and ready to start.
 
-Type: [Promise][40]&lt;any>
+Type: [Promise][41]&lt;any>
 
 ### isValid
 
@@ -244,7 +245,8 @@ Whether the ima plugin is valid.
 [34]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 [35]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 [36]: #googleimaadsrenderingsettings
-[37]: #companionsconfigobject
-[38]: #ima
-[39]: #imaconfigobject
-[40]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[37]: https://github.com/kaltura/playkit-js-ima/blob/FEC-8486/docs/vpaid.md
+[38]: #companionsconfigobject
+[39]: #ima
+[40]: #imaconfigobject
+[41]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
