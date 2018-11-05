@@ -34,7 +34,7 @@ class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_RESUMED,
-          from: State.PAUSED,
+          from: [State.PAUSED, State.PLAYING],
           to: State.PLAYING
         },
         {
@@ -49,16 +49,16 @@ class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_COMPLETED,
-          from: State.PLAYING
+          from: [State.PLAYING, State.PAUSED]
         },
         {
           name: context.player.Event.ALL_ADS_COMPLETED,
-          from: State.IDLE,
+          from: [State.IDLE, State.PAUSED],
           to: State.DONE
         },
         {
           name: context.player.Event.AD_BREAK_END,
-          from: [State.IDLE, State.PLAYING, State.LOADED],
+          from: [State.IDLE, State.PLAYING, State.LOADED, State.PAUSED],
           to: State.IDLE
         },
         {

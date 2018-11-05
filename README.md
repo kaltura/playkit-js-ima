@@ -56,13 +56,13 @@ var config = {
     partnerId: {YOUR_PARTNER_ID}
     ...
   },
- ...
- plugins: {
-   ima: {
-     adTagUrl: 'YOUR_AD_TAG_URL'
-   }
- }
- ...
+  ...
+  plugins: {
+    ima: {
+      adTagUrl: 'YOUR_AD_TAG_URL'
+    }
+  }
+  ...
 };
 var player = KalturaPlayer.setup(config);
 player.play();
@@ -72,7 +72,7 @@ player.play();
 ## Documentation
 
 * **[Configuration & API](docs/configuration-api.md)**
-* **[Guides](docs/vpaid.md)**
+* **[Guides](docs/guides.md)**
 
 ## Running the tests
 
@@ -115,3 +115,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 ## License
 
 This project is licensed under the AGPL-3.0 License - see the [LICENSE.md](LICENSE.md) file for details
+
+```
+
+```
