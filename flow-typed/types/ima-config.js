@@ -11,6 +11,7 @@
  * @property {boolean} [debug] - If set to true, loads IMA SDK in debug mode.
  * @property {number} [disableMediaPreload] - Whether to disable media pre loading while ad is playing. If set to `true`, the player will start loading the content media just after the ad break will end (incase of preroll ad). This will also overrides `config.adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete` no matters its value and sets it to `false`.
  * @property {google.ima.AdsRenderingSettings} [adsRenderingSettings] - Defines parameters that control the rendering of ads.
+ * @property {boolean} [adsRenderingSettings.useStyledLinearAds] - See usage also in {@link https://github.com/kaltura/playkit-js-ima/blob/FEC-8486/docs/vpaid.md|Handling VPAID Ads}
  * @property {CompanionsConfigObject} [companions] - Defines the companion ads.
  * @example
  * // Default config
