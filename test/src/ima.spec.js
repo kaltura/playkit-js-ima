@@ -1,7 +1,6 @@
-import {loadPlayerWithAds, maybeDoneTest, loadGPT, registerCompanionSlots} from './helpers';
+import {loadGPT, loadPlayerWithAds, maybeDoneTest, registerCompanionSlots} from './helpers';
 import * as TestUtils from './utils/test-utils';
-import {FakeEvent} from '@playkit-js/playkit-js';
-import {AdBreakType} from '@playkit-js/playkit-js';
+import {AdBreakType, FakeEvent} from '@playkit-js/playkit-js';
 
 const targetId = 'player-placeholder_ima.spec';
 
