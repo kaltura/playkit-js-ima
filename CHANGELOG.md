@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.8.3"></a>
+## [0.8.3](https://github.com/kaltura/playkit-js-ima/compare/v0.8.2...v0.8.3) (2018-11-05)
+
+
+### Bug Fixes
+
+* **FEC-8486:** player stuck when finish to play VPAID ad ([#76](https://github.com/kaltura/playkit-js-ima/issues/76)) ([b04657b](https://github.com/kaltura/playkit-js-ima/commit/b04657b))
+
+
+
 <a name="0.8.2"></a>
 ## [0.8.2](https://github.com/kaltura/playkit-js-ima/compare/v0.8.1...v0.8.2) (2018-10-18)
 
