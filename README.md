@@ -67,7 +67,7 @@ var config = {
 var player = KalturaPlayer.setup(config);
 player.play();
 </script>
-`
+```
 
 ## Documentation
 
@@ -79,19 +79,19 @@ player.play();
 Tests can be run locally via [Karma], which will run on Chrome, Firefox and Safari
 
 [karma]: https://karma-runner.github.io/1.0/index.html
-```
 
+```
 yarn run test
-
 ```
+
 You can test individual browsers:
-```
 
+```
 yarn run test:chrome
 yarn run test:firefox
 yarn run test:safari
-
 ```
+
 ### And coding style tests
 
 We use ESLint [recommended set](http://eslint.org/docs/rules/) with some additions for enforcing [Flow] types and other rules.
@@ -115,4 +115,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 ## License
 
 This project is licensed under the AGPL-3.0 License - see the [LICENSE.md](LICENSE.md) file for details
+
+```
+
 ```
