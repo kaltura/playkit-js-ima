@@ -3,8 +3,9 @@ import {ImaMiddleware} from './ima-middleware';
 import {ImaAdsController} from './ima-ads-controller';
 import {ImaStateMachine} from './ima-state-machine';
 import {State} from './state';
-import {BaseMiddleware, BasePlugin, EngineType, Error, getCapabilities, Utils} from '@playkit-js/playkit-js';
+import {BaseMiddleware, EngineType, Error, getCapabilities, Utils} from '@playkit-js/playkit-js';
 import './assets/style.css';
+import {ImaGeneric} from './ima-generic';
 
 /**
  * The full screen events..
@@ -21,20 +22,6 @@ const FULL_SCREEN_EVENTS: Array<string> = ['fullscreenchange', 'mozfullscreencha
  * @private
  */
 const OVERLAY_AD_MARGIN: number = 8;
-/**
- * The ads container class.
- * @type {string}
- * @const
- * @private
- */
-const ADS_CONTAINER_CLASS: string = 'playkit-ads-container';
-/**
- * The ads cover class.
- * @type {string}
- * @const
- * @private
- */
-const ADS_COVER_CLASS: string = 'playkit-ads-cover';
 
 /**
  * The ima plugin.
@@ -44,9 +31,9 @@ const ADS_COVER_CLASS: string = 'playkit-ads-cover';
  * @param {ImaConfigObject} config - The plugin config.
  * @implements {IMiddlewareProvider}
  * @implements {IAdsControllerProvider}
- * @extends BasePlugin
+ * @extends ImaGeneric
  */
-class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvider {
+class Ima extends ImaGeneric implements IMiddlewareProvider, IAdsControllerProvider {
   /**
    * The default configuration of the plugin.
    * @type {Object}
@@ -78,7 +65,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @private
    * @memberof Ima
    */
-  static IMA_SDK_LIB_URL: string = '//imasdk.googleapis.com/js/sdkloader/ima3.js';
+  static IMA_LIB_URL: string = '//imasdk.googleapis.com/js/sdkloader/ima3.js';
   /**
    * The debug sdk lib url.
    * @type {string}
@@ -86,18 +73,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @private
    * @memberof Ima
    */
-  static IMA_SDK_DEBUG_LIB_URL: string = '//imasdk.googleapis.com/js/sdkloader/ima3_debug.js';
-  /**
-   * Promise for loading the plugin.
-   * Will be resolved after:
-   * 1) Ima script has been loaded in the page.
-   * 2) The ads manager has been loaded and ready to start.
-   * @type {Promise<*>}
-   * @member
-   * @public
-   * @memberof Ima
-   */
-  loadPromise: DeferredPromise;
+  static IMA_DEBUG_LIB_URL: string = '//imasdk.googleapis.com/js/sdkloader/ima3_debug.js';
   /**
    * The finite state machine of the plugin.
    * @member
@@ -105,27 +81,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _stateMachine: any;
-  /**
-   * The sdk api.
-   * @member
-   * @private
-   * @memberof Ima
-   */
-  _sdk: any;
-  /**
-   * The ads container dom element.
-   * @member
-   * @private
-   * @memberof Ima
-   */
-  _adsContainerDiv: HTMLElement;
-  /**
-   * The ads cover dom element.
-   * @member
-   * @private
-   * @memberof Ima
-   */
-  _adsCoverDiv: HTMLElement;
   /**
    * The ima ads container object.
    * @private
@@ -217,13 +172,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _togglePlayPauseOnAdsContainerCallback: ?Function;
-  /**
-   * Whether the ads cover overlay is active.
-   * @member
-   * @private
-   * @memberof Ima
-   */
-  _isAdsCoverActive: boolean;
 
   /**
    * Whether the ima plugin is valid.
@@ -346,7 +294,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this.eventManager.removeAll();
     this._stopAdInterval();
     this._hideAdsContainer();
-    if (!this._isImaSDKLibLoaded()) {
+    if (!this._isImaLibLoaded()) {
       return;
     }
     if (this._adsManager) {
@@ -489,9 +437,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   _init(): void {
     this.loadPromise = Utils.Object.defer();
     this._maybeDelayInitUntilSourceSelected()
-      .then(() => this._loadImaSDKLib())
+      .then(() => this._loadImaLib())
       .then(() => {
-        this._sdk = window.google.ima;
         this.logger.debug('IMA SDK version: ' + this._sdk.VERSION);
         this._initImaSettings();
         this._initAdsContainer();
@@ -527,30 +474,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   }
 
   /**
-   * Loads the ima sdk lib.
-   * @returns {Promise<*>} - The promise result for the load operation.
-   * @private
-   * @instance
-   * @memberof Ima
-   */
-  _loadImaSDKLib(): Promise<*> {
-    return this._isImaSDKLibLoaded()
-      ? Promise.resolve()
-      : Utils.Dom.loadScriptAsync(this.config.debug ? Ima.IMA_SDK_DEBUG_LIB_URL : Ima.IMA_SDK_LIB_URL);
-  }
-
-  /**
-   * Checks for ima sdk lib availability.
-   * @returns {boolean} - Whether ima sdk lib is loaded.
-   * @private
-   * @instance
-   * @memberof Ima
-   */
-  _isImaSDKLibLoaded(): boolean {
-    return window.google && window.google.ima && window.google.ima.VERSION;
-  }
-
-  /**
    * Init ima settings.
    * @private
    * @returns {void}
@@ -570,30 +493,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   }
 
   /**
-   * Initializing the ad container.
-   * @private
-   * @returns {void}
-   * @instance
-   * @memberof Ima
-   */
-  _initAdsContainer(): void {
-    this.logger.debug('Init ads container');
-    const playerView = this.player.getView();
-    // Create ads container
-    this._adsContainerDiv = Utils.Dom.createElement('div');
-    this._adsContainerDiv.id = ADS_CONTAINER_CLASS + playerView.id;
-    this._adsContainerDiv.className = ADS_CONTAINER_CLASS;
-    // Create ads cover
-    this._adsCoverDiv = Utils.Dom.createElement('div');
-    this._adsCoverDiv.id = ADS_COVER_CLASS + playerView.id;
-    this._adsCoverDiv.className = ADS_COVER_CLASS;
-    this._adsCoverDiv.onclick = () => this._onAdsCoverClicked();
-    // Append the ads container to the dom
-    Utils.Dom.appendChild(playerView, this._adsContainerDiv);
-    this._adDisplayContainer = new this._sdk.AdDisplayContainer(this._adsContainerDiv, this.player.getVideoElement());
-  }
-
-  /**
    * Initializing the ads loader.
    * @private
    * @returns {void}
@@ -602,6 +501,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   _initAdsLoader(): void {
     this.logger.debug('Init ads loader');
+    this._adDisplayContainer = new this._sdk.AdDisplayContainer(this._adsContainerDiv, this.player.getVideoElement());
     this._adsLoader = new this._sdk.AdsLoader(this._adDisplayContainer);
     this._adsLoader.addEventListener(this._sdk.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, adsManagerLoadedEvent =>
       this._onAdsManagerLoaded(adsManagerLoadedEvent)
@@ -834,32 +734,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   }
 
   /**
-   * Shows the ads container.
-   * @private
-   * @returns {void}
-   * @instance
-   * @memberof Ima
-   */
-  _showAdsContainer(): void {
-    if (this._adsContainerDiv) {
-      this._adsContainerDiv.style.visibility = 'visible';
-    }
-  }
-
-  /**
-   * Hides the ads container.
-   * @private
-   * @returns {void}
-   * @instance
-   * @memberof Ima
-   */
-  _hideAdsContainer(): void {
-    if (this._adsContainerDiv) {
-      this._adsContainerDiv.style.visibility = 'hidden';
-    }
-  }
-
-  /**
    * The ads manager loaded handler.
    * @param {any} adsManagerLoadedEvent - The event data.
    * @private
@@ -1006,28 +880,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     if (this._nextPromise) {
       this._nextPromise.resolve();
       this._nextPromise = null;
-    }
-  }
-
-  /**
-   * Toggle the ads cover div.
-   * @param {boolean} enable - Whether to add or remove the ads cover.
-   * @private
-   * @returns {void}
-   * @instance
-   * @memberof Ima
-   */
-  _setToggleAdsCover(enable: boolean): void {
-    if (enable) {
-      if (!this._adsManager.isCustomPlaybackUsed()) {
-        this._adsContainerDiv.appendChild(this._adsCoverDiv);
-        this._isAdsCoverActive = true;
-      }
-    } else {
-      if (this._isAdsCoverActive) {
-        this._adsContainerDiv.removeChild(this._adsCoverDiv);
-        this._isAdsCoverActive = false;
-      }
     }
   }
 
