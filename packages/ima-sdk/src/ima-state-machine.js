@@ -1,7 +1,7 @@
 // @flow
 import StateMachine from 'javascript-state-machine';
 import StateMachineHistory from 'javascript-state-machine/lib/history';
-import {State} from './state';
+import {ImaState} from '../../ima-common/src/ima-state';
 import {Ad, AdBreak, AdBreakType, Error, Utils} from '@playkit-js/playkit-js';
 
 /**
@@ -14,97 +14,97 @@ import {Ad, AdBreak, AdBreakType, Error, Utils} from '@playkit-js/playkit-js';
 class ImaStateMachine {
   constructor(context: any) {
     return new StateMachine({
-      init: State.LOADING,
+      init: ImaState.LOADING,
       transitions: [
         {
           name: 'loaded',
-          from: [State.LOADING, State.LOADED, State.IDLE, State.PAUSED, State.PLAYING, State.DONE],
-          to: State.LOADED
+          from: [ImaState.LOADING, ImaState.LOADED, ImaState.IDLE, ImaState.PAUSED, ImaState.PLAYING, ImaState.DONE],
+          to: ImaState.LOADED
         },
         {
           name: context.player.Event.AD_STARTED,
-          from: [State.LOADED, State.IDLE, State.PAUSED, State.PLAYING],
+          from: [ImaState.LOADED, ImaState.IDLE, ImaState.PAUSED, ImaState.PLAYING],
           to: (adEvent: any): string => {
             let ad = adEvent.getAd();
             if (!ad.isLinear()) {
-              return State.IDLE;
+              return ImaState.IDLE;
             }
-            return State.PLAYING;
+            return ImaState.PLAYING;
           }
         },
         {
           name: context.player.Event.AD_RESUMED,
-          from: [State.PAUSED, State.PLAYING],
-          to: State.PLAYING
+          from: [ImaState.PAUSED, ImaState.PLAYING],
+          to: ImaState.PLAYING
         },
         {
           name: context.player.Event.AD_PAUSED,
-          from: State.PLAYING,
-          to: State.PAUSED
+          from: ImaState.PLAYING,
+          to: ImaState.PAUSED
         },
         {
           name: context.player.Event.AD_SKIPPED,
-          from: [State.PLAYING, State.PAUSED],
-          to: State.IDLE
+          from: [ImaState.PLAYING, ImaState.PAUSED],
+          to: ImaState.IDLE
         },
         {
           name: context.player.Event.AD_COMPLETED,
-          from: [State.PLAYING, State.PAUSED]
+          from: [ImaState.PLAYING, ImaState.PAUSED]
         },
         {
           name: context.player.Event.ALL_ADS_COMPLETED,
-          from: [State.IDLE, State.PAUSED],
-          to: State.DONE
+          from: [ImaState.IDLE, ImaState.PAUSED],
+          to: ImaState.DONE
         },
         {
           name: context.player.Event.AD_BREAK_END,
-          from: [State.IDLE, State.PLAYING, State.LOADED, State.PAUSED],
-          to: State.IDLE
+          from: [ImaState.IDLE, ImaState.PLAYING, ImaState.LOADED, ImaState.PAUSED],
+          to: ImaState.IDLE
         },
         {
           name: context.player.Event.AD_ERROR,
-          from: [State.IDLE, State.LOADED, State.PLAYING, State.PAUSED, State.LOADING],
-          to: State.IDLE
+          from: [ImaState.IDLE, ImaState.LOADED, ImaState.PLAYING, ImaState.PAUSED, ImaState.LOADING],
+          to: ImaState.IDLE
         },
         {
           name: context.player.Event.AD_LOADED,
-          from: [State.IDLE, State.LOADED, State.PLAYING]
+          from: [ImaState.IDLE, ImaState.LOADED, ImaState.PLAYING]
         },
         {
           name: context.player.Event.AD_FIRST_QUARTILE,
-          from: State.PLAYING
+          from: ImaState.PLAYING
         },
         {
           name: context.player.Event.AD_BREAK_START,
-          from: [State.IDLE, State.LOADED]
+          from: [ImaState.IDLE, ImaState.LOADED]
         },
         {
           name: context.player.Event.AD_MIDPOINT,
-          from: State.PLAYING
+          from: ImaState.PLAYING
         },
         {
           name: context.player.Event.AD_THIRD_QUARTILE,
-          from: State.PLAYING
+          from: ImaState.PLAYING
         },
         {
           name: context.player.Event.USER_CLOSED_AD,
-          from: [State.IDLE, State.PLAYING, State.PAUSED]
+          from: [ImaState.IDLE, ImaState.PLAYING, ImaState.PAUSED]
         },
         {
           name: context.player.Event.AD_VOLUME_CHANGED,
-          from: [State.PLAYING, State.PAUSED, State.LOADED]
+          from: [ImaState.PLAYING, ImaState.PAUSED, ImaState.LOADED]
         },
         {
           name: context.player.Event.AD_MUTED,
-          from: [State.PLAYING, State.PAUSED, State.LOADED]
+          from: [ImaState.PLAYING, ImaState.PAUSED, ImaState.LOADED]
         },
         {
           name: context.player.Event.AD_CLICKED,
-          from: [State.PLAYING, State.PAUSED, State.IDLE]
+          from: [ImaState.PLAYING, ImaState.PAUSED, ImaState.IDLE]
         },
         {
           name: context.player.Event.AD_CAN_SKIP,
-          from: [State.PLAYING, State.PAUSED]
+          from: [ImaState.PLAYING, ImaState.PAUSED]
         },
         {
           name: 'goto',
@@ -207,7 +207,7 @@ function onAdClicked(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
   if (this._currentAd.isLinear()) {
     this._maybeIgnoreClickOnAd();
-    if (this._stateMachine.is(State.PLAYING)) {
+    if (this._stateMachine.is(ImaState.PLAYING)) {
       this._adsManager.pause();
     }
     this._setToggleAdsCover(true);

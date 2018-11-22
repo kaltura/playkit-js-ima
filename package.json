@@ -1,34 +1,10 @@
 {
   "name": "@playkit-js/playkit-js-ima",
-  "version": "0.8.3",
-  "main": "dist/playkit-ima.js",
-  "scripts": {
-    "clean": "rm -rf ./dist",
-    "prebuild": "npm run clean",
-    "build": "NODE_ENV=production webpack",
-    "dev": "webpack-dev-server",
-    "watch": "webpack --progress --colors --watch",
-    "test": "NODE_ENV=test karma start --color",
-    "release": "standard-version",
-    "pushTaggedRelease": "git push --follow-tags --no-verify origin master",
-    "eslint": "eslint . --color",
-    "flow": "flow check",
-    "precommit": "lint-staged",
-    "docs:generate": "documentation build flow-typed/** src/** -f md",
-    "docs:serve": "documentation serve flow-typed/** src/** --watch"
-  },
-  "lint-staged": {
-    "*.{js,jsx}": ["eslint --fix", "git add"],
-    "*.{json,md,scss}": ["prettier --write", "git add"]
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "dependencies": {
-    "javascript-state-machine": "^3.0.1"
-  },
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "devDependencies": {
-    "@playkit-js/playkit-js": "^0.37.0",
     "babel-cli": "^6.18.0",
     "babel-core": "^6.18.2",
     "babel-eslint": "^7.1.1",
@@ -38,9 +14,6 @@
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-preset-es2015": "^6.18.0",
     "babel-register": "^6.23.0",
-    "chai": "^3.5.0",
-    "cross-env": "^3.1.4",
-    "css-loader": "^0.28.4",
     "documentation": "^8.1.2",
     "eslint": "^3.10.0",
     "eslint-config-prettier": "^2.9.0",
@@ -50,46 +23,28 @@
     "eslint-plugin-mocha-no-only": "^0.0.5",
     "eslint-plugin-prettier": "^2.6.0",
     "flow-bin": "latest",
-    "husky": "0.14.3",
-    "istanbul": "^0.4.5",
-    "karma": "^1.5.0",
-    "karma-chai": "^0.1.0",
-    "karma-chrome-launcher": "^2.0.0",
-    "karma-cli": "^1.0.1",
-    "karma-coverage": "^1.1.1",
-    "karma-firefox-launcher": "^1.0.1",
-    "karma-ie-launcher": "^1.0.0",
-    "karma-mocha": "^1.3.0",
-    "karma-mocha-reporter": "^2.2.5",
-    "karma-safari-launcher": "^1.0.0",
-    "karma-sourcemap-loader": "^0.3.7",
-    "karma-webpack": "^2.0.2",
-    "lint-staged": "7.0.5",
-    "mocha": "^3.2.0",
-    "mocha-cli": "^1.0.1",
-    "prettier": "^1.12.1",
-    "sinon": "^2.0.0",
-    "sinon-chai": "^2.8.0",
-    "standard-version": "^4.0.0",
-    "style-loader": "^0.18.2",
-    "uglifyjs-webpack-plugin": "^0.4.3",
-    "webpack": "latest",
-    "webpack-dev-server": "latest"
-  },
-  "peerDependencies": {
-    "@playkit-js/playkit-js": "^0.37.0"
+    "prettier": "^1.12.1"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/kaltura/playkit-js-ima"
   },
-  "keywords": ["ad", "vast", "vmap", "ima", "ads", "monetization", "kaltura", "player", "playkit-js", "playkit-js-ima", "html5 player"],
+  "keywords": [
+    "ad",
+    "vast",
+    "vmap",
+    "ima",
+    "ads",
+    "monetization",
+    "kaltura",
+    "player",
+    "playkit-js",
+    "playkit-js-ima",
+    "html5 player"
+  ],
   "license": "AGPL-3.0",
   "bugs": {
     "url": "https://github.com/kaltura/playkit-js-ima/issues"
   },
-  "homepage": "https://github.com/kaltura/playkit-js-ima",
-  "kcc": {
-    "name": "playkit-ima"
-  }
+  "homepage": "https://github.com/kaltura/playkit-js-ima"
 }

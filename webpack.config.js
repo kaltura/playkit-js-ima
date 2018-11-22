@@ -16,75 +16,77 @@ if (PROD) {
   plugins.push(new webpack.optimize.UglifyJsPlugin({sourceMap: true}));
 }
 
-module.exports = {
-  context: __dirname + '/src',
-  entry: {'playkit-ima': 'index.js'},
-  output: {
-    path: __dirname + '/dist',
-    filename: '[name].js',
-    library: ['KalturaPlayer', 'plugins', 'ima'],
-    libraryTarget: 'umd',
-    devtoolModuleFilenameTemplate: './ima/[resource-path]'
-  },
-  devtool: 'source-map',
-  plugins: plugins,
-  module: {
-    loaders: [
-      {
-        test: /\.css$/,
-        loader: 'style-loader!css-loader'
-      }
-    ],
-    rules: [
-      {
-        test: /\.js$/,
-        use: [
-          {
-            loader: 'babel-loader'
-          }
-        ],
-        exclude: [/node_modules/]
-      },
-      {
-        test: /\.js$/,
-        exclude: [/node_modules/],
-        enforce: 'pre',
-        use: [
-          {
-            loader: 'eslint-loader',
-            options: {
-              rules: {
-                semi: 0
+module.exports = function(entryName, libraryName, dirPath) {
+  return {
+    context: __dirname + dirPath + '/src',
+    entry: {[entryName]: __dirname + dirPath + '/index.js'},
+    output: {
+      path: __dirname + dirPath + '/dist',
+      filename: '[name].js',
+      library: ['KalturaPlayer', 'plugins', libraryName],
+      libraryTarget: 'umd',
+      devtoolModuleFilenameTemplate: './' + libraryName + '/[resource-path]'
+    },
+    devtool: 'source-map',
+    plugins: plugins,
+    module: {
+      loaders: [
+        {
+          test: /\.css$/,
+          loader: 'style-loader!css-loader'
+        }
+      ],
+      rules: [
+        {
+          test: /\.js$/,
+          use: [
+            {
+              loader: 'babel-loader'
+            }
+          ],
+          exclude: [/node_modules/]
+        },
+        {
+          test: /\.js$/,
+          exclude: [/node_modules/],
+          enforce: 'pre',
+          use: [
+            {
+              loader: 'eslint-loader',
+              options: {
+                rules: {
+                  semi: 0
+                }
               }
             }
-          }
-        ]
-      },
-      {
-        test: /\.css$/,
-        use: [
-          {
-            loader: 'style-loader'
-          },
-          {
-            loader: 'css-loader'
-          }
-        ]
+          ]
+        },
+        {
+          test: /\.css$/,
+          use: [
+            {
+              loader: 'style-loader'
+            },
+            {
+              loader: 'css-loader'
+            }
+          ]
+        }
+      ]
+    },
+    devServer: {
+      contentBase: __dirname + dirPath + '/src'
+    },
+    resolve: {
+      modules: [path.resolve(__dirname, dirPath + '/src'), 'node_modules']
+    },
+    externals: {
+      '@playkit-js/playkit-js': {
+        commonjs: '@playkit-js/playkit-js',
+        commonjs2: '@playkit-js/playkit-js',
+        amd: 'playkit-js',
+        root: ['KalturaPlayer', 'core']
       }
-    ]
-  },
-  devServer: {
-    contentBase: __dirname + '/src'
-  },
-  resolve: {
-    modules: [path.resolve(__dirname, 'src'), 'node_modules']
-  },
-  externals: {
-    '@playkit-js/playkit-js': {
-      commonjs: '@playkit-js/playkit-js',
-      commonjs2: '@playkit-js/playkit-js',
-      amd: 'playkit-js',
-      root: ['KalturaPlayer', 'core']
     }
-  }
+  };
 };

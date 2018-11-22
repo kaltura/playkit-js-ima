@@ -2,7 +2,7 @@
 .DS_Store
  # Logs
 logs
-*.log
+/yarn-error.log
 npm-debug.log*
  # Runtime data
 pids
@@ -43,7 +43,7 @@ test/
 .editorconfig
 .eslintignore
 .eslintrc.json
-.flowconfig
+../../.flowconfig
 .nmprc
 webpack.config.js
 karma.conf.js

@@ -71,7 +71,7 @@ player.play();
 
 ## Documentation
 
-* **[Configuration & API](docs/configuration-api.md)**
+* **[Configuration & API](docs/api.md)**
 * **[Guides](docs/guides.md)**
 
 ## Running the tests
@@ -96,9 +96,9 @@ yarn run test:safari
 
 We use ESLint [recommended set](http://eslint.org/docs/rules/) with some additions for enforcing [Flow] types and other rules.
 
-See [ESLint config](.eslintrc.json) for full configuration.
+See [ESLint config](../../.eslintrc.json) for full configuration.
 
-We also use [.editorconfig](.editorconfig) to maintain consistent coding styles and settings, please make sure you comply with the styling.
+We also use [.editorconfig](../../.editorconfig) to maintain consistent coding styles and settings, please make sure you comply with the styling.
 
 ## Compatibility
 

@@ -1,15 +1,20 @@
 // @flow
 import {BasePlugin, Utils} from '@playkit-js/playkit-js';
+import '../assets/style.css';
 
 const ADS_CONTAINER_CLASS: string = 'playkit-ads-container';
 const ADS_COVER_CLASS: string = 'playkit-ads-cover';
 
-class ImaGeneric extends BasePlugin {
+class ImaBase extends BasePlugin {
   loadPromise: DeferredPromise;
   _sdk: any;
   _adsContainerDiv: HTMLElement;
   _adsCoverDiv: HTMLElement;
   _isAdsCoverActive: boolean;
+
+  static isValid() {
+    return true;
+  }
 
   constructor(name: string, player: Player, config: Object) {
     super(name, player, config);
@@ -18,25 +23,20 @@ class ImaGeneric extends BasePlugin {
   _loadImaLib(): Promise<*> {
     return (this._isImaLibLoaded()
       ? Promise.resolve()
-      : Utils.Dom.loadScriptAsync(this.config.debug ? this.constructor.IMA_DEBUG_LIB_URL : this.constructor.IMA_LIB_URL)
-    ).then(() => {
-      this._sdk = window.google.ima;
-    });
+      : Utils.Dom.loadScriptAsync(this.config.debug ? this.constructor.DEBUG_LIB_URL : this.constructor.LIB_URL)
+    ).then(() => (this._sdk = window.google.ima));
   }
 
   _initAdsContainer(): void {
     this.logger.debug('Init ads container');
     const playerView = this.player.getView();
-    // Create ads container
     this._adsContainerDiv = Utils.Dom.createElement('div');
     this._adsContainerDiv.id = ADS_CONTAINER_CLASS + playerView.id;
     this._adsContainerDiv.className = ADS_CONTAINER_CLASS;
-    // Create ads cover
     this._adsCoverDiv = Utils.Dom.createElement('div');
     this._adsCoverDiv.id = ADS_COVER_CLASS + playerView.id;
     this._adsCoverDiv.className = ADS_COVER_CLASS;
-    this._adsCoverDiv.onclick = () => this._onAdsCoverClicked();
-    // Append the ads container to the dom
+    this._adsCoverDiv.onclick = e => this._onAdsCoverClicked(e);
     Utils.Dom.appendChild(playerView, this._adsContainerDiv);
   }
 
@@ -69,4 +69,4 @@ class ImaGeneric extends BasePlugin {
   }
 }
 
-export {ImaGeneric};
+export {ImaBase};

@@ -7,8 +7,8 @@
 
 /**
  * @typedef {Object} CompanionsConfigObject
- * @property {Object} ads - Companion ads. Represented as a key-value object where the key is the ad id ({@link string}) and the value is the companion ad object ({@link #companionadobject|CompanionAdObject}).
- * @property {google.ima.CompanionAdSelectionSettings.SizeCriteria} [sizeCriteria] - Available choices for size selection criteria. The user can specify any of these choices for selecting companion ads.
+ * @param {Object} ads - Companion ads. Represented as a key-value object where the key is the ad id ({@link string}) and the value is the companion ad object ({@link #companionadobject|CompanionAdObject}).
+ * @param {google.ima.CompanionAdSelectionSettings.SizeCriteria} [sizeCriteria="SELECT_EXACT_MATCH"] - Available choices for size selection criteria. The user can specify any of these choices for selecting companion ads.
  * @example
  * {
  *   sizeCriteria: 'SELECT_EXACT_MATCH',
@@ -31,8 +31,8 @@ type _CompanionsConfigObject = {
 
 /**
  * @typedef {Object} CompanionAdObject
- * @property {number} width - Width of the companion ad.
- * @property {number} height - Height of the companion ad.
+ * @param {number} width - Width of the companion ad.
+ * @param {number} height - Height of the companion ad.
  */
 type _CompanionAdObject = {
   width: number,

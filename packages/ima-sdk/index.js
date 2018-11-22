@@ -1,6 +1,6 @@
 // @flow
 import {registerPlugin} from '@playkit-js/playkit-js';
-import {Ima} from './ima';
+import {Ima} from './src/ima';
 
 declare var __VERSION__: string;
 declare var __NAME__: string;

@@ -1,7 +1,7 @@
 import {loadPlayerWithAds} from './helpers';
 import * as TestUtils from './utils/test-utils';
 // eslint-disable-next-line no-unused-vars
-import {Ima} from '../../src';
+import {Ima} from '../../index';
 
 const targetId = 'player-placeholder_ima.api.spec';
 

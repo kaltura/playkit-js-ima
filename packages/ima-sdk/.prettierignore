@@ -1,7 +1,6 @@
 /dist
 /src/index.html
-CHANGELOG.md
+/CHANGELOG.md
 yarn.lock
 yarn-error.log
-LICENSE
 /samples

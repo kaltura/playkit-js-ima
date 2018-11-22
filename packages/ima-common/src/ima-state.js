@@ -4,7 +4,7 @@
  * The ima plugin possible states.
  * @type {Object}
  */
-const State: {[state: string]: string} = {
+const ImaState: {[state: string]: string} = {
   LOADING: 'loading',
   LOADED: 'loaded',
   PLAYING: 'playing',
@@ -13,4 +13,4 @@ const State: {[state: string]: string} = {
   DONE: 'done'
 };
 
-export {State};
+export {ImaState};

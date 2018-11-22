@@ -2,10 +2,10 @@
 import {ImaMiddleware} from './ima-middleware';
 import {ImaAdsController} from './ima-ads-controller';
 import {ImaStateMachine} from './ima-state-machine';
-import {State} from './state';
+import {ImaState} from '../../ima-common/src/ima-state';
 import {BaseMiddleware, EngineType, Error, getCapabilities, Utils} from '@playkit-js/playkit-js';
-import './assets/style.css';
-import {ImaGeneric} from './ima-generic';
+import {ImaBase} from '../../ima-common/index';
+import libs from './libs';
 
 /**
  * The full screen events..
@@ -24,16 +24,18 @@ const FULL_SCREEN_EVENTS: Array<string> = ['fullscreenchange', 'mozfullscreencha
 const OVERLAY_AD_MARGIN: number = 8;
 
 /**
- * The ima plugin.
+ * The IMA SDK plugin.
  * @class Ima
  * @param {string} name - The plugin name.
  * @param {Player} player - The player instance.
  * @param {ImaConfigObject} config - The plugin config.
  * @implements {IMiddlewareProvider}
  * @implements {IAdsControllerProvider}
- * @extends ImaGeneric
+ * @extends ImaBase
  */
-class Ima extends ImaGeneric implements IMiddlewareProvider, IAdsControllerProvider {
+class Ima extends ImaBase implements IMiddlewareProvider, IAdsControllerProvider {
+  static LIB_URL: string = libs.url;
+  static DEBUG_LIB_URL: string = libs.debugUrl;
   /**
    * The default configuration of the plugin.
    * @type {Object}
@@ -57,23 +59,6 @@ class Ima extends ImaGeneric implements IMiddlewareProvider, IAdsControllerProvi
       sizeCriteria: 'SELECT_EXACT_MATCH'
     }
   };
-
-  /**
-   * The sdk lib url.
-   * @type {string}
-   * @static
-   * @private
-   * @memberof Ima
-   */
-  static IMA_LIB_URL: string = '//imasdk.googleapis.com/js/sdkloader/ima3.js';
-  /**
-   * The debug sdk lib url.
-   * @type {string}
-   * @static
-   * @private
-   * @memberof Ima
-   */
-  static IMA_DEBUG_LIB_URL: string = '//imasdk.googleapis.com/js/sdkloader/ima3_debug.js';
   /**
    * The finite state machine of the plugin.
    * @member
@@ -172,17 +157,6 @@ class Ima extends ImaGeneric implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _togglePlayPauseOnAdsContainerCallback: ?Function;
-
-  /**
-   * Whether the ima plugin is valid.
-   * @static
-   * @override
-   * @public
-   * @memberof Ima
-   */
-  static isValid() {
-    return true;
-  }
 
   constructor(name: string, player: Player, config: Object) {
     super(name, player, config);
@@ -303,7 +277,7 @@ class Ima extends ImaGeneric implements IMiddlewareProvider, IAdsControllerProvi
     if (this._adsLoader && !this._contentComplete) {
       this._adsLoader.contentComplete();
     }
-    this._stateMachine.goto(State.DONE);
+    this._stateMachine.goto(ImaState.DONE);
     this._initMembers();
     this._addBindings();
   }
@@ -839,7 +813,7 @@ class Ima extends ImaGeneric implements IMiddlewareProvider, IAdsControllerProvi
   _startAdInterval(): void {
     this._stopAdInterval();
     this._intervalTimer = setInterval(() => {
-      if (this._stateMachine.is(State.PLAYING)) {
+      if (this._stateMachine.is(ImaState.PLAYING)) {
         let remainingTime = this._adsManager.getRemainingTime();
         let duration = this._currentAd.getDuration();
         let currentTime = duration - remainingTime;
@@ -893,10 +867,10 @@ class Ima extends ImaGeneric implements IMiddlewareProvider, IAdsControllerProvi
   _onAdsCoverClicked(): void {
     if (this._adsManager) {
       switch (this._stateMachine.state) {
-        case State.PAUSED:
+        case ImaState.PAUSED:
           this._adsManager.resume();
           break;
-        case State.PLAYING:
+        case ImaState.PLAYING:
           this._adsManager.pause();
           break;
         default:

@@ -1,7 +1,7 @@
 // @flow
 import {BaseMiddleware} from '@playkit-js/playkit-js';
 import {Ima} from './ima';
-import {State} from './state';
+import {ImaState} from '../../ima-common/src/ima-state';
 
 /**
  * Middleware implementation for ima plugin.
@@ -52,9 +52,9 @@ class ImaMiddleware extends BaseMiddleware {
       .then(() => {
         let sm = this._context.getStateMachine();
         switch (sm.state) {
-          case State.PLAYING:
+          case ImaState.PLAYING:
             break;
-          case State.LOADED: {
+          case ImaState.LOADED: {
             const initialUserAction = this._context.initialUserAction();
             if (initialUserAction) {
               return initialUserAction.then(() => {
@@ -65,7 +65,7 @@ class ImaMiddleware extends BaseMiddleware {
             }
             break;
           }
-          case State.PAUSED: {
+          case ImaState.PAUSED: {
             const resumeAd = this._context.resumeAd();
             if (resumeAd) {
               return resumeAd.then(() => {
@@ -98,9 +98,9 @@ class ImaMiddleware extends BaseMiddleware {
   pause(next: Function): void {
     let sm = this._context.getStateMachine();
     switch (sm.state) {
-      case State.PAUSED:
+      case ImaState.PAUSED:
         break;
-      case State.PLAYING: {
+      case ImaState.PLAYING: {
         this._context.pauseAd();
         break;
       }

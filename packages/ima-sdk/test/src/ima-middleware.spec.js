@@ -1,5 +1,5 @@
 import {ImaMiddleware} from '../../src/ima-middleware';
-import {State} from '../../src/state';
+import {ImaState} from '../../../ima-common/src/ima-state';
 
 describe('Ima Middleware', function() {
   let sandbox;
@@ -51,7 +51,7 @@ describe('Ima Middleware', function() {
 
     it('should initialUserAction', function(done) {
       let spy = sandbox.spy(fakeContext, 'initialUserAction');
-      fakeContext.setCurrentState(State.LOADED);
+      fakeContext.setCurrentState(ImaState.LOADED);
       imaMiddleware = new ImaMiddleware(fakeContext);
       imaMiddleware.play(function() {
         spy.should.have.been.calledOnce;
@@ -61,7 +61,7 @@ describe('Ima Middleware', function() {
 
     it('should destory adsManager and resume playback in case of error', function(done) {
       let spy = sandbox.spy(fakeContext, 'destroy');
-      fakeContext.setCurrentState(State.LOADED);
+      fakeContext.setCurrentState(ImaState.LOADED);
       fakeContext.initialUserAction = Promise.reject();
       imaMiddleware = new ImaMiddleware(fakeContext);
       imaMiddleware.play(function() {
@@ -73,7 +73,7 @@ describe('Ima Middleware', function() {
 
     it('should resumeAd', function(done) {
       let spy = sandbox.spy(fakeContext, 'resumeAd');
-      fakeContext.setCurrentState(State.PAUSED);
+      fakeContext.setCurrentState(ImaState.PAUSED);
       imaMiddleware = new ImaMiddleware(fakeContext);
       imaMiddleware.play(function() {
         spy.should.have.been.calledOnce;
@@ -114,7 +114,7 @@ describe('Ima Middleware', function() {
 
     it('should pauseAd', function() {
       let spy = sandbox.spy(fakeContext, 'pauseAd');
-      fakeContext.setCurrentState(State.PLAYING);
+      fakeContext.setCurrentState(ImaState.PLAYING);
       imaMiddleware = new ImaMiddleware(fakeContext);
       imaMiddleware.pause();
       spy.should.have.been.calledOnce;
