@@ -104,7 +104,7 @@ class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_CAN_SKIP,
-          from: [State.PLAYING, State.PAUSED]
+          from: [State.PLAYING, State.PAUSED, State.LOADED]
         },
         {
           name: 'goto',
