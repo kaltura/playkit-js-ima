@@ -561,7 +561,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._sdk.settings.setPlayerType(this.config.playerName);
     this._sdk.settings.setPlayerVersion(this.config.playerVersion);
     this._sdk.settings.setVpaidAllowed(true);
-    this._setVpaid();
+    this._sdk.settings.setVpaidMode(this._setVpaid());
     if (typeof this.config.setDisableCustomPlaybackForIOS10Plus === 'boolean') {
       this._sdk.settings.setDisableCustomPlaybackForIOS10Plus(this.config.setDisableCustomPlaybackForIOS10Plus);
     } else {
@@ -577,18 +577,17 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _setVpaid(): void {
-    let value;
-    if (this.config.vpaidMode === 'ENABLED') {
-      value = this._sdk.ImaSdkSettings.VpaidMode.ENABLED;
-    } else if (this.config.vpaidMode === 'INSECURE') {
-      // value = something else
-      value = this._sdk.ImaSdkSettings.VpaidMode.INSECURE;
-    } else if (this.config.vpaidMode === 'DISABLED') {
-      value = this._sdk.ImaSdkSettings.VpaidMode.DISABLED;
+    switch (this.config.vpaidMode) {
+      case 'ENABLED':
+        return this._sdk.ImaSdkSettings.VpaidMode.ENABLED;
+      case 'INSECURE':
+        return this._sdk.ImaSdkSettings.VpaidMode.INSECURE;
+      case 'DISABLED':
+        return this._sdk.ImaSdkSettings.VpaidMode.DISABLED;
+      default:
+        return this._sdk.ImaSdkSettings.VpaidMode.ENABLED;
     }
-    this._sdk.settings.setVpaidMode(value);
   }
-
   /**
    * Initializing the ad container.
    * @private
