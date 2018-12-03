@@ -8,8 +8,8 @@
     "clean": "rm -rf ./dist",
     "precommit": "lint-staged",
     "dev": "webpack-dev-server",
-    "docs:generate": "documentation build flow-typed/** src/** -f md -o docs/api.md",
-    "docs:serve": "documentation serve flow-typed/** src/** --watch",
+    "docs:generate": "documentation build ../../flow-typed/** src/** -f md -o docs/api.md",
+    "docs:serve": "documentation serve ../../flow-typed/** src/** --watch",
     "eslint": "eslint . --color",
     "flow": "flow check",
     "pushTaggedRelease": "git push --follow-tags --no-verify origin master",
@@ -21,7 +21,6 @@
     "javascript-state-machine": "^3.0.1"
   },
   "devDependencies": {
-    "@playkit-js/playkit-js": "^0.37.0",
     "babel-cli": "^6.18.0",
     "eslint": "^3.10.0",
     "flow-bin": "latest",

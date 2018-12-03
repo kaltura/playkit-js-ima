@@ -1,6 +1,5 @@
 // @flow
 import StateMachine from 'javascript-state-machine';
-import StateMachineHistory from 'javascript-state-machine/lib/history';
 import {ImaState} from '../../ima-common/src/ima-state';
 import {Ad, AdBreak, AdBreakType, Error, Utils} from '@playkit-js/playkit-js';
 
@@ -133,8 +132,7 @@ class ImaStateMachine {
         onAdmuted: onAdEvent.bind(context),
         onEnterState: onEnterState.bind(context),
         onPendingTransition: onPendingTransition.bind(context)
-      },
-      plugins: [new StateMachineHistory()]
+      }
     });
   }
 }
