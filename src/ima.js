@@ -561,12 +561,32 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._sdk.settings.setPlayerType(this.config.playerName);
     this._sdk.settings.setPlayerVersion(this.config.playerVersion);
     this._sdk.settings.setVpaidAllowed(true);
-    this._sdk.settings.setVpaidMode(this._sdk.ImaSdkSettings.VpaidMode.ENABLED);
+    this._setVpaid();
     if (typeof this.config.setDisableCustomPlaybackForIOS10Plus === 'boolean') {
       this._sdk.settings.setDisableCustomPlaybackForIOS10Plus(this.config.setDisableCustomPlaybackForIOS10Plus);
     } else {
       this._sdk.settings.setDisableCustomPlaybackForIOS10Plus(this.player.config.playback.playsinline);
     }
+  }
+
+  /**
+   * Initializing the VpaidMode.
+   * @private
+   * @returns {void}
+   * @instance
+   * @memberof Ima
+   */
+  _setVpaid(): void {
+    let value;
+    if (this.config.vpaidMode === 'ENABLED') {
+      value = this._sdk.ImaSdkSettings.VpaidMode.ENABLED;
+    } else if (this.config.vpaidMode === 'INSECURE') {
+      // value = something else
+      value = this._sdk.ImaSdkSettings.VpaidMode.INSECURE;
+    } else if (this.config.vpaidMode === 'DISABLED') {
+      value = this._sdk.ImaSdkSettings.VpaidMode.DISABLED;
+    }
+    this._sdk.settings.setVpaidMode(value);
   }
 
   /**
