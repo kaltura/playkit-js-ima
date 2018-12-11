@@ -4,6 +4,7 @@ import {ImaAdsController} from './ima-ads-controller';
 import {ImaStateMachine} from './ima-state-machine';
 import {State} from './state';
 import {BaseMiddleware, BasePlugin, EngineType, Error, getCapabilities, Utils} from '@playkit-js/playkit-js';
+import {VpaidMode} from './vpaidmode';
 import './assets/style.css';
 
 /**
@@ -578,11 +579,11 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   _getVpaidMode(): string {
     switch (this.config.vpaidMode) {
-      case 'ENABLED':
+      case VpaidMode.ENABLED:
         return this._sdk.ImaSdkSettings.VpaidMode.ENABLED;
-      case 'INSECURE':
+      case VpaidMode.INSECURE:
         return this._sdk.ImaSdkSettings.VpaidMode.INSECURE;
-      case 'DISABLED':
+      case VpaidMode.DISABLED:
         return this._sdk.ImaSdkSettings.VpaidMode.DISABLED;
       default:
         return this._sdk.ImaSdkSettings.VpaidMode.ENABLED;
