@@ -4,6 +4,7 @@ import {ImaAdsController} from './ima-ads-controller';
 import {ImaStateMachine} from './ima-state-machine';
 import {State} from './state';
 import {BaseMiddleware, BasePlugin, EngineType, Error, getCapabilities, Utils} from '@playkit-js/playkit-js';
+import {VpaidMode} from './vpaidmode';
 import './assets/style.css';
 
 /**
@@ -561,7 +562,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._sdk.settings.setPlayerType(this.config.playerName);
     this._sdk.settings.setPlayerVersion(this.config.playerVersion);
     this._sdk.settings.setVpaidAllowed(true);
-    this._sdk.settings.setVpaidMode(this._sdk.ImaSdkSettings.VpaidMode.ENABLED);
+    this._sdk.settings.setVpaidMode(this._getVpaidMode());
     if (typeof this.config.setDisableCustomPlaybackForIOS10Plus === 'boolean') {
       this._sdk.settings.setDisableCustomPlaybackForIOS10Plus(this.config.setDisableCustomPlaybackForIOS10Plus);
     } else {
@@ -569,6 +570,25 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     }
   }
 
+  /**
+   * Initializing the VpaidMode.
+   * @private
+   * @returns {string} - The VPAIDMode type
+   * @instance
+   * @memberof Ima
+   */
+  _getVpaidMode(): string {
+    switch (this.config.vpaidMode) {
+      case VpaidMode.ENABLED:
+        return this._sdk.ImaSdkSettings.VpaidMode.ENABLED;
+      case VpaidMode.INSECURE:
+        return this._sdk.ImaSdkSettings.VpaidMode.INSECURE;
+      case VpaidMode.DISABLED:
+        return this._sdk.ImaSdkSettings.VpaidMode.DISABLED;
+      default:
+        return this._sdk.ImaSdkSettings.VpaidMode.ENABLED;
+    }
+  }
   /**
    * Initializing the ad container.
    * @private
