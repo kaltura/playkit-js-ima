@@ -45,7 +45,7 @@ If you require to alter the VpaidMode, simply change the value of the IMA player
 >
 > ##### Description: Alters the VpaidMode.
 
-###Values
+### Values
 
 > * `ENABLED` VPAID ads are enabled using a cross domain iframe. The VPAID ad cannot access the site. VPAID ads that depend on friendly iframe access may error. This is the default.
 >
