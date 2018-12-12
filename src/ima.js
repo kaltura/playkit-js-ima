@@ -452,6 +452,11 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     });
     this.eventManager.listenOnce(this.player, this.player.Event.CHANGE_SOURCE_STARTED, () => {
       this.loadPromise.then(() => {
+        //TODO: need to implement loadMedia life cycle hook and not call destroy on media error which destroys the adsLoader
+        //re-init ads loader in case it was destroyed
+        if (!this._adsLoader) {
+          this._initAdsLoader();
+        }
         this._requestAds();
       });
     });
