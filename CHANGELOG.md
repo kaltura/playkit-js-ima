@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.8.4"></a>
+## [0.8.4](https://github.com/kaltura/playkit-js-ima/compare/v0.8.3...v0.8.4) (2018-12-12)
+
+
+### Bug Fixes
+
+* add LOADED transition to AD_CAN_SKIP event ([#78](https://github.com/kaltura/playkit-js-ima/issues/78)) ([1c30795](https://github.com/kaltura/playkit-js-ima/commit/1c30795))
+* **FEC-8740:** there is no option to set vpaid mode ([#80](https://github.com/kaltura/playkit-js-ima/issues/80)) ([45c94fc](https://github.com/kaltura/playkit-js-ima/commit/45c94fc))
+
+
+
 <a name="0.8.3"></a>
 ## [0.8.3](https://github.com/kaltura/playkit-js-ima/compare/v0.8.2...v0.8.3) (2018-11-05)
 
