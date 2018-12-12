@@ -35,11 +35,11 @@ player.configure({
 
 # Handling VPAID Modes
 
-If you require to alter the VpaidMode, simply change the value of the IMA player configuration 'ima.vpaidMode' accordingly.
+If you require to alter the VpaidMode, simply change the value of the IMA player configuration `ima.vpaidMode` accordingly.
 
 ### ima.vpaidMode
 
-> ##### Type: `String`
+> ##### Type: `string`
 >
 > ##### Default: `"ENABLED"`
 >
