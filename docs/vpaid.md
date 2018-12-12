@@ -41,7 +41,7 @@ If you require to alter the VpaidMode, simply change the value of the IMA player
 
 > ##### Type: `String`
 >
-> ##### Default: `ENABLED`
+> ##### Default: `"ENABLED"`
 >
 > ##### Description: Alters the VpaidMode.
 
@@ -60,7 +60,7 @@ const player = KalturaPlayer.setup({
   plugins: {
     ima: {
       ...
-       vpaidMode: 'ENABLED'
+      vpaidMode: 'ENABLED'
       ...
     }
   }
