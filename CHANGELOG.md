@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.8.5"></a>
+## [0.8.5](https://github.com/kaltura/playkit-js-ima/compare/v0.8.4...v0.8.5) (2018-12-12)
+
+
+### Bug Fixes
+
+* **FEC-8762:** subsequent media change after ad load fail are stuck ([#82](https://github.com/kaltura/playkit-js-ima/issues/82)) ([b73823c](https://github.com/kaltura/playkit-js-ima/commit/b73823c))
+
+
+
 <a name="0.8.4"></a>
 ## [0.8.4](https://github.com/kaltura/playkit-js-ima/compare/v0.8.3...v0.8.4) (2018-12-12)
 
