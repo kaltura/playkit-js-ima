@@ -71,7 +71,7 @@ player.play();
 
 ## Documentation
 
-* **[Configuration & API](docs/configuration-api.md)**
+* **[Configuration & API](docs/api.md)**
 * **[Guides](docs/guides.md)**
 
 ## Running the tests

@@ -35,23 +35,23 @@ player.configure({
 
 # Handling VPAID Modes
 
-If you require to alter the VpaidMode, simply change the value of the IMA player configuration 'ima.vpaidMode' accordingly.
+If you require to alter the VpaidMode, simply change the value of the IMA player configuration `ima.vpaidMode` accordingly.
 
 ### ima.vpaidMode
 
-> ##### Type: `String`
+> ##### Type: `string`
 >
-> ##### Default: `ENABLED`
+> ##### Default: `"ENABLED"`
 >
 > ##### Description: Alters the VpaidMode.
 
 ### Values
 
-> * `ENABLED` VPAID ads are enabled using a cross domain iframe. The VPAID ad cannot access the site. VPAID ads that depend on friendly iframe access may error. This is the default.
+> * `"ENABLED"` VPAID ads are enabled using a cross domain iframe. The VPAID ad cannot access the site. VPAID ads that depend on friendly iframe access may error. This is the default.
 >
-> * `DISABLED` VPAID ads will not play and an error will be returned.
+> * `"DISABLED"` VPAID ads will not play and an error will be returned.
 >
-> * `INSECURE` VPAID ads are enabled using a friendly iframe. This allows the ad access to the site via JavaScript.
+> * `"INSECURE"` VPAID ads are enabled using a friendly iframe. This allows the ad access to the site via JavaScript.
 
 **Configure on player setup**
 
@@ -60,7 +60,7 @@ const player = KalturaPlayer.setup({
   plugins: {
     ima: {
       ...
-       vpaidMode: 'ENABLED'
+      vpaidMode: 'ENABLED'
       ...
     }
   }
