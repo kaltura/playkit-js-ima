@@ -321,11 +321,11 @@ function onAdError(options: Object, adEvent: any): void {
   if (adEvent.type === 'adError') {
     this.logger.debug(adEvent.type.toUpperCase());
     let adError = adEvent.getError();
-    if (this.loadPromise) {
-      this.loadPromise.reject(adError);
-    }
+    //if this is autoplay or user already requested play then next promise will handle reset
     if (this._nextPromise) {
       this._nextPromise.reject(adError);
+    } else {
+      this.reset();
     }
     this.dispatchEvent(options.transition, getAdError(adError, true));
   } else {
