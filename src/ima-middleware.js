@@ -83,7 +83,7 @@ class ImaMiddleware extends BaseMiddleware {
         }
       })
       .catch(e => {
-        this._context.destroy();
+        this._context.reset();
         this._context.logger.error(e);
         this.callNext(next);
       });

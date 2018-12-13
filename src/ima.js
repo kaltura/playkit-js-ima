@@ -380,7 +380,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       this._adsLoader.contentComplete();
     }
     this._adsLoader = null;
-    this._initMembers();
   }
 
   /**
@@ -406,7 +405,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       }
     } catch (adError) {
       this.logger.error(adError);
-      this.destroy();
+      this.reset();
     }
     return this._nextPromise;
   }
@@ -435,28 +434,23 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _addBindings(): void {
-    FULL_SCREEN_EVENTS.forEach(fullScreenEvent => this.eventManager.listen(document, fullScreenEvent, () => this._resizeAd()));
-    this.eventManager.listen(window, 'resize', () => this._resizeAd());
-    this.eventManager.listen(this.player, this.player.Event.MUTE_CHANGE, () => this._syncPlayerVolume());
-    this.eventManager.listen(this.player, this.player.Event.VOLUME_CHANGE, () => this._syncPlayerVolume());
-    this.eventManager.listen(this.player, this.player.Event.SOURCE_SELECTED, event => {
-      let selectedSource = event.payload.selectedSource;
-      if (selectedSource && selectedSource.length > 0) {
-        this._contentSrc = selectedSource[0].url;
-      }
-    });
-    this.eventManager.listen(this.player, this.player.Event.ERROR, event => {
-      if (event.payload && event.payload.severity === Error.Severity.CRITICAL) {
-        this.reset();
-      }
-    });
     this.eventManager.listenOnce(this.player, this.player.Event.CHANGE_SOURCE_STARTED, () => {
-      this.loadPromise.then(() => {
-        //TODO: need to implement loadMedia life cycle hook and not call destroy on media error which destroys the adsLoader
-        //re-init ads loader in case it was destroyed
-        if (!this._adsLoader) {
-          this._initAdsLoader();
+      FULL_SCREEN_EVENTS.forEach(fullScreenEvent => this.eventManager.listen(document, fullScreenEvent, () => this._resizeAd()));
+      this.eventManager.listen(window, 'resize', () => this._resizeAd());
+      this.eventManager.listen(this.player, this.player.Event.MUTE_CHANGE, () => this._syncPlayerVolume());
+      this.eventManager.listen(this.player, this.player.Event.VOLUME_CHANGE, () => this._syncPlayerVolume());
+      this.eventManager.listen(this.player, this.player.Event.SOURCE_SELECTED, event => {
+        let selectedSource = event.payload.selectedSource;
+        if (selectedSource && selectedSource.length > 0) {
+          this._contentSrc = selectedSource[0].url;
         }
+      });
+      this.eventManager.listen(this.player, this.player.Event.ERROR, event => {
+        if (event.payload && event.payload.severity === Error.Severity.CRITICAL) {
+          this.reset();
+        }
+      });
+      this.loadPromise.then(() => {
         this._requestAds();
       });
     });
@@ -845,7 +839,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._adsLoader.contentComplete();
     this._contentComplete = true;
     if (this._currentAd && !this._currentAd.isLinear()) {
-      this.destroy();
+      this.reset();
     }
   }
 
