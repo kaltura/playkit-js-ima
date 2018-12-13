@@ -31,7 +31,7 @@ describe('Ima Middleware', function() {
     pauseAd: function() {
       return Promise.resolve();
     },
-    destroy: function() {},
+    reset: function() {},
     logger: {
       error: function() {},
       debug: function() {}
@@ -60,7 +60,7 @@ describe('Ima Middleware', function() {
     });
 
     it('should destory adsManager and resume playback in case of error', function(done) {
-      let spy = sandbox.spy(fakeContext, 'destroy');
+      let spy = sandbox.spy(fakeContext, 'reset');
       fakeContext.setCurrentState(State.LOADED);
       fakeContext.initialUserAction = Promise.reject();
       imaMiddleware = new ImaMiddleware(fakeContext);
@@ -88,8 +88,8 @@ describe('Ima Middleware', function() {
       });
     });
 
-    it('should destroy', function(done) {
-      let spy1 = sandbox.spy(fakeContext, 'destroy');
+    it('should reset', function(done) {
+      let spy1 = sandbox.spy(fakeContext, 'reset');
       let spy2 = sandbox.spy(fakeContext.logger, 'error');
       fakeContext.loadPromise = Promise.reject();
       imaMiddleware = new ImaMiddleware(fakeContext);
