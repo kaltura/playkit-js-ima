@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.8.6"></a>
+## [0.8.6](https://github.com/kaltura/playkit-js-ima/compare/v0.8.5...v0.8.6) (2018-12-13)
+
+
+### Bug Fixes
+
+* **FEC-8762:** destroy is called incorrectly in plugin life cycle ([#83](https://github.com/kaltura/playkit-js-ima/issues/83)) ([a6723bd](https://github.com/kaltura/playkit-js-ima/commit/a6723bd))
+
+
+
 <a name="0.8.5"></a>
 ## [0.8.5](https://github.com/kaltura/playkit-js-ima/compare/v0.8.4...v0.8.5) (2018-12-12)
 
