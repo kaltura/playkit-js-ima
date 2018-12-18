@@ -449,4 +449,60 @@ describe('Ima Plugin', function() {
     });
     player.dispatchEvent(new FakeEvent(player.Event.ERROR, {severity: 2}));
   });
+
+  it('should return the correct vpaid for INSECURE', function(done) {
+    player = loadPlayerWithAds(targetId, {
+      vpaidMode: 'INSECURE',
+      adTagUrl:
+        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=[timestamp]'
+    });
+    ima = player._pluginManager.get('ima');
+    ima.loadPromise.then(function() {
+      const value = ima._getVpaidMode();
+      value.should.equals(2);
+      done();
+    });
+  });
+
+  it('should return the correct vpaid for ENABLED', function(done) {
+    player = loadPlayerWithAds(targetId, {
+      vpaidMode: 'ENABLED',
+      adTagUrl:
+        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=[timestamp]'
+    });
+    ima = player._pluginManager.get('ima');
+    ima.loadPromise.then(function() {
+      const value = ima._getVpaidMode();
+      value.should.equals(1);
+      done();
+    });
+  });
+
+  it('should return the correct vpaid for DISABLED', function(done) {
+    player = loadPlayerWithAds(targetId, {
+      vpaidMode: 'DISABLED',
+      adTagUrl:
+        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=[timestamp]'
+    });
+    ima = player._pluginManager.get('ima');
+    ima.loadPromise.then(function() {
+      const value = ima._getVpaidMode();
+      value.should.equals(0);
+      done();
+    });
+  });
+
+  it('should return the correct vpaid for ENABLED', function(done) {
+    player = loadPlayerWithAds(targetId, {
+      vpaidMode: '',
+      adTagUrl:
+        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=[timestamp]'
+    });
+    ima = player._pluginManager.get('ima');
+    ima.loadPromise.then(function() {
+      const value = ima._getVpaidMode();
+      value.should.equals(1);
+      done();
+    });
+  });
 });

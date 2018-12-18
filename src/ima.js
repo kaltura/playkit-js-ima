@@ -571,12 +571,19 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   /**
    * Gets the vpaid mode.
    * @private
-   * @returns {string} - The vpaid mode.
+   * @returns {number} - The vpaid mode.
    * @instance
    * @memberof Ima
    */
-  _getVpaidMode(): string {
-    return this.config.vpaidMode || this._sdk.ImaSdkSettings.VpaidMode.ENABLED;
+  _getVpaidMode(): number {
+    const vpaidmode = this._sdk.ImaSdkSettings.VpaidMode[this.config.vpaidMode];
+    if (this.config.vpaidMode && typeof vpaidmode === 'number') {
+      this.logger.debug('VpaidMode: set to ' + this.config.vpaidMode);
+      return vpaidmode;
+    } else {
+      this.logger.warn('VpaidMode is not set, setting to ENABLED');
+      return this._sdk.ImaSdkSettings.VpaidMode.ENABLED;
+    }
   }
 
   /**
