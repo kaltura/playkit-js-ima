@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.8.7"></a>
+## [0.8.7](https://github.com/kaltura/playkit-js-ima/compare/v0.8.6...v0.8.7) (2018-12-20)
+
+
+### Bug Fixes
+
+* **FEC-8740:** VPAID is still defaulting to ENABLED ([#84](https://github.com/kaltura/playkit-js-ima/issues/84)) ([16a7287](https://github.com/kaltura/playkit-js-ima/commit/16a7287))
+
+
+
 <a name="0.8.6"></a>
 ## [0.8.6](https://github.com/kaltura/playkit-js-ima/compare/v0.8.5...v0.8.6) (2018-12-13)
 
