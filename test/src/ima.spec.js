@@ -534,4 +534,45 @@ describe('Ima Plugin', function() {
       done();
     });
   });
+
+  it('should set playAdsAfterTime according the playback.startTime config', function(done) {
+    player = loadPlayerWithAds(
+      targetId,
+      {
+        adTagUrl:
+          'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=[timestamp]'
+      },
+      {
+        startTime: 15
+      }
+    );
+    ima = player._pluginManager.get('ima');
+    player.addEventListener(player.Event.AD_MANIFEST_LOADED, () => {
+      ima._adsManager.h.playAdsAfterTime.should.equal(15);
+      done();
+    });
+    player.play();
+  });
+
+  it('should override playAdsAfterTime according the plugin config', function(done) {
+    player = loadPlayerWithAds(
+      targetId,
+      {
+        adTagUrl:
+          'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=[timestamp]',
+        adsRenderingSettings: {
+          playAdsAfterTime: -1
+        }
+      },
+      {
+        startTime: 15
+      }
+    );
+    ima = player._pluginManager.get('ima');
+    player.addEventListener(player.Event.AD_MANIFEST_LOADED, () => {
+      ima._adsManager.h.playAdsAfterTime.should.equal(-1);
+      done();
+    });
+    player.play();
+  });
 });
