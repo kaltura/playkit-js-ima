@@ -921,6 +921,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     if (this.config.disableMediaPreload) {
       adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = false;
     }
+    if (!this.config.adsRenderingSettings.playAdsAfterTime) {
+      adsRenderingSettings.playAdsAfterTime = this.player.config.playback.startTime;
+    }
     return adsRenderingSettings;
   }
 
