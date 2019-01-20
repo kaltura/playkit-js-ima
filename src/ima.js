@@ -341,7 +341,24 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   loadMedia(): void {
-    this._addBindings();
+    FULL_SCREEN_EVENTS.forEach(fullScreenEvent => this.eventManager.listen(document, fullScreenEvent, () => this._resizeAd()));
+    this.eventManager.listen(window, 'resize', () => this._resizeAd());
+    this.eventManager.listen(this.player, this.player.Event.MUTE_CHANGE, () => this._syncPlayerVolume());
+    this.eventManager.listen(this.player, this.player.Event.VOLUME_CHANGE, () => this._syncPlayerVolume());
+    this.eventManager.listen(this.player, this.player.Event.SOURCE_SELECTED, event => {
+      let selectedSource = event.payload.selectedSource;
+      if (selectedSource && selectedSource.length > 0) {
+        this._contentSrc = selectedSource[0].url;
+      }
+    });
+    this.eventManager.listen(this.player, this.player.Event.ERROR, event => {
+      if (event.payload && event.payload.severity === Error.Severity.CRITICAL) {
+        this.reset();
+      }
+    });
+    this.loadPromise.then(() => {
+      this._requestAds();
+    });
   }
 
   /**
@@ -433,34 +450,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     readyPromise.then(() => {
       this._adsManager.init(this.player.dimensions.width, this.player.dimensions.height, this._sdk.ViewMode.NORMAL);
       this._adsManager.start();
-    });
-  }
-
-  /**
-   * Adding bindings.
-   * @private
-   * @returns {void}
-   * @instance
-   * @memberof Ima
-   */
-  _addBindings(): void {
-    FULL_SCREEN_EVENTS.forEach(fullScreenEvent => this.eventManager.listen(document, fullScreenEvent, () => this._resizeAd()));
-    this.eventManager.listen(window, 'resize', () => this._resizeAd());
-    this.eventManager.listen(this.player, this.player.Event.MUTE_CHANGE, () => this._syncPlayerVolume());
-    this.eventManager.listen(this.player, this.player.Event.VOLUME_CHANGE, () => this._syncPlayerVolume());
-    this.eventManager.listen(this.player, this.player.Event.SOURCE_SELECTED, event => {
-      let selectedSource = event.payload.selectedSource;
-      if (selectedSource && selectedSource.length > 0) {
-        this._contentSrc = selectedSource[0].url;
-      }
-    });
-    this.eventManager.listen(this.player, this.player.Event.ERROR, event => {
-      if (event.payload && event.payload.severity === Error.Severity.CRITICAL) {
-        this.reset();
-      }
-    });
-    this.loadPromise.then(() => {
-      this._requestAds();
     });
   }
 
