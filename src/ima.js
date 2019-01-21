@@ -342,6 +342,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   loadMedia(): void {
     this._addBindings();
+    this.loadPromise.then(() => this._requestAds());
   }
 
   /**
@@ -458,9 +459,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       if (event.payload && event.payload.severity === Error.Severity.CRITICAL) {
         this.reset();
       }
-    });
-    this.loadPromise.then(() => {
-      this._requestAds();
     });
   }
 
