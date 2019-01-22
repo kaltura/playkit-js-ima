@@ -201,7 +201,9 @@ function onAdStarted(options: Object, adEvent: any): void {
   } else {
     this._setContentPlayheadTrackerEventsEnabled(false);
   }
-  this.dispatchEvent(options.transition);
+  const adOptions = getAdOptions(adEvent);
+  const ad = new Ad(adEvent.getAd().getAdId(), adOptions);
+  this.dispatchEvent(options.transition, {ad});
 }
 
 /**
@@ -474,13 +476,16 @@ function getAdOptions(adEvent: any): Object {
   const adData = adEvent.getAdData();
   const podInfo = ad.getAdPodInfo();
   adOptions.url = ad.getMediaUrl();
-  adOptions.clickThroughUrl = adData.clickThroughUrl;
+  adOptions.clickThroughUrl = adData && adData.clickThroughUrl;
   adOptions.contentType = ad.getContentType();
   adOptions.duration = ad.getDuration();
   adOptions.position = podInfo.getAdPosition();
   adOptions.title = ad.getTitle();
   adOptions.linear = ad.isLinear();
   adOptions.skipOffset = ad.getSkipTimeOffset();
+  adOptions.width = ad.isLinear() ? ad.getVastMediaWidth() : ad.getWidth();
+  adOptions.height = ad.isLinear() ? ad.getVastMediaHeight() : ad.getHeight();
+  adOptions.bitrate = ad.getVastMediaBitrate();
   return adOptions;
 }
 
