@@ -63,7 +63,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       useStyledLinearAds: false,
       useStyledNonLinearAds: true,
       bitrate: -1,
-      autoAlign: true
+      autoAlign: true,
+      loadVideoTimeout: -1
     },
     companions: {
       ads: null,
