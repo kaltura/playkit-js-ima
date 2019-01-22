@@ -107,6 +107,14 @@ class ImaStateMachine {
           from: [State.PLAYING, State.PAUSED, State.LOADED]
         },
         {
+          name: context.player.Event.AD_PROGRESS,
+          from: [State.PLAYING, State.PAUSED]
+        },
+        {
+          name: context.player.Event.AD_BUFFERING,
+          from: '*'
+        },
+        {
           name: 'goto',
           from: '*',
           to: s => s
@@ -131,6 +139,8 @@ class ImaStateMachine {
         onUserclosedad: onAdEvent.bind(context),
         onAdvolumechanged: onAdEvent.bind(context),
         onAdmuted: onAdEvent.bind(context),
+        onAdprogress: onAdProgress.bind(context),
+        onAdbuffering: onAdEvent.bind(context),
         onEnterState: onEnterState.bind(context),
         onPendingTransition: onPendingTransition.bind(context)
       },
@@ -190,7 +200,6 @@ function onAdStarted(options: Object, adEvent: any): void {
     }
   } else {
     this._setContentPlayheadTrackerEventsEnabled(false);
-    this._startAdInterval();
   }
   const adOptions = getAdOptions(adEvent);
   const ad = new Ad(adEvent.getAd().getAdId(), adOptions);
@@ -245,9 +254,6 @@ function onAdResumed(options: Object, adEvent: any): void {
  */
 function onAdCompleted(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
-  if (this._currentAd.isLinear()) {
-    this._stopAdInterval();
-  }
   this._currentAd = null;
   this.dispatchEvent(options.transition);
 }
@@ -351,7 +357,6 @@ function onAdError(options: Object, adEvent: any): void {
  */
 function onAdSkipped(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
-  this._stopAdInterval();
   this.dispatchEvent(options.transition);
 }
 
@@ -367,6 +372,29 @@ function onAdCanSkip(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
   if (this._adsManager.getAdSkippableState()) {
     this.dispatchEvent(options.transition);
+  }
+}
+
+/**
+ * AD_PROGRESS event handler.
+ * @param {Object} options - fsm event data.
+ * @param {any} adEvent - ima event data.
+ * @returns {void}
+ * @private
+ * @memberof ImaStateMachine
+ */
+function onAdProgress(options: Object, adEvent: any): void {
+  this.logger.debug(adEvent.type.toUpperCase());
+  const remainingTime = this._adsManager.getRemainingTime();
+  const duration = this._currentAd.getDuration();
+  const currentTime = duration - remainingTime;
+  if (Utils.Number.isNumber(duration) && Utils.Number.isNumber(currentTime)) {
+    this.dispatchEvent(options.transition, {
+      adProgress: {
+        currentTime: currentTime,
+        duration: duration
+      }
+    });
   }
 }
 

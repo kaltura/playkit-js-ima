@@ -162,13 +162,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   _contentComplete: boolean;
   /**
-   * The ad interval timer.
-   * @member
-   * @private
-   * @memberof Ima
-   */
-  _intervalTimer: ?number;
-  /**
    * Video current time before ads.
    * On custom playback when only one video tag playing, save the video current time.
    * @member
@@ -241,7 +234,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     super(name, player, config);
     this._stateMachine = new ImaStateMachine(this);
     this._initMembers();
-    this._addBindings();
     this._init();
   }
 
@@ -335,6 +327,19 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   }
 
   /**
+   * Prepare the plugin before media is loaded.
+   * @override
+   * @public
+   * @returns {void}
+   * @instance
+   * @memberof Ima
+   */
+  loadMedia(): void {
+    this._addBindings();
+    this.loadPromise.then(() => this._requestAds());
+  }
+
+  /**
    * Resets the plugin.
    * @override
    * @public
@@ -345,7 +350,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   reset(): void {
     this.logger.debug('reset');
     this.eventManager.removeAll();
-    this._stopAdInterval();
     this._hideAdsContainer();
     if (!this._isImaSDKLibLoaded()) {
       return;
@@ -358,7 +362,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     }
     this._stateMachine.goto(State.DONE);
     this._initMembers();
-    this._addBindings();
   }
 
   /**
@@ -372,7 +375,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   destroy(): void {
     this.logger.debug('destroy');
     this.eventManager.destroy();
-    this._stopAdInterval();
     this._hideAdsContainer();
     if (this._adsManager) {
       this._adsManager.destroy();
@@ -435,25 +437,20 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _addBindings(): void {
-    this.eventManager.listenOnce(this.player, this.player.Event.CHANGE_SOURCE_STARTED, () => {
-      FULL_SCREEN_EVENTS.forEach(fullScreenEvent => this.eventManager.listen(document, fullScreenEvent, () => this._resizeAd()));
-      this.eventManager.listen(window, 'resize', () => this._resizeAd());
-      this.eventManager.listen(this.player, this.player.Event.MUTE_CHANGE, () => this._syncPlayerVolume());
-      this.eventManager.listen(this.player, this.player.Event.VOLUME_CHANGE, () => this._syncPlayerVolume());
-      this.eventManager.listen(this.player, this.player.Event.SOURCE_SELECTED, event => {
-        let selectedSource = event.payload.selectedSource;
-        if (selectedSource && selectedSource.length > 0) {
-          this._contentSrc = selectedSource[0].url;
-        }
-      });
-      this.eventManager.listen(this.player, this.player.Event.ERROR, event => {
-        if (event.payload && event.payload.severity === Error.Severity.CRITICAL) {
-          this.reset();
-        }
-      });
-      this.loadPromise.then(() => {
-        this._requestAds();
-      });
+    FULL_SCREEN_EVENTS.forEach(fullScreenEvent => this.eventManager.listen(document, fullScreenEvent, () => this._resizeAd()));
+    this.eventManager.listen(window, 'resize', () => this._resizeAd());
+    this.eventManager.listen(this.player, this.player.Event.MUTE_CHANGE, () => this._syncPlayerVolume());
+    this.eventManager.listen(this.player, this.player.Event.VOLUME_CHANGE, () => this._syncPlayerVolume());
+    this.eventManager.listen(this.player, this.player.Event.SOURCE_SELECTED, event => {
+      let selectedSource = event.payload.selectedSource;
+      if (selectedSource && selectedSource.length > 0) {
+        this._contentSrc = selectedSource[0].url;
+      }
+    });
+    this.eventManager.listen(this.player, this.player.Event.ERROR, event => {
+      if (event.payload && event.payload.severity === Error.Severity.CRITICAL) {
+        this.reset();
+      }
     });
   }
 
@@ -472,7 +469,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._adsManager = null;
     this._contentComplete = false;
     this._isAdsManagerLoaded = false;
-    this._intervalTimer = null;
     this._videoLastCurrentTime = null;
     this._contentPlayheadTracker = {currentTime: 0, previousTime: 0, seeking: false, duration: 0};
     this._hasUserAction = false;
@@ -952,6 +948,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.USER_CLOSE, adEvent => this._stateMachine.userclosedad(adEvent));
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_CHANGED, adEvent => this._stateMachine.advolumechanged(adEvent));
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_MUTED, adEvent => this._stateMachine.admuted(adEvent));
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.AD_PROGRESS, adEvent => this._stateMachine.adprogress(adEvent));
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.AD_BUFFERING, adEvent => this._stateMachine.adbuffering(adEvent));
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOG, adEvent => this._stateMachine.aderror(adEvent));
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.SKIPPABLE_STATE_CHANGED, adEvent => this._stateMachine.adcanskip(adEvent));
     this._adsManager.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, adEvent => this._stateMachine.aderror(adEvent));
@@ -973,46 +971,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
           this._adsManager.setVolume(this.player.volume);
         }
       }
-    }
-  }
-
-  /**
-   * Starts ad interval timer.
-   * @private
-   * @returns {void}
-   * @instance
-   * @memberof Ima
-   */
-  _startAdInterval(): void {
-    this._stopAdInterval();
-    this._intervalTimer = setInterval(() => {
-      if (this._stateMachine.is(State.PLAYING)) {
-        let remainingTime = this._adsManager.getRemainingTime();
-        let duration = this._currentAd.getDuration();
-        let currentTime = duration - remainingTime;
-        if (Utils.Number.isNumber(duration) && Utils.Number.isNumber(currentTime)) {
-          this.dispatchEvent(this.player.Event.AD_PROGRESS, {
-            adProgress: {
-              currentTime: currentTime,
-              duration: duration
-            }
-          });
-        }
-      }
-    }, 300);
-  }
-
-  /**
-   * Stops ads interval timer.
-   * @private
-   * @returns {void}
-   * @instance
-   * @memberof Ima
-   */
-  _stopAdInterval(): void {
-    if (this._intervalTimer) {
-      clearInterval(this._intervalTimer);
-      this._intervalTimer = null;
     }
   }
 
