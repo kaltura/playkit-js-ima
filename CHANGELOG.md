@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.9.0"></a>
+# [0.9.0](https://github.com/kaltura/playkit-js-ima/compare/v0.8.7...v0.9.0) (2019-01-20)
+
+
+### Features
+
+* **FEC-8749:** expose IMA ad data ([#85](https://github.com/kaltura/playkit-js-ima/issues/85)) ([81532ad](https://github.com/kaltura/playkit-js-ima/commit/81532ad))
+* **FEC-8751:** add support for ima playAdsAfterTime setting ([#87](https://github.com/kaltura/playkit-js-ima/issues/87)) ([e928785](https://github.com/kaltura/playkit-js-ima/commit/e928785))
+
+
+
 <a name="0.8.7"></a>
 ## [0.8.7](https://github.com/kaltura/playkit-js-ima/compare/v0.8.6...v0.8.7) (2018-12-20)
 
