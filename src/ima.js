@@ -244,6 +244,11 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._init();
   }
 
+  prepareAd() {
+    this.updateConfig({adsRenderingSettings: {enablePreloading: true}});
+    this._initNext();
+  }
+
   /**
    * TODO: Rethink on design and implementation.
    * Plays ad on demand.
@@ -451,7 +456,20 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
         }
       });
       this.loadPromise.then(() => {
-        this._requestAds();
+        if (this._nextAdLoaded) {
+          this._nextAdLoaded = false;
+          this._adDisplayContainer = this._nextAdDisplayContainer;
+          this._adsLoader = this._adsNextLoader;
+          this._adsManager = this._nextAdsManager;
+          this._attachAdsManagerListeners();
+          this._stateMachine.loaded();
+          this._nextEvents.forEach((event: FakeEvent) => {
+            this._adsManager.dispatchEvent(event);
+          });
+          this._isAdsManagerLoaded = true;
+        } else {
+          this._requestAds();
+        }
       });
     });
   }
@@ -465,7 +483,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   _initMembers(): void {
     this._setContentPlayheadTrackerEventsEnabled(false);
-    this._setVideoEndedCallbackEnabled(false);
+    this._setVideoEndedCallbackEnabled(true);
     this._nextPromise = null;
     this._currentAd = null;
     this._adsManager = null;
@@ -495,6 +513,22 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
         this._initImaSettings();
         this._initAdsContainer();
         this._initAdsLoader();
+        this.loadPromise.resolve();
+      })
+      .catch(e => {
+        this.loadPromise.reject(e);
+      });
+  }
+
+  _initNext(): void {
+    this.loadPromise = Utils.Object.defer();
+    this._loadImaSDKLib()
+      .then(() => {
+        // this._initImaSettings();
+        this._initNextAdsContainer();
+        this._initNextAdsLoader();
+        this._requestNextAds();
+        // this._stateMachine.loaded();
         this.loadPromise.resolve();
       })
       .catch(e => {
@@ -610,6 +644,10 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._adDisplayContainer = new this._sdk.AdDisplayContainer(this._adsContainerDiv, this.player.getVideoElement());
   }
 
+  _initNextAdsContainer(): void {
+    this._nextAdDisplayContainer = new this._sdk.AdDisplayContainer(this._adsContainerDiv, this.player.getVideoElement());
+  }
+
   /**
    * Initializing the ads loader.
    * @private
@@ -624,6 +662,15 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       this._onAdsManagerLoaded(adsManagerLoadedEvent)
     );
     this._adsLoader.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, adEvent => this._stateMachine.aderror(adEvent));
+  }
+
+  _initNextAdsLoader(): void {
+    this.logger.debug('Init ads loader');
+    this._adsNextLoader = new this._sdk.AdsLoader(this._nextAdDisplayContainer);
+    this._adsNextLoader.addEventListener(this._sdk.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, adsManagerLoadedEvent =>
+      this._onNextAdsManagerLoaded(adsManagerLoadedEvent)
+    );
+    this._adsNextLoader.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, adEvent => this._stateMachine.aderror(adEvent));
   }
 
   /**
@@ -682,6 +729,60 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
         this._adsLoader.requestAds(adsRequest);
       }
       this._stateMachine.loaded();
+    } else {
+      this.logger.warn('Missing ad tag url: create plugin without requesting ads');
+      this._allAdsCompleted = true;
+    }
+  }
+
+  _requestNextAds(): void {
+    if (this.config.adTagUrl || this.config.adsResponse) {
+      this.logger.debug('Request ads');
+      // Request video ads
+      let adsRequest = new this._sdk.AdsRequest();
+      if (this.config.adTagUrl) {
+        adsRequest.adTagUrl = this.config.adTagUrl;
+      } else {
+        adsRequest.adsResponse = this.config.adsResponse;
+      }
+      adsRequest.linearAdSlotWidth = this.player.dimensions.width;
+      adsRequest.linearAdSlotHeight = this.player.dimensions.height;
+      adsRequest.nonLinearAdSlotWidth = this.player.dimensions.width;
+      adsRequest.nonLinearAdSlotHeight = this.player.dimensions.height / 3;
+
+      const muted = this.player.muted || this.player.volume === 0;
+      adsRequest.setAdWillPlayMuted(muted);
+
+      const adWillAutoPlay = this.config.adWillAutoPlay;
+      const playerWillAutoPlay = this.player.config.playback.autoplay;
+      const allowMutedAutoPlay = this.player.config.playback.allowMutedAutoPlay;
+
+      // Pass signal to IMA SDK if ad will autoplay with sound
+      // First let application config this, otherwise if player is configured
+      // to autoplay then try to autodetect if unmuted autoplay is supported
+      if (typeof adWillAutoPlay === 'boolean') {
+        adsRequest.setAdWillAutoPlay(adWillAutoPlay);
+        this._adsNextLoader.requestAds(adsRequest);
+      } else if (playerWillAutoPlay) {
+        getCapabilities(EngineType.HTML5).then(capabilities => {
+          // If the plugin has been destroyed while calling this promise
+          // the adsLoader will no longer exists
+          if (!this._adsNextLoader) return;
+
+          if (capabilities.autoplay) {
+            adsRequest.setAdWillAutoPlay(true);
+          } else if (allowMutedAutoPlay && capabilities.mutedAutoPlay) {
+            adsRequest.setAdWillAutoPlay(true);
+            adsRequest.setAdWillPlayMuted(true);
+          } else {
+            adsRequest.setAdWillAutoPlay(false);
+          }
+          this._adsNextLoader.requestAds(adsRequest);
+        });
+      } else {
+        adsRequest.setAdWillAutoPlay(false);
+        this._adsNextLoader.requestAds(adsRequest);
+      }
     } else {
       this.logger.warn('Missing ad tag url: create plugin without requesting ads');
     }
@@ -900,6 +1001,19 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       this.logger.debug('User action occurred before ads manager loaded');
       this._startAdsManager();
     }
+  }
+
+  _onNextAdsManagerLoaded(adsManagerLoadedEvent: any): void {
+    this.logger.debug('Ads manager loaded');
+    const adsRenderingSettings = this._getAdsRenderingSetting();
+    this._nextAdsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
+    this._nextEvents = [];
+    Object.keys(this._sdk.AdEvent.Type).forEach(adEventType => {
+      this._nextAdsManager.addEventListener(this._sdk.AdEvent.Type[adEventType], adEvent => {
+        this._nextEvents.push(adEvent);
+      });
+    });
+    this._nextAdLoaded = true;
   }
 
   /**

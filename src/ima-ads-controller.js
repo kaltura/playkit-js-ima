@@ -39,6 +39,16 @@ class ImaAdsController implements IAdsController {
   playAdNow(adTagUrl: string): void {
     this._context.playAdNow(adTagUrl);
   }
+
+  /**
+   * Prepare an ad for playing.
+   * @param {Object} config - ad config
+   * @public
+   * @returns {void}
+   */
+  prepareAd(config): void {
+    this._context.prepareAd(config);
+  }
 }
 
 export {ImaAdsController};
