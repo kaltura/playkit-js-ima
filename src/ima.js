@@ -240,7 +240,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     super(name, player, config);
     this._stateMachine = new ImaStateMachine(this);
     this._initMembers();
-    this._addBindings();
     this._init();
   }
 
@@ -334,6 +333,19 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   }
 
   /**
+   * Prepare the plugin before media is loaded.
+   * @override
+   * @public
+   * @returns {void}
+   * @instance
+   * @memberof Ima
+   */
+  loadMedia(): void {
+    this._addBindings();
+    this.loadPromise.then(() => this._requestAds());
+  }
+
+  /**
    * Resets the plugin.
    * @override
    * @public
@@ -357,7 +369,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     }
     this._stateMachine.goto(State.DONE);
     this._initMembers();
-    this._addBindings();
   }
 
   /**
@@ -434,25 +445,20 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _addBindings(): void {
-    this.eventManager.listenOnce(this.player, this.player.Event.CHANGE_SOURCE_STARTED, () => {
-      FULL_SCREEN_EVENTS.forEach(fullScreenEvent => this.eventManager.listen(document, fullScreenEvent, () => this._resizeAd()));
-      this.eventManager.listen(window, 'resize', () => this._resizeAd());
-      this.eventManager.listen(this.player, this.player.Event.MUTE_CHANGE, () => this._syncPlayerVolume());
-      this.eventManager.listen(this.player, this.player.Event.VOLUME_CHANGE, () => this._syncPlayerVolume());
-      this.eventManager.listen(this.player, this.player.Event.SOURCE_SELECTED, event => {
-        let selectedSource = event.payload.selectedSource;
-        if (selectedSource && selectedSource.length > 0) {
-          this._contentSrc = selectedSource[0].url;
-        }
-      });
-      this.eventManager.listen(this.player, this.player.Event.ERROR, event => {
-        if (event.payload && event.payload.severity === Error.Severity.CRITICAL) {
-          this.reset();
-        }
-      });
-      this.loadPromise.then(() => {
-        this._requestAds();
-      });
+    FULL_SCREEN_EVENTS.forEach(fullScreenEvent => this.eventManager.listen(document, fullScreenEvent, () => this._resizeAd()));
+    this.eventManager.listen(window, 'resize', () => this._resizeAd());
+    this.eventManager.listen(this.player, this.player.Event.MUTE_CHANGE, () => this._syncPlayerVolume());
+    this.eventManager.listen(this.player, this.player.Event.VOLUME_CHANGE, () => this._syncPlayerVolume());
+    this.eventManager.listen(this.player, this.player.Event.SOURCE_SELECTED, event => {
+      let selectedSource = event.payload.selectedSource;
+      if (selectedSource && selectedSource.length > 0) {
+        this._contentSrc = selectedSource[0].url;
+      }
+    });
+    this.eventManager.listen(this.player, this.player.Event.ERROR, event => {
+      if (event.payload && event.payload.severity === Error.Severity.CRITICAL) {
+        this.reset();
+      }
     });
   }
 
