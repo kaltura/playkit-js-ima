@@ -112,7 +112,7 @@ class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_BUFFERING,
-          from: [State.PLAYING, State.PAUSED]
+          from: '*'
         },
         {
           name: 'goto',
