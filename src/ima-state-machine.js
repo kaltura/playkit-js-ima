@@ -335,14 +335,14 @@ function onAdError(options: Object, adEvent: any): void {
     } else {
       this.reset();
     }
-    this.dispatchEvent(options.transition, getAdError(adError, true));
+    this.dispatchEvent(options.transition, getAdError.call(this, adError, true));
   } else {
     this.logger.debug(adEvent.type.toUpperCase());
     let adData = adEvent.getAdData();
     let adError = adData.adError;
     if (adData.adError) {
       this.logger.error('Non-fatal error occurred: ' + adError.getMessage());
-      this.dispatchEvent(this.player.Event.AD_ERROR, getAdError(adError, false));
+      this.dispatchEvent(this.player.Event.AD_ERROR, getAdError.call(this, adError, false));
     }
   }
 }
@@ -458,7 +458,15 @@ function getAdError(adError: any, fatal: boolean): Error {
   } catch (e) {
     code = Error.Code.AD_UNDEFINED_ERROR;
   }
+  let ad;
+  if (this._adsManager) {
+    const currentAd = this._adsManager.getCurrentAd();
+    const adEvent = {getAd: () => currentAd, getAdData: () => undefined};
+    const adOptions = getAdOptions(adEvent);
+    ad = new Ad(currentAd.getAdId(), adOptions);
+  }
   return new Error(severity, category, code, {
+    ad,
     innerError: adError
   });
 }
