@@ -36,7 +36,8 @@ type _ImaConfigObject = {
   disableMediaPreload: boolean,
   setDisableCustomPlaybackForIOS10Plus: boolean,
   adsRenderingSettings: Object,
-  companions: Object
+  companions: Object,
+  locale: string
 };
 
 declare type ImaConfigObject = _ImaConfigObject;
