@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.10.0"></a>
+# [0.10.0](https://github.com/kaltura/playkit-js-ima/compare/v0.9.0...v0.10.0) (2019-01-24)
+
+
+### Features
+
+* **FEC-8675:** add ad progress and buffer event to player ([#86](https://github.com/kaltura/playkit-js-ima/issues/86)) ([5e3f5d9](https://github.com/kaltura/playkit-js-ima/commit/5e3f5d9))
+* **FEC-8763:** add loadMedia life cycle hook ([#88](https://github.com/kaltura/playkit-js-ima/issues/88)) ([df88a3c](https://github.com/kaltura/playkit-js-ima/commit/df88a3c))
+* **FEC-8815:** support vast timeout ([#89](https://github.com/kaltura/playkit-js-ima/issues/89)) ([78aecd6](https://github.com/kaltura/playkit-js-ima/commit/78aecd6))
+* **FEC-8853:** localizing ima interface via config ([#90](https://github.com/kaltura/playkit-js-ima/issues/90)) ([05db01e](https://github.com/kaltura/playkit-js-ima/commit/05db01e))
+* **FEC-8856:** add ad data on ad error event ([#91](https://github.com/kaltura/playkit-js-ima/issues/91)) ([a53f529](https://github.com/kaltura/playkit-js-ima/commit/a53f529))
+
+
+
 <a name="0.9.0"></a>
 # [0.9.0](https://github.com/kaltura/playkit-js-ima/compare/v0.8.7...v0.9.0) (2019-01-20)
 
