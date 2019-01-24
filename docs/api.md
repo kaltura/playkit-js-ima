@@ -88,6 +88,7 @@ Type: [Object][29]
 * `adsRenderingSettings` **[google.ima.AdsRenderingSettings][38]** Defines parameters that control the rendering of ads. (optional, default `{ restoreCustomPlaybackStateOnAdBreakComplete:true, enablePreloading:false, useStyledLinearAds:false, useStyledNonLinearAds:true bitrate:-1, autoAlign:true }`)
   * `adsRenderingSettings.useStyledLinearAds` **[boolean][35]** See usage also in [Handling VPAID Ads][39] (optional, default `false`)
 * `companions` **[CompanionsConfigObject][40]?** Defines the companion ads.
+* `locale` **[string][40]?** Sets the publisher provided locale.
 
 ## google.ima.ImaSdkSettings.VpaidMode
 
