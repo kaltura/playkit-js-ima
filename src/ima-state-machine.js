@@ -464,8 +464,6 @@ function getAdError(adError: any, fatal: boolean): Error {
     const adEvent = {getAd: () => currentAd, getAdData: () => undefined};
     const adOptions = getAdOptions(adEvent);
     ad = new Ad(currentAd.getAdId(), adOptions);
-  } else {
-    ad = new Ad(null, {url: this.config.adTagUrl});
   }
   return new Error(severity, category, code, {
     ad,
