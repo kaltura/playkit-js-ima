@@ -26,7 +26,7 @@
 }] - Defines parameters that control the rendering of ads.
  * @param {boolean} [adsRenderingSettings.useStyledLinearAds=false] - See usage also in {@link https://github.com/kaltura/playkit-js-ima/blob/master/docs/vpaid.md#handling-vpaid-ads|Handling VPAID Ads}
  * @param {CompanionsConfigObject} [companions] - Defines the companion ads.
- * @param {string} [locale] - Sets the publisher provided locale
+ * @param {string} [locale] - Sets the publisher provided locale.
  * @example
  */
 type _ImaConfigObject = {
