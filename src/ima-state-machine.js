@@ -460,10 +460,14 @@ function getAdError(adError: any, fatal: boolean): Error {
   }
   let ad;
   if (this._adsManager) {
-    const currentAd = this._adsManager.getCurrentAd();
-    const adEvent = {getAd: () => currentAd, getAdData: () => undefined};
-    const adOptions = getAdOptions(adEvent);
-    ad = new Ad(currentAd.getAdId(), adOptions);
+    try {
+      const currentAd = this._adsManager.getCurrentAd();
+      const adEvent = {getAd: () => currentAd, getAdData: () => undefined};
+      const adOptions = getAdOptions(adEvent);
+      ad = new Ad(currentAd.getAdId(), adOptions);
+    } catch (e) {
+      //do nothing
+    }
   }
   return new Error(severity, category, code, {
     ad,
