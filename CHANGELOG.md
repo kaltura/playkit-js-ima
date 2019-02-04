@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.10.1"></a>
+## [0.10.1](https://github.com/kaltura/playkit-js-ima/compare/v0.10.0...v0.10.1) (2019-02-04)
+
+
+### Bug Fixes
+
+* **FEC-8870:** The playback stuck, when second Ad in pre-roll pod broken ([#93](https://github.com/kaltura/playkit-js-ima/issues/93)) ([c7dcc36](https://github.com/kaltura/playkit-js-ima/commit/c7dcc36))
+
+
+
 <a name="0.10.0"></a>
 # [0.10.0](https://github.com/kaltura/playkit-js-ima/compare/v0.9.0...v0.10.0) (2019-01-24)
 
