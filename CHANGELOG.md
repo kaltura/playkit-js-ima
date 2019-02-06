@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.10.2"></a>
+## [0.10.2](https://github.com/kaltura/playkit-js-ima/compare/v0.10.1...v0.10.2) (2019-02-06)
+
+
+### Bug Fixes
+
+* **FEC-8891:** a bumper after an ad cannot be clicked ([#94](https://github.com/kaltura/playkit-js-ima/issues/94)) ([02e29db](https://github.com/kaltura/playkit-js-ima/commit/02e29db))
+
+
+
 <a name="0.10.1"></a>
 ## [0.10.1](https://github.com/kaltura/playkit-js-ima/compare/v0.10.0...v0.10.1) (2019-02-04)
 
