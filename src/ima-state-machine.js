@@ -386,7 +386,7 @@ function onAdCanSkip(options: Object, adEvent: any): void {
 function onAdProgress(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
   const remainingTime = this._adsManager.getRemainingTime();
-  const duration = this._currentAd.getDuration();
+  const duration = adEvent.getAdData() && adEvent.getAdData().duration;
   const currentTime = duration - remainingTime;
   if (Utils.Number.isNumber(duration) && Utils.Number.isNumber(currentTime)) {
     this.dispatchEvent(options.transition, {
