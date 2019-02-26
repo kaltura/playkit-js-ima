@@ -438,7 +438,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   _addBindings(): void {
     FULL_SCREEN_EVENTS.forEach(fullScreenEvent => this.eventManager.listen(document, fullScreenEvent, () => this._resizeAd()));
-    this.eventManager.listen(window, 'resize', () => this._resizeAd());
+    this.eventManager.listen(this.player, 'resize', () => this._resizeAd());
     this.eventManager.listen(this.player, this.player.Event.MUTE_CHANGE, () => this._syncPlayerVolume());
     this.eventManager.listen(this.player, this.player.Event.VOLUME_CHANGE, () => this._syncPlayerVolume());
     this.eventManager.listen(this.player, this.player.Event.SOURCE_SELECTED, event => {
