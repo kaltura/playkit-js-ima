@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.10.3"></a>
+## [0.10.3](https://github.com/kaltura/playkit-js-ima/compare/v0.10.2...v0.10.3) (2019-02-27)
+
+
+### Bug Fixes
+
+* **FEC-8844:** listen to the player resize event instead of the window's ([#95](https://github.com/kaltura/playkit-js-ima/issues/95)) ([9d77484](https://github.com/kaltura/playkit-js-ima/commit/9d77484))
+
+
+
 <a name="0.10.2"></a>
 ## [0.10.2](https://github.com/kaltura/playkit-js-ima/compare/v0.10.1...v0.10.2) (2019-02-06)
 
