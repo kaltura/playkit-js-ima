@@ -3,13 +3,7 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 <a name="0.11.0"></a>
-# [0.11.0](https://github.com/kaltura/playkit-js-ima/compare/v0.10.1...v0.11.0) (2019-02-28)
-
-
-### Bug Fixes
-
-* **FEC-8844:** listen to the player resize event instead of the window's ([#95](https://github.com/kaltura/playkit-js-ima/issues/95)) ([9d77484](https://github.com/kaltura/playkit-js-ima/commit/9d77484))
-* **FEC-8891:** a bumper after an ad cannot be clicked ([#94](https://github.com/kaltura/playkit-js-ima/issues/94)) ([02e29db](https://github.com/kaltura/playkit-js-ima/commit/02e29db))
+# [0.11.0](https://github.com/kaltura/playkit-js-ima/compare/v0.10.3...v0.11.0) (2019-02-28)
 
 
 ### Features
