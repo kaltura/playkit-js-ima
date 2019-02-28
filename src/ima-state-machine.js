@@ -52,7 +52,7 @@ class ImaStateMachine {
           from: [State.PLAYING, State.PAUSED]
         },
         {
-          name: context.player.Event.ALL_ADS_COMPLETED,
+          name: context.player.Event.ADS_COMPLETED,
           from: [State.IDLE, State.PAUSED],
           to: State.DONE
         },
@@ -128,7 +128,7 @@ class ImaStateMachine {
         onAdclicked: onAdClicked.bind(context),
         onAdskipped: onAdSkipped.bind(context),
         onAdcompleted: onAdCompleted.bind(context),
-        onAlladscompleted: onAllAdsCompleted.bind(context),
+        onAdscompleted: onAdsCompleted.bind(context),
         onAdcanskip: onAdCanSkip.bind(context),
         onAdbreakstart: onAdBreakStart.bind(context),
         onAdbreakend: onAdBreakEnd.bind(context),
@@ -259,15 +259,15 @@ function onAdCompleted(options: Object, adEvent: any): void {
 }
 
 /**
- * ALL_ADS_COMPLETED event handler.
+ * ADS_COMPLETED event handler.
  * @param {Object} options - fsm event data.
  * @param {any} adEvent - ima event data.
  * @returns {void}
  * @private
  * @memberof ImaStateMachine
  */
-function onAllAdsCompleted(options: Object, adEvent: any): void {
-  this.logger.debug(adEvent.type.toUpperCase());
+function onAdsCompleted(options: Object, adEvent: any): void {
+  this.logger.debug(options.transition.toUpperCase());
   if (this._adsManager.isCustomPlaybackUsed() && this._contentComplete) {
     this.player.getVideoElement().src = this._contentSrc;
   }
@@ -498,6 +498,7 @@ function getAdOptions(adEvent: any): Object {
   adOptions.width = ad.isLinear() ? ad.getVastMediaWidth() : ad.getWidth();
   adOptions.height = ad.isLinear() ? ad.getVastMediaHeight() : ad.getHeight();
   adOptions.bitrate = ad.getVastMediaBitrate();
+  adOptions.bumper = podInfo.getIsBumper();
   return adOptions;
 }
 
