@@ -42,7 +42,7 @@ describe('Ima Plugin', function() {
       player.Event.AD_RESUMED,
       player.Event.AD_PAUSED,
       player.Event.AD_COMPLETED,
-      player.Event.ALL_ADS_COMPLETED,
+      player.Event.ADS_COMPLETED,
       player.Event.AD_BREAK_END,
       player.Event.AD_BREAK_START,
       player.Event.AD_FIRST_QUARTILE,
@@ -74,8 +74,8 @@ describe('Ima Plugin', function() {
     player.addEventListener(player.Event.AD_COMPLETED, () => {
       maybeDoneTest(adsEvents, player.Event.AD_COMPLETED, done);
     });
-    player.addEventListener(player.Event.ALL_ADS_COMPLETED, () => {
-      maybeDoneTest(adsEvents, player.Event.ALL_ADS_COMPLETED, done);
+    player.addEventListener(player.Event.ADS_COMPLETED, () => {
+      maybeDoneTest(adsEvents, player.Event.ADS_COMPLETED, done);
     });
     player.addEventListener(player.Event.AD_BREAK_START, () => {
       maybeDoneTest(adsEvents, player.Event.AD_BREAK_START, done);

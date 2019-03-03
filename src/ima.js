@@ -318,11 +318,11 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   /**
    * Gets the ads controller.
    * @public
-   * @returns {IAdsController} - The ads api.
+   * @returns {IAdsPluginController} - The ads api.
    * @instance
    * @memberof Ima
    */
-  getAdsController(): IAdsController {
+  getAdsController(): IAdsPluginController {
     return new ImaAdsController(this);
   }
 
