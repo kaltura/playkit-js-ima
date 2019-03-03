@@ -304,6 +304,7 @@ function onAdBreakEnd(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
   this._setVideoEndedCallbackEnabled(true);
   this._setContentPlayheadTrackerEventsEnabled(true);
+  this._currentAd = null;
   if (!this._contentComplete) {
     this._hideAdsContainer();
     this._maybeSetVideoCurrentTime();
