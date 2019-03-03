@@ -216,7 +216,9 @@ function onAdStarted(options: Object, adEvent: any): void {
  */
 function onAdClicked(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
-  if (this._currentAd.isLinear()) {
+  if (this._currentAd === null) {
+    this.player.pause();
+  } else if (this._currentAd.isLinear()) {
     this._maybeIgnoreClickOnAd();
     if (this._stateMachine.is(State.PLAYING)) {
       this._adsManager.pause();
