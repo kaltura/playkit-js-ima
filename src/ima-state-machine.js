@@ -188,7 +188,6 @@ function onAdStarted(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
   this._currentAd = adEvent.getAd();
   this._resizeAd();
-  this._showAdsContainer();
   this._maybeDisplayCompanionAds();
   if (!this._currentAd.isLinear()) {
     this._setContentPlayheadTrackerEventsEnabled(true);
@@ -199,6 +198,7 @@ function onAdStarted(options: Object, adEvent: any): void {
       this.player.play();
     }
   } else {
+    this._showAdsContainer();
     this._setContentPlayheadTrackerEventsEnabled(false);
   }
   const adOptions = getAdOptions(adEvent);
