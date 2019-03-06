@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.10.4"></a>
+## [0.10.4](https://github.com/kaltura/playkit-js-ima/compare/v0.10.3...v0.10.4) (2019-03-06)
+
+
+### Bug Fixes
+
+* **FEC-8936:** VPAID ads may cause player crash ([#97](https://github.com/kaltura/playkit-js-ima/issues/97)) ([cd6f317](https://github.com/kaltura/playkit-js-ima/commit/cd6f317))
+
+
+
 <a name="0.10.3"></a>
 ## [0.10.3](https://github.com/kaltura/playkit-js-ima/compare/v0.10.2...v0.10.3) (2019-02-27)
 
