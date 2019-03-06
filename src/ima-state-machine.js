@@ -188,7 +188,9 @@ function onAdStarted(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
   this._currentAd = adEvent.getAd();
   this._resizeAd();
-  this._showAdsContainer();
+  if (this._currentAd.isLinear()) {
+    this._showAdsContainer();
+  }
   this._maybeDisplayCompanionAds();
   if (!this._currentAd.isLinear()) {
     this._setContentPlayheadTrackerEventsEnabled(true);
