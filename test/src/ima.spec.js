@@ -188,7 +188,7 @@ describe('Ima Plugin', function() {
     player.play();
   });
 
-  it('should play vmap-preroll-bumper', done => {
+  it.skip('should play vmap-preroll-bumper', done => {
     cuePoints = [0, 0];
     player = loadPlayerWithAds(targetId, {
       adTagUrl:
@@ -205,7 +205,7 @@ describe('Ima Plugin', function() {
     player.play();
   });
 
-  it('should play vmap-preroll-midroll-postroll', done => {
+  it.skip('should play vmap-preroll-midroll-postroll', done => {
     cuePoints = [0, 1, -1];
     player = loadPlayerWithAds(targetId, {
       adTagUrl:
@@ -257,7 +257,7 @@ describe('Ima Plugin', function() {
     player.play();
   });
 
-  it('should play vmap-postroll-bumper', done => {
+  it.skip('should play vmap-postroll-bumper', done => {
     cuePoints = [-1, -1];
     player = loadPlayerWithAds(targetId, {
       adTagUrl:
