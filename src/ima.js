@@ -1099,7 +1099,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   _maybeForceExitFullScreen(): void {
     const isIOS = () => this.player.env.os.name === 'iOS';
-    if (isIOS() && !this._adsManager.isCustomPlaybackUsed() && this.player.isFullscreen()) {
+    if (isIOS() && !this._adsManager.isCustomPlaybackUsed() && this.player.isFullscreen(true)) {
       this.player.exitFullscreen();
     }
   }
