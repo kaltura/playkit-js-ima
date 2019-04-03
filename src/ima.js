@@ -513,7 +513,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
           // Source selected event already dispatched
           resolve();
         } else {
-          this.eventManager.listenOnce(this.player, this.player.Event.SOURCE_SELECTED, resolve);
+          this.eventManager.listenOnce(this.player, this.player.Event.CHANGE_SOURCE_ENDED, resolve);
           this.eventManager.listenOnce(this.player, this.player.Event.ERROR, reject);
         }
       });
@@ -1099,8 +1099,14 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   _maybeForceExitFullScreen(): void {
     const isIOS = () => this.player.env.os.name === 'iOS';
-    //check if inBrowserFullscreen not set, fullscreen is native. otherwise it could be non-native version
-    if (isIOS() && !this._adsManager.isCustomPlaybackUsed() && this.player.isFullscreen() && !this.player.config.playback.inBrowserFullscreen) {
+    //check if inBrowserFullscreen not set, just in case of inline true and inBrowserFullscreen we will exit otherwise
+    //we'll keep the original behavior
+    if (
+      isIOS() &&
+      !this._adsManager.isCustomPlaybackUsed() &&
+      this.player.isFullscreen() &&
+      (this.player.config.playback.playsinline && !this.player.config.playback.inBrowserFullscreen)
+    ) {
       this.player.exitFullscreen();
     }
   }
