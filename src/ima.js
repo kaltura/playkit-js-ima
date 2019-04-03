@@ -55,7 +55,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   static defaultConfig: Object = {
     debug: false,
-    delayInitUntilSourceSelected: false,
+    delayInitUntilSourceSelected: true,
     disableMediaPreload: false,
     adsRenderingSettings: {
       restoreCustomPlaybackStateOnAdBreakComplete: true,
@@ -513,7 +513,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
           // Source selected event already dispatched
           resolve();
         } else {
-          this.eventManager.listenOnce(this.player, this.player.Event.CHANGE_SOURCE_ENDED, resolve);
+          this.eventManager.listenOnce(this.player, this.player.Event.SOURCE_SELECTED, resolve);
           this.eventManager.listenOnce(this.player, this.player.Event.ERROR, reject);
         }
       });
