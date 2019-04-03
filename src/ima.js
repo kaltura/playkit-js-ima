@@ -55,7 +55,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   static defaultConfig: Object = {
     debug: false,
-    delayInitUntilSourceSelected: false,
+    delayInitUntilSourceSelected: true,
     disableMediaPreload: false,
     adsRenderingSettings: {
       restoreCustomPlaybackStateOnAdBreakComplete: true,
