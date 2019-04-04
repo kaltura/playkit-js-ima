@@ -3,7 +3,7 @@ import {ImaMiddleware} from './ima-middleware';
 import {ImaAdsController} from './ima-ads-controller';
 import {ImaStateMachine} from './ima-state-machine';
 import {State} from './state';
-import {BaseMiddleware, BasePlugin, EngineType, Error, getCapabilities, Utils} from '@playkit-js/playkit-js';
+import {BaseMiddleware, BasePlugin, EngineType, Error, getCapabilities, Utils, Env} from '@playkit-js/playkit-js';
 import './assets/style.css';
 
 /**
@@ -55,7 +55,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   static defaultConfig: Object = {
     debug: false,
-    delayInitUntilSourceSelected: false,
+    delayInitUntilSourceSelected: Env.os.name === 'iOS',
     disableMediaPreload: false,
     adsRenderingSettings: {
       restoreCustomPlaybackStateOnAdBreakComplete: true,
