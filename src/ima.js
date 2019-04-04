@@ -3,7 +3,7 @@ import {ImaMiddleware} from './ima-middleware';
 import {ImaAdsController} from './ima-ads-controller';
 import {ImaStateMachine} from './ima-state-machine';
 import {State} from './state';
-import {BaseMiddleware, BasePlugin, EngineType, Error, getCapabilities, Utils} from '@playkit-js/playkit-js';
+import {BaseMiddleware, BasePlugin, EngineType, Error, getCapabilities, Utils, Env} from '@playkit-js/playkit-js';
 import './assets/style.css';
 
 /**
@@ -55,7 +55,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   static defaultConfig: Object = {
     debug: false,
-    delayInitUntilSourceSelected: false,
+    delayInitUntilSourceSelected: Env.os.name === 'iOS',
     disableMediaPreload: false,
     adsRenderingSettings: {
       restoreCustomPlaybackStateOnAdBreakComplete: true,
@@ -1098,8 +1098,14 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _maybeForceExitFullScreen(): void {
-    const isIOS = () => this.player.env.os.name === 'iOS';
-    if (isIOS() && !this._adsManager.isCustomPlaybackUsed() && this.player.isFullscreen()) {
+    const isIOS = this.player.env.os.name === 'iOS';
+    //check if inBrowserFullscreen not set, just in case of inline true and not inBrowserFullscreen we will exit otherwise
+    if (
+      isIOS &&
+      !this._adsManager.isCustomPlaybackUsed() &&
+      (this.player.isFullscreen() && !this.player.config.playback.inBrowserFullscreen) &&
+      this.player.config.playback.playsinline
+    ) {
       this.player.exitFullscreen();
     }
   }
