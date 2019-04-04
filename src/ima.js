@@ -1103,7 +1103,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     if (
       isIOS &&
       !this._adsManager.isCustomPlaybackUsed() &&
-      (this.player.isFullscreen() && this.player.config.playback.playsinline && !this.player.config.playback.inBrowserFullscreen)
+      (this.player.isFullscreen() && !this.player.config.playback.inBrowserFullscreen) &&
+      this.player.config.playback.playsinline
     ) {
       this.player.exitFullscreen();
     }
