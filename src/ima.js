@@ -465,8 +465,10 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   _setDefaultConfiguration(config: Object): void {
     //check if delayInitUntilSourceSelected set in app configuration, else set true for ios
-    this.config.delayInitUntilSourceSelected =
-      typeof config.delayInitUntilSourceSelected === `boolean` ? this.config.delayInitUntilSourceSelected : this.player.env.os.name === 'iOS';
+    //this.config contain the default configuration, config param doesnt, that's the reason why I used config
+    if (typeof config.delayInitUntilSourceSelected !== `boolean`) {
+      this.config.delayInitUntilSourceSelected = this.player.env.os.name === 'iOS';
+    }
   }
 
   /**
