@@ -1,5 +1,5 @@
 .playkit-ads-cover {
-  position: fixed;
+  position: relative;
   cursor: pointer;
   width: 100%;
   height: 100%;
@@ -9,4 +9,6 @@
 .playkit-ads-container {
   visibility: hidden;
   position: absolute;
+  width: 100%;
+  height:100%;
 }
