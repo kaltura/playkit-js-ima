@@ -55,7 +55,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   static defaultConfig: Object = {
     debug: false,
-    delayInitUntilSourceSelected: true,
+    delayInitUntilSourceSelected: false,
     disableMediaPreload: false,
     adsRenderingSettings: {
       restoreCustomPlaybackStateOnAdBreakComplete: true,
@@ -233,6 +233,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   constructor(name: string, player: Player, config: Object) {
     super(name, player, config);
     this._stateMachine = new ImaStateMachine(this);
+    this._setDefaultConfiguration(config);
     this._initMembers();
     this._init();
   }
@@ -452,6 +453,20 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
         this.reset();
       }
     });
+  }
+
+  /**
+   * set default Configuration for plugin
+   * @private
+   * @returns {void}
+   * @instance
+   * @memberof Ima
+   * @param {Object} config - configuration of app for ima plugin
+   */
+  _setDefaultConfiguration(config: Object): void {
+    //check if delayInitUntilSourceSelected set in app configuration, else set true for ios
+    this.config.delayInitUntilSourceSelected =
+      typeof config.delayInitUntilSourceSelected === `boolean` ? this.config.delayInitUntilSourceSelected : this.player.env.os.name === 'iOS';
   }
 
   /**
