@@ -1100,12 +1100,10 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   _maybeForceExitFullScreen(): void {
     const isIOS = this.player.env.os.name === 'iOS';
     //check if inBrowserFullscreen not set, just in case of inline true and not inBrowserFullscreen we will exit otherwise
-    //we'll keep the original behavior
     if (
       isIOS &&
       !this._adsManager.isCustomPlaybackUsed() &&
-      this.player.isFullscreen() &&
-      (this.player.config.playback.playsinline && !this.player.config.playback.inBrowserFullscreen)
+      (this.player.isFullscreen() && this.player.config.playback.playsinline && !this.player.config.playback.inBrowserFullscreen)
     ) {
       this.player.exitFullscreen();
     }
