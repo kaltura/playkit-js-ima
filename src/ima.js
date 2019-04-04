@@ -3,7 +3,7 @@ import {ImaMiddleware} from './ima-middleware';
 import {ImaAdsController} from './ima-ads-controller';
 import {ImaStateMachine} from './ima-state-machine';
 import {State} from './state';
-import {BaseMiddleware, BasePlugin, EngineType, Error, getCapabilities, Utils} from '@playkit-js/playkit-js';
+import {BaseMiddleware, BasePlugin, EngineType, Error, getCapabilities, Utils, Env} from '@playkit-js/playkit-js';
 import './assets/style.css';
 
 /**
@@ -55,7 +55,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   static defaultConfig: Object = {
     debug: false,
-    delayInitUntilSourceSelected: false,
+    delayInitUntilSourceSelected: Env.os.name === 'iOS',
     disableMediaPreload: false,
     adsRenderingSettings: {
       restoreCustomPlaybackStateOnAdBreakComplete: true,
@@ -233,7 +233,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   constructor(name: string, player: Player, config: Object) {
     super(name, player, config);
     this._stateMachine = new ImaStateMachine(this);
-    this._setDefaultConfiguration(config);
     this._initMembers();
     this._init();
   }
@@ -453,22 +452,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
         this.reset();
       }
     });
-  }
-
-  /**
-   * set default Configuration for plugin
-   * @private
-   * @returns {void}
-   * @instance
-   * @memberof Ima
-   * @param {Object} config - configuration of app for ima plugin
-   */
-  _setDefaultConfiguration(config: Object): void {
-    //check if delayInitUntilSourceSelected set in app configuration, else set true for ios
-    //this.config contain the default configuration, config param doesnt, that's the reason why I used config
-    if (typeof config.delayInitUntilSourceSelected !== `boolean`) {
-      this.config.delayInitUntilSourceSelected = this.player.env.os.name === 'iOS';
-    }
   }
 
   /**
