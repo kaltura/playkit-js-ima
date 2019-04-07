@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.10.6"></a>
+## [0.10.6](https://github.com/kaltura/playkit-js-ima/compare/v0.10.5...v0.10.6) (2019-04-07)
+
+
+### Bug Fixes
+
+* **FEC-8933:** fix ads covered entire page ([#101](https://github.com/kaltura/playkit-js-ima/issues/101)) ([9891a31](https://github.com/kaltura/playkit-js-ima/commit/9891a31))
+* **FEC-8996:** [iOS] - player exits from in browser full screen on ad ([#102](https://github.com/kaltura/playkit-js-ima/issues/102)) ([526952d](https://github.com/kaltura/playkit-js-ima/commit/526952d))
+* **FEC-9013:** [iOS] - Player doesnt play ads native when playsinline is false ([#103](https://github.com/kaltura/playkit-js-ima/issues/103)) ([edc0c6b](https://github.com/kaltura/playkit-js-ima/commit/edc0c6b))
+
+
+
 <a name="0.10.5"></a>
 ## [0.10.5](https://github.com/kaltura/playkit-js-ima/compare/v0.10.4...v0.10.5) (2019-03-07)
 
