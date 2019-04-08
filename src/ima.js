@@ -37,13 +37,6 @@ const ADS_CONTAINER_CLASS: string = 'playkit-ads-container';
 const ADS_COVER_CLASS: string = 'playkit-ads-cover';
 
 /**
- * The ads class for linear ads.
- * @type {string}
- * @const
- * @private
- */
-const ADS_LINEAR_CLASS: string = 'playkit-linear-ads';
-/**
  * The ima plugin.
  * @class Ima
  * @param {string} name - The plugin name.
@@ -606,9 +599,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     // Create ads container
     this._adsContainerDiv = Utils.Dom.createElement('div');
     this._adsContainerDiv.id = ADS_CONTAINER_CLASS + playerView.id;
-    Utils.Dom.addClassName(this._adsContainerDiv, ADS_CONTAINER_CLASS);
-    //add class for linear ads by default
-    Utils.Dom.addClassName(this._adsContainerDiv, ADS_LINEAR_CLASS);
+    this._adsContainerDiv.className = ADS_CONTAINER_CLASS;
 
     // Create ads cover
     this._adsCoverDiv = Utils.Dom.createElement('div');
@@ -724,7 +715,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _alignAdsContainerSizeForOverlayAd(): void {
-    Utils.Dom.removeClassName(this._adsContainerDiv, ADS_LINEAR_CLASS);
     this._adsContainerDiv.style.bottom = this._currentAd.getHeight() + OVERLAY_AD_MARGIN + 'px';
     this._adsContainerDiv.style.left = (this.player.dimensions.width - this._currentAd.getWidth()) / 2 + 'px';
   }
@@ -1013,12 +1003,12 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   _setToggleAdsCover(enable: boolean): void {
     if (enable) {
       if (!this._adsManager.isCustomPlaybackUsed()) {
-        this._adsContainerDiv.appendChild(this._adsCoverDiv);
+        this._adsContainerDiv.parentNode.insertBefore(this._adsCoverDiv, this._adsContainerDiv.nextSibling);
         this._isAdsCoverActive = true;
       }
     } else {
       if (this._isAdsCoverActive) {
-        this._adsContainerDiv.removeChild(this._adsCoverDiv);
+        this._adsContainerDiv.parentNode.removeChild(this._adsCoverDiv);
         this._isAdsCoverActive = false;
       }
     }
