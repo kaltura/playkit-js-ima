@@ -9,6 +9,9 @@
 .playkit-ads-container {
   visibility: hidden;
   position: absolute;
+}
+
+.playkit-linear-ads{
   width: 100%;
-  height:100%;
+  height: 100%;
 }
