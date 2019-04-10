@@ -1003,13 +1003,17 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   _setToggleAdsCover(enable: boolean): void {
     if (enable) {
       if (!this._adsManager.isCustomPlaybackUsed()) {
-        this._adsContainerDiv.parentNode.insertBefore(this._adsCoverDiv, this._adsContainerDiv.nextSibling);
-        this._isAdsCoverActive = true;
+        if (this._adsContainerDiv.parentNode) {
+          this._adsContainerDiv.parentNode.insertBefore(this._adsCoverDiv, this._adsContainerDiv.nextSibling);
+          this._isAdsCoverActive = true;
+        }
       }
     } else {
       if (this._isAdsCoverActive) {
-        this._adsContainerDiv.parentNode.removeChild(this._adsCoverDiv);
-        this._isAdsCoverActive = false;
+        if (this._adsContainerDiv.parentNode) {
+          this._adsContainerDiv.parentNode.removeChild(this._adsCoverDiv);
+          this._isAdsCoverActive = false;
+        }
       }
     }
   }
