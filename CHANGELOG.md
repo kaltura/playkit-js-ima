@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.10.7"></a>
+## [0.10.7](https://github.com/kaltura/playkit-js-ima/compare/v0.10.6...v0.10.7) (2019-04-10)
+
+
+### Bug Fixes
+
+* **FEC-9027:** overlay ad not displayed ([#104](https://github.com/kaltura/playkit-js-ima/issues/104)) ([a0c85b3](https://github.com/kaltura/playkit-js-ima/commit/a0c85b3))
+
+
+
 <a name="0.10.6"></a>
 ## [0.10.6](https://github.com/kaltura/playkit-js-ima/compare/v0.10.5...v0.10.6) (2019-04-07)
 
