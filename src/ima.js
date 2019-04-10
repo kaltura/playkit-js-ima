@@ -600,6 +600,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._adsContainerDiv = Utils.Dom.createElement('div');
     this._adsContainerDiv.id = ADS_CONTAINER_CLASS + playerView.id;
     this._adsContainerDiv.className = ADS_CONTAINER_CLASS;
+
     // Create ads cover
     this._adsCoverDiv = Utils.Dom.createElement('div');
     this._adsCoverDiv.id = ADS_COVER_CLASS + playerView.id;
@@ -1002,13 +1003,17 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   _setToggleAdsCover(enable: boolean): void {
     if (enable) {
       if (!this._adsManager.isCustomPlaybackUsed()) {
-        this._adsContainerDiv.appendChild(this._adsCoverDiv);
-        this._isAdsCoverActive = true;
+        if (this._adsContainerDiv.parentNode) {
+          this._adsContainerDiv.parentNode.insertBefore(this._adsCoverDiv, this._adsContainerDiv.nextSibling);
+          this._isAdsCoverActive = true;
+        }
       }
     } else {
       if (this._isAdsCoverActive) {
-        this._adsContainerDiv.removeChild(this._adsCoverDiv);
-        this._isAdsCoverActive = false;
+        if (this._adsContainerDiv.parentNode) {
+          this._adsContainerDiv.parentNode.removeChild(this._adsCoverDiv);
+          this._isAdsCoverActive = false;
+        }
       }
     }
   }
