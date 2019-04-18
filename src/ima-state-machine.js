@@ -305,13 +305,17 @@ function onAdBreakEnd(options: Object, adEvent: any): void {
   this._setVideoEndedCallbackEnabled(true);
   this._setContentPlayheadTrackerEventsEnabled(true);
   this._currentAd = null;
+  if (this._isVideoDataNotAvailable) {
+    this.player.getVideoElement().load();
+  }
   if (!this._contentComplete) {
     this._hideAdsContainer();
-    this._maybeSetVideoCurrentTime();
     if (this._nextPromise) {
       this._resolveNextPromise();
     } else {
-      this.player.play();
+      if (!this._isVideoDataNotAvailable) {
+        this.player.play();
+      }
     }
   }
   this.dispatchEvent(options.transition);
