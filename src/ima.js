@@ -153,7 +153,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @private
    * @memberof Ima
    */
-  _inProgressEventCounter: Number;
+  _inProgressEventCounter: number;
   /**
    * The content tracker.
    * @member
