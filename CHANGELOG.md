@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.10.8"></a>
+## [0.10.8](https://github.com/kaltura/playkit-js-ima/compare/v0.10.7...v0.10.8) (2019-04-24)
+
+
+### Bug Fixes
+
+* **FEC-9051:** Added umdNameDefine true to support requireJS in IMA ([4bac468](https://github.com/kaltura/playkit-js-ima/commit/4bac468))
+
+
+
 <a name="0.10.7"></a>
 ## [0.10.7](https://github.com/kaltura/playkit-js-ima/compare/v0.10.6...v0.10.7) (2019-04-10)
 
