@@ -24,6 +24,7 @@ module.exports = {
     filename: '[name].js',
     library: ['KalturaPlayer', 'plugins', 'ima'],
     libraryTarget: 'umd',
+    umdNamedDefine: true,
     devtoolModuleFilenameTemplate: './ima/[resource-path]'
   },
   devtool: 'source-map',
