@@ -306,15 +306,15 @@ function onAdBreakEnd(options: Object, adEvent: any): void {
   this._setContentPlayheadTrackerEventsEnabled(true);
   this._currentAd = null;
   if (!this._contentComplete) {
-    if (this._isVideoDataNotAvailable) {
+    if (this.config.forceReloadMediaAfterAds) {
       this.player.getVideoElement().load();
     }
     this._hideAdsContainer();
+    this._maybeSetVideoCurrentTime();
     if (this._nextPromise) {
       this._resolveNextPromise();
     } else {
-      if (!this._isVideoDataNotAvailable) {
-        this._maybeSetVideoCurrentTime();
+      if (!this.config.forceReloadMediaAfterAds) {
         this.player.play();
       }
     }

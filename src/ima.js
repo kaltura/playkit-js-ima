@@ -57,6 +57,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     debug: false,
     delayInitUntilSourceSelected: Env.os.name === 'iOS',
     disableMediaPreload: false,
+    forceReloadMediaAfterAds: false,
     adsRenderingSettings: {
       restoreCustomPlaybackStateOnAdBreakComplete: true,
       enablePreloading: false,
@@ -190,13 +191,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _contentSrc: string;
-  /**
-   * trying to get media data, but data is not available
-   * @member
-   * @private
-   * @memberof Ima
-   */
-  _isVideoDataNotAvailable: boolean;
+
   /**
    * Whether an initial user action happened.
    * @member
@@ -454,15 +449,12 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
         this._contentSrc = selectedSource[0].url;
       }
     });
-    this.eventManager.listenOnce(this.player, this.player.Event.STALLED, () => {
-      this._isVideoDataNotAvailable = true;
-    });
-    this.eventManager.listen(this.player, this.player.Event.LOADED_DATA, () => {
-      if (this._isVideoDataNotAvailable) {
+    if (this.config.forceReloadMediaAfterAds) {
+      this.eventManager.listen(this.player, this.player.Event.LOADED_DATA, () => {
         this._maybeSetVideoCurrentTime();
         this.player.play();
-      }
-    });
+      });
+    }
     this.eventManager.listen(this.player, this.player.Event.ERROR, event => {
       if (event.payload && event.payload.severity === Error.Severity.CRITICAL) {
         this.reset();
@@ -489,7 +481,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._contentPlayheadTracker = {currentTime: 0, previousTime: 0, seeking: false, duration: 0};
     this._hasUserAction = false;
     this._togglePlayPauseOnAdsContainerCallback = null;
-    this._isVideoDataNotAvailable = false;
   }
 
   /**
@@ -845,7 +836,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _maybeSetVideoCurrentTime(): void {
-    if ((this._adsManager.isCustomPlaybackUsed() || this._isVideoDataNotAvailable) && this._videoLastCurrentTime) {
+    if ((this._adsManager.isCustomPlaybackUsed() || this.config.forceReloadMediaAfterAds) && this._videoLastCurrentTime) {
       this.logger.debug('Custom playback used: set current time after ads', this._videoLastCurrentTime);
       this.player.currentTime = this._videoLastCurrentTime;
       this._videoLastCurrentTime = null;
