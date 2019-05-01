@@ -465,12 +465,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       this._isVideoDataNotAvailable = true;
     });
     this.eventManager.listen(this.player, this.player.Event.LOADED_DATA, () => {
-      if (this._isVideoDataNotAvailable && !this._contentComplete) {
+      if (this._isVideoDataNotAvailable) {
         this._maybeSetVideoCurrentTime();
-      }
-    });
-    this.eventManager.listen(this.player, this.player.Event.SEEKED, () => {
-      if (this._isVideoDataNotAvailable && !this._contentComplete) {
         this.player.play();
       }
     });
@@ -843,7 +839,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _maybeSaveVideoCurrentTime(): void {
-    if ((this._adsManager.isCustomPlaybackUsed() || this._isVideoDataNotAvailable) && this.player.currentTime && this.player.currentTime > 0) {
+    if (this.player.currentTime && this.player.currentTime > 0) {
       this.logger.debug('Custom playback used: save current time before ads', this.player.currentTime);
       this._videoLastCurrentTime = this.player.currentTime;
     }
@@ -857,7 +853,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _maybeSetVideoCurrentTime(): void {
-    if (this._videoLastCurrentTime) {
+    if ((this._adsManager.isCustomPlaybackUsed() || this._isVideoDataNotAvailable) && this._videoLastCurrentTime) {
       this.logger.debug('Custom playback used: set current time after ads', this._videoLastCurrentTime);
       this.player.currentTime = this._videoLastCurrentTime;
       this._videoLastCurrentTime = null;
@@ -981,27 +977,12 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.USER_CLOSE, adEvent => this._stateMachine.userclosedad(adEvent));
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_CHANGED, adEvent => this._stateMachine.advolumechanged(adEvent));
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_MUTED, adEvent => this._stateMachine.admuted(adEvent));
-    this._adsManager.addEventListener(this._sdk.AdEvent.Type.AD_PROGRESS, adEvent => this._adprogress(adEvent));
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.AD_PROGRESS, adEvent => this._stateMachine.adprogress(adEvent));
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.AD_BUFFERING, adEvent => this._stateMachine.adbuffering(adEvent));
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOG, adEvent => this._stateMachine.aderror(adEvent));
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.SKIPPABLE_STATE_CHANGED, adEvent => this._stateMachine.adcanskip(adEvent));
     this._adsManager.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, adEvent => this._stateMachine.aderror(adEvent));
   }
-
-  /**
-   * AD_PROGRESS event handler.
-   * @param {any} adEvent - ima event data.
-   * @returns {void}
-   * @private
-   * @memberof Ima
-   */
-  _adprogress(adEvent: any): void {
-    this._inProgressEventCounter++;
-    if ((this._inProgressEventCounter % 5 === 0 && this._isVideoDataNotAvailable) || !this._isVideoDataNotAvailable) {
-      this._stateMachine.adprogress(adEvent);
-    }
-  }
-
   /**
    * Syncs the player volume.
    * @private
