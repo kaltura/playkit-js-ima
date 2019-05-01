@@ -148,13 +148,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   _adsLoader: any;
   /**
-   * The counter progress event.
-   * @member
-   * @private
-   * @memberof Ima
-   */
-  _inProgressEventCounter: number;
-  /**
    * The content tracker.
    * @member
    * @private
@@ -497,7 +490,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._hasUserAction = false;
     this._togglePlayPauseOnAdsContainerCallback = null;
     this._isVideoDataNotAvailable = false;
-    this._inProgressEventCounter = 0;
   }
 
   /**
@@ -789,7 +781,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       this.eventManager.unlisten(this.player, this.player.Event.LOADED_METADATA);
       this.eventManager.unlisten(this.player, this.player.Event.TIME_UPDATE);
       this.eventManager.unlisten(this.player, this.player.Event.SEEKING);
-      this.eventManager.unlisten(this.player, this.player.Event.SEEKED, () => this._onMediaSeeked());
+      this.eventManager.unlisten(this.player, this.player.Event.SEEKED);
     }
   }
 
