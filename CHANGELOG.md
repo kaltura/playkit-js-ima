@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.10.9"></a>
+## [0.10.9](https://github.com/kaltura/playkit-js-ima/compare/v0.10.8...v0.10.9) (2019-05-01)
+
+
+### Bug Fixes
+
+* **FEC-9058:** get state machine from kaltura with patch ([#107](https://github.com/kaltura/playkit-js-ima/issues/107)) ([cb5457e](https://github.com/kaltura/playkit-js-ima/commit/cb5457e))
+
+
+
 <a name="0.10.8"></a>
 ## [0.10.8](https://github.com/kaltura/playkit-js-ima/compare/v0.10.7...v0.10.8) (2019-04-24)
 
