@@ -822,7 +822,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _maybeSaveVideoCurrentTime(): void {
-    if (this.player.currentTime && this.player.currentTime > 0) {
+    if ((this._adsManager.isCustomPlaybackUsed() || this.config.forceReloadMediaAfterAds) && this.player.currentTime && this.player.currentTime > 0) {
       this.logger.debug('Custom playback used: save current time before ads', this.player.currentTime);
       this._videoLastCurrentTime = this.player.currentTime;
     }
@@ -836,7 +836,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _maybeSetVideoCurrentTime(): void {
-    if ((this._adsManager.isCustomPlaybackUsed() || this.config.forceReloadMediaAfterAds) && this._videoLastCurrentTime) {
+    if (this._videoLastCurrentTime) {
       this.logger.debug('Custom playback used: set current time after ads', this._videoLastCurrentTime);
       this.player.currentTime = this._videoLastCurrentTime;
       this._videoLastCurrentTime = null;
