@@ -897,6 +897,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this.logger.debug('Ads manager loaded');
     const adsRenderingSettings = this._getAdsRenderingSetting();
     this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
+    this.config.forceReloadMediaAfterAds = this._adsManager.isCustomPlaybackUsed() ? false : this.config.forceReloadMediaAfterAds;
     const cuePoints = this._adsManager.getCuePoints();
     if (!cuePoints.length) {
       cuePoints.push(0);
