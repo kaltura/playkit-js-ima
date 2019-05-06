@@ -5,6 +5,7 @@ import {ImaStateMachine} from './ima-state-machine';
 import {State} from './state';
 import {BaseMiddleware, BasePlugin, EngineType, Error, getCapabilities, Utils, Env} from '@playkit-js/playkit-js';
 import './assets/style.css';
+import {ImaEngineDecorator} from './ima-engine-decorator';
 
 /**
  * The full screen events..
@@ -237,6 +238,18 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._stateMachine = new ImaStateMachine(this);
     this._initMembers();
     this._init();
+  }
+
+  /**
+   * Gets the engine decorator.
+   * @param {IEngine} engine - The engine to decorate.
+   * @public
+   * @returns {ImaEngineDecorator} - The ads api.
+   * @instance
+   * @memberof ImaDAI
+   */
+  getEngineDecorator(engine: IEngine): ImaEngineDecorator {
+    return new ImaEngineDecorator(engine);
   }
 
   /**
