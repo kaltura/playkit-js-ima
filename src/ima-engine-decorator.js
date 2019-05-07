@@ -1,5 +1,6 @@
 // @flow
 import {BaseEngineDecorator, FakeEvent, Error} from '@playkit-js/playkit-js';
+import {Ima} from './ima';
 
 /**
  * Engine decorator for ima dai plugin.
@@ -9,13 +10,15 @@ import {BaseEngineDecorator, FakeEvent, Error} from '@playkit-js/playkit-js';
  */
 class ImaEngineDecorator extends BaseEngineDecorator {
   _src: String;
+  _plugin: Ima;
 
-  constructor(engine: IEngine) {
+  constructor(engine: IEngine, plugin: Ima) {
     super(engine);
+    this._plugin = plugin;
   }
 
   dispatchEvent(event: FakeEvent): ?boolean {
-    if (!!event.payload && event.payload.code === Error.Code.VIDEO_ERROR) {
+    if (this._plugin.isAdsPlayingCustomPlayback() && !!event.payload && event.payload.code === Error.Code.VIDEO_ERROR) {
       this._src = this._engine.getVideoElement().src;
       setTimeout(() => {
         if (this._src === this._engine.getVideoElement().src) {

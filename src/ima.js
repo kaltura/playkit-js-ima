@@ -246,10 +246,10 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @public
    * @returns {ImaEngineDecorator} - The ads api.
    * @instance
-   * @memberof ImaDAI
+   * @memberof Ima
    */
   getEngineDecorator(engine: IEngine): ImaEngineDecorator {
-    return new ImaEngineDecorator(engine);
+    return new ImaEngineDecorator(engine, this);
   }
 
   /**
@@ -339,6 +339,17 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   getAdsController(): IAdsController {
     return new ImaAdsController(this);
+  }
+
+  /**
+   * Gets the indicator if ads playing on the player.
+   * @public
+   * @returns {boolean} - if ads playing on the player.
+   * @instance
+   * @memberof Ima
+   */
+  isAdsPlayingCustomPlayback(): boolean {
+    return this._adsManager.isCustomPlaybackUsed() && !this._stateMachine.is(State.IDLE) && !this._stateMachine.is(State.DONE);
   }
 
   /**
