@@ -22,9 +22,10 @@ class ImaEngineDecorator extends BaseEngineDecorator {
       this._src = this._engine.getVideoElement().src;
       setTimeout(() => {
         if (this._src === this._engine.getVideoElement().src) {
-          return super.dispatchEvent(event);
+          super.dispatchEvent(event);
         }
       }, 0);
+      return event.defaultPrevented;
     } else {
       return super.dispatchEvent(event);
     }
