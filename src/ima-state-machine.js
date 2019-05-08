@@ -283,6 +283,7 @@ function onAllAdsCompleted(options: Object, adEvent: any): void {
  */
 function onAdBreakStart(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
+  this._isAdsInProcess = true;
   this.player.pause();
   const adBreakOptions = getAdBreakOptions.call(this, adEvent);
   const adBreak = new AdBreak(adBreakOptions);
@@ -302,11 +303,16 @@ function onAdBreakStart(options: Object, adEvent: any): void {
  */
 function onAdBreakEnd(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
+  this._isAdsInProcess = false;
   this._setVideoEndedCallbackEnabled(true);
   this._setContentPlayheadTrackerEventsEnabled(true);
   this._currentAd = null;
   if (!this._contentComplete) {
     if (this.config.forceReloadMediaAfterAds) {
+      this.eventManager.listenOnce(this.player, this.player.Event.LOADED_DATA, () => {
+        this._maybeSetVideoCurrentTime();
+        this.player.play();
+      });
       this.player.getVideoElement().load();
     }
     this._hideAdsContainer();

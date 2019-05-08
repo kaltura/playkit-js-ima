@@ -208,6 +208,13 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   _isAdsManagerLoaded: boolean;
   /**
+   * Whether the ads in process
+   * @member
+   * @private
+   * @memberof Ima
+   */
+  _isAdsInProcess: boolean;
+  /**
    * The bounded handler of the ads container click.
    * @member
    * @private
@@ -342,14 +349,14 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   }
 
   /**
-   * Gets the indicator if ads playing on the player.
+   * Gets the indicator if ads still playing on the same player.
    * @public
-   * @returns {boolean} - if ads playing on the player.
+   * @returns {boolean} - if ads still playing on the same player.
    * @instance
    * @memberof Ima
    */
   isAdsPlayingCustomPlayback(): boolean {
-    return this._adsManager.isCustomPlaybackUsed() && !this._stateMachine.is(State.IDLE) && !this._stateMachine.is(State.DONE);
+    return !!this._adsManager && !!this._adsManager.isCustomPlaybackUsed() && this._isAdsInProcess && !this._stateMachine.is(State.DONE);
   }
 
   /**
@@ -473,12 +480,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
         this._contentSrc = selectedSource[0].url;
       }
     });
-    if (this.config.forceReloadMediaAfterAds) {
-      this.eventManager.listen(this.player, this.player.Event.LOADED_DATA, () => {
-        this._maybeSetVideoCurrentTime();
-        this.player.play();
-      });
-    }
     this.eventManager.listen(this.player, this.player.Event.ERROR, event => {
       if (event.payload && event.payload.severity === Error.Severity.CRITICAL) {
         this.reset();
@@ -505,6 +506,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._contentPlayheadTracker = {currentTime: 0, previousTime: 0, seeking: false, duration: 0};
     this._hasUserAction = false;
     this._togglePlayPauseOnAdsContainerCallback = null;
+    this._isAdsInProcess = false;
   }
 
   /**
