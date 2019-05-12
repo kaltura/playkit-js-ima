@@ -23,7 +23,7 @@ class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_STARTED,
-          from: [State.LOADED, State.IDLE, State.PAUSED, State.PLAYING],
+          from: [State.LOADED, State.IDLE, State.PAUSED, State.PLAYING, State.PROCESS],
           to: (adEvent: any): string => {
             let ad = adEvent.getAd();
             if (!ad.isLinear()) {
@@ -76,7 +76,8 @@ class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_BREAK_START,
-          from: [State.IDLE, State.LOADED]
+          from: [State.IDLE, State.LOADED],
+          to: State.PROCESS
         },
         {
           name: context.player.Event.AD_MIDPOINT,
@@ -283,7 +284,6 @@ function onAllAdsCompleted(options: Object, adEvent: any): void {
  */
 function onAdBreakStart(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
-  this._isAdsInProcess = true;
   this.player.pause();
   const adBreakOptions = getAdBreakOptions.call(this, adEvent);
   const adBreak = new AdBreak(adBreakOptions);
@@ -303,7 +303,6 @@ function onAdBreakStart(options: Object, adEvent: any): void {
  */
 function onAdBreakEnd(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
-  this._isAdsInProcess = false;
   this._setVideoEndedCallbackEnabled(true);
   this._setContentPlayheadTrackerEventsEnabled(true);
   this._currentAd = null;

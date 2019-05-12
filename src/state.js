@@ -7,6 +7,7 @@
 const State: {[state: string]: string} = {
   LOADING: 'loading',
   LOADED: 'loaded',
+  PROCESS: 'process',
   PLAYING: 'playing',
   PAUSED: 'paused',
   IDLE: 'idle',

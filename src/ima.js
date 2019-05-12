@@ -208,13 +208,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   _isAdsManagerLoaded: boolean;
   /**
-   * Whether the ads in process
-   * @member
-   * @private
-   * @memberof Ima
-   */
-  _isAdsInProcess: boolean;
-  /**
    * The bounded handler of the ads container click.
    * @member
    * @private
@@ -356,7 +349,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   isAdsPlayingCustomPlayback(): boolean {
-    return !!this._adsManager && !!this._adsManager.isCustomPlaybackUsed() && this._isAdsInProcess && !this._stateMachine.is(State.DONE);
+    return (
+      !!this._adsManager && !!this._adsManager.isCustomPlaybackUsed() && !this._stateMachine.is(State.IDLE) && !this._stateMachine.is(State.DONE)
+    );
   }
 
   /**
@@ -506,7 +501,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._contentPlayheadTracker = {currentTime: 0, previousTime: 0, seeking: false, duration: 0};
     this._hasUserAction = false;
     this._togglePlayPauseOnAdsContainerCallback = null;
-    this._isAdsInProcess = false;
   }
 
   /**
