@@ -488,8 +488,11 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       let selectedSource = event.payload.selectedSource;
       if (selectedSource && selectedSource.length > 0) {
         this._contentSrc = selectedSource[0].url;
-        this._contentDuration = event.payload.duration;
       }
+    });
+    this.eventManager.listenOnce(this.player, this.player.Event.DURATION_CHANGE, () => {
+      this.logger.debug('DURATION_CHANGE');
+      this._contentDuration = this.player.duration;
     });
     this.eventManager.listen(this.player, this.player.Event.ERROR, event => {
       if (event.payload && event.payload.severity === Error.Severity.CRITICAL) {
