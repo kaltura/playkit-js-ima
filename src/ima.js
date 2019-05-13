@@ -186,6 +186,13 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   _currentAd: any;
   /**
+   * The content media duration.
+   * @member
+   * @private
+   * @memberof Ima
+   */
+  _contentDuration: ?number;
+  /**
    * The content media src.
    * @member
    * @private
@@ -354,6 +361,14 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     );
   }
 
+  getContentTime(): ?number {
+    return this._videoLastCurrentTime ? this._videoLastCurrentTime : 0;
+  }
+
+  getContentDuration(): ?number {
+    return this._contentDuration ? this._contentDuration : 0;
+  }
+
   /**
    * Prepare the plugin before media is loaded.
    * @override
@@ -473,6 +488,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       let selectedSource = event.payload.selectedSource;
       if (selectedSource && selectedSource.length > 0) {
         this._contentSrc = selectedSource[0].url;
+        this._contentDuration = event.payload.duration;
       }
     });
     this.eventManager.listen(this.player, this.player.Event.ERROR, event => {
