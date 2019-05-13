@@ -319,7 +319,7 @@ function onAdBreakEnd(options: Object, adEvent: any): void {
     if (this._nextPromise) {
       this._resolveNextPromise();
     } else {
-      if (!this.config.forceReloadMediaAfterAds) {
+    else if (!this.config.forceReloadMediaAfterAds) {
         this.player.play();
       }
     }
