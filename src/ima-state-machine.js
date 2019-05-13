@@ -318,10 +318,8 @@ function onAdBreakEnd(options: Object, adEvent: any): void {
     this._maybeSetVideoCurrentTime();
     if (this._nextPromise) {
       this._resolveNextPromise();
-    } else {
-      if (!this.config.forceReloadMediaAfterAds) {
-        this.player.play();
-      }
+    } else if (!this.config.forceReloadMediaAfterAds) {
+      this.player.play();
     }
   }
   this.dispatchEvent(options.transition);
