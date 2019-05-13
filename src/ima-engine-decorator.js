@@ -17,7 +17,7 @@ class ImaEngineDecorator extends BaseEngineDecorator {
     this._plugin = plugin;
   }
 
-  dispatchEvent(event: FakeEvent): ?boolean {
+  dispatchEvent(event: FakeEvent): boolean {
     if (!!event.payload && event.payload.code === Error.Code.VIDEO_ERROR && this._plugin.isAdsPlayingCustomPlayback()) {
       this._src = this._engine.getVideoElement().src;
       setTimeout(() => {
