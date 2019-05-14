@@ -366,7 +366,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   }
 
   getContentDuration(): ?number {
-    return this._contentDuration ? this._contentDuration : 0;
+    return this._contentDuration ? this._contentDuration : this.player.config.sources.duration;
   }
 
   /**
