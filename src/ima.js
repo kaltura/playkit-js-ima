@@ -362,7 +362,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   }
 
   getContentTime(): ?number {
-    return this._videoLastCurrentTime ? this._videoLastCurrentTime : 0;
+    return this._videoLastCurrentTime ? this._videoLastCurrentTime : this._contentComplete ? this.getContentDuration() : 0;
   }
 
   getContentDuration(): ?number {
