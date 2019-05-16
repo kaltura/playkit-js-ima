@@ -17,11 +17,7 @@ class ImaEngineDecorator extends BaseEngineDecorator {
   }
 
   dispatchEvent(event: FakeEvent): boolean {
-    if (this._plugin.isAdsPlayingCustomPlayback()) {
-      return event.defaultPrevented;
-    } else {
-      return super.dispatchEvent(event);
-    }
+    return this._plugin.isAdsPlayingOnSameVideoTag() ? event.defaultPrevented : super.dispatchEvent(event);
   }
   /**
    * Get paused state.
@@ -32,10 +28,7 @@ class ImaEngineDecorator extends BaseEngineDecorator {
    * @memberof ImaEngineDecorator
    */
   get paused(): boolean {
-    if (!this._plugin.isAdsPlayingCustomPlayback()) {
-      return super.paused;
-    }
-    return true;
+    return this._plugin.isAdsPlayingOnSameVideoTag() ? true : super.paused;
   }
   /**
    * Get the current time in seconds.
@@ -46,10 +39,7 @@ class ImaEngineDecorator extends BaseEngineDecorator {
    * @memberof ImaEngineDecorator
    */
   get currentTime(): ?number {
-    if (!this._plugin.isAdsPlayingCustomPlayback()) {
-      return super.currentTime;
-    }
-    return this._plugin.getContentTime();
+    return this._plugin.isAdsPlayingOnSameVideoTag() ? this._plugin.getContentTime() : super.currentTime;
   }
   /**
    * Set the current time in seconds.
@@ -69,10 +59,7 @@ class ImaEngineDecorator extends BaseEngineDecorator {
    * @memberof ImaEngineDecorator
    */
   get duration(): ?number {
-    if (!this._plugin.isAdsPlayingCustomPlayback()) {
-      return super.duration;
-    }
-    return this._plugin.getContentDuration();
+    return this._plugin.isAdsPlayingOnSameVideoTag() ? this._plugin.getContentDuration() : super.duration;
   }
 }
 

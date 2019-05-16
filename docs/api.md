@@ -32,7 +32,7 @@
   * [getStateMachine][28]
   * [getMiddlewareImpl][29]
   * [getAdsController][30]
-  * [isAdsPlayingCustomPlayback][31]
+  * [isAdsPlayingOnSameVideoTag][31]
   * [loadMedia][32]
   * [reset][33]
   * [destroy][34]
@@ -216,7 +216,7 @@ Gets the ads controller.
 
 Returns **IAdsController** The ads api.
 
-### isAdsPlayingCustomPlayback
+### isAdsPlayingOnSameVideoTag
 
 Gets the indicator if ads still playing on the same player.
 
@@ -296,7 +296,7 @@ Whether the ima plugin is valid.
 [28]: #getstatemachine
 [29]: #getmiddlewareimpl
 [30]: #getadscontroller
-[31]: #isadsplayingcustomplayback
+[31]: #isadsplayingonsamevideotag
 [32]: #loadmedia
 [33]: #reset
 [34]: #destroy

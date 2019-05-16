@@ -355,18 +355,25 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @instance
    * @memberof Ima
    */
-  isAdsPlayingCustomPlayback(): boolean {
+  isAdsPlayingOnSameVideoTag(): boolean {
     return (
       !!this._adsManager && !!this._adsManager.isCustomPlaybackUsed() && !this._stateMachine.is(State.IDLE) && !this._stateMachine.is(State.DONE)
     );
   }
 
   getContentTime(): ?number {
-    return this._videoLastCurrentTime ? this._videoLastCurrentTime : this._contentComplete ? this.getContentDuration() : 0;
+    let currentTime = 0;
+    //current time exist for mid-roll otherwise it's pre-roll(start of video - 0) - post-roll(end of video)
+    if (this._videoLastCurrentTime) {
+      currentTime = this._videoLastCurrentTime;
+    } else if (this._contentComplete) {
+      currentTime = this.getContentDuration();
+    }
+    return currentTime;
   }
 
   getContentDuration(): ?number {
-    return this._contentDuration ? this._contentDuration : this.player.config.sources.duration;
+    return this._contentDuration || this.player.config.sources.duration || 0;
   }
 
   /**
@@ -519,6 +526,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._contentPlayheadTracker = {currentTime: 0, previousTime: 0, seeking: false, duration: 0};
     this._hasUserAction = false;
     this._togglePlayPauseOnAdsContainerCallback = null;
+    this._contentDuration = null;
   }
 
   /**
