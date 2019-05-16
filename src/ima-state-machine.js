@@ -487,6 +487,7 @@ function getAdOptions(adEvent: any): Object {
   const ad = adEvent.getAd();
   const adData = adEvent.getAdData();
   const podInfo = ad.getAdPodInfo();
+  adOptions.system = ad.getAdSystem();
   adOptions.url = ad.getMediaUrl();
   adOptions.clickThroughUrl = adData && adData.clickThroughUrl;
   adOptions.contentType = ad.getContentType();
