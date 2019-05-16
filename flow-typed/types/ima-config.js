@@ -16,7 +16,7 @@
  * @param {boolean} [debug=false] - If set to true, loads IMA SDK in debug mode.
  * @param {number} [disableMediaPreload=false] - Whether to disable media pre loading while ad is playing. If set to `true`, the player will start loading the content media just after the ad break will end (incase of preroll ad). This will also overrides `config.adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete` no matters its value and sets it to `false`.
  * @param {google.ima.ImaSdkSettings.VpaidMode} [vpaidMode='ENABLED'] - Sets VPAID playback mode See usage also in {@link https://github.com/kaltura/playkit-js-ima/blob/master/docs/vpaid.md#handling-vpaid-modes|Handling VPAID Modes}.
- * @param {google.ima.AdsRequest.vastLoadTimeout [vastLoadTimeout: 5000] - Override for default VAST load timeout in milliseconds for a single wrapper. The default timeout is 5000ms.
+ * @param {google.ima.AdsRequest.vastLoadTimeout} [vastLoadTimeout: 5000] - Override for default VAST load timeout in milliseconds for a single wrapper. The default timeout is 5000ms.
  * @param {google.ima.AdsRenderingSettings} [adsRenderingSettings={
   restoreCustomPlaybackStateOnAdBreakComplete: true,
   enablePreloading: false,
