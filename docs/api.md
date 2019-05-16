@@ -9,39 +9,50 @@
 * [CompanionAdObject][5]
   * [Parameters][6]
 * [google.ima.AdsRenderingSettings][7]
-* [ImaConfigObject][8]
-  * [Parameters][9]
-* [google.ima.ImaSdkSettings.VpaidMode][10]
+* [google.ima.ImaSdkSettings.VpaidMode][8]
+* [ImaConfigObject][9]
+  * [Parameters][10]
 * [ImaAdsController][11]
   * [Parameters][12]
   * [skipAd][13]
-* [Ima][14]
+* [ImaEngineDecorator][14]
   * [Parameters][15]
-  * [skipAd][16]
-  * [resumeAd][17]
-  * [pauseAd][18]
-  * [getStateMachine][19]
-  * [getMiddlewareImpl][20]
-  * [getAdsController][21]
-  * [reset][22]
-  * [destroy][23]
-  * [initialUserAction][24]
-  * [defaultConfig][25]
-  * [loadPromise][26]
-  * [isValid][27]
+  * [paused][16]
+  * [currentTime][17]
+  * [currentTime][18]
+    * [Parameters][19]
+  * [duration][20]
+* [Ima][21]
+  * [Parameters][22]
+  * [getEngineDecorator][23]
+    * [Parameters][24]
+  * [skipAd][25]
+  * [resumeAd][26]
+  * [pauseAd][27]
+  * [getStateMachine][28]
+  * [getMiddlewareImpl][29]
+  * [getAdsController][30]
+  * [isAdsPlayingOnSameVideoTag][31]
+  * [loadMedia][32]
+  * [reset][33]
+  * [destroy][34]
+  * [initialUserAction][35]
+  * [defaultConfig][36]
+  * [loadPromise][37]
+  * [isValid][38]
 
 ## google.ima.CompanionAdSelectionSettings.SizeCriteria
 
-[google.ima.CompanionAdSelectionSettings.SizeCriteria][28]
+[google.ima.CompanionAdSelectionSettings.SizeCriteria][39]
 
 ## CompanionsConfigObject
 
-Type: [Object][29]
+Type: [Object][40]
 
 ### Parameters
 
-* `ads` **[Object][29]** Companion ads. Represented as a key-value object where the key is the ad id ([string][30]) and the value is the companion ad object ([CompanionAdObject][5]).
-* `sizeCriteria` **[google.ima.CompanionAdSelectionSettings.SizeCriteria][31]** Available choices for size selection criteria. The user can specify any of these choices for selecting companion ads. (optional, default `'SELECT_EXACT_MATCH'`)
+* `ads` **[Object][40]** Companion ads. Represented as a key-value object where the key is the ad id ([string][41]) and the value is the companion ad object ([CompanionAdObject][5]).
+* `sizeCriteria` **[google.ima.CompanionAdSelectionSettings.SizeCriteria][42]** Available choices for size selection criteria. The user can specify any of these choices for selecting companion ads. (optional, default `'SELECT_EXACT_MATCH'`)
 
 ### Examples
 
@@ -63,36 +74,38 @@ Type: [Object][29]
 
 ## CompanionAdObject
 
-Type: [Object][29]
+Type: [Object][40]
 
 ### Parameters
 
-* `width` **[number][32]** Width of the companion ad.
-* `height` **[number][32]** Height of the companion ad.
+* `width` **[number][43]** Width of the companion ad.
+* `height` **[number][43]** Height of the companion ad.
 
 ## google.ima.AdsRenderingSettings
 
-[google.ima.AdsRenderingSettings][33]
-
-## ImaConfigObject
-
-Type: [Object][29]
-
-### Parameters
-
-* `adTagUrl` **[string][34]** Specifies the ad tag url that is requested from the ad server.
-* `adsResponse` **[string][34]?** Specifies a VAST 2.0 document to be used as the ads response instead of making a request via an ad tag url (if `adTagUrl` is not set).
-* `debug` **[boolean][35]** If set to true, loads IMA SDK in debug mode. (optional, default `false`)
-* `disableMediaPreload` **[number][32]** Whether to disable media pre loading while ad is playing. If set to `true`, the player will start loading the content media just after the ad break will end (incase of preroll ad). This will also overrides `config.adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete` no matters its value and sets it to `false`. (optional, default `false`)
-* `vpaidMode` **[google.ima.ImaSdkSettings.VpaidMode][36]** Sets VPAID playback mode See usage also in [Handling VPAID Modes][37]. (optional, default `'ENABLED'`)
-* `adsRenderingSettings` **[google.ima.AdsRenderingSettings][38]** Defines parameters that control the rendering of ads. (optional, default `{ restoreCustomPlaybackStateOnAdBreakComplete:true, enablePreloading:false, useStyledLinearAds:false, useStyledNonLinearAds:true bitrate:-1, autoAlign:true }`)
-  * `adsRenderingSettings.useStyledLinearAds` **[boolean][35]** See usage also in [Handling VPAID Ads][39] (optional, default `false`)
-* `companions` **[CompanionsConfigObject][40]?** Defines the companion ads.
-* `locale` **[string][40]?** Sets the publisher provided locale.
+[google.ima.AdsRenderingSettings][44]
 
 ## google.ima.ImaSdkSettings.VpaidMode
 
-[google.ima.ImaSdkSettings.VpaidMode][41]
+[google.ima.ImaSdkSettings.VpaidMode][45]
+
+## ImaConfigObject
+
+Type: [Object][40]
+
+### Parameters
+
+* `adTagUrl` **[string][46]** Specifies the ad tag url that is requested from the ad server.
+* `adsResponse` **[string][46]?** Specifies a VAST 2.0 document to be used as the ads response instead of making a request via an ad tag url (if `adTagUrl` is not set).
+* `debug` **[boolean][47]** If set to true, loads IMA SDK in debug mode. (optional, default `false`)
+* `disableMediaPreload` **[number][43]** Whether to disable media pre loading while ad is playing. If set to `true`, the player will start loading the content media just after the ad break will end (incase of preroll ad). This will also overrides `config.adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete` no matters its value and sets it to `false`. (optional, default `false`)
+* `forceReloadMediaAfterAds` **[boolean][47]** force reload our media after ads finish. (optional, default `false`)
+* `delayInitUntilSourceSelected` **[boolean][47]** wait until the video tag loaded and then load Ima. (optional, default `false`)
+* `vpaidMode` **[google.ima.ImaSdkSettings.VpaidMode][48]** Sets VPAID playback mode See usage also in [Handling VPAID Modes][49]. (optional, default `'ENABLED'`)
+* `adsRenderingSettings` **[google.ima.AdsRenderingSettings][50]** Defines parameters that control the rendering of ads. (optional, default `{ restoreCustomPlaybackStateOnAdBreakComplete:true, enablePreloading:false, useStyledLinearAds:false, useStyledNonLinearAds:true bitrate:-1, autoAlign:true }`)
+  * `adsRenderingSettings.useStyledLinearAds` **[boolean][47]** See usage also in [Handling VPAID Ads][51] (optional, default `false`)
+* `companions` **[CompanionsConfigObject][52]?** Defines the companion ads.
+* `locale` **[string][46]?** Sets the publisher provided locale. The locale specifies the language in which to display UI elements and can be any two-letter [ISO 639-1][53] code.
 
 ## ImaAdsController
 
@@ -100,13 +113,50 @@ Controller for ima plugin.
 
 ### Parameters
 
-* `context` **[Ima][42]** The ima plugin context.
+* `context` **[Ima][54]** The ima plugin context.
 
 ### skipAd
 
 Skip on an ad.
 
 Returns **void**
+
+## ImaEngineDecorator
+
+Engine decorator for ima plugin.
+
+### Parameters
+
+* `engine` **IEngine** The HTML5 engine.
+* `plugin` **[Ima][54]** The ima plugin.
+
+### paused
+
+Get paused state.
+
+Returns **[boolean][47]** The paused value of the engine.
+
+### currentTime
+
+Get the current time in seconds.
+
+Returns **[number][43]** The current playback time.
+
+### currentTime
+
+Set the current time in seconds.
+
+#### Parameters
+
+* `to` **[number][43]** The number to set in seconds.
+
+Returns **void**
+
+### duration
+
+Get the duration in seconds.
+
+Returns **[number][43]** The playback duration.
 
 ## Ima
 
@@ -116,9 +166,19 @@ The ima plugin.
 
 ### Parameters
 
-* `name` **[string][34]** The plugin name.
+* `name` **[string][46]** The plugin name.
 * `player` **Player** The player instance.
-* `config` **[ImaConfigObject][43]** The plugin config.
+* `config` **[ImaConfigObject][55]** The plugin config.
+
+### getEngineDecorator
+
+Gets the engine decorator.
+
+#### Parameters
+
+* `engine` **IEngine** The engine to decorate.
+
+Returns **[ImaEngineDecorator][56]** The ads api.
 
 ### skipAd
 
@@ -156,6 +216,18 @@ Gets the ads controller.
 
 Returns **IAdsController** The ads api.
 
+### isAdsPlayingOnSameVideoTag
+
+Gets the indicator if ads still playing on the same player.
+
+Returns **[boolean][47]** if ads still playing on the same player.
+
+### loadMedia
+
+Prepare the plugin before media is loaded.
+
+Returns **void**
+
 ### reset
 
 Resets the plugin.
@@ -178,7 +250,7 @@ Returns **DeferredPromise?** The promise which when resolved starts the next han
 
 The default configuration of the plugin.
 
-Type: [Object][29]
+Type: [Object][40]
 
 ### loadPromise
 
@@ -188,7 +260,7 @@ Will be resolved after:
 1.  Ima script has been loaded in the page.
 2.  The ads manager has been loaded and ready to start.
 
-Type: [Promise][44]&lt;any>
+Type: [Promise][57]&lt;any>
 
 ### isValid
 
@@ -201,40 +273,53 @@ Whether the ima plugin is valid.
 [5]: #companionadobject
 [6]: #parameters-1
 [7]: #googleimaadsrenderingsettings
-[8]: #imaconfigobject
-[9]: #parameters-2
-[10]: #googleimaimasdksettingsvpaidmode
+[8]: #googleimaimasdksettingsvpaidmode
+[9]: #imaconfigobject
+[10]: #parameters-2
 [11]: #imaadscontroller
 [12]: #parameters-3
 [13]: #skipad
-[14]: #ima
+[14]: #imaenginedecorator
 [15]: #parameters-4
-[16]: #skipad-1
-[17]: #resumead
-[18]: #pausead
-[19]: #getstatemachine
-[20]: #getmiddlewareimpl
-[21]: #getadscontroller
-[22]: #reset
-[23]: #destroy
-[24]: #initialuseraction
-[25]: #defaultconfig
-[26]: #loadpromise
-[27]: #isvalid
-[28]: https://developers.google.com/interactive-media-ads/docs/sdks/html5/v3/apis#ima.CompanionAdSelectionSettings.SizeCriteria
-[29]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
-[30]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
-[31]: #googleimacompanionadselectionsettingssizecriteria
-[32]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
-[33]: https://developers.google.com/interactive-media-ads/docs/sdks/html5/v3/apis#ima.AdsRenderingSettings
-[34]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
-[35]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
-[36]: #googleimaimasdksettingsvpaidmode
-[37]: https://github.com/kaltura/playkit-js-ima/blob/master/docs/vpaid.md#handling-vpaid-modes
-[38]: #googleimaadsrenderingsettings
-[39]: https://github.com/kaltura/playkit-js-ima/blob/master/docs/vpaid.md#handling-vpaid-ads
-[40]: #companionsconfigobject
-[41]: https://developers.google.com/interactive-media-ads/docs/sdks/html5/v3/apis#ima.ImaSdkSettings.VpaidMode
-[42]: #ima
-[43]: #imaconfigobject
-[44]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[16]: #paused
+[17]: #currenttime
+[18]: #currenttime-1
+[19]: #parameters-5
+[20]: #duration
+[21]: #ima
+[22]: #parameters-6
+[23]: #getenginedecorator
+[24]: #parameters-7
+[25]: #skipad-1
+[26]: #resumead
+[27]: #pausead
+[28]: #getstatemachine
+[29]: #getmiddlewareimpl
+[30]: #getadscontroller
+[31]: #isadsplayingonsamevideotag
+[32]: #loadmedia
+[33]: #reset
+[34]: #destroy
+[35]: #initialuseraction
+[36]: #defaultconfig
+[37]: #loadpromise
+[38]: #isvalid
+[39]: https://developers.google.com/interactive-media-ads/docs/sdks/html5/v3/apis#ima.CompanionAdSelectionSettings.SizeCriteria
+[40]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[41]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[42]: #googleimacompanionadselectionsettingssizecriteria
+[43]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[44]: https://developers.google.com/interactive-media-ads/docs/sdks/html5/v3/apis#ima.AdsRenderingSettings
+[45]: https://developers.google.com/interactive-media-ads/docs/sdks/html5/v3/apis#ima.ImaSdkSettings.VpaidMode
+[46]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[47]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[48]: #googleimaimasdksettingsvpaidmode
+[49]: https://github.com/kaltura/playkit-js-ima/blob/master/docs/vpaid.md#handling-vpaid-modes
+[50]: #googleimaadsrenderingsettings
+[51]: https://github.com/kaltura/playkit-js-ima/blob/master/docs/vpaid.md#handling-vpaid-ads
+[52]: #companionsconfigobject
+[53]: https://www.loc.gov/standards/iso639-2/php/English_list.php
+[54]: #ima
+[55]: #imaconfigobject
+[56]: #imaenginedecorator
+[57]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise

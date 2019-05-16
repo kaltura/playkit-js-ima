@@ -23,7 +23,7 @@ class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_STARTED,
-          from: [State.LOADED, State.IDLE, State.PAUSED, State.PLAYING],
+          from: [State.LOADED, State.IDLE, State.PAUSED, State.PLAYING, State.PENDING],
           to: (adEvent: any): string => {
             let ad = adEvent.getAd();
             if (!ad.isLinear()) {
@@ -63,7 +63,7 @@ class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_ERROR,
-          from: [State.IDLE, State.LOADED, State.PLAYING, State.PAUSED, State.LOADING],
+          from: [State.IDLE, State.LOADED, State.PLAYING, State.PAUSED, State.LOADING, State.PENDING],
           to: State.IDLE
         },
         {
@@ -76,7 +76,8 @@ class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_BREAK_START,
-          from: [State.IDLE, State.LOADED]
+          from: [State.IDLE, State.LOADED],
+          to: State.PENDING
         },
         {
           name: context.player.Event.AD_MIDPOINT,
@@ -306,11 +307,18 @@ function onAdBreakEnd(options: Object, adEvent: any): void {
   this._setContentPlayheadTrackerEventsEnabled(true);
   this._currentAd = null;
   if (!this._contentComplete) {
+    if (this.config.forceReloadMediaAfterAds) {
+      this.eventManager.listenOnce(this.player, this.player.Event.LOADED_DATA, () => {
+        this._maybeSetVideoCurrentTime();
+        this.player.play();
+      });
+      this.player.getVideoElement().load();
+    }
     this._hideAdsContainer();
     this._maybeSetVideoCurrentTime();
     if (this._nextPromise) {
       this._resolveNextPromise();
-    } else {
+    } else if (!this.config.forceReloadMediaAfterAds) {
       this.player.play();
     }
   }

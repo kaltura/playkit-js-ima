@@ -15,6 +15,8 @@
  * @param {string} [adsResponse] - Specifies a VAST 2.0 document to be used as the ads response instead of making a request via an ad tag url (if `adTagUrl` is not set).
  * @param {boolean} [debug=false] - If set to true, loads IMA SDK in debug mode.
  * @param {number} [disableMediaPreload=false] - Whether to disable media pre loading while ad is playing. If set to `true`, the player will start loading the content media just after the ad break will end (incase of preroll ad). This will also overrides `config.adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete` no matters its value and sets it to `false`.
+ * @param {boolean} [forceReloadMediaAfterAds=false] - force reload our media after ads finish.
+ * @param {boolean} [delayInitUntilSourceSelected=false] - wait until the video tag loaded and then load Ima.
  * @param {google.ima.ImaSdkSettings.VpaidMode} [vpaidMode='ENABLED'] - Sets VPAID playback mode See usage also in {@link https://github.com/kaltura/playkit-js-ima/blob/master/docs/vpaid.md#handling-vpaid-modes|Handling VPAID Modes}.
  * @param {google.ima.AdsRenderingSettings} [adsRenderingSettings={
   restoreCustomPlaybackStateOnAdBreakComplete: true,
@@ -35,6 +37,8 @@ type _ImaConfigObject = {
   adsResponse: string,
   vpaidMode: string,
   disableMediaPreload: boolean,
+  forceReloadMediaAfterAds: boolean,
+  delayInitUntilSourceSelected: boolean,
   setDisableCustomPlaybackForIOS10Plus: boolean,
   adsRenderingSettings: Object,
   companions: Object,
