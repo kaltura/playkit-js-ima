@@ -10,21 +10,13 @@
  */
 
 /**
- * @external google.ima.AdsRequest
- * @description {@link https://developers.google.com/interactive-media-ads/docs/sdks/html5/v3/apis#ima.AdsRequest}
- */
-
-
-/**
  * @typedef {Object} ImaConfigObject
  * @param {string} adTagUrl - Specifies the ad tag url that is requested from the ad server.
  * @param {string} [adsResponse] - Specifies a VAST 2.0 document to be used as the ads response instead of making a request via an ad tag url (if `adTagUrl` is not set).
  * @param {boolean} [debug=false] - If set to true, loads IMA SDK in debug mode.
  * @param {number} [disableMediaPreload=false] - Whether to disable media pre loading while ad is playing. If set to `true`, the player will start loading the content media just after the ad break will end (incase of preroll ad). This will also overrides `config.adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete` no matters its value and sets it to `false`.
  * @param {google.ima.ImaSdkSettings.VpaidMode} [vpaidMode='ENABLED'] - Sets VPAID playback mode See usage also in {@link https://github.com/kaltura/playkit-js-ima/blob/master/docs/vpaid.md#handling-vpaid-modes|Handling VPAID Modes}.
- * @param {google.ima.AdsRequest} [adsRequest={
-   vastLoadTimeout: 5000
- * }] = AdsRequest instance containing data for the ads request.
+ * @param {google.ima.AdsRequest.vastLoadTimeout [vastLoadTimeout: 5000] - Override for default VAST load timeout in milliseconds for a single wrapper. The default timeout is 5000ms.
  * @param {google.ima.AdsRenderingSettings} [adsRenderingSettings={
   restoreCustomPlaybackStateOnAdBreakComplete: true,
   enablePreloading: false,
@@ -46,7 +38,6 @@ type _ImaConfigObject = {
   disableMediaPreload: boolean,
   setDisableCustomPlaybackForIOS10Plus: boolean,
   adsRenderingSettings: Object,
-  adsRequest: Object,
   companions: Object,
   locale: string
 };

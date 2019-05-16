@@ -66,9 +66,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       autoAlign: true,
       loadVideoTimeout: -1
     },
-    adsRequest: {
-      vastLoadTimeout: 5000
-    },
     companions: {
       ads: null,
       sizeCriteria: 'SELECT_EXACT_MATCH'
@@ -647,8 +644,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       } else {
         adsRequest.adsResponse = this.config.adsResponse;
       }
-      if (this.config.adsRequest.vastLoadTimeout) {
-        adsRequest.vastLoadTimeout = this.config.adsRequest.vastLoadTimeout;
+      if (this.config.vastLoadTimeout) {
+        adsRequest.vastLoadTimeout = this.config.vastLoadTimeout;
       }
       adsRequest.linearAdSlotWidth = this.player.dimensions.width;
       adsRequest.linearAdSlotHeight = this.player.dimensions.height;
