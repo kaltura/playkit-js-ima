@@ -9,6 +9,7 @@
 * [CompanionAdObject][5]
   * [Parameters][6]
 * [google.ima.AdsRenderingSettings][7]
+* [google.ima.AdsRequest][45]
 * [ImaConfigObject][8]
   * [Parameters][9]
 * [google.ima.ImaSdkSettings.VpaidMode][10]
@@ -74,6 +75,10 @@ Type: [Object][29]
 
 [google.ima.AdsRenderingSettings][33]
 
+## google.ima.AdsRequest
+
+[google.ima.AdsRequest][45]
+
 ## ImaConfigObject
 
 Type: [Object][29]
@@ -86,9 +91,11 @@ Type: [Object][29]
 * `disableMediaPreload` **[number][32]** Whether to disable media pre loading while ad is playing. If set to `true`, the player will start loading the content media just after the ad break will end (incase of preroll ad). This will also overrides `config.adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete` no matters its value and sets it to `false`. (optional, default `false`)
 * `vpaidMode` **[google.ima.ImaSdkSettings.VpaidMode][36]** Sets VPAID playback mode See usage also in [Handling VPAID Modes][37]. (optional, default `'ENABLED'`)
 * `adsRenderingSettings` **[google.ima.AdsRenderingSettings][38]** Defines parameters that control the rendering of ads. (optional, default `{ restoreCustomPlaybackStateOnAdBreakComplete:true, enablePreloading:false, useStyledLinearAds:false, useStyledNonLinearAds:true bitrate:-1, autoAlign:true }`)
-  * `adsRenderingSettings.useStyledLinearAds` **[boolean][35]** See usage also in [Handling VPAID Ads][39] (optional, default `false`)
+* `adsRenderingSettings.useStyledLinearAds` **[boolean][35]** See usage also in [Handling VPAID Ads][39] (optional, default `false`)
 * `companions` **[CompanionsConfigObject][40]?** Defines the companion ads.
 * `locale` **[string][40]?** Sets the publisher provided locale.
+* `adsRequest` **[google.ima.AdsRequest][45]** A class for specifying properties of the ad request.
+* `adsRequest.vastLoadTimeout` **[number][32]** Override for default VAST load timeout in milliseconds for a single wrapper. The default timeout is 5000ms.
 
 ## google.ima.ImaSdkSettings.VpaidMode
 
@@ -238,3 +245,4 @@ Whether the ima plugin is valid.
 [42]: #ima
 [43]: #imaconfigobject
 [44]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[45]: https://developers.google.com/interactive-media-ads/docs/sdks/html5/v3/apis#ima.AdsRequest
