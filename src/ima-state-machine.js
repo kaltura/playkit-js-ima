@@ -23,7 +23,7 @@ class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_STARTED,
-          from: [State.LOADED, State.IDLE, State.PAUSED, State.PLAYING, State.PROCESS],
+          from: [State.LOADED, State.IDLE, State.PAUSED, State.PLAYING, State.PENDING],
           to: (adEvent: any): string => {
             let ad = adEvent.getAd();
             if (!ad.isLinear()) {
@@ -63,7 +63,7 @@ class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_ERROR,
-          from: [State.IDLE, State.LOADED, State.PLAYING, State.PAUSED, State.LOADING, State.PROCESS],
+          from: [State.IDLE, State.LOADED, State.PLAYING, State.PAUSED, State.LOADING, State.PENDING],
           to: State.IDLE
         },
         {
@@ -77,7 +77,7 @@ class ImaStateMachine {
         {
           name: context.player.Event.AD_BREAK_START,
           from: [State.IDLE, State.LOADED],
-          to: State.PROCESS
+          to: State.PENDING
         },
         {
           name: context.player.Event.AD_MIDPOINT,

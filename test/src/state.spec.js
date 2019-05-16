@@ -5,6 +5,7 @@ describe('Ima Plugin State', function() {
     State.should.deep.equal({
       LOADING: 'loading',
       LOADED: 'loaded',
+      PENDING: 'pending',
       PLAYING: 'playing',
       PAUSED: 'paused',
       IDLE: 'idle',

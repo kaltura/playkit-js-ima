@@ -28,7 +28,7 @@
     "javascript-state-machine": "^3.0.1"
   },
   "devDependencies": {
-    "@playkit-js/playkit-js": "^0.45.1-canary.4eaff16",
+    "@playkit-js/playkit-js": "^0.46.1",
     "babel-cli": "^6.18.0",
     "babel-core": "^6.18.2",
     "babel-eslint": "^7.1.1",
