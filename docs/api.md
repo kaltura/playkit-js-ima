@@ -90,7 +90,7 @@ Type: [Object][30]
   * `adsRenderingSettings.useStyledLinearAds` **[boolean][36]** See usage also in [Handling VPAID Ads][40] (optional, default `false`)
 * `companions` **[CompanionsConfigObject][41]?** Defines the companion ads.
 * `locale` **[string][35]?** Sets the publisher provided locale. The locale specifies the language in which to display UI elements and can be any two-letter [ISO 639-1][42] code.
-* `vastLoadTimeout` **[number][47]** Override for default VAST load timeout in milliseconds for a single wrapper. The default timeout is 5000ms.
+* `vastLoadTimeout` **[number][47]** Override for default VAST load timeout in milliseconds for a single wrapper. (optional, default `5000`).
 
 ## google.ima.ImaSdkSettings.VpaidMode
 
