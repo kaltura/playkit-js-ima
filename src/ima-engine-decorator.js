@@ -3,10 +3,10 @@ import {BaseEngineDecorator, FakeEvent} from '@playkit-js/playkit-js';
 import {Ima} from './ima';
 
 /**
- * Engine decorator for ima dai plugin.
- * @class ImaDAIEngineDecorator
+ * Engine decorator for ima plugin.
+ * @class ImaEngineDecorator
  * @param {IEngine} engine - The HTML5 engine.
- * @param {Ima} plugin - The ima dai plugin.
+ * @param {Ima} plugin - The ima plugin.
  */
 class ImaEngineDecorator extends BaseEngineDecorator {
   _plugin: Ima;
@@ -29,7 +29,7 @@ class ImaEngineDecorator extends BaseEngineDecorator {
    * @public
    * @override
    * @instance
-   * @memberof ImaDAIEngineDecorator
+   * @memberof ImaEngineDecorator
    */
   get paused(): boolean {
     if (!this._plugin.isAdsPlayingCustomPlayback()) {
