@@ -698,6 +698,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       } else {
         adsRequest.adsResponse = this.config.adsResponse;
       }
+      if (typeof this.config.vastLoadTimeout === 'number') {
+        adsRequest.vastLoadTimeout = this.config.vastLoadTimeout;
+      }
       adsRequest.linearAdSlotWidth = this.player.dimensions.width;
       adsRequest.linearAdSlotHeight = this.player.dimensions.height;
       adsRequest.nonLinearAdSlotWidth = this.player.dimensions.width;
