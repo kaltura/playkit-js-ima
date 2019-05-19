@@ -9,13 +9,13 @@
 * [CompanionAdObject][5]
   * [Parameters][6]
 * [google.ima.AdsRenderingSettings][7]
-* [ImaConfigObject][8]
-  * [Parameters][9]
-* [google.ima.ImaSdkSettings.VpaidMode][10]
+* [google.ima.ImaSdkSettings.VpaidMode][8]
+* [ImaConfigObject][9]
+  * [Parameters][10]
 * [ImaAdsController][11]
   * [Parameters][12]
   * [skipAd][13]
-* [Ima][14]
+* [ImaEngineDecorator][14]
   * [Parameters][15]
   * [skipAd][16]
   * [resumeAd][17]
@@ -75,11 +75,11 @@ Type: [Object][30]
 
 [google.ima.AdsRenderingSettings][34]
 
-## ImaConfigObject
+## google.ima.ImaSdkSettings.VpaidMode
 
 Type: [Object][30]
 
-### Parameters
+## ImaConfigObject
 
 * `adTagUrl` **[string][35]** Specifies the ad tag url that is requested from the ad server.
 * `adsResponse` **[string][35]?** Specifies a VAST 2.0 document to be used as the ads response instead of making a request via an ad tag url (if `adTagUrl` is not set).
@@ -92,7 +92,7 @@ Type: [Object][30]
 * `locale` **[string][35]?** Sets the publisher provided locale. The locale specifies the language in which to display UI elements and can be any two-letter [ISO 639-1][42] code.
 * `vastLoadTimeout` **[number][47]** Override for default VAST load timeout in milliseconds for a single wrapper. (optional, default `5000`).
 
-## google.ima.ImaSdkSettings.VpaidMode
+### Parameters
 
 [google.ima.ImaSdkSettings.VpaidMode][43]
 
@@ -109,6 +109,43 @@ Controller for ima plugin.
 Skip on an ad.
 
 Returns **void**
+
+## ImaEngineDecorator
+
+Engine decorator for ima plugin.
+
+### Parameters
+
+* `engine` **IEngine** The HTML5 engine.
+* `plugin` **[Ima][54]** The ima plugin.
+
+### paused
+
+Get paused state.
+
+Returns **[boolean][47]** The paused value of the engine.
+
+### currentTime
+
+Get the current time in seconds.
+
+Returns **[number][43]** The current playback time.
+
+### currentTime
+
+Set the current time in seconds.
+
+#### Parameters
+
+* `to` **[number][43]** The number to set in seconds.
+
+Returns **void**
+
+### duration
+
+Get the duration in seconds.
+
+Returns **[number][43]** The playback duration.
 
 ## Ima
 
@@ -209,13 +246,13 @@ Whether the ima plugin is valid.
 [5]: #companionadobject
 [6]: #parameters-1
 [7]: #googleimaadsrenderingsettings
-[8]: #imaconfigobject
-[9]: #parameters-2
-[10]: #googleimaimasdksettingsvpaidmode
+[8]: #googleimaimasdksettingsvpaidmode
+[9]: #imaconfigobject
+[10]: #parameters-2
 [11]: #imaadscontroller
 [12]: #parameters-3
 [13]: #skipad
-[14]: #ima
+[14]: #imaenginedecorator
 [15]: #parameters-4
 [16]: #skipad-1
 [17]: #resumead

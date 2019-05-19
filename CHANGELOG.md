@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.11.0"></a>
+# [0.11.0](https://github.com/kaltura/playkit-js-ima/compare/v0.10.9...v0.11.0) (2019-05-16)
+
+
+### Bug Fixes
+
+* ad system is missing in the ad event payload ([#109](https://github.com/kaltura/playkit-js-ima/issues/109)) ([dbc1eeb](https://github.com/kaltura/playkit-js-ima/commit/dbc1eeb))
+* **FEC-9112:** start time skips the midroll despite the config ([#110](https://github.com/kaltura/playkit-js-ima/issues/110)) ([edea4d3](https://github.com/kaltura/playkit-js-ima/commit/edea4d3))
+
+
+### Features
+
+* **FEC-9067:** playback error with ima on LG TV WebOS ([#105](https://github.com/kaltura/playkit-js-ima/issues/105)) ([778ae07](https://github.com/kaltura/playkit-js-ima/commit/778ae07))
+
+
+
 <a name="0.10.9"></a>
 ## [0.10.9](https://github.com/kaltura/playkit-js-ima/compare/v0.10.8...v0.10.9) (2019-05-01)
 
