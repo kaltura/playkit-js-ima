@@ -25,7 +25,7 @@
     "access": "public"
   },
   "dependencies": {
-    "javascript-state-machine": "https://github.com/kaltura/javascript-state-machine.git#v3.0.1"
+    "javascript-state-machine": "https://github.com/kaltura/javascript-state-machine.git#^v3.1.0-k-1"
   },
   "devDependencies": {
     "@playkit-js/playkit-js": "^0.46.1",
