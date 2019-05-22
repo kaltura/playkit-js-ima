@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.12.0"></a>
+# [0.12.0](https://github.com/kaltura/playkit-js-ima/compare/v0.11.0...v0.12.0) (2019-05-22)
+
+
+### Bug Fixes
+
+* **FEC-9058:** get state machine from kaltura with patch ([#111](https://github.com/kaltura/playkit-js-ima/issues/111)) ([99c2fc8](https://github.com/kaltura/playkit-js-ima/commit/99c2fc8))
+
+
+### Features
+
+* **FEC-9074:** expose the vastLoadTimeout value ([#108](https://github.com/kaltura/playkit-js-ima/issues/108)) ([59bc4ff](https://github.com/kaltura/playkit-js-ima/commit/59bc4ff))
+
+
+
 <a name="0.11.0"></a>
 # [0.11.0](https://github.com/kaltura/playkit-js-ima/compare/v0.10.9...v0.11.0) (2019-05-16)
 
