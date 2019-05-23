@@ -4709,9 +4709,9 @@ istanbul@^0.4.0, istanbul@^0.4.5:
     which "^1.1.1"
     wordwrap "^1.0.0"
 
-"javascript-state-machine@https://github.com/kaltura/javascript-state-machine.git#^v3.1.0-k-1":
+"javascript-state-machine@https://github.com/kaltura/javascript-state-machine.git#v3.1.0-k-1":
   version "3.1.0"
-  resolved "https://github.com/kaltura/javascript-state-machine.git#0d603577423244228cebcd62e60dbbfff27c6ea3"
+  resolved "https://github.com/kaltura/javascript-state-machine.git#510114d1a7e98b7bc1444ca22f034a3596b46605"
 
 jest-config@^22.4.3:
   version "22.4.3"
