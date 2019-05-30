@@ -23,7 +23,7 @@ class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_STARTED,
-          from: [State.LOADED, State.IDLE, State.PAUSED, State.PLAYING],
+          from: [State.LOADED, State.IDLE, State.PAUSED, State.PLAYING, State.PENDING],
           to: (adEvent: any): string => {
             let ad = adEvent.getAd();
             if (!ad.isLinear()) {
@@ -63,7 +63,7 @@ class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_ERROR,
-          from: [State.IDLE, State.LOADED, State.PLAYING, State.PAUSED, State.LOADING],
+          from: [State.IDLE, State.LOADED, State.PLAYING, State.PAUSED, State.LOADING, State.PENDING],
           to: State.IDLE
         },
         {
@@ -76,7 +76,8 @@ class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_BREAK_START,
-          from: [State.IDLE, State.LOADED]
+          from: [State.IDLE, State.LOADED],
+          to: State.PENDING
         },
         {
           name: context.player.Event.AD_MIDPOINT,
@@ -254,7 +255,6 @@ function onAdResumed(options: Object, adEvent: any): void {
  */
 function onAdCompleted(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
-  this._currentAd = null;
   this.dispatchEvent(options.transition);
 }
 
@@ -305,12 +305,20 @@ function onAdBreakEnd(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
   this._setVideoEndedCallbackEnabled(true);
   this._setContentPlayheadTrackerEventsEnabled(true);
+  this._currentAd = null;
   if (!this._contentComplete) {
+    if (this.config.forceReloadMediaAfterAds) {
+      this.eventManager.listenOnce(this.player, this.player.Event.LOADED_DATA, () => {
+        this._maybeSetVideoCurrentTime();
+        this.player.play();
+      });
+      this.player.getVideoElement().load();
+    }
     this._hideAdsContainer();
     this._maybeSetVideoCurrentTime();
     if (this._nextPromise) {
       this._resolveNextPromise();
-    } else {
+    } else if (!this.config.forceReloadMediaAfterAds) {
       this.player.play();
     }
   }
@@ -487,6 +495,7 @@ function getAdOptions(adEvent: any): Object {
   const ad = adEvent.getAd();
   const adData = adEvent.getAdData();
   const podInfo = ad.getAdPodInfo();
+  adOptions.system = ad.getAdSystem();
   adOptions.url = ad.getMediaUrl();
   adOptions.clickThroughUrl = adData && adData.clickThroughUrl;
   adOptions.contentType = ad.getContentType();

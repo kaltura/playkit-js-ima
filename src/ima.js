@@ -3,8 +3,9 @@ import {ImaMiddleware} from './ima-middleware';
 import {ImaAdsController} from './ima-ads-controller';
 import {ImaStateMachine} from './ima-state-machine';
 import {State} from './state';
-import {BaseMiddleware, BasePlugin, EngineType, Error, getCapabilities, Utils} from '@playkit-js/playkit-js';
+import {BaseMiddleware, BasePlugin, EngineType, Error, getCapabilities, Utils, Env} from '@playkit-js/playkit-js';
 import './assets/style.css';
+import {ImaEngineDecorator} from './ima-engine-decorator';
 
 /**
  * The full screen events..
@@ -55,8 +56,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   static defaultConfig: Object = {
     debug: false,
-    delayInitUntilSourceSelected: false,
+    delayInitUntilSourceSelected: Env.os.name === 'iOS',
     disableMediaPreload: false,
+    forceReloadMediaAfterAds: false,
     adsRenderingSettings: {
       restoreCustomPlaybackStateOnAdBreakComplete: true,
       enablePreloading: false,
@@ -184,12 +186,20 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   _currentAd: any;
   /**
+   * The content media duration.
+   * @member
+   * @private
+   * @memberof Ima
+   */
+  _contentDuration: ?number;
+  /**
    * The content media src.
    * @member
    * @private
    * @memberof Ima
    */
   _contentSrc: string;
+
   /**
    * Whether an initial user action happened.
    * @member
@@ -235,6 +245,18 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._stateMachine = new ImaStateMachine(this);
     this._initMembers();
     this._init();
+  }
+
+  /**
+   * Gets the engine decorator.
+   * @param {IEngine} engine - The engine to decorate.
+   * @public
+   * @returns {ImaEngineDecorator} - The ads api.
+   * @instance
+   * @memberof Ima
+   */
+  getEngineDecorator(engine: IEngine): ImaEngineDecorator {
+    return new ImaEngineDecorator(engine, this);
   }
 
   /**
@@ -324,6 +346,34 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   getAdsController(): IAdsPluginController {
     return new ImaAdsController(this);
+  }
+
+  /**
+   * Gets the indicator if ads still playing on the same player.
+   * @public
+   * @returns {boolean} - if ads still playing on the same player.
+   * @instance
+   * @memberof Ima
+   */
+  isAdsPlayingOnSameVideoTag(): boolean {
+    return (
+      !!this._adsManager && !!this._adsManager.isCustomPlaybackUsed() && !this._stateMachine.is(State.IDLE) && !this._stateMachine.is(State.DONE)
+    );
+  }
+
+  getContentTime(): ?number {
+    let currentTime = 0;
+    //current time exist for mid-roll otherwise it's pre-roll(start of video - 0) - post-roll(end of video)
+    if (this._videoLastCurrentTime) {
+      currentTime = this._videoLastCurrentTime;
+    } else if (this._contentComplete) {
+      currentTime = this.getContentDuration();
+    }
+    return currentTime;
+  }
+
+  getContentDuration(): ?number {
+    return this._contentDuration || this.player.config.sources.duration || 0;
   }
 
   /**
@@ -447,6 +497,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
         this._contentSrc = selectedSource[0].url;
       }
     });
+    this.eventManager.listenOnce(this.player, this.player.Event.DURATION_CHANGE, () => {
+      this._contentDuration = this.player.duration;
+    });
     this.eventManager.listen(this.player, this.player.Event.ERROR, event => {
       if (event.payload && event.payload.severity === Error.Severity.CRITICAL) {
         this.reset();
@@ -478,6 +531,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._contentPlayheadTracker = {currentTime: 0, previousTime: 0, seeking: false, duration: 0};
     this._hasUserAction = false;
     this._togglePlayPauseOnAdsContainerCallback = null;
+    this._contentDuration = null;
   }
 
   /**
@@ -605,6 +659,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._adsContainerDiv = Utils.Dom.createElement('div');
     this._adsContainerDiv.id = ADS_CONTAINER_CLASS + playerView.id;
     this._adsContainerDiv.className = ADS_CONTAINER_CLASS;
+
     // Create ads cover
     this._adsCoverDiv = Utils.Dom.createElement('div');
     this._adsCoverDiv.id = ADS_COVER_CLASS + playerView.id;
@@ -647,6 +702,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
         adsRequest.adTagUrl = this.config.adTagUrl;
       } else {
         adsRequest.adsResponse = this.config.adsResponse;
+      }
+      if (typeof this.config.vastLoadTimeout === 'number') {
+        adsRequest.vastLoadTimeout = this.config.vastLoadTimeout;
       }
       adsRequest.linearAdSlotWidth = this.player.dimensions.width;
       adsRequest.linearAdSlotHeight = this.player.dimensions.height;
@@ -818,7 +876,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _maybeSaveVideoCurrentTime(): void {
-    if (this._adsManager.isCustomPlaybackUsed() && this.player.currentTime && this.player.currentTime > 0) {
+    if ((this._adsManager.isCustomPlaybackUsed() || this.config.forceReloadMediaAfterAds) && this.player.currentTime && this.player.currentTime > 0) {
       this.logger.debug('Custom playback used: save current time before ads', this.player.currentTime);
       this._videoLastCurrentTime = this.player.currentTime;
     }
@@ -893,6 +951,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this.logger.debug('Ads manager loaded');
     const adsRenderingSettings = this._getAdsRenderingSetting();
     this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
+    this.config.forceReloadMediaAfterAds = this._adsManager.isCustomPlaybackUsed() ? false : this.config.forceReloadMediaAfterAds;
     const cuePoints = this._adsManager.getCuePoints();
     if (!cuePoints.length) {
       cuePoints.push(0);
@@ -926,7 +985,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     if (this.config.disableMediaPreload) {
       adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = false;
     }
-    if (!this.config.adsRenderingSettings.playAdsAfterTime) {
+    if (typeof this.config.adsRenderingSettings.playAdsAfterTime !== 'number') {
       adsRenderingSettings.playAdsAfterTime = this.player.config.playback.startTime;
     }
     return adsRenderingSettings;
@@ -962,7 +1021,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.SKIPPABLE_STATE_CHANGED, adEvent => this._stateMachine.adcanskip(adEvent));
     this._adsManager.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, adEvent => this._stateMachine.aderror(adEvent));
   }
-
   /**
    * Syncs the player volume.
    * @private
@@ -1007,13 +1065,17 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   _setToggleAdsCover(enable: boolean): void {
     if (enable) {
       if (!this._adsManager.isCustomPlaybackUsed()) {
-        this._adsContainerDiv.appendChild(this._adsCoverDiv);
-        this._isAdsCoverActive = true;
+        if (this._adsContainerDiv.parentNode) {
+          this._adsContainerDiv.parentNode.insertBefore(this._adsCoverDiv, this._adsContainerDiv.nextSibling);
+          this._isAdsCoverActive = true;
+        }
       }
     } else {
       if (this._isAdsCoverActive) {
-        this._adsContainerDiv.removeChild(this._adsCoverDiv);
-        this._isAdsCoverActive = false;
+        if (this._adsContainerDiv.parentNode) {
+          this._adsContainerDiv.parentNode.removeChild(this._adsCoverDiv);
+          this._isAdsCoverActive = false;
+        }
       }
     }
   }
@@ -1103,8 +1165,14 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _maybeForceExitFullScreen(): void {
-    const isIOS = () => this.player.env.os.name === 'iOS';
-    if (isIOS() && !this._adsManager.isCustomPlaybackUsed() && this.player.isFullscreen()) {
+    const isIOS = this.player.env.os.name === 'iOS';
+    //check if inBrowserFullscreen not set, just in case of inline true and not inBrowserFullscreen we will exit otherwise
+    if (
+      isIOS &&
+      !this._adsManager.isCustomPlaybackUsed() &&
+      (this.player.isFullscreen() && !this.player.config.playback.inBrowserFullscreen) &&
+      this.player.config.playback.playsinline
+    ) {
       this.player.exitFullscreen();
     }
   }

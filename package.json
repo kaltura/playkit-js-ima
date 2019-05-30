@@ -1,6 +1,6 @@
 {
   "name": "@playkit-js/playkit-js-ima",
-  "version": "0.11.0",
+  "version": "0.12.1",
   "main": "dist/playkit-ima.js",
   "scripts": {
     "clean": "rm -rf ./dist",
@@ -25,10 +25,10 @@
     "access": "public"
   },
   "dependencies": {
-    "javascript-state-machine": "^3.0.1"
+    "javascript-state-machine": "https://github.com/kaltura/javascript-state-machine.git#v3.1.0-k-1"
   },
   "devDependencies": {
-    "@playkit-js/playkit-js": "^0.45.1-canary.4eaff16",
+    "@playkit-js/playkit-js": "^0.46.1",
     "babel-cli": "^6.18.0",
     "babel-core": "^6.18.2",
     "babel-eslint": "^7.1.1",

@@ -2,13 +2,101 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-<a name="0.11.0"></a>
-# [0.11.0](https://github.com/kaltura/playkit-js-ima/compare/v0.10.3...v0.11.0) (2019-02-28)
+<a name="0.12.1"></a>
+## [0.12.1](https://github.com/kaltura/playkit-js-ima/compare/v0.12.0...v0.12.1) (2019-05-23)
+
+
+### Bug Fixes
+
+* **FEC-9058:** incorrect package dependency(javascript-state-machine) ([#112](https://github.com/kaltura/playkit-js-ima/issues/112)) ([be59186](https://github.com/kaltura/playkit-js-ima/commit/be59186))
+
+
+
+<a name="0.12.0"></a>
+# [0.12.0](https://github.com/kaltura/playkit-js-ima/compare/v0.11.0...v0.12.0) (2019-05-22)
+
+
+### Bug Fixes
+
+* **FEC-9058:** get state machine from kaltura with patch ([#111](https://github.com/kaltura/playkit-js-ima/issues/111)) ([99c2fc8](https://github.com/kaltura/playkit-js-ima/commit/99c2fc8))
 
 
 ### Features
 
-* **FEC-8631:** bumper plugin ([bfc41d9](https://github.com/kaltura/playkit-js-ima/commit/bfc41d9))
+* **FEC-9074:** expose the vastLoadTimeout value ([#108](https://github.com/kaltura/playkit-js-ima/issues/108)) ([59bc4ff](https://github.com/kaltura/playkit-js-ima/commit/59bc4ff))
+
+
+
+<a name="0.11.0"></a>
+# [0.11.0](https://github.com/kaltura/playkit-js-ima/compare/v0.10.9...v0.11.0) (2019-05-16)
+
+
+### Bug Fixes
+
+* ad system is missing in the ad event payload ([#109](https://github.com/kaltura/playkit-js-ima/issues/109)) ([dbc1eeb](https://github.com/kaltura/playkit-js-ima/commit/dbc1eeb))
+* **FEC-9112:** start time skips the midroll despite the config ([#110](https://github.com/kaltura/playkit-js-ima/issues/110)) ([edea4d3](https://github.com/kaltura/playkit-js-ima/commit/edea4d3))
+
+
+### Features
+
+* **FEC-9067:** playback error with ima on LG TV WebOS ([#105](https://github.com/kaltura/playkit-js-ima/issues/105)) ([778ae07](https://github.com/kaltura/playkit-js-ima/commit/778ae07))
+
+
+
+<a name="0.10.9"></a>
+## [0.10.9](https://github.com/kaltura/playkit-js-ima/compare/v0.10.8...v0.10.9) (2019-05-01)
+
+
+### Bug Fixes
+
+* **FEC-9058:** get state machine from kaltura with patch ([#107](https://github.com/kaltura/playkit-js-ima/issues/107)) ([cb5457e](https://github.com/kaltura/playkit-js-ima/commit/cb5457e))
+
+
+
+<a name="0.10.8"></a>
+## [0.10.8](https://github.com/kaltura/playkit-js-ima/compare/v0.10.7...v0.10.8) (2019-04-24)
+
+
+### Bug Fixes
+
+* **FEC-9051:** Added umdNameDefine true to support requireJS in IMA ([4bac468](https://github.com/kaltura/playkit-js-ima/commit/4bac468))
+
+
+
+<a name="0.10.7"></a>
+## [0.10.7](https://github.com/kaltura/playkit-js-ima/compare/v0.10.6...v0.10.7) (2019-04-10)
+
+
+### Bug Fixes
+
+* **FEC-9027:** overlay ad not displayed ([#104](https://github.com/kaltura/playkit-js-ima/issues/104)) ([a0c85b3](https://github.com/kaltura/playkit-js-ima/commit/a0c85b3))
+
+
+
+<a name="0.10.6"></a>
+## [0.10.6](https://github.com/kaltura/playkit-js-ima/compare/v0.10.5...v0.10.6) (2019-04-07)
+
+
+### Bug Fixes
+
+* **FEC-8933:** fix ads covered entire page ([#101](https://github.com/kaltura/playkit-js-ima/issues/101)) ([9891a31](https://github.com/kaltura/playkit-js-ima/commit/9891a31))
+* **FEC-8996:** [iOS] - player exits from in browser full screen on ad ([#102](https://github.com/kaltura/playkit-js-ima/issues/102)) ([526952d](https://github.com/kaltura/playkit-js-ima/commit/526952d))
+* **FEC-9013:** [iOS] - Player doesnt play ads native when playsinline is false ([#103](https://github.com/kaltura/playkit-js-ima/issues/103)) ([edc0c6b](https://github.com/kaltura/playkit-js-ima/commit/edc0c6b))
+
+
+
+<a name="0.10.5"></a>
+## [0.10.5](https://github.com/kaltura/playkit-js-ima/compare/v0.10.4...v0.10.5) (2019-03-07)
+
+
+
+<a name="0.10.4"></a>
+## [0.10.4](https://github.com/kaltura/playkit-js-ima/compare/v0.10.3...v0.10.4) (2019-03-06)
+
+
+### Bug Fixes
+
+* **FEC-8936:** VPAID ads may cause player crash ([#97](https://github.com/kaltura/playkit-js-ima/issues/97)) ([cd6f317](https://github.com/kaltura/playkit-js-ima/commit/cd6f317))
 
 
 
