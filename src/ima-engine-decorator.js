@@ -1,5 +1,5 @@
 // @flow
-import {BaseEngineDecorator, FakeEvent} from '@playkit-js/playkit-js';
+import {BaseEngineDecorator, FakeEvent, Html5EventType} from '@playkit-js/playkit-js';
 import {Ima} from './ima';
 
 /**
@@ -17,7 +17,19 @@ class ImaEngineDecorator extends BaseEngineDecorator {
   }
 
   dispatchEvent(event: FakeEvent): boolean {
-    return this._plugin.isAdsPlayingOnSameVideoTag() ? event.defaultPrevented : super.dispatchEvent(event);
+    //handle events for fatal adError that doesnt return the video source
+    if (this._plugin.isAdsFailedAndSourceChanged()) {
+      if (event.type === Html5EventType.ERROR) {
+        this._plugin.setAdsFailed(false);
+        this._plugin.player.getVideoElement().src = this._plugin.getContentSrc();
+        this._plugin.player.play();
+        return event.defaultPrevented;
+      } else if (event.type === Html5EventType.AUTOPLAY_FAILED) {
+        return event.defaultPrevented;
+      }
+    } else {
+      return this._plugin.isAdsPlayingOnSameVideoTag() ? event.defaultPrevented : super.dispatchEvent(event);
+    }
   }
   /**
    * Get paused state.
