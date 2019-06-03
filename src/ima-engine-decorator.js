@@ -18,15 +18,15 @@ class ImaEngineDecorator extends BaseEngineDecorator {
 
   dispatchEvent(event: FakeEvent): boolean {
     //handle events for fatal adError that doesnt return the video source
-    if (this._plugin.isAdsFailedAndSourceChanged() && event.type === EventType.ERROR) {
+    if (this._plugin.isAdFailedAndSourceChanged() && event.type === EventType.ERROR) {
       this._plugin.setAdsFailed(false);
       this._plugin.player.getVideoElement().src = this._plugin.getContentSrc();
       this._plugin.player.play();
       return event.defaultPrevented;
-    } else if (this._plugin.isAdsFailedAndSourceChanged() && event.type === EventType.AUTOPLAY_FAILED) {
+    } else if (this._plugin.isAdFailedAndSourceChanged() && event.type === EventType.AUTOPLAY_FAILED) {
       return event.defaultPrevented;
     } else {
-      return this._plugin.isAdsPlayingOnSameVideoTag() ? event.defaultPrevented : super.dispatchEvent(event);
+      return this._plugin.isAdPlayingOnSameVideoTag() ? event.defaultPrevented : super.dispatchEvent(event);
     }
   }
   /**
@@ -38,7 +38,7 @@ class ImaEngineDecorator extends BaseEngineDecorator {
    * @memberof ImaEngineDecorator
    */
   get paused(): boolean {
-    return this._plugin.isAdsPlayingOnSameVideoTag() ? true : super.paused;
+    return this._plugin.isAdPlayingOnSameVideoTag() ? true : super.paused;
   }
   /**
    * Get the current time in seconds.
@@ -49,7 +49,7 @@ class ImaEngineDecorator extends BaseEngineDecorator {
    * @memberof ImaEngineDecorator
    */
   get currentTime(): ?number {
-    return this._plugin.isAdsPlayingOnSameVideoTag() ? this._plugin.getContentTime() : super.currentTime;
+    return this._plugin.isAdPlayingOnSameVideoTag() ? this._plugin.getContentTime() : super.currentTime;
   }
   /**
    * Set the current time in seconds.
@@ -69,7 +69,7 @@ class ImaEngineDecorator extends BaseEngineDecorator {
    * @memberof ImaEngineDecorator
    */
   get duration(): ?number {
-    return this._plugin.isAdsPlayingOnSameVideoTag() ? this._plugin.getContentDuration() : super.duration;
+    return this._plugin.isAdPlayingOnSameVideoTag() ? this._plugin.getContentDuration() : super.duration;
   }
 }
 

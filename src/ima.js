@@ -362,7 +362,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @instance
    * @memberof Ima
    */
-  isAdsPlayingOnSameVideoTag(): boolean {
+  isAdPlayingOnSameVideoTag(): boolean {
     return (
       !!this._adsManager && !!this._adsManager.isCustomPlaybackUsed() && !this._stateMachine.is(State.IDLE) && !this._stateMachine.is(State.DONE)
     );
@@ -375,7 +375,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @instance
    * @memberof Ima
    */
-  isAdsFailedAndSourceChanged() {
+  isAdFailedAndSourceChanged() {
     return this._isAdsFailed && this._contentSrc !== this.player.getVideoElement().src;
   }
 
