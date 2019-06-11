@@ -357,7 +357,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   isAdsPlayingOnSameVideoTag(): boolean {
     return (
-      !!this._adsManager && !!this._adsManager.isCustomPlaybackUsed() && !this._stateMachine.is(State.IDLE) && !this._stateMachine.is(State.DONE)
+      !!this._adsManager &&
+      !!this._adsManager.isCustomPlaybackUsed() &&
+      (this._stateMachine.is(State.PLAYING) || this._stateMachine.is(State.PENDING) || this._stateMachine.is(State.PAUSED))
     );
   }
 
