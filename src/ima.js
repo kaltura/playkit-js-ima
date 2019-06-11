@@ -169,7 +169,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @private
    * @memberof Ima
    */
-  _isAdsFailed: boolean;
+  _isAdFailed: boolean;
   /**
    * Video current time before ads.
    * On custom playback when only one video tag playing, save the video current time.
@@ -356,18 +356,25 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   }
 
   /**
-   * Gets the indicator if ads still playing on the same player.
+   * Gets the indicator if ads playing on same video tag
    * @public
-   * @returns {boolean} - if ads still playing on the same player.
+   * @returns {boolean} - if ads playing on same video tag.
    * @instance
    * @memberof Ima
    */
-  isAdPlayingOnSameVideoTag(): boolean {
-    return (
-      !!this._adsManager &&
-      !!this._adsManager.isCustomPlaybackUsed() &&
-      (this._stateMachine.is(State.PLAYING) || this._stateMachine.is(State.PENDING) || this._stateMachine.is(State.PAUSED))
-    );
+  isAdOnSameVideoTag() {
+    return !!this._adsManager && !!this._adsManager.isCustomPlaybackUsed();
+  }
+
+  /**
+   * Gets the indicator if ads still playing.
+   * @public
+   * @returns {boolean} - if ads still playing.
+   * @instance
+   * @memberof Ima
+   */
+  isAdPlaying(): boolean {
+    return this._stateMachine.is(State.PLAYING) || this._stateMachine.is(State.PENDING) || this._stateMachine.is(State.PAUSED);
   }
 
   /**
@@ -378,7 +385,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   isAdFailedAndSourceChanged() {
-    return this._isAdsFailed && this._contentSrc !== this.player.getVideoElement().src;
+    return this._isAdFailed && this._contentSrc !== this.player.getVideoElement().src;
   }
 
   getContentTime(): ?number {
@@ -400,8 +407,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     return this._contentSrc || '';
   }
 
-  setAdsFailed(status: boolean): void {
-    this._isAdsFailed = status;
+  setAdFailed(status: boolean): void {
+    this._isAdFailed = status;
   }
   /**
    * Prepare the plugin before media is loaded.
