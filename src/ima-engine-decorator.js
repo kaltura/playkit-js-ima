@@ -43,7 +43,7 @@ class ImaEngineDecorator extends BaseEngineDecorator {
    * @memberof ImaEngineDecorator
    */
   get paused(): boolean {
-    return this._plugin.isAdPlayingOnSameVideoTag() ? true : super.paused;
+    return this._plugin.isAdOnSameVideoTag() && this._plugin.isAdPlaying() ? true : super.paused;
   }
   /**
    * Get the current time in seconds.
@@ -54,7 +54,7 @@ class ImaEngineDecorator extends BaseEngineDecorator {
    * @memberof ImaEngineDecorator
    */
   get currentTime(): ?number {
-    return this._plugin.isAdPlayingOnSameVideoTag() ? this._plugin.getContentTime() : super.currentTime;
+    return this._plugin.isAdOnSameVideoTag() && this._plugin.isAdPlaying() ? this._plugin.getContentTime() : super.currentTime;
   }
   /**
    * Set the current time in seconds.
@@ -74,7 +74,7 @@ class ImaEngineDecorator extends BaseEngineDecorator {
    * @memberof ImaEngineDecorator
    */
   get duration(): ?number {
-    return this._plugin.isAdPlayingOnSameVideoTag() ? this._plugin.getContentDuration() : super.duration;
+    return this._plugin.isAdOnSameVideoTag() && this._plugin.isAdPlaying() ? this._plugin.getContentDuration() : super.duration;
   }
 }
 
