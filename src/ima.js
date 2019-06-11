@@ -164,7 +164,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   _contentComplete: boolean;
   /**
-   * Flag to know when ads failed.
+   * Flag to know when an ad failed.
    * @member
    * @private
    * @memberof Ima
@@ -388,7 +388,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     return this._isAdFailed && this._contentSrc !== this.player.getVideoElement().src;
   }
 
-  getContentTime(): ?number {
+  getContentTime(): number {
     let currentTime = 0;
     //current time exist for mid-roll otherwise it's pre-roll(start of video - 0) - post-roll(end of video)
     if (this._videoLastCurrentTime) {
@@ -399,11 +399,11 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     return currentTime;
   }
 
-  getContentDuration(): ?number {
+  getContentDuration(): number {
     return this._contentDuration || this.player.config.sources.duration || 0;
   }
 
-  getContentSrc(): ?string {
+  getContentSrc(): string {
     return this._contentSrc || '';
   }
 
