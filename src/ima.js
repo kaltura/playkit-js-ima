@@ -584,7 +584,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _loadImaSDKLib(): Promise<*> {
-    const protocol = 'http:' === document.location.protocol ? '' : 'https:';
+    const protocolRegex = /^(https:|http:)/i.exec(document.location.protocol);
+    const protocol = protocolRegex && protocolRegex.hasOwnProperty('index') ? protocolRegex[protocolRegex.index] : 'https:';
     return this._isImaSDKLibLoaded()
       ? Promise.resolve()
       : Utils.Dom.loadScriptAsync(this.config.debug ? protocol + Ima.IMA_SDK_DEBUG_LIB_URL : protocol + Ima.IMA_SDK_LIB_URL);
