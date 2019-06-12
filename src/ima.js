@@ -164,6 +164,13 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   _contentComplete: boolean;
   /**
+   * Flag to know when an ad failed.
+   * @member
+   * @private
+   * @memberof Ima
+   */
+  _isAdFailed: boolean;
+  /**
    * Video current time before ads.
    * On custom playback when only one video tag playing, save the video current time.
    * @member
@@ -349,19 +356,39 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   }
 
   /**
-   * Gets the indicator if ads still playing on the same player.
+   * Gets the indicator if ads playing on same video tag
    * @public
-   * @returns {boolean} - if ads still playing on the same player.
+   * @returns {boolean} - if ads playing on same video tag.
    * @instance
    * @memberof Ima
    */
-  isAdsPlayingOnSameVideoTag(): boolean {
-    return (
-      !!this._adsManager && !!this._adsManager.isCustomPlaybackUsed() && !this._stateMachine.is(State.IDLE) && !this._stateMachine.is(State.DONE)
-    );
+  isAdOnSameVideoTag() {
+    return !!this._adsManager && !!this._adsManager.isCustomPlaybackUsed();
   }
 
-  getContentTime(): ?number {
+  /**
+   * Gets the indicator if ads still playing.
+   * @public
+   * @returns {boolean} - if ads still playing.
+   * @instance
+   * @memberof Ima
+   */
+  isAdPlaying(): boolean {
+    return this._stateMachine.is(State.PLAYING) || this._stateMachine.is(State.PENDING) || this._stateMachine.is(State.PAUSED);
+  }
+
+  /**
+   * Gets the indicator if ads got an error and source isn't equal to the original.
+   * @public
+   * @returns {boolean} - if ads got an error and source isn't equal to the original.
+   * @instance
+   * @memberof Ima
+   */
+  isAdFailedAndSourceChanged() {
+    return this._isAdFailed && this._contentSrc !== this.player.getVideoElement().src;
+  }
+
+  getContentTime(): number {
     let currentTime = 0;
     //current time exist for mid-roll otherwise it's pre-roll(start of video - 0) - post-roll(end of video)
     if (this._videoLastCurrentTime) {
@@ -372,10 +399,17 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     return currentTime;
   }
 
-  getContentDuration(): ?number {
+  getContentDuration(): number {
     return this._contentDuration || this.player.config.sources.duration || 0;
   }
 
+  getContentSrc(): string {
+    return this._contentSrc || '';
+  }
+
+  setAdFailed(status: boolean): void {
+    this._isAdFailed = status;
+  }
   /**
    * Prepare the plugin before media is loaded.
    * @override
