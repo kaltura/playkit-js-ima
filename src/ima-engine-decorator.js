@@ -1,5 +1,5 @@
 // @flow
-import {BaseEngineDecorator, FakeEvent} from '@playkit-js/playkit-js';
+import {BaseEngineDecorator, FakeEvent, EventType} from '@playkit-js/playkit-js';
 import {Ima} from './ima';
 
 /**
@@ -17,7 +17,22 @@ class ImaEngineDecorator extends BaseEngineDecorator {
   }
 
   dispatchEvent(event: FakeEvent): boolean {
-    return this._plugin.isAdsPlayingOnSameVideoTag() ? event.defaultPrevented : super.dispatchEvent(event);
+    if (!this._plugin.isAdOnSameVideoTag()) {
+      return super.dispatchEvent(event);
+    } else {
+      if (this._plugin.isAdPlaying()) {
+        return event.defaultPrevented;
+        //handle events for fatal adError that doesnt return the video source
+      } else if (event.type === EventType.ERROR && this._plugin.isAdFailedAndSourceChanged()) {
+        this._plugin.setAdFailed(false);
+        this._plugin.player.getVideoElement().src = this._plugin.getContentSrc();
+        this._plugin.player.play();
+        return event.defaultPrevented;
+      } else if (event.type === EventType.AUTOPLAY_FAILED && this._plugin.isAdFailedAndSourceChanged()) {
+        return event.defaultPrevented;
+      }
+      return super.dispatchEvent(event);
+    }
   }
   /**
    * Get paused state.
@@ -28,7 +43,7 @@ class ImaEngineDecorator extends BaseEngineDecorator {
    * @memberof ImaEngineDecorator
    */
   get paused(): boolean {
-    return this._plugin.isAdsPlayingOnSameVideoTag() ? true : super.paused;
+    return this._plugin.isAdOnSameVideoTag() && this._plugin.isAdPlaying() ? true : super.paused;
   }
   /**
    * Get the current time in seconds.
@@ -39,7 +54,7 @@ class ImaEngineDecorator extends BaseEngineDecorator {
    * @memberof ImaEngineDecorator
    */
   get currentTime(): ?number {
-    return this._plugin.isAdsPlayingOnSameVideoTag() ? this._plugin.getContentTime() : super.currentTime;
+    return this._plugin.isAdOnSameVideoTag() && this._plugin.isAdPlaying() ? this._plugin.getContentTime() : super.currentTime;
   }
   /**
    * Set the current time in seconds.
@@ -59,7 +74,7 @@ class ImaEngineDecorator extends BaseEngineDecorator {
    * @memberof ImaEngineDecorator
    */
   get duration(): ?number {
-    return this._plugin.isAdsPlayingOnSameVideoTag() ? this._plugin.getContentDuration() : super.duration;
+    return this._plugin.isAdOnSameVideoTag() && this._plugin.isAdPlaying() ? this._plugin.getContentDuration() : super.duration;
   }
 }
 
