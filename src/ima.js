@@ -544,6 +544,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
         this._showAdsContainer();
       }
     });
+    this.eventManager.listen(this.player, this.player.Event.ENDED, () => this._onMediaEnded());
   }
 
   /**
@@ -917,18 +918,29 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
 
   /**
    * Ended event handler.
+   * @private
+   * @returns {void}
+   * @instance
+   * @memberof Ima
+   */
+  _onMediaEnded(): void {
+    this.logger.debug('Media ended');
+    this._contentComplete = true;
+    if (this._currentAd && !this._currentAd.isLinear()) {
+      this.reset();
+    }
+  }
+
+  /**
+   * Ended event handler.
    * @public
    * @returns {Promise<void>} - complete promise
    * @instance
    * @memberof Ima
    */
-  onMediaEnded(): Promise<void> {
-    this.logger.debug('Media ended');
+  onPlaybackEnded(): Promise<void> {
+    this.logger.debug('Playback ended');
     this._adsLoader.contentComplete();
-    this._contentComplete = true;
-    if (this._currentAd && !this._currentAd.isLinear()) {
-      this.reset();
-    }
     if (this._adsManager && this._adsManager.getCuePoints().includes(-1)) {
       return new Promise(resolve => {
         this.eventManager.listenOnce(this._adsManager, this._sdk.AdEvent.Type.ALL_ADS_COMPLETED, () => {

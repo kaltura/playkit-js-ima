@@ -48,7 +48,7 @@ class ImaAdsController implements IAdsPluginController {
    * @memberof ImaAdsController
    */
   onPlaybackEnded(): Promise<void> {
-    return this._context.onMediaEnded();
+    return this._context.onPlaybackEnded();
   }
 
   /**
