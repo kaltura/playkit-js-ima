@@ -521,7 +521,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   _initMembers(): void {
     this._setContentPlayheadTrackerEventsEnabled(false);
-    this._setVideoEndedCallbackEnabled(false);
     this._nextPromise = null;
     this._currentAd = null;
     this._adsManager = null;
@@ -853,22 +852,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   }
 
   /**
-   * Removes or adds the listener for ended event.
-   * @param {boolean} enable - Whether to enable the event listener or not.
-   * @private
-   * @return {void}
-   * @instance
-   * @memberof Ima
-   */
-  _setVideoEndedCallbackEnabled(enable: boolean): void {
-    if (enable) {
-      this.eventManager.listen(this.player, this.player.Event.ENDED, () => this._onMediaEnded());
-    } else {
-      this.eventManager.unlisten(this.player, this.player.Event.ENDED);
-    }
-  }
-
-  /**
    * Maybe save the video current time before ads starts (on ios this is necessary).
    * @private
    * @return {void}
@@ -899,18 +882,26 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
 
   /**
    * Ended event handler.
-   * @private
-   * @returns {void}
+   * @public
+   * @returns {Promise<void>} - complete promise
    * @instance
    * @memberof Ima
    */
-  _onMediaEnded(): void {
+  onMediaEnded(): Promise<void> {
     this.logger.debug('Media ended');
     this._adsLoader.contentComplete();
     this._contentComplete = true;
     if (this._currentAd && !this._currentAd.isLinear()) {
       this.reset();
     }
+    if (this._adsManager && this._adsManager.getCuePoints().includes(-1)) {
+      return new Promise(resolve => {
+        this.eventManager.listenOnce(this._adsManager, this._sdk.AdEvent.Type.ALL_ADS_COMPLETED, () => {
+          resolve();
+        });
+      });
+    }
+    return Promise.resolve();
   }
 
   /**

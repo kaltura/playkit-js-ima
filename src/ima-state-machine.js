@@ -192,7 +192,6 @@ function onAdStarted(options: Object, adEvent: any): void {
   this._maybeDisplayCompanionAds();
   if (!this._currentAd.isLinear()) {
     this._setContentPlayheadTrackerEventsEnabled(true);
-    this._setVideoEndedCallbackEnabled(true);
     if (this._nextPromise) {
       this._resolveNextPromise();
     } else {
@@ -287,7 +286,6 @@ function onAdBreakStart(options: Object, adEvent: any): void {
   this.player.pause();
   const adBreakOptions = getAdBreakOptions.call(this, adEvent);
   const adBreak = new AdBreak(adBreakOptions);
-  this._setVideoEndedCallbackEnabled(false);
   this._maybeForceExitFullScreen();
   this._maybeSaveVideoCurrentTime();
   this.dispatchEvent(options.transition, {adBreak: adBreak});
@@ -303,7 +301,6 @@ function onAdBreakStart(options: Object, adEvent: any): void {
  */
 function onAdBreakEnd(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
-  this._setVideoEndedCallbackEnabled(true);
   this._setContentPlayheadTrackerEventsEnabled(true);
   this._currentAd = null;
   if (!this._contentComplete) {

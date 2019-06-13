@@ -42,6 +42,16 @@ class ImaAdsController implements IAdsPluginController {
   }
 
   /**
+   * On playback ended handler.
+   * @public
+   * @returns {Promise<void>} - complete promise
+   * @memberof ImaAdsController
+   */
+  onPlaybackEnded(): Promise<void> {
+    return this._context.onMediaEnded();
+  }
+
+  /**
    * Whether this ads controller is active
    * @public
    * @returns {boolean} - is active
