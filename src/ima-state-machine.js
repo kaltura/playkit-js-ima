@@ -52,7 +52,7 @@ class ImaStateMachine {
           from: [State.PLAYING, State.PAUSED]
         },
         {
-          name: context.player.Event.ALL_ADS_COMPLETED,
+          name: context.player.Event.ADS_COMPLETED,
           from: [State.IDLE, State.PAUSED],
           to: State.DONE
         },
@@ -129,7 +129,7 @@ class ImaStateMachine {
         onAdclicked: onAdClicked.bind(context),
         onAdskipped: onAdSkipped.bind(context),
         onAdcompleted: onAdCompleted.bind(context),
-        onAlladscompleted: onAllAdsCompleted.bind(context),
+        onAdscompleted: onAdsCompleted.bind(context),
         onAdcanskip: onAdCanSkip.bind(context),
         onAdbreakstart: onAdBreakStart.bind(context),
         onAdbreakend: onAdBreakEnd.bind(context),
@@ -190,17 +190,16 @@ function onAdStarted(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
   this._currentAd = adEvent.getAd();
   this._resizeAd();
-  this._showAdsContainer();
   this._maybeDisplayCompanionAds();
   if (!this._currentAd.isLinear()) {
     this._setContentPlayheadTrackerEventsEnabled(true);
-    this._setVideoEndedCallbackEnabled(true);
     if (this._nextPromise) {
       this._resolveNextPromise();
     } else {
       this.player.play();
     }
   } else {
+    this._showAdsContainer();
     this._setContentPlayheadTrackerEventsEnabled(false);
   }
   const adOptions = getAdOptions(adEvent);
@@ -260,15 +259,15 @@ function onAdCompleted(options: Object, adEvent: any): void {
 }
 
 /**
- * ALL_ADS_COMPLETED event handler.
+ * ADS_COMPLETED event handler.
  * @param {Object} options - fsm event data.
  * @param {any} adEvent - ima event data.
  * @returns {void}
  * @private
  * @memberof ImaStateMachine
  */
-function onAllAdsCompleted(options: Object, adEvent: any): void {
-  this.logger.debug(adEvent.type.toUpperCase());
+function onAdsCompleted(options: Object, adEvent: any): void {
+  this.logger.debug(options.transition.toUpperCase());
   if (this._adsManager.isCustomPlaybackUsed() && this._contentComplete) {
     this.player.getVideoElement().src = this._contentSrc;
   }
@@ -288,7 +287,6 @@ function onAdBreakStart(options: Object, adEvent: any): void {
   this.player.pause();
   const adBreakOptions = getAdBreakOptions.call(this, adEvent);
   const adBreak = new AdBreak(adBreakOptions);
-  this._setVideoEndedCallbackEnabled(false);
   this._maybeForceExitFullScreen();
   this._maybeSaveVideoCurrentTime();
   this.dispatchEvent(options.transition, {adBreak: adBreak});
@@ -304,7 +302,6 @@ function onAdBreakStart(options: Object, adEvent: any): void {
  */
 function onAdBreakEnd(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
-  this._setVideoEndedCallbackEnabled(true);
   this._setContentPlayheadTrackerEventsEnabled(true);
   this._currentAd = null;
   if (!this._contentComplete) {
@@ -509,6 +506,7 @@ function getAdOptions(adEvent: any): Object {
   adOptions.width = ad.isLinear() ? ad.getVastMediaWidth() : ad.getWidth();
   adOptions.height = ad.isLinear() ? ad.getVastMediaHeight() : ad.getHeight();
   adOptions.bitrate = ad.getVastMediaBitrate();
+  adOptions.bumper = podInfo.getIsBumper();
   return adOptions;
 }
 

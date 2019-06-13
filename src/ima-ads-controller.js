@@ -1,12 +1,13 @@
 // @flow
 import {Ima} from './ima';
+import {State} from './state';
 
 /**
  * Controller for ima plugin.
  * @class ImaAdsController
  * @param {Ima} context - The ima plugin context.
  */
-class ImaAdsController implements IAdsController {
+class ImaAdsController implements IAdsPluginController {
   /**
    * The plugin context.
    * @member
@@ -32,12 +33,42 @@ class ImaAdsController implements IAdsController {
   /**
    * Play an ad on demand.
    * @param {string} adTagUrl - The ad tag url to play.
-   * @private
+   * @public
    * @returns {void}
    * @memberof ImaAdsController
    */
   playAdNow(adTagUrl: string): void {
     this._context.playAdNow(adTagUrl);
+  }
+
+  /**
+   * On playback ended handler.
+   * @public
+   * @returns {Promise<void>} - complete promise
+   * @memberof ImaAdsController
+   */
+  onPlaybackEnded(): Promise<void> {
+    return this._context.onPlaybackEnded();
+  }
+
+  /**
+   * Whether this ads controller is active
+   * @public
+   * @returns {boolean} - is active
+   * @memberof ImaAdsController
+   */
+  get active(): boolean {
+    return this._context.getStateMachine().state === State.PLAYING || this._context.getStateMachine().state === State.PAUSED;
+  }
+
+  /**
+   * Whether this ads controller is done
+   * @public
+   * @returns {boolean} - is done
+   * @memberof ImaAdsController
+   */
+  get done(): boolean {
+    return this._context.getStateMachine().state === State.DONE;
   }
 }
 
