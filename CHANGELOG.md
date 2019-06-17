@@ -2,6 +2,306 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.12.1"></a>
+## [0.12.1](https://github.com/kaltura/playkit-js-ima/compare/v0.12.0...v0.12.1) (2019-05-23)
+
+
+### Bug Fixes
+
+* **FEC-9058:** incorrect package dependency(javascript-state-machine) ([#112](https://github.com/kaltura/playkit-js-ima/issues/112)) ([be59186](https://github.com/kaltura/playkit-js-ima/commit/be59186))
+
+
+
+<a name="0.12.0"></a>
+# [0.12.0](https://github.com/kaltura/playkit-js-ima/compare/v0.11.0...v0.12.0) (2019-05-22)
+
+
+### Bug Fixes
+
+* **FEC-9058:** get state machine from kaltura with patch ([#111](https://github.com/kaltura/playkit-js-ima/issues/111)) ([99c2fc8](https://github.com/kaltura/playkit-js-ima/commit/99c2fc8))
+
+
+### Features
+
+* **FEC-9074:** expose the vastLoadTimeout value ([#108](https://github.com/kaltura/playkit-js-ima/issues/108)) ([59bc4ff](https://github.com/kaltura/playkit-js-ima/commit/59bc4ff))
+
+
+
+<a name="0.11.0"></a>
+# [0.11.0](https://github.com/kaltura/playkit-js-ima/compare/v0.10.9...v0.11.0) (2019-05-16)
+
+
+### Bug Fixes
+
+* ad system is missing in the ad event payload ([#109](https://github.com/kaltura/playkit-js-ima/issues/109)) ([dbc1eeb](https://github.com/kaltura/playkit-js-ima/commit/dbc1eeb))
+* **FEC-9112:** start time skips the midroll despite the config ([#110](https://github.com/kaltura/playkit-js-ima/issues/110)) ([edea4d3](https://github.com/kaltura/playkit-js-ima/commit/edea4d3))
+
+
+### Features
+
+* **FEC-9067:** playback error with ima on LG TV WebOS ([#105](https://github.com/kaltura/playkit-js-ima/issues/105)) ([778ae07](https://github.com/kaltura/playkit-js-ima/commit/778ae07))
+
+
+
+<a name="0.10.9"></a>
+## [0.10.9](https://github.com/kaltura/playkit-js-ima/compare/v0.10.8...v0.10.9) (2019-05-01)
+
+
+### Bug Fixes
+
+* **FEC-9058:** get state machine from kaltura with patch ([#107](https://github.com/kaltura/playkit-js-ima/issues/107)) ([cb5457e](https://github.com/kaltura/playkit-js-ima/commit/cb5457e))
+
+
+
+<a name="0.10.8"></a>
+## [0.10.8](https://github.com/kaltura/playkit-js-ima/compare/v0.10.7...v0.10.8) (2019-04-24)
+
+
+### Bug Fixes
+
+* **FEC-9051:** Added umdNameDefine true to support requireJS in IMA ([4bac468](https://github.com/kaltura/playkit-js-ima/commit/4bac468))
+
+
+
+<a name="0.10.7"></a>
+## [0.10.7](https://github.com/kaltura/playkit-js-ima/compare/v0.10.6...v0.10.7) (2019-04-10)
+
+
+### Bug Fixes
+
+* **FEC-9027:** overlay ad not displayed ([#104](https://github.com/kaltura/playkit-js-ima/issues/104)) ([a0c85b3](https://github.com/kaltura/playkit-js-ima/commit/a0c85b3))
+
+
+
+<a name="0.10.6"></a>
+## [0.10.6](https://github.com/kaltura/playkit-js-ima/compare/v0.10.5...v0.10.6) (2019-04-07)
+
+
+### Bug Fixes
+
+* **FEC-8933:** fix ads covered entire page ([#101](https://github.com/kaltura/playkit-js-ima/issues/101)) ([9891a31](https://github.com/kaltura/playkit-js-ima/commit/9891a31))
+* **FEC-8996:** [iOS] - player exits from in browser full screen on ad ([#102](https://github.com/kaltura/playkit-js-ima/issues/102)) ([526952d](https://github.com/kaltura/playkit-js-ima/commit/526952d))
+* **FEC-9013:** [iOS] - Player doesnt play ads native when playsinline is false ([#103](https://github.com/kaltura/playkit-js-ima/issues/103)) ([edc0c6b](https://github.com/kaltura/playkit-js-ima/commit/edc0c6b))
+
+
+
+<a name="0.10.5"></a>
+## [0.10.5](https://github.com/kaltura/playkit-js-ima/compare/v0.10.4...v0.10.5) (2019-03-07)
+
+
+
+<a name="0.10.4"></a>
+## [0.10.4](https://github.com/kaltura/playkit-js-ima/compare/v0.10.3...v0.10.4) (2019-03-06)
+
+
+### Bug Fixes
+
+* **FEC-8936:** VPAID ads may cause player crash ([#97](https://github.com/kaltura/playkit-js-ima/issues/97)) ([cd6f317](https://github.com/kaltura/playkit-js-ima/commit/cd6f317))
+
+
+
+<a name="0.10.3"></a>
+## [0.10.3](https://github.com/kaltura/playkit-js-ima/compare/v0.10.2...v0.10.3) (2019-02-27)
+
+
+### Bug Fixes
+
+* **FEC-8844:** listen to the player resize event instead of the window's ([#95](https://github.com/kaltura/playkit-js-ima/issues/95)) ([9d77484](https://github.com/kaltura/playkit-js-ima/commit/9d77484))
+
+
+
+<a name="0.10.2"></a>
+## [0.10.2](https://github.com/kaltura/playkit-js-ima/compare/v0.10.1...v0.10.2) (2019-02-06)
+
+
+### Bug Fixes
+
+* **FEC-8891:** a bumper after an ad cannot be clicked ([#94](https://github.com/kaltura/playkit-js-ima/issues/94)) ([02e29db](https://github.com/kaltura/playkit-js-ima/commit/02e29db))
+
+
+
+<a name="0.10.1"></a>
+## [0.10.1](https://github.com/kaltura/playkit-js-ima/compare/v0.10.0...v0.10.1) (2019-02-04)
+
+
+### Bug Fixes
+
+* **FEC-8870:** The playback stuck, when second Ad in pre-roll pod broken ([#93](https://github.com/kaltura/playkit-js-ima/issues/93)) ([c7dcc36](https://github.com/kaltura/playkit-js-ima/commit/c7dcc36))
+
+
+
+<a name="0.10.0"></a>
+# [0.10.0](https://github.com/kaltura/playkit-js-ima/compare/v0.9.0...v0.10.0) (2019-01-24)
+
+
+### Features
+
+* **FEC-8675:** add ad progress and buffer event to player ([#86](https://github.com/kaltura/playkit-js-ima/issues/86)) ([5e3f5d9](https://github.com/kaltura/playkit-js-ima/commit/5e3f5d9))
+* **FEC-8763:** add loadMedia life cycle hook ([#88](https://github.com/kaltura/playkit-js-ima/issues/88)) ([df88a3c](https://github.com/kaltura/playkit-js-ima/commit/df88a3c))
+* **FEC-8815:** support vast timeout ([#89](https://github.com/kaltura/playkit-js-ima/issues/89)) ([78aecd6](https://github.com/kaltura/playkit-js-ima/commit/78aecd6))
+* **FEC-8853:** localizing ima interface via config ([#90](https://github.com/kaltura/playkit-js-ima/issues/90)) ([05db01e](https://github.com/kaltura/playkit-js-ima/commit/05db01e))
+* **FEC-8856:** add ad data on ad error event ([#91](https://github.com/kaltura/playkit-js-ima/issues/91)) ([a53f529](https://github.com/kaltura/playkit-js-ima/commit/a53f529))
+
+
+
+<a name="0.9.0"></a>
+# [0.9.0](https://github.com/kaltura/playkit-js-ima/compare/v0.8.7...v0.9.0) (2019-01-20)
+
+
+### Features
+
+* **FEC-8749:** expose IMA ad data ([#85](https://github.com/kaltura/playkit-js-ima/issues/85)) ([81532ad](https://github.com/kaltura/playkit-js-ima/commit/81532ad))
+* **FEC-8751:** add support for ima playAdsAfterTime setting ([#87](https://github.com/kaltura/playkit-js-ima/issues/87)) ([e928785](https://github.com/kaltura/playkit-js-ima/commit/e928785))
+
+
+
+<a name="0.8.7"></a>
+## [0.8.7](https://github.com/kaltura/playkit-js-ima/compare/v0.8.6...v0.8.7) (2018-12-20)
+
+
+### Bug Fixes
+
+* **FEC-8740:** VPAID is still defaulting to ENABLED ([#84](https://github.com/kaltura/playkit-js-ima/issues/84)) ([16a7287](https://github.com/kaltura/playkit-js-ima/commit/16a7287))
+
+
+
+<a name="0.8.6"></a>
+## [0.8.6](https://github.com/kaltura/playkit-js-ima/compare/v0.8.5...v0.8.6) (2018-12-13)
+
+
+### Bug Fixes
+
+* **FEC-8762:** destroy is called incorrectly in plugin life cycle ([#83](https://github.com/kaltura/playkit-js-ima/issues/83)) ([a6723bd](https://github.com/kaltura/playkit-js-ima/commit/a6723bd))
+
+
+
+<a name="0.8.5"></a>
+## [0.8.5](https://github.com/kaltura/playkit-js-ima/compare/v0.8.4...v0.8.5) (2018-12-12)
+
+
+### Bug Fixes
+
+* **FEC-8762:** subsequent media change after ad load fail are stuck ([#82](https://github.com/kaltura/playkit-js-ima/issues/82)) ([b73823c](https://github.com/kaltura/playkit-js-ima/commit/b73823c))
+
+
+
+<a name="0.8.4"></a>
+## [0.8.4](https://github.com/kaltura/playkit-js-ima/compare/v0.8.3...v0.8.4) (2018-12-12)
+
+
+### Bug Fixes
+
+* add LOADED transition to AD_CAN_SKIP event ([#78](https://github.com/kaltura/playkit-js-ima/issues/78)) ([1c30795](https://github.com/kaltura/playkit-js-ima/commit/1c30795))
+* **FEC-8740:** there is no option to set vpaid mode ([#80](https://github.com/kaltura/playkit-js-ima/issues/80)) ([45c94fc](https://github.com/kaltura/playkit-js-ima/commit/45c94fc))
+
+
+
+<a name="0.8.3"></a>
+## [0.8.3](https://github.com/kaltura/playkit-js-ima/compare/v0.8.2...v0.8.3) (2018-11-05)
+
+
+### Bug Fixes
+
+* **FEC-8486:** player stuck when finish to play VPAID ad ([#76](https://github.com/kaltura/playkit-js-ima/issues/76)) ([b04657b](https://github.com/kaltura/playkit-js-ima/commit/b04657b))
+
+
+
+<a name="0.8.2"></a>
+## [0.8.2](https://github.com/kaltura/playkit-js-ima/compare/v0.8.1...v0.8.2) (2018-10-18)
+
+
+### Bug Fixes
+
+* **FEC-8599:** ads counter is not running when any ad playing ([#75](https://github.com/kaltura/playkit-js-ima/issues/75)) ([c8df633](https://github.com/kaltura/playkit-js-ima/commit/c8df633))
+
+
+
+<a name="0.8.1"></a>
+## [0.8.1](https://github.com/kaltura/playkit-js-ima/compare/v0.8.0...v0.8.1) (2018-10-14)
+
+
+### Bug Fixes
+
+* **FEC-8504:** null exception ([#73](https://github.com/kaltura/playkit-js-ima/issues/73)) ([c12771f](https://github.com/kaltura/playkit-js-ima/commit/c12771f))
+* **FEC-8573:** cannot change media on ALL_ADS_COMPLETED event ([#74](https://github.com/kaltura/playkit-js-ima/issues/74)) ([43525c9](https://github.com/kaltura/playkit-js-ima/commit/43525c9))
+
+
+
+<a name="0.8.0"></a>
+# [0.8.0](https://github.com/kaltura/playkit-js-ima/compare/v0.7.2...v0.8.0) (2018-09-16)
+
+
+### Features
+
+* **FEC-8103:** ads controller ([#69](https://github.com/kaltura/playkit-js-ima/issues/69)) ([e1f5e0c](https://github.com/kaltura/playkit-js-ima/commit/e1f5e0c))
+
+
+
+<a name="0.7.2"></a>
+## [0.7.2](https://github.com/kaltura/playkit-js-ima/compare/v0.7.1...v0.7.2) (2018-09-05)
+
+
+### Bug Fixes
+
+* use playkit ads framework ([#71](https://github.com/kaltura/playkit-js-ima/issues/71)) ([1241126](https://github.com/kaltura/playkit-js-ima/commit/1241126))
+
+
+
+<a name="0.7.1"></a>
+## [0.7.1](https://github.com/kaltura/playkit-js-ima/compare/v0.7.0...v0.7.1) (2018-08-07)
+
+
+### Bug Fixes
+
+* **FEC-8405:** Video stop/freeze during mid post ads playing ([#65](https://github.com/kaltura/playkit-js-ima/issues/65)) ([dd3727b](https://github.com/kaltura/playkit-js-ima/commit/dd3727b))
+
+
+
+<a name="0.7.0"></a>
+# [0.7.0](https://github.com/kaltura/playkit-js-ima/compare/v0.6.0...v0.7.0) (2018-07-26)
+
+
+### Bug Fixes
+
+* **FEC-8239:** IMA exception when calling reset followed by destroy ([#62](https://github.com/kaltura/playkit-js-ima/issues/62)) ([0903675](https://github.com/kaltura/playkit-js-ima/commit/0903675))
+
+
+### Features
+
+* **FEC-8295:** Show error UI on network error while playing ads ([#64](https://github.com/kaltura/playkit-js-ima/issues/64)) ([d335c37](https://github.com/kaltura/playkit-js-ima/commit/d335c37))
+
+
+
+<a name="0.6.1"></a>
+## [0.6.1](https://github.com/kaltura/playkit-js-ima/compare/v0.6.0...v0.6.1) (2018-05-26)
+
+
+### Bug Fixes
+
+* **FEC-8239:** IMA exception when calling reset followed by destroy ([#62](https://github.com/kaltura/playkit-js-ima/issues/62)) ([0903675](https://github.com/kaltura/playkit-js-ima/commit/0903675))
+
+
+
+<a name="0.6.0"></a>
+# [0.6.0](https://github.com/kaltura/playkit-js-ima/compare/v0.5.5...v0.6.0) (2018-05-10)
+
+
+### Features
+
+* serve ima as external bundle ([#61](https://github.com/kaltura/playkit-js-ima/issues/61)) ([43de7c5](https://github.com/kaltura/playkit-js-ima/commit/43de7c5))
+
+
+
+<a name="0.5.5"></a>
+## [0.5.5](https://github.com/kaltura/playkit-js-ima/compare/v0.5.4...v0.5.5) (2018-05-01)
+
+
+### Bug Fixes
+
+* **FEC-7406:** preroll doesn't played on change media while unmute the previous media [#60](https://github.com/kaltura/playkit-js-ima/issues/60) ([29f5752](https://github.com/kaltura/playkit-js-ima/commit/29f5752))
+
+
+
 <a name="0.5.4"></a>
 ## [0.5.4](https://github.com/kaltura/playkit-js-ima/compare/v0.5.3...v0.5.4) (2018-04-23)
 

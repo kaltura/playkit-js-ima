@@ -1,8 +1,8 @@
 'use strict';
 
-const webpack = require("webpack");
-const path = require("path");
-const packageData = require("./package.json");
+const webpack = require('webpack');
+const path = require('path');
+const packageData = require('./package.json');
 
 let plugins = [
   new webpack.DefinePlugin({
@@ -12,14 +12,15 @@ let plugins = [
 ];
 
 module.exports = {
-  context: __dirname + "/src",
-  entry: {"playkit-ima": "index.js"},
+  context: __dirname + '/src',
+  entry: {'playkit-ima': 'index.js'},
   output: {
-    path: __dirname + "/dist",
+    path: __dirname + '/dist',
     filename: '[name].js',
-    library: ["playkit", "plugins", "ima"],
-    libraryTarget: "umd",
-    devtoolModuleFilenameTemplate: "./plugins/ima/[resource-path]",
+    library: ['playkit', 'plugins', 'ima'],
+    libraryTarget: 'umd',
+    umdNamedDefine: true,
+    devtoolModuleFilenameTemplate: './plugins/ima/[resource-path]'
   },
   devtool: 'source-map',
   plugins: plugins,
@@ -28,33 +29,30 @@ module.exports = {
       test: /\.js$/,
       exclude: /node_modules/,
       use: [
-        "babel-loader",
-        "eslint-loader",
+        'babel-loader',
+        'eslint-loader',
       ]
     }, {
       test: /\.css$/,
       exclude: /node_modules/,
       use: [
-        "style-loader",
-        "css-loader"
+        'style-loader,
+        'css-loader'
       ]
     }]
   },
   devServer: {
-    contentBase: __dirname + "/src"
+    contentBase: __dirname + '/src'
   },
   resolve: {
-    modules: [
-      path.resolve(__dirname, "src"),
-      "node_modules"
-    ]
+    modules: [path.resolve(__dirname, 'src'), 'node_modules']
   },
   externals: {
-    "playkit-js": {
-      commonjs: "playkit-js",
-      commonjs2: "playkit-js",
-      amd: "playkit-js",
-      root: ["playkit", "core"]
+    '@playkit-js/playkit-js': {
+      commonjs: '@playkit-js/playkit-js',
+      commonjs2: '@playkit-js/playkit-js',
+      amd: 'playkit-js',
+      root: ['playkit', 'core']
     }
   }
 };
