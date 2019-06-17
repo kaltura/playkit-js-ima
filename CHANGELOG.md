@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.13.0"></a>
+# [0.13.0](https://github.com/kaltura/playkit-js-ima/compare/v0.12.1...v0.13.0) (2019-06-17)
+
+
+### Bug Fixes
+
+* **FEC-9111:** LG TV - seekbar doesnt work ([#114](https://github.com/kaltura/playkit-js-ima/issues/114)) ([f391307](https://github.com/kaltura/playkit-js-ima/commit/f391307))
+* **FEC-9167:** set default IMA lib protocol for non http protocols ([#115](https://github.com/kaltura/playkit-js-ima/issues/115)) ([1e3855b](https://github.com/kaltura/playkit-js-ima/commit/1e3855b))
+* **FEC-9173:** playback failed for unsupported ads. ([#113](https://github.com/kaltura/playkit-js-ima/issues/113)) ([3f3dcf1](https://github.com/kaltura/playkit-js-ima/commit/3f3dcf1))
+
+
+### Features
+
+* **FEC-8631:** bumper plugin ([#96](https://github.com/kaltura/playkit-js-ima/issues/96)) ([b0f7713](https://github.com/kaltura/playkit-js-ima/commit/b0f7713))
+
+
+
 <a name="0.12.1"></a>
 ## [0.12.1](https://github.com/kaltura/playkit-js-ima/compare/v0.12.0...v0.12.1) (2019-05-23)
 
