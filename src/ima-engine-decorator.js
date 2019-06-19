@@ -18,19 +18,21 @@ class ImaEngineDecorator extends BaseEngineDecorator {
 
   dispatchEvent(event: FakeEvent): boolean {
     if (!this._plugin.isAdOnSameVideoTag()) {
+      //after error ima doesn't on the same video tag
+      if (event.type === EventType.ERROR && this._plugin.isAdFailedOnSameVideoTag()) {
+        this._plugin.setAdFailedOnSameVideoTag(false);
+        this._plugin.player.getVideoElement().src = this._plugin.getContentSrc();
+        this._plugin.player.play();
+        return event.defaultPrevented;
+      } else if (event.type === EventType.AUTOPLAY_FAILED && this._plugin.isAdFailedOnSameVideoTag()) {
+        return event.defaultPrevented;
+      }
       return super.dispatchEvent(event);
     } else {
       if (this._plugin.isAdPlaying()) {
         return event.defaultPrevented;
-        //handle events for fatal adError that doesnt return the video source
-      } else if (event.type === EventType.ERROR && this._plugin.isAdFailedAndSourceChanged()) {
-        this._plugin.setAdFailed(false);
-        this._plugin.player.getVideoElement().src = this._plugin.getContentSrc();
-        this._plugin.player.play();
-        return event.defaultPrevented;
-      } else if (event.type === EventType.AUTOPLAY_FAILED && this._plugin.isAdFailedAndSourceChanged()) {
-        return event.defaultPrevented;
       }
+      //handle events for fatal adError that doesnt return the video source
       return super.dispatchEvent(event);
     }
   }
