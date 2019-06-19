@@ -378,9 +378,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   }
 
   /**
-   * Gets the indicator if ads got an error and source isn't equal to the original.
+   * Gets the indicator if ads got an error on same video tag and source isn't equal to the original.
    * @public
-   * @returns {boolean} - if ads got an error and source isn't equal to the original.
+   * @returns {boolean} - if ads got an error on same video tag and source isn't equal to the original.
    * @instance
    * @memberof Ima
    */

@@ -18,6 +18,7 @@ class ImaEngineDecorator extends BaseEngineDecorator {
 
   dispatchEvent(event: FakeEvent): boolean {
     // after error ima doesn't on the same video tag
+    //handle events for fatal adError that doesnt return the video source
     if (event.type === EventType.ERROR && this._plugin.isAdFailedOnSameVideoTag()) {
       this._plugin.setAdFailedOnSameVideoTag(false);
       this._plugin.player.getVideoElement().src = this._plugin.getContentSrc();
@@ -32,7 +33,6 @@ class ImaEngineDecorator extends BaseEngineDecorator {
       if (this._plugin.isAdPlaying()) {
         return event.defaultPrevented;
       }
-      //handle events for fatal adError that doesnt return the video source
       return super.dispatchEvent(event);
     }
   }

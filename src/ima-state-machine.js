@@ -339,6 +339,7 @@ function onAdError(options: Object, adEvent: any): void {
       this.setAdFailedOnSameVideoTag(true);
     }
     //if this is autoplay or user already requested play then next promise will handle reset
+    //handle error for same video tag on decorator instead to avoid playback failed
     if (this._nextPromise && !this.isAdOnSameVideoTag()) {
       this._nextPromise.reject(adError);
     } else {
