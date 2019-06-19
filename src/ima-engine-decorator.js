@@ -17,16 +17,16 @@ class ImaEngineDecorator extends BaseEngineDecorator {
   }
 
   dispatchEvent(event: FakeEvent): boolean {
+    // after error ima doesn't on the same video tag
+    if (event.type === EventType.ERROR && this._plugin.isAdFailedOnSameVideoTag()) {
+      this._plugin.setAdFailedOnSameVideoTag(false);
+      this._plugin.player.getVideoElement().src = this._plugin.getContentSrc();
+      this._plugin.player.play();
+      return event.defaultPrevented;
+    } else if (event.type === EventType.AUTOPLAY_FAILED && this._plugin.isAdFailedOnSameVideoTag()) {
+      return event.defaultPrevented;
+    }
     if (!this._plugin.isAdOnSameVideoTag()) {
-      //after error ima doesn't on the same video tag
-      if (event.type === EventType.ERROR && this._plugin.isAdFailedOnSameVideoTag()) {
-        this._plugin.setAdFailedOnSameVideoTag(false);
-        this._plugin.player.getVideoElement().src = this._plugin.getContentSrc();
-        this._plugin.player.play();
-        return event.defaultPrevented;
-      } else if (event.type === EventType.AUTOPLAY_FAILED && this._plugin.isAdFailedOnSameVideoTag()) {
-        return event.defaultPrevented;
-      }
       return super.dispatchEvent(event);
     } else {
       if (this._plugin.isAdPlaying()) {

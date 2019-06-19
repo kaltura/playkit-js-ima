@@ -339,7 +339,7 @@ function onAdError(options: Object, adEvent: any): void {
       this.setAdFailedOnSameVideoTag(true);
     }
     //if this is autoplay or user already requested play then next promise will handle reset
-    if (this._nextPromise) {
+    if (this._nextPromise && !this._adsManager.isCustomPlaybackUsed()) {
       this._nextPromise.reject(adError);
     } else {
       this.reset();
