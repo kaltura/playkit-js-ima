@@ -169,7 +169,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @private
    * @memberof Ima
    */
-  _isAdFailed: boolean;
+  _isAdFailedOnSameVideoTag: boolean;
   /**
    * Video current time before ads.
    * On custom playback when only one video tag playing, save the video current time.
@@ -384,8 +384,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @instance
    * @memberof Ima
    */
-  isAdFailedAndSourceChanged() {
-    return this._isAdFailed && this._contentSrc !== this.player.getVideoElement().src;
+  isAdFailedOnSameVideoTag() {
+    return this._isAdFailedOnSameVideoTag && this._contentSrc !== this.player.getVideoElement().src;
   }
 
   getContentTime(): number {
@@ -407,8 +407,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     return this._contentSrc || '';
   }
 
-  setAdFailed(status: boolean): void {
-    this._isAdFailed = status;
+  setAdFailedOnSameVideoTag(status: boolean): void {
+    this._isAdFailedOnSameVideoTag = status;
   }
   /**
    * Prepare the plugin before media is loaded.
