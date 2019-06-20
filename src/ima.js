@@ -1216,4 +1216,4 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   }
 }
 
-export {Ima as Plugin};
+export {Ima};
