@@ -164,13 +164,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   _contentComplete: boolean;
   /**
-   * Flag to know when an ad failed on the same video tag.
-   * @member
-   * @private
-   * @memberof Ima
-   */
-  _isAdFailedOnSameVideoTag: boolean;
-  /**
    * Video current time before ads.
    * On custom playback when only one video tag playing, save the video current time.
    * @member
@@ -377,17 +370,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     return this._stateMachine.is(State.PLAYING) || this._stateMachine.is(State.PENDING) || this._stateMachine.is(State.PAUSED);
   }
 
-  /**
-   * Gets the indicator if ads got an error on same video tag and source isn't equal to the original.
-   * @public
-   * @returns {boolean} - if ads got an error on same video tag and source isn't equal to the original.
-   * @instance
-   * @memberof Ima
-   */
-  isAdFailedOnSameVideoTag() {
-    return this._isAdFailedOnSameVideoTag && this._contentSrc !== this.player.getVideoElement().src;
-  }
-
   getContentTime(): number {
     let currentTime = 0;
     //current time exist for mid-roll otherwise it's pre-roll(start of video - 0) - post-roll(end of video)
@@ -405,10 +387,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
 
   getContentSrc(): string {
     return this._contentSrc || '';
-  }
-
-  setAdFailedOnSameVideoTag(status: boolean): void {
-    this._isAdFailedOnSameVideoTag = status;
   }
   /**
    * Prepare the plugin before media is loaded.

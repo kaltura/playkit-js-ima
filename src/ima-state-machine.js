@@ -160,7 +160,6 @@ class ImaStateMachine {
  */
 function onAdLoaded(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
-  this.setAdFailedOnSameVideoTag(false);
   // When we are using the same video element on iOS, native captions still
   // appearing on the video element, so need to hide them before ad start.
   if (this.isAdOnSameVideoTag()) {
@@ -335,13 +334,20 @@ function onAdError(options: Object, adEvent: any): void {
   if (adEvent.type === 'adError') {
     this.logger.debug(adEvent.type.toUpperCase());
     let adError = adEvent.getError();
-    if (this.isAdOnSameVideoTag()) {
-      this.setAdFailedOnSameVideoTag(true);
-    }
-    //if this is autoplay or user already requested play then next promise will handle reset
-    //handle error for same video tag on decorator instead to avoid playback failed
-    if (this._nextPromise && !this.isAdOnSameVideoTag()) {
-      this._nextPromise.reject(adError);
+    // if this is autoplay or user already requested play then next promise will handle reset
+    if (this._nextPromise) {
+      //ads playing on same video tag wait to ima to end the source replacement
+      if (this.isAdOnSameVideoTag() && this.player.env.os.name !== 'iOS') {
+        setTimeout(
+          () => {
+            this._nextPromise.reject(adError);
+          },
+          0,
+          adError
+        );
+      } else {
+        this._nextPromise.reject(adError);
+      }
     } else {
       this.reset();
     }
