@@ -70,6 +70,16 @@ class ImaAdsController implements IAdsPluginController {
   get done(): boolean {
     return this._context.getStateMachine().state === State.DONE;
   }
+
+  /**
+   * The controller name
+   * @public
+   * @returns {string} - The name
+   * @memberof ImaAdsController
+   */
+  get name(): string {
+    return this._context.name;
+  }
 }
 
 export {ImaAdsController};
