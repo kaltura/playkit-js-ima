@@ -160,10 +160,9 @@ class ImaStateMachine {
  */
 function onAdLoaded(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
-  this.setAdFailed(false);
   // When we are using the same video element on iOS, native captions still
   // appearing on the video element, so need to hide them before ad start.
-  if (this._adsManager.isCustomPlaybackUsed()) {
+  if (this.isAdOnSameVideoTag()) {
     this.player.hideTextTrack();
   }
   const adBreakType = getAdBreakType(adEvent);
@@ -268,7 +267,7 @@ function onAdCompleted(options: Object, adEvent: any): void {
  */
 function onAdsCompleted(options: Object, adEvent: any): void {
   this.logger.debug(options.transition.toUpperCase());
-  if (this._adsManager.isCustomPlaybackUsed() && this._contentComplete) {
+  if (this.isAdOnSameVideoTag() && this._contentComplete) {
     this.player.getVideoElement().src = this._contentSrc;
   }
   onAdBreakEnd.call(this, options, adEvent);
@@ -335,10 +334,20 @@ function onAdError(options: Object, adEvent: any): void {
   if (adEvent.type === 'adError') {
     this.logger.debug(adEvent.type.toUpperCase());
     let adError = adEvent.getError();
-    this.setAdFailed(true);
-    //if this is autoplay or user already requested play then next promise will handle reset
+    // if this is autoplay or user already requested play then next promise will handle reset
     if (this._nextPromise) {
-      this._nextPromise.reject(adError);
+      //ads playing on same video tag wait to ima to end the source replacement
+      if (this.isAdOnSameVideoTag() && this.player.env.os.name !== 'iOS') {
+        setTimeout(
+          () => {
+            this._nextPromise.reject(adError);
+          },
+          0,
+          adError
+        );
+      } else {
+        this._nextPromise.reject(adError);
+      }
     } else {
       this.reset();
     }
