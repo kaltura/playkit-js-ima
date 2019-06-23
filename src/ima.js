@@ -3,7 +3,7 @@ import {ImaMiddleware} from './ima-middleware';
 import {ImaAdsController} from './ima-ads-controller';
 import {ImaStateMachine} from './ima-state-machine';
 import {State} from './state';
-import {BaseMiddleware, BasePlugin, EngineType, Error, getCapabilities, Utils, Env} from '@playkit-js/playkit-js';
+import {BaseMiddleware, BasePlugin, EngineType, Error, getCapabilities, Utils, Env, BaseEngineDecorator} from '@playkit-js/playkit-js';
 import './assets/style.css';
 import {ImaEngineDecorator} from './ima-engine-decorator';
 
@@ -251,12 +251,34 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Gets the engine decorator.
    * @param {IEngine} engine - The engine to decorate.
    * @public
-   * @returns {ImaEngineDecorator} - The ads api.
+   * @returns {BaseEngineDecorator} - The ads api.
    * @instance
    * @memberof Ima
    */
-  getEngineDecorator(engine: IEngine): ImaEngineDecorator {
+  getEngineDecorator(engine: IEngine): BaseEngineDecorator {
     return new ImaEngineDecorator(engine, this);
+  }
+
+  /**
+   * Gets the middleware.
+   * @public
+   * @returns {ImaMiddleware} - The middleware api.
+   * @instance
+   * @memberof Ima
+   */
+  getMiddlewareImpl(): BaseMiddleware {
+    return new ImaMiddleware(this);
+  }
+
+  /**
+   * Gets the ads controller.
+   * @public
+   * @returns {IAdsPluginController} - The ads api.
+   * @instance
+   * @memberof Ima
+   */
+  getAdsController(): IAdsPluginController {
+    return new ImaAdsController(this);
   }
 
   /**
@@ -324,28 +346,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   getStateMachine(): any {
     return this._stateMachine;
-  }
-
-  /**
-   * Gets the middleware.
-   * @public
-   * @returns {ImaMiddleware} - The middleware api.
-   * @instance
-   * @memberof Ima
-   */
-  getMiddlewareImpl(): BaseMiddleware {
-    return new ImaMiddleware(this);
-  }
-
-  /**
-   * Gets the ads controller.
-   * @public
-   * @returns {IAdsPluginController} - The ads api.
-   * @instance
-   * @memberof Ima
-   */
-  getAdsController(): IAdsPluginController {
-    return new ImaAdsController(this);
   }
 
   /**
@@ -759,6 +759,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       }
       this._stateMachine.loaded();
     } else {
+      this._stateMachine.goto(State.DONE);
       this.logger.warn('Missing ad tag url: create plugin without requesting ads');
     }
   }
