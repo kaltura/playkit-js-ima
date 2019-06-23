@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.13.2"></a>
+## [0.13.2](https://github.com/kaltura/playkit-js-ima/compare/v0.13.1...v0.13.2) (2019-06-23)
+
+
+### Bug Fixes
+
+* **FEC-9209:** when bumper and ima plugins enabled in player, no Big Replay button at the end ([#119](https://github.com/kaltura/playkit-js-ima/issues/119)) ([fe05bfa](https://github.com/kaltura/playkit-js-ima/commit/fe05bfa))
+
+
+
 <a name="0.13.1"></a>
 ## [0.13.1](https://github.com/kaltura/playkit-js-ima/compare/v0.13.0...v0.13.1) (2019-06-23)
 
