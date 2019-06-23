@@ -1,6 +1,6 @@
 {
   "name": "@playkit-js/playkit-js-ima",
-  "version": "0.13.0",
+  "version": "0.13.1",
   "main": "dist/playkit-ima.js",
   "scripts": {
     "clean": "rm -rf ./dist",

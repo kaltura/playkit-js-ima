@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.13.1"></a>
+## [0.13.1](https://github.com/kaltura/playkit-js-ima/compare/v0.13.0...v0.13.1) (2019-06-23)
+
+
+### Bug Fixes
+
+* **FEC-9173:** playback failed for unsupported ads. ([#116](https://github.com/kaltura/playkit-js-ima/issues/116)) ([b7386fb](https://github.com/kaltura/playkit-js-ima/commit/b7386fb))
+* **FEC-9192:** post bumper doesn't play ([#117](https://github.com/kaltura/playkit-js-ima/issues/117)) ([7b7c75b](https://github.com/kaltura/playkit-js-ima/commit/7b7c75b))
+* **FEC-9198:** the media doesn't auto continue after the preroll finished, when disableMediaPreLoad is true ([#118](https://github.com/kaltura/playkit-js-ima/issues/118)) ([42d1851](https://github.com/kaltura/playkit-js-ima/commit/42d1851))
+
+
+
 <a name="0.13.0"></a>
 # [0.13.0](https://github.com/kaltura/playkit-js-ima/compare/v0.12.1...v0.13.0) (2019-06-17)
 
