@@ -338,8 +338,10 @@ function onAdError(options: Object, adEvent: any): void {
     if (this._nextPromise) {
       //ads playing on same video tag wait to ima to end the source replacement
       if (this.isAdOnSameVideoTag() && this.player.env.os.name !== 'iOS') {
+        const src = this.player.getVideoElement().src;
         setTimeout(
           () => {
+            this.player.getVideoElement().src = src;
             this._nextPromise.reject(adError);
           },
           0,
