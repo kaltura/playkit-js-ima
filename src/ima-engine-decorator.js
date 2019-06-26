@@ -16,8 +16,12 @@ class ImaEngineDecorator extends BaseEngineDecorator {
     this._plugin = plugin;
   }
 
+  get active(): boolean {
+    return this._plugin.isAdOnSameVideoTag() && this._plugin.isAdPlaying();
+  }
+
   dispatchEvent(event: FakeEvent): boolean {
-    return this._plugin.isAdOnSameVideoTag() && this._plugin.isAdPlaying() ? event.defaultPrevented : super.dispatchEvent(event);
+    return event.defaultPrevented;
   }
   /**
    * Get paused state.
@@ -28,7 +32,7 @@ class ImaEngineDecorator extends BaseEngineDecorator {
    * @memberof ImaEngineDecorator
    */
   get paused(): boolean {
-    return this._plugin.isAdOnSameVideoTag() && this._plugin.isAdPlaying() ? true : super.paused;
+    return true;
   }
   /**
    * Get the current time in seconds.
@@ -39,7 +43,7 @@ class ImaEngineDecorator extends BaseEngineDecorator {
    * @memberof ImaEngineDecorator
    */
   get currentTime(): ?number {
-    return this._plugin.isAdOnSameVideoTag() && this._plugin.isAdPlaying() ? this._plugin.getContentTime() : super.currentTime;
+    return this._plugin.getContentTime();
   }
   /**
    * Set the current time in seconds.
@@ -59,7 +63,7 @@ class ImaEngineDecorator extends BaseEngineDecorator {
    * @memberof ImaEngineDecorator
    */
   get duration(): ?number {
-    return this._plugin.isAdOnSameVideoTag() && this._plugin.isAdPlaying() ? this._plugin.getContentDuration() : super.duration;
+    return this._plugin.getContentDuration();
   }
 }
 
