@@ -257,6 +257,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   getEngineDecorator(engine: IEngine): IEngine {
+    // $FlowFixMe
     return new ImaEngineDecorator(engine, this);
   }
 

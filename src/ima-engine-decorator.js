@@ -41,7 +41,7 @@ class ImaEngineDecorator {
    * @instance
    * @memberof ImaEngineDecorator
    */
-  get currentTime(): ?number {
+  get currentTime(): number {
     return this._plugin.getContentTime();
   }
   /**
@@ -61,7 +61,7 @@ class ImaEngineDecorator {
    * @instance
    * @memberof ImaEngineDecorator
    */
-  get duration(): ?number {
+  get duration(): number {
     return this._plugin.getContentDuration();
   }
 }
