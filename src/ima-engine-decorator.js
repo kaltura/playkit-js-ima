@@ -1,5 +1,5 @@
 // @flow
-import {BaseEngineDecorator, FakeEvent} from '@playkit-js/playkit-js';
+import {FakeEvent} from '@playkit-js/playkit-js';
 import {Ima} from './ima';
 
 /**
@@ -8,11 +8,10 @@ import {Ima} from './ima';
  * @param {IEngine} engine - The HTML5 engine.
  * @param {Ima} plugin - The ima plugin.
  */
-class ImaEngineDecorator extends BaseEngineDecorator {
+class ImaEngineDecorator {
   _plugin: Ima;
 
   constructor(engine: IEngine, plugin: Ima) {
-    super(engine);
     this._plugin = plugin;
   }
 
@@ -52,7 +51,7 @@ class ImaEngineDecorator extends BaseEngineDecorator {
    * @returns {void}
    */
   set currentTime(to: number): void {
-    super.currentTime = to;
+    // Do nothing
   }
   /**
    * Get the duration in seconds.

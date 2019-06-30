@@ -3,7 +3,7 @@ import {ImaMiddleware} from './ima-middleware';
 import {ImaAdsController} from './ima-ads-controller';
 import {ImaStateMachine} from './ima-state-machine';
 import {State} from './state';
-import {BaseMiddleware, BasePlugin, EngineType, Error, getCapabilities, Utils, Env, BaseEngineDecorator} from '@playkit-js/playkit-js';
+import {BaseMiddleware, BasePlugin, EngineType, Error, getCapabilities, Utils, Env} from '@playkit-js/playkit-js';
 import './assets/style.css';
 import {ImaEngineDecorator} from './ima-engine-decorator';
 
@@ -45,9 +45,10 @@ const ADS_COVER_CLASS: string = 'playkit-ads-cover';
  * @param {ImaConfigObject} config - The plugin config.
  * @implements {IMiddlewareProvider}
  * @implements {IAdsControllerProvider}
+ * @implements {IEngineDecoratorProvider}
  * @extends BasePlugin
  */
-class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvider {
+class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvider, IEngineDecoratorProvider {
   /**
    * The default configuration of the plugin.
    * @type {Object}
@@ -251,11 +252,11 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Gets the engine decorator.
    * @param {IEngine} engine - The engine to decorate.
    * @public
-   * @returns {BaseEngineDecorator} - The ads api.
+   * @returns {IEngine} - The ads api.
    * @instance
    * @memberof Ima
    */
-  getEngineDecorator(engine: IEngine): BaseEngineDecorator {
+  getEngineDecorator(engine: IEngine): IEngine {
     return new ImaEngineDecorator(engine, this);
   }
 
