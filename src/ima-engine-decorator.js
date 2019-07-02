@@ -16,7 +16,7 @@ class ImaEngineDecorator {
   }
 
   get active(): boolean {
-    return this._plugin.isAdOnSameVideoTag() && this._plugin.isAdPlaying();
+    return this._plugin.playOnMainVideoTag() && this._plugin.isAdPlaying();
   }
 
   dispatchEvent(event: FakeEvent): boolean {

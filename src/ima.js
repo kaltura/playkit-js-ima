@@ -351,13 +351,13 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   }
 
   /**
-   * Gets the indicator if ads playing on same video tag
+   * Gets the indicator if ads playing on the main video tag
    * @public
-   * @returns {boolean} - if ads playing on same video tag.
+   * @returns {boolean} - if ads playing on the main video tag.
    * @instance
    * @memberof Ima
    */
-  isAdOnSameVideoTag() {
+  playOnMainVideoTag() {
     return !!this._adsManager && !!this._adsManager.isCustomPlaybackUsed();
   }
 
@@ -486,7 +486,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   _startAdsManager(): void {
     this.logger.debug('Start ads manager');
-    const readyPromise = this.isAdOnSameVideoTag() && !this.config.disableMediaPreload ? this.player.ready() : Promise.resolve();
+    const readyPromise = this.playOnMainVideoTag() && !this.config.disableMediaPreload ? this.player.ready() : Promise.resolve();
     readyPromise.then(() => {
       this._adsManager.init(this.player.dimensions.width, this.player.dimensions.height, this._sdk.ViewMode.NORMAL);
       this._adsManager.start();
@@ -876,7 +876,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _maybeSaveVideoCurrentTime(): void {
-    if ((this.isAdOnSameVideoTag() || this.config.forceReloadMediaAfterAds) && this.player.currentTime && this.player.currentTime > 0) {
+    if ((this.playOnMainVideoTag() || this.config.forceReloadMediaAfterAds) && this.player.currentTime && this.player.currentTime > 0) {
       this.logger.debug('Custom playback used: save current time before ads', this.player.currentTime);
       this._videoLastCurrentTime = this.player.currentTime;
     }
@@ -970,7 +970,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this.logger.debug('Ads manager loaded');
     const adsRenderingSettings = this._getAdsRenderingSetting();
     this._adsManager = adsManagerLoadedEvent.getAdsManager(this._contentPlayheadTracker, adsRenderingSettings);
-    this.config.forceReloadMediaAfterAds = this.isAdOnSameVideoTag() ? false : this.config.forceReloadMediaAfterAds;
+    this.config.forceReloadMediaAfterAds = this.playOnMainVideoTag() ? false : this.config.forceReloadMediaAfterAds;
     const cuePoints = this._adsManager.getCuePoints();
     if (!cuePoints.length) {
       cuePoints.push(0);
@@ -1083,7 +1083,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   _setToggleAdsCover(enable: boolean): void {
     if (enable) {
-      if (!this.isAdOnSameVideoTag()) {
+      if (!this.playOnMainVideoTag()) {
         if (this._adsContainerDiv.parentNode) {
           this._adsContainerDiv.parentNode.insertBefore(this._adsCoverDiv, this._adsContainerDiv.nextSibling);
           this._isAdsCoverActive = true;
@@ -1188,7 +1188,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     //check if inBrowserFullscreen not set, just in case of inline true and not inBrowserFullscreen we will exit otherwise
     if (
       isIOS &&
-      !this.isAdOnSameVideoTag() &&
+      !this.playOnMainVideoTag() &&
       (this.player.isFullscreen() && !this.player.config.playback.inBrowserFullscreen) &&
       this.player.config.playback.playsinline
     ) {
