@@ -7,8 +7,9 @@ import {Ima} from './ima';
  * @class ImaEngineDecorator
  * @param {IEngine} engine - The HTML5 engine.
  * @param {Ima} plugin - The ima plugin.
+ * @implements {IEngineDecorator}
  */
-class ImaEngineDecorator {
+class ImaEngineDecorator implements IEngineDecorator {
   _plugin: Ima;
 
   constructor(engine: IEngine, plugin: Ima) {
