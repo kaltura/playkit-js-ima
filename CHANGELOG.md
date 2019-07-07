@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.14.0"></a>
+# [0.14.0](https://github.com/kaltura/playkit-js-ima/compare/v0.13.2...v0.14.0) (2019-07-07)
+
+
+### Features
+
+* **FEC-9145:** support non sibling video tags ([#121](https://github.com/kaltura/playkit-js-ima/issues/121)) ([5cdf9f0](https://github.com/kaltura/playkit-js-ima/commit/5cdf9f0))
+
+
+
 <a name="0.13.2"></a>
 ## [0.13.2](https://github.com/kaltura/playkit-js-ima/compare/v0.13.1...v0.13.2) (2019-06-23)
 
