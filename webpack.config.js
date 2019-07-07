@@ -20,7 +20,7 @@ module.exports = {
     library: ['playkit', 'plugins', 'ima'],
     libraryTarget: 'umd',
     umdNamedDefine: true,
-    devtoolModuleFilenameTemplate: './plugins/ima/[resource-path]'
+    devtoolModuleFilenameTemplate: './playkit/plugins/ima/[resource-path]'
   },
   devtool: 'source-map',
   plugins: plugins,
