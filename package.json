@@ -73,7 +73,6 @@
     "lint-staged": "^8.2.1",
     "mocha": "^6.1.4",
     "mocha-cli": "^1.0.1",
-    "pre-push": "^0.1.1",
     "prettier": "^1.18.2",
     "sinon": "^7.3.2",
     "sinon-chai": "^3.3.0",
