@@ -1,5 +1,5 @@
 // @flow
-import {BaseEngineDecorator, FakeEvent, EventType} from '@playkit-js/playkit-js';
+import {FakeEvent} from '@playkit-js/playkit-js';
 import {Ima} from './ima';
 
 /**
@@ -7,32 +7,21 @@ import {Ima} from './ima';
  * @class ImaEngineDecorator
  * @param {IEngine} engine - The HTML5 engine.
  * @param {Ima} plugin - The ima plugin.
+ * @implements {IEngineDecorator}
  */
-class ImaEngineDecorator extends BaseEngineDecorator {
+class ImaEngineDecorator implements IEngineDecorator {
   _plugin: Ima;
 
   constructor(engine: IEngine, plugin: Ima) {
-    super(engine);
     this._plugin = plugin;
   }
 
+  get active(): boolean {
+    return this._plugin.playOnMainVideoTag() && this._plugin.isAdPlaying();
+  }
+
   dispatchEvent(event: FakeEvent): boolean {
-    if (!this._plugin.isAdOnSameVideoTag()) {
-      return super.dispatchEvent(event);
-    } else {
-      if (this._plugin.isAdPlaying()) {
-        return event.defaultPrevented;
-        //handle events for fatal adError that doesnt return the video source
-      } else if (event.type === EventType.ERROR && this._plugin.isAdFailedAndSourceChanged()) {
-        this._plugin.setAdFailed(false);
-        this._plugin.player.getVideoElement().src = this._plugin.getContentSrc();
-        this._plugin.player.play();
-        return event.defaultPrevented;
-      } else if (event.type === EventType.AUTOPLAY_FAILED && this._plugin.isAdFailedAndSourceChanged()) {
-        return event.defaultPrevented;
-      }
-      return super.dispatchEvent(event);
-    }
+    return event.defaultPrevented;
   }
   /**
    * Get paused state.
@@ -43,7 +32,7 @@ class ImaEngineDecorator extends BaseEngineDecorator {
    * @memberof ImaEngineDecorator
    */
   get paused(): boolean {
-    return this._plugin.isAdOnSameVideoTag() && this._plugin.isAdPlaying() ? true : super.paused;
+    return true;
   }
   /**
    * Get the current time in seconds.
@@ -53,8 +42,8 @@ class ImaEngineDecorator extends BaseEngineDecorator {
    * @instance
    * @memberof ImaEngineDecorator
    */
-  get currentTime(): ?number {
-    return this._plugin.isAdOnSameVideoTag() && this._plugin.isAdPlaying() ? this._plugin.getContentTime() : super.currentTime;
+  get currentTime(): number {
+    return this._plugin.getContentTime();
   }
   /**
    * Set the current time in seconds.
@@ -63,7 +52,7 @@ class ImaEngineDecorator extends BaseEngineDecorator {
    * @returns {void}
    */
   set currentTime(to: number): void {
-    super.currentTime = to;
+    // Do nothing
   }
   /**
    * Get the duration in seconds.
@@ -73,8 +62,8 @@ class ImaEngineDecorator extends BaseEngineDecorator {
    * @instance
    * @memberof ImaEngineDecorator
    */
-  get duration(): ?number {
-    return this._plugin.isAdOnSameVideoTag() && this._plugin.isAdPlaying() ? this._plugin.getContentDuration() : super.duration;
+  get duration(): number {
+    return this._plugin.getContentDuration();
   }
 }
 

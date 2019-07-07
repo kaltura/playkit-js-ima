@@ -18,12 +18,12 @@ class ImaMiddleware extends BaseMiddleware {
    */
   id: string = 'ImaMiddleware';
   /**
-   * Whether the player has been loaded.
+   * Whether the play request is the first.
    * @member
    * @private
    * @memberof ImaMiddleware
    */
-  _isPlayerLoaded: boolean;
+  _isFirstPlay: boolean;
   /**
    * The plugin context.
    * @member
@@ -35,7 +35,7 @@ class ImaMiddleware extends BaseMiddleware {
   constructor(context: Ima) {
     super();
     this._context = context;
-    context.player.addEventListener(context.player.Event.CHANGE_SOURCE_STARTED, () => (this._isPlayerLoaded = false));
+    context.player.addEventListener(context.player.Event.CHANGE_SOURCE_STARTED, () => (this._isFirstPlay = true));
   }
 
   /**
@@ -45,8 +45,9 @@ class ImaMiddleware extends BaseMiddleware {
    * @memberof ImaMiddleware
    */
   play(next: Function): void {
-    if (!this._isPlayerLoaded && !this._context.config.disableMediaPreload) {
-      this._loadPlayer();
+    if (this._isFirstPlay) {
+      this._isFirstPlay = false;
+      this._context.config.disableMediaPreload ? this._context.player.getVideoElement().load() : this._loadPlayer();
     }
     this._context.loadPromise
       .then(() => {
@@ -121,7 +122,6 @@ class ImaMiddleware extends BaseMiddleware {
     const loadPlayer = () => {
       this._context.logger.debug('Load player by ima middleware');
       this._context.player.load();
-      this._isPlayerLoaded = true;
     };
     if (this._context.player.engineType) {
       // player has source to play

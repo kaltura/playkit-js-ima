@@ -2,6 +2,55 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.14.0"></a>
+# [0.14.0](https://github.com/kaltura/playkit-js-ima/compare/v0.13.2...v0.14.0) (2019-07-07)
+
+
+### Features
+
+* **FEC-9145:** support non sibling video tags ([#121](https://github.com/kaltura/playkit-js-ima/issues/121)) ([5cdf9f0](https://github.com/kaltura/playkit-js-ima/commit/5cdf9f0))
+
+
+
+<a name="0.13.2"></a>
+## [0.13.2](https://github.com/kaltura/playkit-js-ima/compare/v0.13.1...v0.13.2) (2019-06-23)
+
+
+### Bug Fixes
+
+* **FEC-9209:** when bumper and ima plugins enabled in player, no Big Replay button at the end ([#119](https://github.com/kaltura/playkit-js-ima/issues/119)) ([fe05bfa](https://github.com/kaltura/playkit-js-ima/commit/fe05bfa))
+
+
+
+<a name="0.13.1"></a>
+## [0.13.1](https://github.com/kaltura/playkit-js-ima/compare/v0.13.0...v0.13.1) (2019-06-23)
+
+
+### Bug Fixes
+
+* **FEC-9173:** playback failed for unsupported ads. ([#116](https://github.com/kaltura/playkit-js-ima/issues/116)) ([b7386fb](https://github.com/kaltura/playkit-js-ima/commit/b7386fb))
+* **FEC-9192:** post bumper doesn't play ([#117](https://github.com/kaltura/playkit-js-ima/issues/117)) ([7b7c75b](https://github.com/kaltura/playkit-js-ima/commit/7b7c75b))
+* **FEC-9198:** the media doesn't auto continue after the preroll finished, when disableMediaPreLoad is true ([#118](https://github.com/kaltura/playkit-js-ima/issues/118)) ([42d1851](https://github.com/kaltura/playkit-js-ima/commit/42d1851))
+
+
+
+<a name="0.13.0"></a>
+# [0.13.0](https://github.com/kaltura/playkit-js-ima/compare/v0.12.1...v0.13.0) (2019-06-17)
+
+
+### Bug Fixes
+
+* **FEC-9111:** LG TV - seekbar doesnt work ([#114](https://github.com/kaltura/playkit-js-ima/issues/114)) ([f391307](https://github.com/kaltura/playkit-js-ima/commit/f391307))
+* **FEC-9167:** set default IMA lib protocol for non http protocols ([#115](https://github.com/kaltura/playkit-js-ima/issues/115)) ([1e3855b](https://github.com/kaltura/playkit-js-ima/commit/1e3855b))
+* **FEC-9173:** playback failed for unsupported ads. ([#113](https://github.com/kaltura/playkit-js-ima/issues/113)) ([3f3dcf1](https://github.com/kaltura/playkit-js-ima/commit/3f3dcf1))
+
+
+### Features
+
+* **FEC-8631:** bumper plugin ([#96](https://github.com/kaltura/playkit-js-ima/issues/96)) ([b0f7713](https://github.com/kaltura/playkit-js-ima/commit/b0f7713))
+
+
+
 <a name="0.12.1"></a>
 ## [0.12.1](https://github.com/kaltura/playkit-js-ima/compare/v0.12.0...v0.12.1) (2019-05-23)
 
