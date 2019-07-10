@@ -59,6 +59,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     debug: false,
     delayInitUntilSourceSelected: Env.os.name === 'iOS',
     disableMediaPreload: false,
+    playAdsWithMSE: false,
     forceReloadMediaAfterAds: false,
     adsRenderingSettings: {
       restoreCustomPlaybackStateOnAdBreakComplete: true,
@@ -1000,7 +1001,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
         this.logger.warn('unsupported adsRenderingSettings was set:', setting);
       }
     });
-    if (this.config.disableMediaPreload) {
+    if (this.config.disableMediaPreload || this.config.playAdsWithMSE) {
       adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = false;
     }
     if (typeof this.config.adsRenderingSettings.playAdsAfterTime !== 'number') {
