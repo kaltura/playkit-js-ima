@@ -510,6 +510,7 @@ function getAdOptions(adEvent: any): Object {
   adOptions.duration = ad.getDuration();
   adOptions.position = podInfo.getAdPosition();
   adOptions.title = ad.getTitle();
+  adOptions.advertiserName = ad.getAdvertiserName();
   adOptions.linear = ad.isLinear();
   adOptions.skipOffset = ad.getSkipTimeOffset();
   adOptions.width = ad.isLinear() ? ad.getVastMediaWidth() : ad.getWidth();
