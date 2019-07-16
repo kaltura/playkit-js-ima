@@ -59,7 +59,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     debug: false,
     delayInitUntilSourceSelected: Env.os.name === 'iOS',
     disableMediaPreload: false,
-    playAdsWithMSE: false,
+    reloadSourceOnComplete: true,
     forceReloadMediaAfterAds: false,
     adsRenderingSettings: {
       restoreCustomPlaybackStateOnAdBreakComplete: true,

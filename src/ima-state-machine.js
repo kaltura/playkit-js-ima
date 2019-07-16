@@ -267,7 +267,7 @@ function onAdCompleted(options: Object, adEvent: any): void {
  */
 function onAdsCompleted(options: Object, adEvent: any): void {
   this.logger.debug(options.transition.toUpperCase());
-  if (this.playOnMainVideoTag() && this._contentComplete && !this.config.playAdsWithMSE) {
+  if (this.playOnMainVideoTag() && this._contentComplete && this.config.reloadSourceOnComplete) {
     this.player.getVideoElement().src = this._contentSrc;
   }
   onAdBreakEnd.call(this, options, adEvent);
