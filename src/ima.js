@@ -58,7 +58,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   static defaultConfig: Object = {
     debug: false,
     delayInitUntilSourceSelected: Env.os.name === 'iOS',
-    disableMediaPreload: false,
     forceReloadMediaAfterAds: false,
     adsRenderingSettings: {
       restoreCustomPlaybackStateOnAdBreakComplete: true,
@@ -485,7 +484,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   _startAdsManager(): void {
     this.logger.debug('Start ads manager');
-    const readyPromise = this.playOnMainVideoTag() && !this.config.disableMediaPreload ? this.player.ready() : Promise.resolve();
+    const readyPromise =
+      this.playOnMainVideoTag() && !this.player.config.playback.disableMediaPreloadWhileAd ? this.player.ready() : Promise.resolve();
     readyPromise.then(() => {
       this._adsManager.init(this.player.dimensions.width, this.player.dimensions.height, this._sdk.ViewMode.NORMAL);
       this._adsManager.start();
@@ -1000,7 +1000,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
         this.logger.warn('unsupported adsRenderingSettings was set:', setting);
       }
     });
-    if (this.config.disableMediaPreload) {
+    if (this.player.config.playback.disableMediaPreloadWhileAd) {
       adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = false;
     }
     if (typeof this.config.adsRenderingSettings.playAdsAfterTime !== 'number') {
