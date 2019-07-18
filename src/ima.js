@@ -389,6 +389,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   getContentSrc(): string {
     return this._contentSrc || '';
   }
+  getContentEnded(): boolean {
+    return this._contentComplete;
+  }
   /**
    * Prepare the plugin before media is loaded.
    * @override
