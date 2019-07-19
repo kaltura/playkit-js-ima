@@ -65,6 +65,17 @@ class ImaEngineDecorator implements IEngineDecorator {
   get duration(): number {
     return this._plugin.getContentDuration();
   }
+  /**
+   * Get ended state
+   * @returns {boolean} - media ended
+   * @public
+   * @override
+   * @instance
+   * @memberof ImaEngineDecorator
+   */
+  get ended(): boolean {
+    return this._plugin.getContentEnded();
+  }
 }
 
 export {ImaEngineDecorator};
