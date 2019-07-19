@@ -79,7 +79,7 @@ class ImaMiddleware extends BaseMiddleware {
   play(next: Function): void {
     if (this._isFirstPlay) {
       this._isFirstPlay = false;
-      this._context.config.disableMediaPreload ? this._context.player.getVideoElement().load() : this._loadPlayer();
+      this._context.config.disableMediaPreload ? this._context.player.getVideoElement().load() : this._callNextLoad();
     }
     this._context.loadPromise
       .then(() => {
