@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.15.0"></a>
+# [0.15.0](https://github.com/kaltura/playkit-js-ima/compare/v0.14.0...v0.15.0) (2019-07-19)
+
+
+### Features
+
+* **FEC-9158:** preload chain ([#125](https://github.com/kaltura/playkit-js-ima/issues/125)) ([99877db](https://github.com/kaltura/playkit-js-ima/commit/99877db))
+
+
+
 <a name="0.14.0"></a>
 # [0.14.0](https://github.com/kaltura/playkit-js-ima/compare/v0.13.2...v0.14.0) (2019-07-07)
 
