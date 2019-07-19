@@ -459,7 +459,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     try {
       this.logger.debug('Initial user action');
       this._nextPromise = Utils.Object.defer();
-      this._adDisplayContainer.initialize();
+      this._adDisplayContainer && this._adDisplayContainer.initialize();
       this._hasUserAction = true;
       if (!this.config.adTagUrl && !this.config.adsResponse) {
         this._resolveNextPromise();
