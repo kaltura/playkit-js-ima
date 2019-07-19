@@ -47,7 +47,7 @@ class ImaMiddleware extends BaseMiddleware {
   play(next: Function): void {
     if (this._isFirstPlay) {
       this._isFirstPlay = false;
-      this._context.player.config.playback.disableMediaPreloadWhileAd && this._context.player.getVideoElement().load();
+      this._context.config.disableMediaPreload ? this._context.player.getVideoElement().load() : this._loadPlayer();
     }
     this._context.loadPromise
       .then(() => {
@@ -109,6 +109,25 @@ class ImaMiddleware extends BaseMiddleware {
         this.callNext(next);
         break;
       }
+    }
+  }
+
+  /**
+   * Load the player.
+   * @returns {void}
+   * @private
+   * @memberof ImaMiddleware
+   */
+  _loadPlayer(): void {
+    const loadPlayer = () => {
+      this._context.logger.debug('Load player by ima middleware');
+      this._context.player.load();
+    };
+    if (this._context.player.engineType) {
+      // player has source to play
+      loadPlayer();
+    } else {
+      this._context.player.addEventListener(this._context.player.Event.SOURCE_SELECTED, () => loadPlayer());
     }
   }
 }

@@ -21,13 +21,6 @@ class ImaAdsController implements IAdsPluginController {
   }
 
   /**
-   * @public
-   * @returns {void}
-   * @memberof ImaAdsController
-   */
-  prepare(): void {}
-
-  /**
    * Skip on an ad.
    * @public
    * @returns {void}
@@ -56,16 +49,6 @@ class ImaAdsController implements IAdsPluginController {
    */
   onPlaybackEnded(): Promise<void> {
     return this._context.onPlaybackEnded();
-  }
-
-  /**
-   * Whether to prepare the ads in advance
-   * @public
-   * @returns {void}
-   * @memberof ImaAdsController
-   */
-  get preload(): boolean {
-    return false;
   }
 
   /**
