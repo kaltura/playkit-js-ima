@@ -1,6 +1,6 @@
 {
   "name": "@playkit-js/playkit-js-ima",
-  "version": "0.14.0",
+  "version": "0.16.1",
   "main": "dist/playkit-ima.js",
   "scripts": {
     "clean": "rm -rf ./dist",
@@ -34,7 +34,7 @@
     "javascript-state-machine": "https://github.com/kaltura/javascript-state-machine.git#v3.1.0-k-1"
   },
   "devDependencies": {
-    "@playkit-js/playkit-js": "^0.49.0-canary.20b084c",
+    "@playkit-js/playkit-js": "0.51.1",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-eslint": "^8.2.3",
@@ -83,7 +83,7 @@
     "webpack-dev-server": "^3.7.1"
   },
   "peerDependencies": {
-    "@playkit-js/playkit-js": "0.49.0-canary.20b084c"
+    "@playkit-js/playkit-js": "0.51.1"
   },
   "repository": {
     "type": "git",

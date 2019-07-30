@@ -31,11 +31,43 @@ class ImaMiddleware extends BaseMiddleware {
    * @memberof ImaMiddleware
    */
   _context: Ima;
+  /**
+   * The next load function.
+   * @member
+   * @private
+   * @memberof ImaMiddleware
+   */
+  _nextLoad: ?Function;
 
   constructor(context: Ima) {
     super();
     this._context = context;
-    context.player.addEventListener(context.player.Event.CHANGE_SOURCE_STARTED, () => (this._isFirstPlay = true));
+    context.player.addEventListener(context.player.Event.CHANGE_SOURCE_STARTED, () => {
+      this._isFirstPlay = true;
+      this._nextLoad = null;
+    });
+  }
+
+  /**
+   * Load middleware handler.
+   * @param {Function} next - The load play handler in the middleware chain.
+   * @returns {void}
+   * @memberof ImaMiddleware
+   */
+  load(next: Function): void {
+    this._nextLoad = next;
+    if (this._context.config.adTagUrl || this._context.config.adsResponse) {
+      this._context.player.addEventListener(this._context.player.Event.AD_ERROR, () => {
+        this._callNextLoad();
+      });
+      this._context.player.addEventListener(this._context.player.Event.AD_MANIFEST_LOADED, event => {
+        if (!event.payload.adBreaksPosition.includes(0)) {
+          this._callNextLoad();
+        }
+      });
+    } else {
+      this._callNextLoad();
+    }
   }
 
   /**
@@ -47,7 +79,7 @@ class ImaMiddleware extends BaseMiddleware {
   play(next: Function): void {
     if (this._isFirstPlay) {
       this._isFirstPlay = false;
-      this._context.config.disableMediaPreload ? this._context.player.getVideoElement().load() : this._loadPlayer();
+      this._context.config.disableMediaPreload ? this._context.player.getVideoElement().load() : this._callNextLoad();
     }
     this._context.loadPromise
       .then(() => {
@@ -112,23 +144,11 @@ class ImaMiddleware extends BaseMiddleware {
     }
   }
 
-  /**
-   * Load the player.
-   * @returns {void}
-   * @private
-   * @memberof ImaMiddleware
-   */
-  _loadPlayer(): void {
-    const loadPlayer = () => {
-      this._context.logger.debug('Load player by ima middleware');
-      this._context.player.load();
-    };
-    if (this._context.player.engineType) {
-      // player has source to play
-      loadPlayer();
-    } else {
-      this._context.player.addEventListener(this._context.player.Event.SOURCE_SELECTED, () => loadPlayer());
+  _callNextLoad(): void {
+    if (this._nextLoad && !(this._context.playOnMainVideoTag() || this._context.config.disableMediaPreload)) {
+      this.callNext(this._nextLoad);
     }
+    this._nextLoad = null;
   }
 }
 
