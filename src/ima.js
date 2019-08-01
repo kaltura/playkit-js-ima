@@ -61,7 +61,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     disableMediaPreload: false,
     forceReloadMediaAfterAds: false,
     adsRenderingSettings: {
-      restoreCustomPlaybackStateOnAdBreakComplete: true,
+      restoreCustomPlaybackStateOnAdBreakComplete: false,
       enablePreloading: false,
       useStyledLinearAds: false,
       useStyledNonLinearAds: true,
@@ -525,6 +525,11 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       if (this._currentAd && !this._currentAd.isLinear()) {
         this._showAdsContainer();
       }
+    });
+    this.eventManager.listen(this.player, this.player.Event.MEDIA_LOADED, () => {
+      this._adsManager.updateAdsRenderingSettings({
+        restoreCustomPlaybackStateOnAdBreakComplete: !this.player.config.playback.playAdsWithMSE
+      });
     });
     this.eventManager.listen(this.player, this.player.Event.ENDED, () => this._onMediaEnded());
   }
@@ -1001,9 +1006,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
         this.logger.warn('unsupported adsRenderingSettings was set:', setting);
       }
     });
-    if (this.config.disableMediaPreload) {
-      adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = false;
-    }
+    adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = false;
     if (typeof this.config.adsRenderingSettings.playAdsAfterTime !== 'number') {
       adsRenderingSettings.playAdsAfterTime = this.player.config.playback.startTime;
     }
