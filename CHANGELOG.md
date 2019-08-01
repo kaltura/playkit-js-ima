@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.16.2"></a>
+## [0.16.2](https://github.com/kaltura/playkit-js-ima/compare/v0.16.1...v0.16.2) (2019-08-01)
+
+
+### Bug Fixes
+
+* **FEC-9273:** playing preroll on AV player (ios+playsinline=false) gets the player stuck ([#127](https://github.com/kaltura/playkit-js-ima/issues/127)) ([d2f565e](https://github.com/kaltura/playkit-js-ima/commit/d2f565e))
+
+
+
 <a name="0.16.1"></a>
 ## [0.16.1](https://github.com/kaltura/playkit-js-ima/compare/v0.16.0...v0.16.1) (2019-07-21)
 
