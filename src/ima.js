@@ -3,7 +3,7 @@ import {ImaMiddleware} from './ima-middleware';
 import {ImaAdsController} from './ima-ads-controller';
 import {ImaStateMachine} from './ima-state-machine';
 import {State} from './state';
-import {BaseMiddleware, BasePlugin, EngineType, Error, getCapabilities, Utils, Env} from '@playkit-js/playkit-js';
+import {BaseMiddleware, BasePlugin, EngineType, Error, getCapabilities, Utils, Env, AudioTrack, TextTrack} from '@playkit-js/playkit-js';
 import './assets/style.css';
 import {ImaEngineDecorator} from './ima-engine-decorator';
 
@@ -61,7 +61,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     disableMediaPreload: false,
     forceReloadMediaAfterAds: false,
     adsRenderingSettings: {
-      restoreCustomPlaybackStateOnAdBreakComplete: true,
+      restoreCustomPlaybackStateOnAdBreakComplete: false,
       enablePreloading: false,
       useStyledLinearAds: false,
       useStyledNonLinearAds: true,
@@ -229,6 +229,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _isAdsCoverActive: boolean;
+  _selectedAudioTrack: ?AudioTrack;
+  _selectedTextTrack: ?TextTrack;
+  _selectedPlaybackRate: number;
 
   /**
    * Whether the ima plugin is valid.
@@ -526,6 +529,11 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
         this._showAdsContainer();
       }
     });
+    this.eventManager.listen(this.player, this.player.Event.MEDIA_LOADED, () => {
+      this._adsManager.updateAdsRenderingSettings({
+        restoreCustomPlaybackStateOnAdBreakComplete: !this.player.config.playback.playAdsWithMSE
+      });
+    });
     this.eventManager.listen(this.player, this.player.Event.ENDED, () => this._onMediaEnded());
   }
 
@@ -548,6 +556,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._hasUserAction = false;
     this._togglePlayPauseOnAdsContainerCallback = null;
     this._contentDuration = null;
+    this._selectedAudioTrack = null;
+    this._selectedTextTrack = null;
+    this._selectedPlaybackRate = 1;
   }
 
   /**
@@ -1001,9 +1012,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
         this.logger.warn('unsupported adsRenderingSettings was set:', setting);
       }
     });
-    if (this.config.disableMediaPreload) {
-      adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = false;
-    }
+    adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = false;
     if (typeof this.config.adsRenderingSettings.playAdsAfterTime !== 'number') {
       adsRenderingSettings.playAdsAfterTime = this.player.config.playback.startTime;
     }
