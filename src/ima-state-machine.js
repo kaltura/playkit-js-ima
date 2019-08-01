@@ -166,7 +166,7 @@ function onAdLoaded(options: Object, adEvent: any): void {
     this._selectedAudioTrack = this.player.getActiveTracks().audio;
     this._selectedTextTrack = this.player.getActiveTracks().text;
     this._selectedPlaybackRate = this.player.playbackRate;
-    this.player.hideTextTrack();
+    // this.player.hideTextTrack();
   }
   const adBreakType = getAdBreakType(adEvent);
   const adOptions = getAdOptions(adEvent);
@@ -323,7 +323,7 @@ function onAdBreakEnd(options: Object, adEvent: any): void {
     }
   }
   if (this.playOnMainVideoTag()) {
-    this.eventManager.listenOnce(this.player, this.player.Event.PLAYING, () => {
+    this.eventManager.listenOnce(this.player, this.player.Event.CAN_PLAY, () => {
       this.player.selectTrack(this._selectedAudioTrack);
       this.player.selectTrack(this._selectedTextTrack);
       this.player.playbackRate = this._selectedPlaybackRate;
