@@ -3,7 +3,7 @@ import {ImaMiddleware} from './ima-middleware';
 import {ImaAdsController} from './ima-ads-controller';
 import {ImaStateMachine} from './ima-state-machine';
 import {State} from './state';
-import {BaseMiddleware, BasePlugin, EngineType, Error, getCapabilities, Utils, Env} from '@playkit-js/playkit-js';
+import {BaseMiddleware, BasePlugin, EngineType, Error, getCapabilities, Utils, Env, AudioTrack, TextTrack} from '@playkit-js/playkit-js';
 import './assets/style.css';
 import {ImaEngineDecorator} from './ima-engine-decorator';
 
@@ -229,6 +229,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _isAdsCoverActive: boolean;
+  _selectedAudioTrack: ?AudioTrack;
+  _selectedTextTrack: ?TextTrack;
+  _selectedPlaybackRate: number;
 
   /**
    * Whether the ima plugin is valid.
@@ -553,6 +556,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._hasUserAction = false;
     this._togglePlayPauseOnAdsContainerCallback = null;
     this._contentDuration = null;
+    this._selectedAudioTrack = null;
+    this._selectedTextTrack = null;
+    this._selectedPlaybackRate = 1;
   }
 
   /**
