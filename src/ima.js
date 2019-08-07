@@ -1193,7 +1193,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   _hideActiveTextTracksOnAVPlayer(): void {
     const isIOS = this.player.env.os.name === 'iOS';
-    if (isIOS) {
+    if (isIOS && this.playOnMainVideoTag()) {
       let tracks = this.player.getVideoElement().textTracks;
       if (tracks.length) {
         for (let i = 0; i < tracks.length; i++) {
