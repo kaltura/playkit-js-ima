@@ -1185,6 +1185,27 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   }
 
   /**
+   * On iOS AVPlayer caption stack on video tag, should re-position to hide
+   * @private
+   * @returns {void}
+   * @instance
+   * @memberof Ima
+   */
+  _hideActiveTextTracksOnAVPlayer(): void {
+    const isIOS = this.player.env.os.name === 'iOS';
+    if (isIOS) {
+      let tracks = this.player.getVideoElement().textTracks;
+      if (tracks.length) {
+        for (let i = 0; i < tracks.length; i++) {
+          if (tracks[i].mode === 'showing') {
+            tracks[i].activeCues[0].position = 100;
+          }
+        }
+      }
+    }
+  }
+
+  /**
    * When playing with different video tags on iOS ads are not
    * supported in native full screen, so need to exist full screen before ads started.
    * @private
