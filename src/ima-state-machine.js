@@ -163,6 +163,9 @@ function onAdLoaded(options: Object, adEvent: any): void {
   // When we are using the same video element on iOS, native captions still
   // appearing on the video element, so need to hide them before ad start.
   if (this.playOnMainVideoTag()) {
+    this._selectedAudioTrack = this.player.getActiveTracks().audio;
+    this._selectedTextTrack = this.player.getActiveTracks().text;
+    this._selectedPlaybackRate = this.player.playbackRate;
     this.player.hideTextTrack();
   }
   const adBreakType = getAdBreakType(adEvent);
@@ -318,6 +321,13 @@ function onAdBreakEnd(options: Object, adEvent: any): void {
     } else if (!this.config.forceReloadMediaAfterAds) {
       this.player.play();
     }
+  }
+  if (this.playOnMainVideoTag()) {
+    this.eventManager.listenOnce(this.player, this.player.Event.CAN_PLAY, () => {
+      this.player.selectTrack(this._selectedAudioTrack);
+      this.player.selectTrack(this._selectedTextTrack);
+      this.player.playbackRate = this._selectedPlaybackRate;
+    });
   }
   this.dispatchEvent(options.transition);
 }
