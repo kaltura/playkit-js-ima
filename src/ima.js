@@ -535,6 +535,10 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       });
     });
     this.eventManager.listen(this.player, this.player.Event.ENDED, () => this._onMediaEnded());
+    this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, () => this._onLoadedMetadata());
+    this.eventManager.listen(this.player, this.player.Event.TIME_UPDATE, () => this._onMediaTimeUpdate());
+    this.eventManager.listen(this.player, this.player.Event.SEEKING, () => this._onMediaSeeking());
+    this.eventManager.listen(this.player, this.player.Event.SEEKED, () => this._onMediaSeeked());
   }
 
   /**
@@ -545,7 +549,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _initMembers(): void {
-    this._setContentPlayheadTrackerEventsEnabled(false);
     this._nextPromise = null;
     this._currentAd = null;
     this._adsManager = null;
@@ -829,31 +832,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _onMediaTimeUpdate(): void {
-    if (!this._contentPlayheadTracker.seeking) {
+    if (!this._contentPlayheadTracker.seeking && this.player.currentTime) {
       this._contentPlayheadTracker.previousTime = this._contentPlayheadTracker.currentTime;
       this._contentPlayheadTracker.currentTime = this.player.currentTime;
-    }
-  }
-
-  /**
-   * Sets the content playhead tracker events enabled/disabled.
-   * @param {boolean} enabled - Whether do enabled the events.
-   * @private
-   * @returns {void}
-   * @instance
-   * @memberof Ima
-   */
-  _setContentPlayheadTrackerEventsEnabled(enabled: boolean): void {
-    if (enabled) {
-      this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, () => this._onLoadedMetadata());
-      this.eventManager.listen(this.player, this.player.Event.TIME_UPDATE, () => this._onMediaTimeUpdate());
-      this.eventManager.listen(this.player, this.player.Event.SEEKING, () => this._onMediaSeeking());
-      this.eventManager.listen(this.player, this.player.Event.SEEKED, () => this._onMediaSeeked());
-    } else {
-      this.eventManager.unlisten(this.player, this.player.Event.LOADED_METADATA);
-      this.eventManager.unlisten(this.player, this.player.Event.TIME_UPDATE);
-      this.eventManager.unlisten(this.player, this.player.Event.SEEKING);
-      this.eventManager.unlisten(this.player, this.player.Event.SEEKED);
     }
   }
 
