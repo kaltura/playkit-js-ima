@@ -111,7 +111,7 @@ Type: [Object][49]
 * `forceReloadMediaAfterAds` **[boolean][56]** force reload our media after ads finish. (optional, default `false`)
 * `delayInitUntilSourceSelected` **[boolean][56]** wait until the video tag loaded and then load Ima. (optional, default `false`)
 * `vpaidMode` **[google.ima.ImaSdkSettings.VpaidMode][57]** Sets VPAID playback mode See usage also in [Handling VPAID Modes][58]. (optional, default `'ENABLED'`)
-* `setNumRedirects` **google.ima.ImaSdkSettings.setNumRedirects** Specifies the maximum number of redirects before the subsequent redirects will be denied, and the ad load aborted. This applies to all VAST wrapper ads. (optional, default `4`)
+* `numRedirects` **google.ima.ImaSdkSettings.numRedirects** Specifies the maximum number of redirects before the subsequent redirects will be denied, and the ad load aborted. This applies to all VAST wrapper ads. (optional, default `4`)
 * `adsRenderingSettings` **[google.ima.AdsRenderingSettings][59]** Defines parameters that control the rendering of ads. (optional, default `{ restoreCustomPlaybackStateOnAdBreakComplete:true, enablePreloading:false, useStyledLinearAds:false, useStyledNonLinearAds:true bitrate:-1, autoAlign:true }`)
   * `adsRenderingSettings.useStyledLinearAds` **[boolean][56]** See usage also in [Handling VPAID Ads][60] (optional, default `false`)
 * `companions` **[CompanionsConfigObject][61]?** Defines the companion ads.
