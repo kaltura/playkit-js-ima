@@ -18,7 +18,7 @@
  * @param {boolean} [forceReloadMediaAfterAds=false] - force reload our media after ads finish.
  * @param {boolean} [delayInitUntilSourceSelected=false] - wait until the video tag loaded and then load Ima.
  * @param {google.ima.ImaSdkSettings.VpaidMode} [vpaidMode='ENABLED'] - Sets VPAID playback mode See usage also in {@link https://github.com/kaltura/playkit-js-ima/blob/master/docs/vpaid.md#handling-vpaid-modes|Handling VPAID Modes}.
- * @param {google.ima.ImaSdkSettings.setNumRedirects} [setNumRedirects=4] - Specifies the maximum number of redirects before the subsequent redirects will be denied, and the ad load aborted. This applies to all VAST wrapper ads.
+ * @param {google.ima.ImaSdkSettings.setNumRedirects} [numRedirects=4] - Specifies the maximum number of redirects before the subsequent redirects will be denied, and the ad load aborted. This applies to all VAST wrapper ads.
  * @param {google.ima.AdsRequest.vastLoadTimeout} [vastLoadTimeout: 5000] - Override for default VAST load timeout in milliseconds for a single wrapper. The default timeout is 5000ms.
  * @param {google.ima.AdsRenderingSettings} [adsRenderingSettings={
   restoreCustomPlaybackStateOnAdBreakComplete: true,
@@ -42,7 +42,7 @@ type _ImaConfigObject = {
   forceReloadMediaAfterAds: boolean,
   delayInitUntilSourceSelected: boolean,
   setDisableCustomPlaybackForIOS10Plus: boolean,
-  setNumRedirects: number,
+  numRedirects: number,
   adsRenderingSettings: Object,
   companions: Object,
   locale: string
