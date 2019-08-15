@@ -195,7 +195,6 @@ function onAdStarted(options: Object, adEvent: any): void {
   this._resizeAd();
   this._maybeDisplayCompanionAds();
   if (!this._currentAd.isLinear()) {
-    this._setContentPlayheadTrackerEventsEnabled(true);
     if (this._nextPromise) {
       this._resolveNextPromise();
     } else {
@@ -203,7 +202,6 @@ function onAdStarted(options: Object, adEvent: any): void {
     }
   } else {
     this._showAdsContainer();
-    this._setContentPlayheadTrackerEventsEnabled(false);
   }
   const adOptions = getAdOptions(adEvent);
   const ad = new Ad(adEvent.getAd().getAdId(), adOptions);
@@ -305,7 +303,6 @@ function onAdBreakStart(options: Object, adEvent: any): void {
  */
 function onAdBreakEnd(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
-  this._setContentPlayheadTrackerEventsEnabled(true);
   this._currentAd = null;
   if (!this._contentComplete) {
     if (this.config.forceReloadMediaAfterAds) {
