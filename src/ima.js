@@ -835,7 +835,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _onMediaTimeUpdate(): void {
-    if (!this._contentPlayheadTracker.seeking && this.player.currentTime) {
+    if (!this._contentPlayheadTracker.seeking && this.player.currentTime > 0) {
       this._contentPlayheadTracker.previousTime = this._contentPlayheadTracker.currentTime;
       this._contentPlayheadTracker.currentTime = this.player.currentTime;
     }
