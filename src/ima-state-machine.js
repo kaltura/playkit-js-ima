@@ -166,6 +166,7 @@ function onAdLoaded(options: Object, adEvent: any): void {
     this._selectedAudioTrack = this.player.getActiveTracks().audio;
     this._selectedTextTrack = this.player.getActiveTracks().text;
     this._selectedPlaybackRate = this.player.playbackRate;
+    this._hideActiveTextTracksOnAVPlayer();
     this.player.hideTextTrack();
   }
   const adBreakType = getAdBreakType(adEvent);
