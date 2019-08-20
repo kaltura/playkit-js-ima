@@ -1181,7 +1181,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       let tracks = this.player.getVideoElement().textTracks;
       for (let i = 0; i < tracks.length; i++) {
         if (tracks[i].mode === 'showing') {
-          for (let j = 0; j < tracks[i].activeCues; j++) {
+          for (let j = 0; j < tracks[i].activeCues.length; j++) {
             tracks[i].activeCues[j].position = 100;
           }
         }
