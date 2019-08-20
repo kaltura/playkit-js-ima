@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.17.1"></a>
+## [0.17.1](https://github.com/kaltura/playkit-js-ima/compare/v0.17.0...v0.17.1) (2019-08-20)
+
+
+### Bug Fixes
+
+* broken mp4 in tests ([#131](https://github.com/kaltura/playkit-js-ima/issues/131)) ([efe32e7](https://github.com/kaltura/playkit-js-ima/commit/efe32e7))
+* **FEC-9160:** disable tacks on midroll ([#132](https://github.com/kaltura/playkit-js-ima/issues/132)) ([3296523](https://github.com/kaltura/playkit-js-ima/commit/3296523))
+
+
+
 <a name="0.17.0"></a>
 # [0.17.0](https://github.com/kaltura/playkit-js-ima/compare/v0.16.2...v0.17.0) (2019-08-19)
 
