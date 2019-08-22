@@ -232,6 +232,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   _selectedAudioTrack: ?AudioTrack;
   _selectedTextTrack: ?TextTrack;
   _selectedPlaybackRate: number;
+  _activeCuesPosition: Array<number>;
 
   /**
    * Whether the ima plugin is valid.
@@ -562,6 +563,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._selectedAudioTrack = null;
     this._selectedTextTrack = null;
     this._selectedPlaybackRate = 1;
+    this._activeCuesPosition = [];
   }
 
   /**
@@ -1182,13 +1184,29 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       for (let i = 0; i < tracks.length; i++) {
         if (tracks[i].mode === 'showing') {
           for (let j = 0; j < tracks[i].activeCues.length; j++) {
+            this._activeCuesPosition.push(tracks[i].activeCues[j].position);
             tracks[i].activeCues[j].position = 100;
           }
         }
       }
     }
   }
-
+  _setActiveTextTracksOnAVPlayer(): void {
+    const isIOS = this.player.env.os.name === 'iOS';
+    if (this._activeCuesPosition && isIOS && this.playOnMainVideoTag()) {
+      let tracks = this.player.getVideoElement().textTracks;
+      for (let i = 0; i < tracks.length; i++) {
+        if (tracks[i].mode === 'showing') {
+          for (let j = 0; j < tracks[i].activeCues.length; j++) {
+            if (this._activeCuesPosition[j]) {
+              tracks[i].activeCues[j].position = this._activeCuesPosition[j];
+            }
+          }
+        }
+      }
+    }
+    this._activeCuesPosition = [];
+  }
   /**
    * When playing with different video tags on iOS ads are not
    * supported in native full screen, so need to exist full screen before ads started.
