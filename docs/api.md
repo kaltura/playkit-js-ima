@@ -226,7 +226,7 @@ Gets the engine decorator.
 
 #### Parameters
 
-* `engine` **IEngine** The engine to decorate.
+- `engine` **IEngine** The engine to decorate.
 
 Returns **IEngineDecorator** The ads api.
 
