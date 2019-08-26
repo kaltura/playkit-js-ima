@@ -535,6 +535,10 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       });
     });
     this.eventManager.listen(this.player, this.player.Event.ENDED, () => this._onMediaEnded());
+    this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, () => this._onLoadedMetadata());
+    this.eventManager.listen(this.player, this.player.Event.TIME_UPDATE, () => this._onMediaTimeUpdate());
+    this.eventManager.listen(this.player, this.player.Event.SEEKING, () => this._onMediaSeeking());
+    this.eventManager.listen(this.player, this.player.Event.SEEKED, () => this._onMediaSeeked());
   }
 
   /**
@@ -545,7 +549,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _initMembers(): void {
-    this._setContentPlayheadTrackerEventsEnabled(false);
     this._nextPromise = null;
     this._currentAd = null;
     this._adsManager = null;
@@ -832,31 +835,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _onMediaTimeUpdate(): void {
-    if (!this._contentPlayheadTracker.seeking) {
+    if (!this._contentPlayheadTracker.seeking && this.player.currentTime > 0) {
       this._contentPlayheadTracker.previousTime = this._contentPlayheadTracker.currentTime;
       this._contentPlayheadTracker.currentTime = this.player.currentTime;
-    }
-  }
-
-  /**
-   * Sets the content playhead tracker events enabled/disabled.
-   * @param {boolean} enabled - Whether do enabled the events.
-   * @private
-   * @returns {void}
-   * @instance
-   * @memberof Ima
-   */
-  _setContentPlayheadTrackerEventsEnabled(enabled: boolean): void {
-    if (enabled) {
-      this.eventManager.listen(this.player, this.player.Event.LOADED_METADATA, () => this._onLoadedMetadata());
-      this.eventManager.listen(this.player, this.player.Event.TIME_UPDATE, () => this._onMediaTimeUpdate());
-      this.eventManager.listen(this.player, this.player.Event.SEEKING, () => this._onMediaSeeking());
-      this.eventManager.listen(this.player, this.player.Event.SEEKED, () => this._onMediaSeeked());
-    } else {
-      this.eventManager.unlisten(this.player, this.player.Event.LOADED_METADATA);
-      this.eventManager.unlisten(this.player, this.player.Event.TIME_UPDATE);
-      this.eventManager.unlisten(this.player, this.player.Event.SEEKING);
-      this.eventManager.unlisten(this.player, this.player.Event.SEEKED);
     }
   }
 
@@ -1184,6 +1165,27 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     const isChrome = () => this.player.env.browser.name === 'Chrome';
     if (isAndroid() && isChrome()) {
       this.eventManager.listenOnce(this.player.getView(), 'click', e => e.stopPropagation());
+    }
+  }
+
+  /**
+   * On iOS AVPlayer caption stack on video tag, should re-position to hide
+   * @private
+   * @returns {void}
+   * @instance
+   * @memberof Ima
+   */
+  _hideActiveTextTracksOnAVPlayer(): void {
+    const isIOS = this.player.env.os.name === 'iOS';
+    if (isIOS && this.playOnMainVideoTag()) {
+      let tracks = this.player.getVideoElement().textTracks;
+      for (let i = 0; i < tracks.length; i++) {
+        if (tracks[i].mode === 'showing') {
+          for (let j = 0; j < tracks[i].activeCues.length; j++) {
+            tracks[i].activeCues[j].position = 100;
+          }
+        }
+      }
     }
   }
 

@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.17.1"></a>
+## [0.17.1](https://github.com/kaltura/playkit-js-ima/compare/v0.17.0...v0.17.1) (2019-08-20)
+
+
+### Bug Fixes
+
+* broken mp4 in tests ([#131](https://github.com/kaltura/playkit-js-ima/issues/131)) ([efe32e7](https://github.com/kaltura/playkit-js-ima/commit/efe32e7))
+* **FEC-9160:** disable tacks on midroll ([#132](https://github.com/kaltura/playkit-js-ima/issues/132)) ([3296523](https://github.com/kaltura/playkit-js-ima/commit/3296523))
+
+
+
+<a name="0.17.0"></a>
+# [0.17.0](https://github.com/kaltura/playkit-js-ima/compare/v0.16.2...v0.17.0) (2019-08-19)
+
+
+### Bug Fixes
+
+* non relevant code after engine decorator ([#130](https://github.com/kaltura/playkit-js-ima/issues/130)) ([d3a9b89](https://github.com/kaltura/playkit-js-ima/commit/d3a9b89))
+* **FEC-9160:** captions displayed during midroll ad on AVplayer ([#129](https://github.com/kaltura/playkit-js-ima/issues/129)) ([f8b5a62](https://github.com/kaltura/playkit-js-ima/commit/f8b5a62))
+
+
+### Features
+
+* **FEC-9279:** expose config for num of redirects in IMA ([#128](https://github.com/kaltura/playkit-js-ima/issues/128)) ([90bb16b](https://github.com/kaltura/playkit-js-ima/commit/90bb16b))
+
+
+
 <a name="0.16.2"></a>
 ## [0.16.2](https://github.com/kaltura/playkit-js-ima/compare/v0.16.1...v0.16.2) (2019-08-01)
 
