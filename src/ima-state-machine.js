@@ -325,7 +325,6 @@ function onAdBreakEnd(options: Object, adEvent: any): void {
       this.player.selectTrack(this._selectedAudioTrack);
       this.player.selectTrack(this._selectedTextTrack);
       this.player.playbackRate = this._selectedPlaybackRate;
-      this._setActiveTextTracksOnAVPlayer();
     });
   }
   this.dispatchEvent(options.transition);
