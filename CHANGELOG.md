@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.17.2"></a>
+## [0.17.2](https://github.com/kaltura/playkit-js-ima/compare/v0.17.1...v0.17.2) (2019-08-27)
+
+
+### Bug Fixes
+
+* **FEC-9160:** track keep showing in background and other keeps playing ([#133](https://github.com/kaltura/playkit-js-ima/issues/133)) ([3d45f07](https://github.com/kaltura/playkit-js-ima/commit/3d45f07))
+
+
+
 <a name="0.17.1"></a>
 ## [0.17.1](https://github.com/kaltura/playkit-js-ima/compare/v0.17.0...v0.17.1) (2019-08-20)
 
