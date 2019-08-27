@@ -1181,14 +1181,14 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     const isIOS = this.player.env.os.name === 'iOS';
     if (isIOS && this.playOnMainVideoTag()) {
       let tracks = this.player.getVideoElement().textTracks;
-      for (let i = 0; i < tracks.length; i++) {
-        if (tracks[i].mode === 'showing') {
-          for (let j = 0; j < tracks[i].activeCues.length; j++) {
-            this._textTracksHidden.push(tracks[i].activeCues[j].text);
-            tracks[i].activeCues[j].text = '';
-          }
+      Array.from(tracks).forEach(track => {
+        if (track.mode === 'showing') {
+          Array.from(track.activeCues).forEach(cue => {
+            this._textTracksHidden.push(cue.text);
+            cue.text = '';
+          });
         }
-      }
+      });
     }
   }
 
@@ -1196,15 +1196,15 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     const isIOS = this.player.env.os.name === 'iOS';
     if (this._textTracksHidden && isIOS && this.playOnMainVideoTag()) {
       let tracks = this.player.getVideoElement().textTracks;
-      for (let i = 0; i < tracks.length; i++) {
-        if (tracks[i].mode === 'showing') {
-          for (let j = 0; j < tracks[i].activeCues.length; j++) {
-            if (this._textTracksHidden[j]) {
-              tracks[i].activeCues[j].text = this._textTracksHidden[j];
+      Array.from(tracks).forEach(track => {
+        if (track === 'showing') {
+          Array.from(track.activeCues).forEach(cue => {
+            if (this._textTracksHidden.length > 0) {
+              cue.text = this._textTracksHidden.shift();
             }
-          }
+          });
         }
-      }
+      });
     }
     this._textTracksHidden = [];
   }
