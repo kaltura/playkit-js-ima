@@ -232,6 +232,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   _selectedAudioTrack: ?AudioTrack;
   _selectedTextTrack: ?TextTrack;
   _selectedPlaybackRate: number;
+  _textTracksHided: Array<string>;
 
   /**
    * Whether the ima plugin is valid.
@@ -562,6 +563,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._selectedAudioTrack = null;
     this._selectedTextTrack = null;
     this._selectedPlaybackRate = 1;
+    this._textTracksHided = [];
   }
 
   /**
@@ -1182,11 +1184,29 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       for (let i = 0; i < tracks.length; i++) {
         if (tracks[i].mode === 'showing') {
           for (let j = 0; j < tracks[i].activeCues.length; j++) {
+            this._textTracksHided.push(tracks[i].activeCues[j].text);
             tracks[i].activeCues[j].text = '';
           }
         }
       }
     }
+  }
+
+  _setActiveTextTracksOnAVPlayer(): void {
+    const isIOS = this.player.env.os.name === 'iOS';
+    if (this._textTracksHided && isIOS && this.playOnMainVideoTag()) {
+      let tracks = this.player.getVideoElement().textTracks;
+      for (let i = 0; i < tracks.length; i++) {
+        if (tracks[i].mode === 'showing') {
+          for (let j = 0; j < tracks[i].activeCues.length; j++) {
+            if (this._textTracksHided[j]) {
+              tracks[i].activeCues[j].text = this._textTracksHided[j];
+            }
+          }
+        }
+      }
+    }
+    this._textTracksHided = [];
   }
   /**
    * When playing with different video tags on iOS ads are not
