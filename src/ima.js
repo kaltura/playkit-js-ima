@@ -232,6 +232,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   _selectedAudioTrack: ?AudioTrack;
   _selectedTextTrack: ?TextTrack;
   _selectedPlaybackRate: number;
+  _textTracksHidden: Array<string>;
 
   /**
    * Whether the ima plugin is valid.
@@ -562,6 +563,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._selectedAudioTrack = null;
     this._selectedTextTrack = null;
     this._selectedPlaybackRate = 1;
+    this._textTracksHidden = [];
   }
 
   /**
@@ -1179,16 +1181,33 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     const isIOS = this.player.env.os.name === 'iOS';
     if (isIOS && this.playOnMainVideoTag()) {
       let tracks = this.player.getVideoElement().textTracks;
-      for (let i = 0; i < tracks.length; i++) {
-        if (tracks[i].mode === 'showing') {
-          for (let j = 0; j < tracks[i].activeCues.length; j++) {
-            tracks[i].activeCues[j].position = 100;
-          }
+      Array.from(tracks).forEach(track => {
+        if (track.mode === 'showing') {
+          Array.from(track.activeCues).forEach(cue => {
+            this._textTracksHidden.push(cue.text);
+            cue.text = '';
+          });
         }
-      }
+      });
     }
   }
 
+  _setActiveTextTracksOnAVPlayer(): void {
+    const isIOS = this.player.env.os.name === 'iOS';
+    if (this._textTracksHidden && isIOS && this.playOnMainVideoTag()) {
+      let tracks = this.player.getVideoElement().textTracks;
+      Array.from(tracks).forEach(track => {
+        if (track === 'showing') {
+          Array.from(track.activeCues).forEach(cue => {
+            if (this._textTracksHidden.length > 0) {
+              cue.text = this._textTracksHidden.shift();
+            }
+          });
+        }
+      });
+    }
+    this._textTracksHidden = [];
+  }
   /**
    * When playing with different video tags on iOS ads are not
    * supported in native full screen, so need to exist full screen before ads started.
