@@ -272,7 +272,9 @@ function onAdsCompleted(options: Object, adEvent: any): void {
   if (this.playOnMainVideoTag() && this._contentComplete && !this.player.config.playback.playAdsWithMSE) {
     this.player.getVideoElement().src = this._contentSrc;
   }
-  onAdBreakEnd.call(this, options, adEvent);
+  if (this._playAdByConfig()) {
+    onAdBreakEnd.call(this, options, adEvent);
+  }
 }
 
 /**
@@ -286,11 +288,13 @@ function onAdsCompleted(options: Object, adEvent: any): void {
 function onAdBreakStart(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
   this.player.pause();
-  const adBreakOptions = getAdBreakOptions.call(this, adEvent);
-  const adBreak = new AdBreak(adBreakOptions);
   this._maybeForceExitFullScreen();
   this._maybeSaveVideoCurrentTime();
-  this.dispatchEvent(options.transition, {adBreak: adBreak});
+  if (this._playAdByConfig()) {
+    const adBreakOptions = getAdBreakOptions.call(this, adEvent);
+    const adBreak = new AdBreak(adBreakOptions);
+    this.dispatchEvent(options.transition, {adBreak: adBreak});
+  }
 }
 
 /**
@@ -328,7 +332,9 @@ function onAdBreakEnd(options: Object, adEvent: any): void {
       this._setActiveTextTracksOnAVPlayer();
     });
   }
-  this.dispatchEvent(options.transition);
+  if (this._playAdByConfig()) {
+    this.dispatchEvent(options.transition);
+  }
 }
 
 /**
@@ -340,7 +346,7 @@ function onAdBreakEnd(options: Object, adEvent: any): void {
  * @memberof ImaStateMachine
  */
 function onAdError(options: Object, adEvent: any): void {
-  if (adEvent.type === 'adError') {
+  if (adEvent.type === 'adError' && this._playAdByConfig()) {
     this.logger.debug(adEvent.type.toUpperCase());
     let adError = adEvent.getError();
     // if this is autoplay or user already requested play then next promise will handle reset
@@ -363,9 +369,13 @@ function onAdError(options: Object, adEvent: any): void {
     this.dispatchEvent(options.transition, getAdError.call(this, adError, true));
   } else {
     this.logger.debug(adEvent.type.toUpperCase());
-    let adData = adEvent.getAdData();
-    let adError = adData.adError;
-    if (adData.adError) {
+    let adError;
+    if (typeof adEvent.getAdData === 'function') {
+      adError = adEvent.getAdData().adError;
+    } else if (typeof adEvent.getError === 'function') {
+      adError = adEvent.getError();
+    }
+    if (adError) {
       this.logger.error('Non-fatal error occurred: ' + adError.getMessage());
       this.dispatchEvent(this.player.Event.AD_ERROR, getAdError.call(this, adError, false));
     }
