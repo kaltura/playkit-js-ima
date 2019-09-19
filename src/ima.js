@@ -538,12 +538,20 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this.eventManager.listen(this.player, this.player.Event.SEEKING, () => this._onMediaSeeking());
     this.eventManager.listen(this.player, this.player.Event.SEEKED, () => this._onMediaSeeked());
     if (!this._playAdByConfig()) {
-      this.eventManager.listen(this.player, this.player.Event.AD_BREAK_START, adEvent => this._stateMachine.adbreakstart(adEvent));
-      this.eventManager.listen(this.player, this.player.Event.AD_BREAK_END, adEvent => {
-        this._stateMachine.adbreakend(adEvent);
-        this._stateMachine.goto(State.DONE);
+      this.eventManager.listen(this.player, this.player.Event.AD_BREAK_START, adEvent => {
+        if (this._stateMachine.is(State.LOADED)) {
+          this._stateMachine.adbreakstart(adEvent);
+        }
       });
-      this.eventManager.listen(this.player, this.player.Event.ALL_ADS_COMPLETED, adEvent => this._stateMachine.adscompleted(adEvent));
+      this.eventManager.listen(this.player, this.player.Event.AD_BREAK_END, adEvent => {
+        if (this._stateMachine.is(State.PLAYING)) {
+          this._stateMachine.adbreakend(adEvent);
+          this._stateMachine.goto(State.DONE);
+        }
+      });
+      this.eventManager.listen(this.player, this.player.Event.ALL_ADS_COMPLETED, adEvent => {
+        this._stateMachine.adscompleted(adEvent);
+      });
     }
   }
 
