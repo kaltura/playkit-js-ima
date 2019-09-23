@@ -169,7 +169,7 @@ function onAdLoaded(options: Object, adEvent: any): void {
     this._hideActiveTextTracksOnAVPlayer();
     this.player.hideTextTrack();
   }
-  const adBreakType = getAdBreakType(adEvent);
+  const adBreakType = getAdBreakType.call(this, adEvent);
   const adOptions = getAdOptions(adEvent);
   const ad = new Ad(adEvent.getAd().getAdId(), adOptions);
   Utils.Dom.setAttribute(this._adsContainerDiv, 'data-adtype', adBreakType);
@@ -272,9 +272,7 @@ function onAdsCompleted(options: Object, adEvent: any): void {
   if (this.playOnMainVideoTag() && this._contentComplete && !this.player.config.playback.playAdsWithMSE) {
     this.player.getVideoElement().src = this._contentSrc;
   }
-  if (this._playAdByConfig()) {
-    onAdBreakEnd.call(this, options, adEvent);
-  }
+  onAdBreakEnd.call(this, options, adEvent);
 }
 
 /**
@@ -288,13 +286,11 @@ function onAdsCompleted(options: Object, adEvent: any): void {
 function onAdBreakStart(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
   this.player.pause();
+  const adBreakOptions = getAdBreakOptions.call(this, adEvent);
+  const adBreak = new AdBreak(adBreakOptions);
   this._maybeForceExitFullScreen();
   this._maybeSaveVideoCurrentTime();
-  if (this._playAdByConfig()) {
-    const adBreakOptions = getAdBreakOptions.call(this, adEvent);
-    const adBreak = new AdBreak(adBreakOptions);
-    this.dispatchEvent(options.transition, {adBreak: adBreak});
-  }
+  this.dispatchEvent(options.transition, {adBreak: adBreak});
 }
 
 /**
@@ -332,9 +328,7 @@ function onAdBreakEnd(options: Object, adEvent: any): void {
       this._setActiveTextTracksOnAVPlayer();
     });
   }
-  if (this._playAdByConfig()) {
-    this.dispatchEvent(options.transition);
-  }
+  this.dispatchEvent(options.transition);
 }
 
 /**
@@ -547,12 +541,14 @@ function getAdOptions(adEvent: any): Object {
  */
 function getAdBreakOptions(adEvent: any): Object {
   const adBreakOptions = {};
-  adBreakOptions.numAds = adEvent
-    .getAd()
-    .getAdPodInfo()
-    .getTotalAds();
+  adBreakOptions.numAds =
+    this._podLength ||
+    adEvent
+      .getAd()
+      .getAdPodInfo()
+      .getTotalAds();
   adBreakOptions.position = this.player.ended ? -1 : this.player.currentTime;
-  adBreakOptions.type = getAdBreakType(adEvent);
+  adBreakOptions.type = getAdBreakType.call(this, adEvent);
   return adBreakOptions;
 }
 
@@ -565,19 +561,16 @@ function getAdBreakOptions(adEvent: any): Object {
  */
 function getAdBreakType(adEvent: any): string {
   const ad = adEvent.getAd();
-  const podInfo = ad.getAdPodInfo();
-  const podIndex = podInfo.getPodIndex();
   if (!ad.isLinear()) {
     return AdBreakType.OVERLAY;
   }
-  switch (podIndex) {
-    case 0:
-      return AdBreakType.PRE;
-    case -1:
-      return AdBreakType.POST;
-    default:
-      return AdBreakType.MID;
+  if (this.player.ended) {
+    return AdBreakType.POST;
   }
+  if (this.player.currentTime > 0) {
+    return AdBreakType.MID;
+  }
+  return AdBreakType.PRE;
 }
 
 export {ImaStateMachine};
