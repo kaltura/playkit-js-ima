@@ -561,29 +561,54 @@ function getAdBreakOptions(adEvent: any): Object {
  */
 function getAdBreakType(adEvent: any): string {
   const ad = adEvent.getAd();
+  if (!ad.isLinear()) {
+    return AdBreakType.OVERLAY;
+  }
+  if (this._playAdByConfig()) {
+    return getAdBreakTypeFromSdk(adEvent);
+  } else {
+    return getAdBreakTypeFromPlayer.call(this);
+  }
+}
+
+/**
+ * Gets the ad break type from ima sdk.
+ * @param {any} adEvent - The ima ad event object.
+ * @returns {string} - The ad break type.
+ * @private
+ * @memberof ImaStateMachine
+ */
+function getAdBreakTypeFromSdk(adEvent: any): string {
+  const ad = adEvent.getAd();
   const podInfo = ad.getAdPodInfo();
   const podIndex = podInfo.getPodIndex();
   if (!ad.isLinear()) {
     return AdBreakType.OVERLAY;
   }
-  if (this._playAdByConfig()) {
-    switch (podIndex) {
-      case 0:
-        return AdBreakType.PRE;
-      case -1:
-        return AdBreakType.POST;
-      default:
-        return AdBreakType.MID;
-    }
-  } else {
-    if (this.player.ended) {
+  switch (podIndex) {
+    case 0:
+      return AdBreakType.PRE;
+    case -1:
       return AdBreakType.POST;
-    }
-    if (this.player.currentTime > 0) {
+    default:
       return AdBreakType.MID;
-    }
-    return AdBreakType.PRE;
   }
+}
+
+/**
+ * Gets the ad break type from the player current time.
+ * @returns {string} - The ad break type.
+ * @private
+ * @memberof ImaStateMachine
+ */
+function getAdBreakTypeFromPlayer(): string {
+  if (this.player.ended) {
+    return AdBreakType.POST;
+  }
+  if (this.player.currentTime > 0) {
+    return AdBreakType.MID;
+  }
+  return AdBreakType.PRE;
 }
 
 export {ImaStateMachine};
