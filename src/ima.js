@@ -302,13 +302,13 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
 
   /**
    * Plays ad on demand.
-   * @param {Array<Object>} adPod - The ad pod to play.
+   * @param {PKAdPod} adPod - The ad pod to play.
    * @returns {void}
    * @public
    * @instance
    * @memberof Ima
    */
-  playAdNow(adPod: Array<Object>): void {
+  playAdNow(adPod: PKAdPod): void {
     if (Array.isArray(adPod) && !(this.isAdPlaying() || this._playAdByConfig())) {
       this._playAdBreak(adPod);
     }
@@ -824,6 +824,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       this._stateMachine.loaded();
     } else {
       this._stateMachine.goto(State.DONE);
+      this.logger.debug('Missing ad tag url: create plugin without requesting ads');
     }
   }
 

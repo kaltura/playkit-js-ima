@@ -561,16 +561,29 @@ function getAdBreakOptions(adEvent: any): Object {
  */
 function getAdBreakType(adEvent: any): string {
   const ad = adEvent.getAd();
+  const podInfo = ad.getAdPodInfo();
+  const podIndex = podInfo.getPodIndex();
   if (!ad.isLinear()) {
     return AdBreakType.OVERLAY;
   }
-  if (this.player.ended) {
-    return AdBreakType.POST;
+  if (this._playAdByConfig()) {
+    switch (podIndex) {
+      case 0:
+        return AdBreakType.PRE;
+      case -1:
+        return AdBreakType.POST;
+      default:
+        return AdBreakType.MID;
+    }
+  } else {
+    if (this.player.ended) {
+      return AdBreakType.POST;
+    }
+    if (this.player.currentTime > 0) {
+      return AdBreakType.MID;
+    }
+    return AdBreakType.PRE;
   }
-  if (this.player.currentTime > 0) {
-    return AdBreakType.MID;
-  }
-  return AdBreakType.PRE;
 }
 
 export {ImaStateMachine};
