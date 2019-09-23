@@ -252,7 +252,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * Whether the ima plugin is valid.
    * @static
    * @override
-   * @public   * @memberof Ima
+   * @public
+   * @memberof Ima
    */
   static isValid() {
     return true;
@@ -301,7 +302,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
 
   /**
    * Plays ad on demand.
-   * @param {string} adPod - The ad vast url to play.
+   * @param {Array<Object>} adPod - The ad pod to play.
    * @returns {void}
    * @public
    * @instance
@@ -577,11 +578,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this.eventManager.listen(this.player, this.player.Event.TIME_UPDATE, () => this._onMediaTimeUpdate());
     this.eventManager.listen(this.player, this.player.Event.SEEKING, () => this._onMediaSeeking());
     this.eventManager.listen(this.player, this.player.Event.SEEKED, () => this._onMediaSeeked());
-    if (!this._playAdByConfig()) {
-      this.eventManager.listen(this.player, this.player.Event.ALL_ADS_COMPLETED, adEvent => {
-        this._stateMachine.adscompleted(adEvent);
-      });
-    }
   }
 
   /**
