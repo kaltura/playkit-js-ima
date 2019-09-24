@@ -333,6 +333,17 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
         this._adBreaksEventManager.listen(this._adsManager, this._sdk.AdEvent.Type.COMPLETE, playNext);
         this._adBreaksEventManager.listen(this._adsManager, this._sdk.AdErrorEvent.Type.AD_ERROR, playNext);
       });
+      this._adBreaksEventManager.listen(this._adsLoader, this._sdk.AdErrorEvent.Type.AD_ERROR, () => {
+        playNext();
+        if (this._podLength === 0) {
+          this._stateMachine.goto(State.DONE);
+          this.dispatchEvent(this.player.Event.AD_BREAK_END);
+          this.dispatchEvent(this.player.Event.ADS_COMPLETED);
+          if (!this.player.ended) {
+            this.player.play();
+          }
+        }
+      });
       //TODO support water falling
       this._requestAds(ad.url[0]);
     }
