@@ -32,13 +32,13 @@ class ImaAdsController implements IAdsPluginController {
 
   /**
    * Play an ad on demand.
-   * @param {string} adTagUrl - The ad tag url to play.
+   * @param {PKAdPod} adPod - The ad pod to play.
    * @public
    * @returns {void}
    * @memberof ImaAdsController
    */
-  playAdNow(adTagUrl: string): void {
-    this._context.playAdNow(adTagUrl);
+  playAdNow(adPod: PKAdPod): void {
+    this._context.playAdNow(adPod);
   }
 
   /**

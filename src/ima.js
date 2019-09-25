@@ -3,7 +3,18 @@ import {ImaMiddleware} from './ima-middleware';
 import {ImaAdsController} from './ima-ads-controller';
 import {ImaStateMachine} from './ima-state-machine';
 import {State} from './state';
-import {BaseMiddleware, BasePlugin, EngineType, Error, getCapabilities, Utils, Env, AudioTrack, TextTrack} from '@playkit-js/playkit-js';
+import {
+  BaseMiddleware,
+  BasePlugin,
+  EngineType,
+  Error,
+  getCapabilities,
+  Utils,
+  Env,
+  AudioTrack,
+  TextTrack,
+  EventManager
+} from '@playkit-js/playkit-js';
 import './assets/style.css';
 import {ImaEngineDecorator} from './ima-engine-decorator';
 
@@ -233,6 +244,10 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   _selectedTextTrack: ?TextTrack;
   _selectedPlaybackRate: number;
   _textTracksHidden: Array<string>;
+  _adBreaksEventManager: EventManager;
+  _podLength: number;
+  _adPosition: number;
+  _firstOfAdPod: boolean;
 
   /**
    * Whether the ima plugin is valid.
@@ -287,16 +302,54 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   }
 
   /**
-   * TODO: Rethink on design and implementation.
    * Plays ad on demand.
-   * @param {string} adTagUrl - The ad tag url to play.
+   * @param {PKAdPod} adPod - The ad pod to play.
    * @returns {void}
-   * @private
+   * @public
    * @instance
    * @memberof Ima
    */
-  playAdNow(adTagUrl: string): void {
-    this.logger.warn('playAdNow API is not implemented yet', adTagUrl);
+  playAdNow(adPod: PKAdPod): void {
+    if (Array.isArray(adPod) && !(this.isAdPlaying() || this._playAdByConfig())) {
+      this._playAdBreak(adPod);
+    }
+  }
+
+  _playAdBreak(adPod: PKAdPod): void {
+    this._podLength = adPod.length;
+    this._adPosition = 1;
+    this._firstOfAdPod = true;
+    this.loadPromise.then(() => this._playAd(adPod));
+  }
+
+  _playAd(adPod: PKAdPod): void {
+    const ad = adPod.shift();
+    const playNext = () => {
+      this._adBreaksEventManager.removeAll();
+      this._firstOfAdPod = false;
+      this._podLength = adPod.length;
+      this._adPosition++;
+      this._playAd(adPod);
+    };
+    if (ad) {
+      this._adBreaksEventManager.listen(this._adsLoader, this._sdk.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, () => {
+        this._adBreaksEventManager.listen(this._adsManager, this._sdk.AdEvent.Type.COMPLETE, playNext);
+        this._adBreaksEventManager.listen(this._adsManager, this._sdk.AdEvent.Type.LOG, playNext);
+        this._adBreaksEventManager.listen(this._adsManager, this._sdk.AdErrorEvent.Type.AD_ERROR, playNext);
+      });
+      this._adBreaksEventManager.listen(this._adsLoader, this._sdk.AdErrorEvent.Type.AD_ERROR, () => {
+        playNext();
+        if (this._podLength === 0) {
+          this._stateMachine.adbreakend({type: this._sdk.AdEvent.Type.CONTENT_RESUME_REQUESTED});
+          this._stateMachine.adscompleted({type: this._sdk.AdEvent.Type.ALL_ADS_COMPLETED});
+          if (!this.player.ended) {
+            this.player.play();
+          }
+        }
+      });
+      //TODO support water falling
+      this._requestAds(ad.url[0]);
+    }
   }
 
   /**
@@ -406,7 +459,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   loadMedia(): void {
     this._addBindings();
-    this.loadPromise.then(() => this._requestAds());
+    if (this._playAdByConfig()) {
+      this.loadPromise.then(() => this._requestAds());
+    }
   }
 
   /**
@@ -420,6 +475,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   reset(): void {
     this.logger.debug('reset');
     this.eventManager.removeAll();
+    this._adBreaksEventManager.removeAll();
     this._hideAdsContainer();
     if (!this._isImaSDKLibLoaded()) {
       return;
@@ -468,10 +524,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       this._nextPromise = Utils.Object.defer();
       this._adDisplayContainer.initialize();
       this._hasUserAction = true;
-      if (!this.config.adTagUrl && !this.config.adsResponse) {
-        this._resolveNextPromise();
-        return this._nextPromise;
-      }
       if (this._isAdsManagerLoaded) {
         this.logger.debug('User action occurred after ads manager loaded');
         this._startAdsManager();
@@ -564,6 +616,10 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._selectedTextTrack = null;
     this._selectedPlaybackRate = 1;
     this._textTracksHidden = [];
+    this._adBreaksEventManager = new EventManager();
+    this._podLength = 0;
+    this._adPosition = 0;
+    this._firstOfAdPod = false;
   }
 
   /**
@@ -722,18 +778,20 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
 
   /**
    * Requests the ads from the ads loader.
+   * @param {?string} vastUrl - vast url.
    * @private
    * @returns {void}
    * @instance
    * @memberof Ima
    */
-  _requestAds(): void {
-    if (this.config.adTagUrl || this.config.adsResponse) {
+  _requestAds(vastUrl: ?string): void {
+    if (vastUrl || this._playAdByConfig()) {
       this.logger.debug('Request ads');
       // Request video ads
       let adsRequest = new this._sdk.AdsRequest();
-      if (this.config.adTagUrl) {
-        adsRequest.adTagUrl = this.config.adTagUrl;
+      const adTagUrl = vastUrl || this.config.adTagUrl;
+      if (adTagUrl) {
+        adsRequest.adTagUrl = adTagUrl;
       } else {
         adsRequest.adsResponse = this.config.adsResponse;
       }
@@ -781,7 +839,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       this._stateMachine.loaded();
     } else {
       this._stateMachine.goto(State.DONE);
-      this.logger.warn('Missing ad tag url: create plugin without requesting ads');
+      this.logger.debug('Missing ad tag url: create plugin without requesting ads');
     }
   }
 
@@ -972,7 +1030,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     if (!cuePoints.length) {
       cuePoints.push(0);
     }
-    this.dispatchEvent(this.player.Event.AD_MANIFEST_LOADED, {adBreaksPosition: cuePoints});
+    if (this._playAdByConfig()) {
+      this.dispatchEvent(this.player.Event.AD_MANIFEST_LOADED, {adBreaksPosition: cuePoints});
+    }
     this._isAdsManagerLoaded = true;
     this._attachAdsManagerListeners();
     this._syncPlayerVolume();
@@ -1013,7 +1073,22 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _attachAdsManagerListeners(): void {
-    this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_PAUSE_REQUESTED, adEvent => this._stateMachine.adbreakstart(adEvent));
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_PAUSE_REQUESTED, adEvent => {
+      if (this._playAdByConfig() || this._firstOfAdPod) {
+        this._stateMachine.adbreakstart(adEvent);
+      }
+    });
+
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_RESUME_REQUESTED, adEvent => {
+      if (this._playAdByConfig() || this._podLength === 0) {
+        this._stateMachine.adbreakend(adEvent);
+      }
+    });
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.ALL_ADS_COMPLETED, adEvent => {
+      if (this._playAdByConfig() || this._podLength === 0) {
+        this._stateMachine.adscompleted(adEvent);
+      }
+    });
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOADED, adEvent => this._stateMachine.adloaded(adEvent));
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.STARTED, adEvent => this._stateMachine.adstarted(adEvent));
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.PAUSED, adEvent => this._stateMachine.adpaused(adEvent));
@@ -1024,8 +1099,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.CLICK, adEvent => this._stateMachine.adclicked(adEvent));
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.SKIPPED, adEvent => this._stateMachine.adskipped(adEvent));
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.COMPLETE, adEvent => this._stateMachine.adcompleted(adEvent));
-    this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_RESUME_REQUESTED, adEvent => this._stateMachine.adbreakend(adEvent));
-    this._adsManager.addEventListener(this._sdk.AdEvent.Type.ALL_ADS_COMPLETED, adEvent => this._stateMachine.adscompleted(adEvent));
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.USER_CLOSE, adEvent => this._stateMachine.userclosedad(adEvent));
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_CHANGED, adEvent => this._stateMachine.advolumechanged(adEvent));
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_MUTED, adEvent => this._stateMachine.admuted(adEvent));
@@ -1227,6 +1300,10 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     ) {
       this.player.exitFullscreen();
     }
+  }
+
+  _playAdByConfig(): boolean {
+    return !!(this.config.adTagUrl || this.config.adsResponse);
   }
 }
 

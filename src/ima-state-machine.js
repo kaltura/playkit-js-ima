@@ -169,8 +169,8 @@ function onAdLoaded(options: Object, adEvent: any): void {
     this._hideActiveTextTracksOnAVPlayer();
     this.player.hideTextTrack();
   }
-  const adBreakType = getAdBreakType(adEvent);
-  const adOptions = getAdOptions(adEvent);
+  const adBreakType = getAdBreakType.call(this, adEvent);
+  const adOptions = getAdOptions.call(this, adEvent);
   const ad = new Ad(adEvent.getAd().getAdId(), adOptions);
   Utils.Dom.setAttribute(this._adsContainerDiv, 'data-adtype', adBreakType);
   this.logger.warn(`adType and extraAdData fields will be deprecated soon from AD_LOADED event payload. See docs for more information`);
@@ -203,7 +203,7 @@ function onAdStarted(options: Object, adEvent: any): void {
   } else {
     this._showAdsContainer();
   }
-  const adOptions = getAdOptions(adEvent);
+  const adOptions = getAdOptions.call(this, adEvent);
   const ad = new Ad(adEvent.getAd().getAdId(), adOptions);
   this.dispatchEvent(options.transition, {ad});
 }
@@ -340,7 +340,7 @@ function onAdBreakEnd(options: Object, adEvent: any): void {
  * @memberof ImaStateMachine
  */
 function onAdError(options: Object, adEvent: any): void {
-  if (adEvent.type === 'adError') {
+  if (adEvent.type === 'adError' && this._playAdByConfig()) {
     this.logger.debug(adEvent.type.toUpperCase());
     let adError = adEvent.getError();
     // if this is autoplay or user already requested play then next promise will handle reset
@@ -363,9 +363,13 @@ function onAdError(options: Object, adEvent: any): void {
     this.dispatchEvent(options.transition, getAdError.call(this, adError, true));
   } else {
     this.logger.debug(adEvent.type.toUpperCase());
-    let adData = adEvent.getAdData();
-    let adError = adData.adError;
-    if (adData.adError) {
+    let adError;
+    if (typeof adEvent.getAdData === 'function') {
+      adError = adEvent.getAdData().adError;
+    } else if (typeof adEvent.getError === 'function') {
+      adError = adEvent.getError();
+    }
+    if (adError) {
       this.logger.error('Non-fatal error occurred: ' + adError.getMessage());
       this.dispatchEvent(this.player.Event.AD_ERROR, getAdError.call(this, adError, false));
     }
@@ -488,7 +492,7 @@ function getAdError(adError: any, fatal: boolean): Error {
     try {
       const currentAd = this._adsManager.getCurrentAd();
       const adEvent = {getAd: () => currentAd, getAdData: () => undefined};
-      const adOptions = getAdOptions(adEvent);
+      const adOptions = getAdOptions.call(this, adEvent);
       ad = new Ad(currentAd.getAdId(), adOptions);
     } catch (e) {
       //do nothing
@@ -517,7 +521,7 @@ function getAdOptions(adEvent: any): Object {
   adOptions.clickThroughUrl = adData && adData.clickThroughUrl;
   adOptions.contentType = ad.getContentType();
   adOptions.duration = ad.getDuration();
-  adOptions.position = podInfo.getAdPosition();
+  adOptions.position = this._adPosition || podInfo.getAdPosition();
   adOptions.title = ad.getTitle();
   adOptions.linear = ad.isLinear();
   adOptions.skipOffset = ad.getSkipTimeOffset();
@@ -537,12 +541,14 @@ function getAdOptions(adEvent: any): Object {
  */
 function getAdBreakOptions(adEvent: any): Object {
   const adBreakOptions = {};
-  adBreakOptions.numAds = adEvent
-    .getAd()
-    .getAdPodInfo()
-    .getTotalAds();
+  adBreakOptions.numAds =
+    this._podLength ||
+    adEvent
+      .getAd()
+      .getAdPodInfo()
+      .getTotalAds();
   adBreakOptions.position = this.player.ended ? -1 : this.player.currentTime;
-  adBreakOptions.type = getAdBreakType(adEvent);
+  adBreakOptions.type = getAdBreakType.call(this, adEvent);
   return adBreakOptions;
 }
 
@@ -554,6 +560,25 @@ function getAdBreakOptions(adEvent: any): Object {
  * @memberof ImaStateMachine
  */
 function getAdBreakType(adEvent: any): string {
+  const ad = adEvent.getAd();
+  if (!ad.isLinear()) {
+    return AdBreakType.OVERLAY;
+  }
+  if (this._playAdByConfig()) {
+    return getAdBreakTypeFromSdk(adEvent);
+  } else {
+    return getAdBreakTypeFromPlayer.call(this);
+  }
+}
+
+/**
+ * Gets the ad break type from ima sdk.
+ * @param {any} adEvent - The ima ad event object.
+ * @returns {string} - The ad break type.
+ * @private
+ * @memberof ImaStateMachine
+ */
+function getAdBreakTypeFromSdk(adEvent: any): string {
   const ad = adEvent.getAd();
   const podInfo = ad.getAdPodInfo();
   const podIndex = podInfo.getPodIndex();
@@ -568,6 +593,22 @@ function getAdBreakType(adEvent: any): string {
     default:
       return AdBreakType.MID;
   }
+}
+
+/**
+ * Gets the ad break type from the player current time.
+ * @returns {string} - The ad break type.
+ * @private
+ * @memberof ImaStateMachine
+ */
+function getAdBreakTypeFromPlayer(): string {
+  if (this.player.ended) {
+    return AdBreakType.POST;
+  }
+  if (this.player.currentTime > 0) {
+    return AdBreakType.MID;
+  }
+  return AdBreakType.PRE;
 }
 
 export {ImaStateMachine};
