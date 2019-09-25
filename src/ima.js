@@ -246,6 +246,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   _textTracksHidden: Array<string>;
   _adBreaksEventManager: EventManager;
   _podLength: number;
+  _adPosition: number;
   _firstOfAdPod: boolean;
 
   /**
@@ -316,6 +317,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
 
   _playAdBreak(adPod: PKAdPod): void {
     this._podLength = adPod.length;
+    this._adPosition = 1;
     this._firstOfAdPod = true;
     this.loadPromise.then(() => this._playAd(adPod));
   }
@@ -326,11 +328,13 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       this._adBreaksEventManager.removeAll();
       this._firstOfAdPod = false;
       this._podLength = adPod.length;
+      this._adPosition++;
       this._playAd(adPod);
     };
     if (ad) {
       this._adBreaksEventManager.listen(this._adsLoader, this._sdk.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, () => {
         this._adBreaksEventManager.listen(this._adsManager, this._sdk.AdEvent.Type.COMPLETE, playNext);
+        this._adBreaksEventManager.listen(this._adsManager, this._sdk.AdEvent.Type.LOG, playNext);
         this._adBreaksEventManager.listen(this._adsManager, this._sdk.AdErrorEvent.Type.AD_ERROR, playNext);
       });
       this._adBreaksEventManager.listen(this._adsLoader, this._sdk.AdErrorEvent.Type.AD_ERROR, () => {
@@ -615,6 +619,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._textTracksHidden = [];
     this._adBreaksEventManager = new EventManager();
     this._podLength = 0;
+    this._adPosition = 0;
     this._firstOfAdPod = false;
   }
 

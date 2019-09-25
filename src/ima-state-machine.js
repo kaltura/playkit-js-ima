@@ -170,7 +170,7 @@ function onAdLoaded(options: Object, adEvent: any): void {
     this.player.hideTextTrack();
   }
   const adBreakType = getAdBreakType.call(this, adEvent);
-  const adOptions = getAdOptions(adEvent);
+  const adOptions = getAdOptions.call(this, adEvent);
   const ad = new Ad(adEvent.getAd().getAdId(), adOptions);
   Utils.Dom.setAttribute(this._adsContainerDiv, 'data-adtype', adBreakType);
   this.logger.warn(`adType and extraAdData fields will be deprecated soon from AD_LOADED event payload. See docs for more information`);
@@ -203,7 +203,7 @@ function onAdStarted(options: Object, adEvent: any): void {
   } else {
     this._showAdsContainer();
   }
-  const adOptions = getAdOptions(adEvent);
+  const adOptions = getAdOptions.call(this, adEvent);
   const ad = new Ad(adEvent.getAd().getAdId(), adOptions);
   this.dispatchEvent(options.transition, {ad});
 }
@@ -492,7 +492,7 @@ function getAdError(adError: any, fatal: boolean): Error {
     try {
       const currentAd = this._adsManager.getCurrentAd();
       const adEvent = {getAd: () => currentAd, getAdData: () => undefined};
-      const adOptions = getAdOptions(adEvent);
+      const adOptions = getAdOptions.call(this, adEvent);
       ad = new Ad(currentAd.getAdId(), adOptions);
     } catch (e) {
       //do nothing
@@ -521,7 +521,7 @@ function getAdOptions(adEvent: any): Object {
   adOptions.clickThroughUrl = adData && adData.clickThroughUrl;
   adOptions.contentType = ad.getContentType();
   adOptions.duration = ad.getDuration();
-  adOptions.position = podInfo.getAdPosition();
+  adOptions.position = this._adPosition || podInfo.getAdPosition();
   adOptions.title = ad.getTitle();
   adOptions.linear = ad.isLinear();
   adOptions.skipOffset = ad.getSkipTimeOffset();
