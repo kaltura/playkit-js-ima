@@ -561,7 +561,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   _addBindings(): void {
     FULL_SCREEN_EVENTS.forEach(fullScreenEvent => this.eventManager.listen(document, fullScreenEvent, () => this._resizeAd()));
     this.eventManager.listen(this.player, 'resize', () => this._resizeAd());
-    this.eventManager.listen(this.player, this.player.Event.MUTE_CHANGE, () => this._syncPlayerVolume(true));
+    this.eventManager.listen(this.player, this.player.Event.MUTE_CHANGE, () => this._syncPlayerVolume());
     this.eventManager.listen(this.player, this.player.Event.VOLUME_CHANGE, () => this._syncPlayerVolume());
     this.eventManager.listen(this.player, this.player.Event.SOURCE_SELECTED, event => {
       let selectedSource = event.payload.selectedSource;
@@ -1112,17 +1112,16 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   /**
    * Syncs the player volume.
    * @private
-   * @param {boolean} muteChange - Whether to add or remove the ads cover.
    * @returns {void}
    * @instance
    * @memberof Ima
    */
-  _syncPlayerVolume(muteChange: boolean = false): void {
+  _syncPlayerVolume(): void {
     if (this._adsManager) {
       if (this.player.muted) {
         this._adsManager.setVolume(0);
       } else {
-        if (this._adsManager && typeof this.player.volume === 'number' && (this.player.volume !== this._adsManager.getVolume() || muteChange)) {
+        if (this._adsManager && typeof this.player.volume === 'number') {
           this._adsManager.setVolume(this.player.volume);
         }
       }
