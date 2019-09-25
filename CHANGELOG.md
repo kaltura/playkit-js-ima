@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.18.0"></a>
+# [0.18.0](https://github.com/kaltura/playkit-js-ima/compare/v0.17.2...v0.18.0) (2019-09-25)
+
+
+### Bug Fixes
+
+* **FEC-9367:** unmate button doesn't change the ad volume ([#136](https://github.com/kaltura/playkit-js-ima/issues/136)) ([3db3dec](https://github.com/kaltura/playkit-js-ima/commit/3db3dec))
+
+
+### Features
+
+* **FEC-9323:** advertising configuration ([#135](https://github.com/kaltura/playkit-js-ima/issues/135)) ([2faedf9](https://github.com/kaltura/playkit-js-ima/commit/2faedf9))
+
+
+
 <a name="0.17.2"></a>
 ## [0.17.2](https://github.com/kaltura/playkit-js-ima/compare/v0.17.1...v0.17.2) (2019-08-27)
 
