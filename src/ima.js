@@ -1121,7 +1121,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       if (this.player.muted) {
         this._adsManager.setVolume(0);
       } else {
-        if (this._adsManager && this.player.volume && typeof this.player.volume === 'number') {
+        if (this._adsManager && !isNaN(this.player.volume) && typeof this.player.volume === 'number') {
           this._adsManager.setVolume(this.player.volume);
         }
       }
