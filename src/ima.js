@@ -1108,6 +1108,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.SKIPPABLE_STATE_CHANGED, adEvent => this._stateMachine.adcanskip(adEvent));
     this._adsManager.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, adEvent => this._stateMachine.aderror(adEvent));
   }
+
   /**
    * Syncs the player volume.
    * @private
@@ -1120,7 +1121,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       if (this.player.muted) {
         this._adsManager.setVolume(0);
       } else {
-        if (this._adsManager && typeof this.player.volume === 'number' && this.player.volume !== this._adsManager.getVolume()) {
+        if (this._adsManager && !isNaN(this.player.volume) && typeof this.player.volume === 'number') {
           this._adsManager.setVolume(this.player.volume);
         }
       }
