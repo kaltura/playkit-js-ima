@@ -807,8 +807,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       adsRequest.setAdWillPlayMuted(muted);
 
       const adWillAutoPlay = this.config.adWillAutoPlay;
-      const playerWillAutoPlay = this.player.config.playback.autoplay;
-      const allowMutedAutoPlay = this.player.config.playback.allowMutedAutoPlay;
+      const playerWillAutoPlay = Utils.Object.getPropertyPath(this.player.config, 'playback.autoplay');
+      const allowMutedAutoPlay = Utils.Object.getPropertyPath(this.player.config, 'playback.allowMutedAutoPlay');
+      const playsinline = Utils.Object.getPropertyPath(this.player.config, 'playback.playsinline');
 
       // Pass signal to IMA SDK if ad will autoplay with sound
       // First let application config this, otherwise if player is configured
@@ -817,7 +818,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
         adsRequest.setAdWillAutoPlay(adWillAutoPlay);
         this._adsLoader.requestAds(adsRequest);
       } else if (playerWillAutoPlay) {
-        getCapabilities(EngineType.HTML5).then(capabilities => {
+        getCapabilities(EngineType.HTML5, playsinline).then(capabilities => {
           // If the plugin has been destroyed while calling this promise
           // the adsLoader will no longer exists
           if (!this._adsLoader) return;
