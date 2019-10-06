@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.18.2"></a>
+## [0.18.2](https://github.com/kaltura/playkit-js-ima/compare/v0.18.1...v0.18.2) (2019-10-06)
+
+
+### Bug Fixes
+
+* **FEC-9373:** new layout, the player stuck if skip pre-roll ad ([#138](https://github.com/kaltura/playkit-js-ima/issues/138)) ([ec0bafe](https://github.com/kaltura/playkit-js-ima/commit/ec0bafe))
+
+
+
 <a name="0.18.1"></a>
 ## [0.18.1](https://github.com/kaltura/playkit-js-ima/compare/v0.18.0...v0.18.1) (2019-10-02)
 
