@@ -62,6 +62,11 @@ class ImaStateMachine {
           to: State.IDLE
         },
         {
+          name: 'adlog',
+          from: [State.IDLE, State.LOADED, State.PLAYING, State.PAUSED, State.LOADING, State.PENDING],
+          to: State.IDLE
+        },
+        {
           name: context.player.Event.AD_ERROR,
           from: [State.IDLE, State.LOADED, State.PLAYING, State.PAUSED, State.LOADING, State.PENDING],
           to: State.IDLE
@@ -136,6 +141,7 @@ class ImaStateMachine {
         onAdfirstquartile: onAdEvent.bind(context),
         onAdmidpoint: onAdEvent.bind(context),
         onAdthirdquartile: onAdEvent.bind(context),
+        onAdlog: onAdLog.bind(context),
         onAderror: onAdError.bind(context),
         onUserclosedad: onAdEvent.bind(context),
         onAdvolumechanged: onAdEvent.bind(context),
@@ -332,6 +338,27 @@ function onAdBreakEnd(options: Object, adEvent: any): void {
 }
 
 /**
+ * LOG event handler.
+ * @param {Object} options - fsm event data.
+ * @param {any} adEvent - ima event data.
+ * @returns {void}
+ * @private
+ * @memberof ImaStateMachine
+ */
+function onAdLog(options: Object, adEvent: any): void {
+  this.logger.debug(adEvent.type.toUpperCase());
+  let adError;
+  if (typeof adEvent.getAdData === 'function') {
+    adError = adEvent.getAdData().adError;
+  } else if (typeof adEvent.getError === 'function') {
+    adError = adEvent.getError();
+  }
+  if (adError) {
+    this.logger.error('Non-fatal error occurred: ' + adError.getMessage());
+    this.dispatchEvent(this.player.Event.AD_ERROR, getAdError.call(this, adError, false));
+  }
+}
+/**
  * ERROR event handler.
  * @param {Object} options - fsm event data.
  * @param {any} adEvent - ima event data.
@@ -340,7 +367,7 @@ function onAdBreakEnd(options: Object, adEvent: any): void {
  * @memberof ImaStateMachine
  */
 function onAdError(options: Object, adEvent: any): void {
-  if (adEvent.type === 'adError' && this._playAdByConfig()) {
+  if (this._playAdByConfig()) {
     this.logger.debug(adEvent.type.toUpperCase());
     let adError = adEvent.getError();
     // if this is autoplay or user already requested play then next promise will handle reset
@@ -361,18 +388,6 @@ function onAdError(options: Object, adEvent: any): void {
       this.reset();
     }
     this.dispatchEvent(options.transition, getAdError.call(this, adError, true));
-  } else {
-    this.logger.debug(adEvent.type.toUpperCase());
-    let adError;
-    if (typeof adEvent.getAdData === 'function') {
-      adError = adEvent.getAdData().adError;
-    } else if (typeof adEvent.getError === 'function') {
-      adError = adEvent.getError();
-    }
-    if (adError) {
-      this.logger.error('Non-fatal error occurred: ' + adError.getMessage());
-      this.dispatchEvent(this.player.Event.AD_ERROR, getAdError.call(this, adError, false));
-    }
   }
 }
 
@@ -567,7 +582,7 @@ function getAdBreakType(adEvent: any): string {
   if (this._playAdByConfig()) {
     return getAdBreakTypeFromSdk(adEvent);
   } else {
-    return getAdBreakTypeFromPlayer.call(this);
+    return this._getAdBreakTypeFromPlayer();
   }
 }
 
@@ -593,22 +608,6 @@ function getAdBreakTypeFromSdk(adEvent: any): string {
     default:
       return AdBreakType.MID;
   }
-}
-
-/**
- * Gets the ad break type from the player current time.
- * @returns {string} - The ad break type.
- * @private
- * @memberof ImaStateMachine
- */
-function getAdBreakTypeFromPlayer(): string {
-  if (this.player.ended) {
-    return AdBreakType.POST;
-  }
-  if (this.player.currentTime > 0) {
-    return AdBreakType.MID;
-  }
-  return AdBreakType.PRE;
 }
 
 export {ImaStateMachine};
