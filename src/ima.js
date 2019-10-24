@@ -509,6 +509,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     if (this._adsLoader && !this._contentComplete) {
       this._adsLoader.contentComplete();
     }
+    if (this._adDisplayContainer) {
+      this._adDisplayContainer.destroy();
+    }
     this._adsLoader = null;
   }
 
