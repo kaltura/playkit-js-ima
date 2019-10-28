@@ -330,7 +330,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     const playNext = () => {
       adPod.shift();
       this._adBreaksEventManager.removeAll();
-      this._firstOfAdPod = false;
       this._waterfalled = false;
       this._podLength = adPod.length;
       this._adPosition++;
@@ -346,7 +345,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
         }
       });
       this._adBreaksEventManager.removeAll();
-      this._firstOfAdPod = false;
       this._waterfalled = true;
       ad.url.shift();
       this._playAd(adPod);
@@ -372,10 +370,15 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       this._adBreaksEventManager.listen(this._adsLoader, this._sdk.AdErrorEvent.Type.AD_ERROR, error => {
         onError(error);
         if (this._podLength === 0) {
-          this._stateMachine.adbreakend({type: this._sdk.AdEvent.Type.CONTENT_RESUME_REQUESTED});
-          this._stateMachine.adscompleted({type: this._sdk.AdEvent.Type.ALL_ADS_COMPLETED});
-          if (!this.player.ended) {
-            this.player.play();
+          if (this.player.ads.isAdBreak()) {
+            this._stateMachine.adbreakend({type: this._sdk.AdEvent.Type.CONTENT_RESUME_REQUESTED});
+          }
+          if (this._hasUserAction) {
+            this._stateMachine.adscompleted({type: this._sdk.AdEvent.Type.ALL_ADS_COMPLETED});
+          } else {
+            this.eventManager.listen(this.player, this.player.Event.FIRST_PLAY, () => {
+              this._stateMachine.adscompleted({type: this._sdk.AdEvent.Type.ALL_ADS_COMPLETED});
+            });
           }
         }
       });
@@ -1121,6 +1124,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   _attachAdsManagerListeners(): void {
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_PAUSE_REQUESTED, adEvent => {
       if (this._playAdByConfig() || this._firstOfAdPod) {
+        this._firstOfAdPod = false;
         this._stateMachine.adbreakstart(adEvent);
       }
     });
