@@ -575,9 +575,13 @@ function getAdBreakOptions(adEvent: any): Object {
  * @memberof ImaStateMachine
  */
 function getAdBreakType(adEvent: any): string {
-  const ad = adEvent.getAd();
-  if (!ad.isLinear()) {
-    return AdBreakType.OVERLAY;
+  try {
+    const ad = adEvent.getAd();
+    if (!ad.isLinear()) {
+      return AdBreakType.OVERLAY;
+    }
+  } catch (e) {
+    // do nothing
   }
   if (this._playAdByConfig()) {
     return getAdBreakTypeFromSdk(adEvent);
