@@ -341,9 +341,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       this._adBreaksEventManager.listen(this._adsLoader, this._sdk.AdErrorEvent.Type.AD_ERROR, () => {
         playNext();
         if (this._podLength === 0) {
-          if (this.player.ads.isAdBreak()) {
-            this._stateMachine.adbreakend({type: this._sdk.AdEvent.Type.CONTENT_RESUME_REQUESTED});
-          }
+          this._stateMachine.adbreakend({type: this._sdk.AdEvent.Type.CONTENT_RESUME_REQUESTED});
           if (this._hasUserAction) {
             this._stateMachine.adscompleted({type: this._sdk.AdEvent.Type.ALL_ADS_COMPLETED});
           } else {
