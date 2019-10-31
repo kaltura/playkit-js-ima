@@ -13,7 +13,8 @@ import {
   Env,
   AudioTrack,
   TextTrack,
-  EventManager
+  EventManager,
+  AdBreakType
 } from '@playkit-js/playkit-js';
 import './assets/style.css';
 import {ImaEngineDecorator} from './ima-engine-decorator';
@@ -248,6 +249,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   _podLength: number;
   _adPosition: number;
   _firstOfAdPod: boolean;
+  _waterfalled: boolean;
 
   /**
    * Whether the ima plugin is valid.
@@ -302,7 +304,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   }
 
   /**
-   * Plays ad on demand.
+   * Plays ad on demand
    * @param {PKAdPod} adPod - The ad pod to play.
    * @returns {void}
    * @public
@@ -319,29 +321,63 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._podLength = adPod.length;
     this._adPosition = 1;
     this._firstOfAdPod = true;
-    this.loadPromise.then(() => this._playAd(adPod));
+    this._waterfalled = false;
+    this.loadPromise.then(() => {
+      this._playAd(adPod);
+      if (!this._hasUserAction && this.player.currentTime > 0) {
+        this.initialUserAction();
+      }
+    });
   }
 
   _playAd(adPod: PKAdPod): void {
-    const ad = adPod.shift();
+    const ad = adPod[0];
     const playNext = () => {
+      adPod.shift();
       this._adBreaksEventManager.removeAll();
-      this._firstOfAdPod = false;
+      this._waterfalled = false;
       this._podLength = adPod.length;
       this._adPosition++;
       this._playAd(adPod);
+    };
+    const waterfall = error => {
+      this.dispatchEvent(this.player.Event.AD_WATERFALLING, {
+        adFailed: {
+          url: ad.url[0],
+          data: error,
+          adBreak: this._getAdBreakTypeFromPlayer(),
+          position: this._adPosition
+        }
+      });
+      this._adBreaksEventManager.removeAll();
+      this._waterfalled = true;
+      ad.url.shift();
+      this._playAd(adPod);
+    };
+    const onError = error => {
+      if (ad.url.length > 1) {
+        waterfall(error);
+      } else {
+        if (this._waterfalled) {
+          this.dispatchEvent(this.player.Event.AD_WATERFALLING_FAILED);
+        }
+        this._stateMachine.adlog(error);
+        playNext();
+      }
     };
     if (ad) {
       this._adBreaksEventManager.listen(this._adsLoader, this._sdk.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, () => {
         this._adBreaksEventManager.listen(this._adsManager, this._sdk.AdEvent.Type.COMPLETE, playNext);
         this._adBreaksEventManager.listen(this._adsManager, this._sdk.AdEvent.Type.SKIPPED, playNext);
-        this._adBreaksEventManager.listen(this._adsManager, this._sdk.AdEvent.Type.LOG, playNext);
-        this._adBreaksEventManager.listen(this._adsManager, this._sdk.AdErrorEvent.Type.AD_ERROR, playNext);
+        this._adBreaksEventManager.listen(this._adsManager, this._sdk.AdEvent.Type.LOG, onError);
+        this._adBreaksEventManager.listen(this._adsManager, this._sdk.AdErrorEvent.Type.AD_ERROR, onError);
       });
-      this._adBreaksEventManager.listen(this._adsLoader, this._sdk.AdErrorEvent.Type.AD_ERROR, () => {
-        playNext();
+      this._adBreaksEventManager.listen(this._adsLoader, this._sdk.AdErrorEvent.Type.AD_ERROR, error => {
+        onError(error);
         if (this._podLength === 0) {
-          this._stateMachine.adbreakend({type: this._sdk.AdEvent.Type.CONTENT_RESUME_REQUESTED});
+          if (this.player.ads.isAdBreak()) {
+            this._stateMachine.adbreakend({type: this._sdk.AdEvent.Type.CONTENT_RESUME_REQUESTED});
+          }
           if (this._hasUserAction) {
             this._stateMachine.adscompleted({type: this._sdk.AdEvent.Type.ALL_ADS_COMPLETED});
           } else {
@@ -351,9 +387,18 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
           }
         }
       });
-      //TODO support water falling
       this._requestAds(ad.url[0]);
     }
+  }
+
+  _getAdBreakTypeFromPlayer(): string {
+    if (this.player.ended) {
+      return AdBreakType.POST;
+    }
+    if (this.player.currentTime > 0) {
+      return AdBreakType.MID;
+    }
+    return AdBreakType.PRE;
   }
 
   /**
@@ -627,6 +672,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._podLength = 0;
     this._adPosition = 0;
     this._firstOfAdPod = false;
+    this._waterfalled = false;
   }
 
   /**
@@ -1083,6 +1129,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   _attachAdsManagerListeners(): void {
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_PAUSE_REQUESTED, adEvent => {
       if (this._playAdByConfig() || this._firstOfAdPod) {
+        this._firstOfAdPod = false;
         this._stateMachine.adbreakstart(adEvent);
       }
     });
@@ -1112,7 +1159,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.VOLUME_MUTED, adEvent => this._stateMachine.admuted(adEvent));
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.AD_PROGRESS, adEvent => this._stateMachine.adprogress(adEvent));
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.AD_BUFFERING, adEvent => this._stateMachine.adbuffering(adEvent));
-    this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOG, adEvent => this._stateMachine.aderror(adEvent));
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOG, adEvent => this._stateMachine.adlog(adEvent));
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.SKIPPABLE_STATE_CHANGED, adEvent => this._stateMachine.adcanskip(adEvent));
     this._adsManager.addEventListener(this._sdk.AdErrorEvent.Type.AD_ERROR, adEvent => this._stateMachine.aderror(adEvent));
   }
