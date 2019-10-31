@@ -304,7 +304,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   }
 
   /**
-   * Plays ad on demand.
+   * Plays ad on demand
    * @param {PKAdPod} adPod - The ad pod to play.
    * @returns {void}
    * @public
