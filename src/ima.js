@@ -322,7 +322,12 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._adPosition = 1;
     this._firstOfAdPod = true;
     this._waterfalled = false;
-    this.loadPromise.then(() => this._playAd(adPod));
+    this.loadPromise.then(() => {
+      this._playAd(adPod);
+      if (!this._hasUserAction && this.player.currentTime > 0) {
+        this.initialUserAction();
+      }
+    });
   }
 
   _playAd(adPod: PKAdPod): void {
