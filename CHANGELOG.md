@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.19.0"></a>
+# [0.19.0](https://github.com/kaltura/playkit-js-ima/compare/v0.18.2...v0.19.0) (2019-11-03)
+
+
+### Bug Fixes
+
+* **FEC-9290:** destroy adDisplayContainer on destroy ([#141](https://github.com/kaltura/playkit-js-ima/issues/141)) ([1ba5eab](https://github.com/kaltura/playkit-js-ima/commit/1ba5eab))
+* **FEC-9429:** new ad layout - stopped source will autoplay if AD_ERROR occurs on preroll URL ([#142](https://github.com/kaltura/playkit-js-ima/issues/142)) ([1620b8b](https://github.com/kaltura/playkit-js-ima/commit/1620b8b))
+
+
+### Features
+
+* **FEC-9293:** ad waterfalling ([#139](https://github.com/kaltura/playkit-js-ima/issues/139)) ([8fc58f1](https://github.com/kaltura/playkit-js-ima/commit/8fc58f1))
+
+
+
 <a name="0.18.2"></a>
 ## [0.18.2](https://github.com/kaltura/playkit-js-ima/compare/v0.18.1...v0.18.2) (2019-10-06)
 
