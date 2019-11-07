@@ -198,6 +198,7 @@ function onAdLoaded(options: Object, adEvent: any): void {
 function onAdStarted(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
   this._currentAd = adEvent.getAd();
+  this._adVideoTagAlreadyPlayed = true;
   this._resizeAd();
   this._maybeDisplayCompanionAds();
   if (!this._currentAd.isLinear()) {
