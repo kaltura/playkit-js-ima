@@ -649,7 +649,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
         this.loadPromise.then(() => this._adDisplayContainer.initialize());
       });
       this.eventManager.listen(this.player, this.player.Event.MUTE_CHANGE, () => {
-        if (!this.player.ads.isAdBreak()) {
+        if (!this.isAdPlaying()) {
           this.loadPromise.then(() => this._adDisplayContainer.initialize());
         }
       });
