@@ -98,7 +98,7 @@ class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_VOLUME_CHANGED,
-          from: [State.PLAYING, State.PAUSED, State.LOADED]
+          from: [State.PENDING, State.PLAYING, State.PAUSED, State.LOADED]
         },
         {
           name: context.player.Event.AD_MUTED,
