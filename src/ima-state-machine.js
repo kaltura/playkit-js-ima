@@ -98,7 +98,7 @@ class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_VOLUME_CHANGED,
-          from: [State.PLAYING, State.PAUSED, State.LOADED]
+          from: [State.PENDING, State.PLAYING, State.PAUSED, State.LOADED]
         },
         {
           name: context.player.Event.AD_MUTED,
@@ -198,6 +198,7 @@ function onAdLoaded(options: Object, adEvent: any): void {
 function onAdStarted(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
   this._currentAd = adEvent.getAd();
+  this._adVideoTagAlreadyPlayed = true;
   this._resizeAd();
   this._maybeDisplayCompanionAds();
   if (!this._currentAd.isLinear()) {

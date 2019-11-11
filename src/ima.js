@@ -250,6 +250,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   _adPosition: number;
   _firstOfAdPod: boolean;
   _waterfalled: boolean;
+  _adVideoTagAlreadyPlayed: boolean = false;
 
   /**
    * Whether the ima plugin is valid.
@@ -644,6 +645,13 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this.eventManager.listen(this.player, this.player.Event.TIME_UPDATE, () => this._onMediaTimeUpdate());
     this.eventManager.listen(this.player, this.player.Event.SEEKING, () => this._onMediaSeeking());
     this.eventManager.listen(this.player, this.player.Event.SEEKED, () => this._onMediaSeeked());
+    if (!this._playAdByConfig()) {
+      this.eventManager.listenOnce(this.player, this.player.Event.USER_GESTURE, () => {
+        if (!this._adVideoTagAlreadyPlayed) {
+          this._adDisplayContainer.initialize();
+        }
+      });
+    }
   }
 
   /**
