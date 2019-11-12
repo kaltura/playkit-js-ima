@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.19.1"></a>
+## [0.19.1](https://github.com/kaltura/playkit-js-ima/compare/v0.19.0...v0.19.1) (2019-11-12)
+
+
+### Bug Fixes
+
+* **FEC-9483:** ad layout - no mid-roll ads play on iPad ([#149](https://github.com/kaltura/playkit-js-ima/issues/149)) ([244c394](https://github.com/kaltura/playkit-js-ima/commit/244c394))
+
+
+
 <a name="0.19.0"></a>
 # [0.19.0](https://github.com/kaltura/playkit-js-ima/compare/v0.18.2...v0.19.0) (2019-11-03)
 
