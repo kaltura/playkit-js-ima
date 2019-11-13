@@ -323,12 +323,14 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._adPosition = 1;
     this._firstOfAdPod = true;
     this._waterfalled = false;
-    this.loadPromise.then(() => {
-      this._playAd(adPod);
-      if (!this._hasUserAction && this.player.currentTime > 0) {
-        this.initialUserAction();
-      }
-    });
+    this.loadPromise
+      .then(() => {
+        this._playAd(adPod);
+        if (!this._hasUserAction && this.player.currentTime > 0) {
+          this.initialUserAction();
+        }
+      })
+      .catch(() => {});
   }
 
   _playAd(adPod: PKAdPod): void {
@@ -510,7 +512,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   loadMedia(): void {
     this._addBindings();
     if (this._playAdByConfig()) {
-      this.loadPromise.then(() => this._requestAds());
+      this.loadPromise.then(() => this._requestAds()).catch(() => {});
     }
   }
 
@@ -722,7 +724,11 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
           resolve();
         } else {
           this.eventManager.listenOnce(this.player, this.player.Event.SOURCE_SELECTED, resolve);
-          this.eventManager.listenOnce(this.player, this.player.Event.ERROR, reject);
+          this.eventManager.listenOnce(this.player, this.player.Event.ERROR, error => {
+            if (error.payload.severity === Error.Severity.CRITICAL) {
+              reject(error);
+            }
+          });
         }
       });
     } else {
