@@ -16,9 +16,9 @@
     esutils "^2.0.2"
     js-tokens "^3.0.0"
 
-"@playkit-js/playkit-js@0.58.0-canary.b322bcb":
-  version "0.58.0-canary.b322bcb"
-  resolved "https://registry.yarnpkg.com/@playkit-js/playkit-js/-/playkit-js-0.58.0-canary.b322bcb.tgz#09cedb8ff61235558559d39821a15fd40a6c8935"
+"@playkit-js/playkit-js@0.58.0-canary.fbd1cb8":
+  version "0.58.0-canary.fbd1cb8"
+  resolved "https://registry.yarnpkg.com/@playkit-js/playkit-js/-/playkit-js-0.58.0-canary.fbd1cb8.tgz#03bc5994ef91762f47067b381ffd2b7a212982a1"
   dependencies:
     js-logger "^1.3.0"
     ua-parser-js "^0.7.13"
