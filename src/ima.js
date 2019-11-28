@@ -347,7 +347,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     const waterfall = error => {
       this.dispatchEvent(this.player.Event.AD_WATERFALLING, {
         adFailed: {
-          url: ad.url[0],
+          url: ad.url ? ad.url[0] : '',
+          response: !ad.url && ad.response ? ad.response[0] : '',
           data: error,
           adBreak: this._getAdBreakTypeFromPlayer(),
           position: this._adPosition
@@ -355,11 +356,11 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       });
       this._adBreaksEventManager.removeAll();
       this._waterfalled = true;
-      ad.url.shift();
+      ad.url ? ad.url.shift() : ad.response && ad.response.shift();
       this._playAd(adPod);
     };
     const onError = error => {
-      if (ad.url.length > 1) {
+      if ((ad.url && ad.url.length > 1) || (!ad.url && ad.response && ad.response.length > 1)) {
         waterfall(error);
       } else {
         if (this._waterfalled) {
@@ -392,7 +393,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
         }
       });
       this._isBumper = !!ad.bumper;
-      this._requestAds(ad.url[0]);
+      this._requestAds(ad.url && ad.url[0], ad.response && ad.response[0]);
     }
   }
 
@@ -849,13 +850,14 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   /**
    * Requests the ads from the ads loader.
    * @param {?string} vastUrl - vast url.
+   * @param {?string} vastResponse - vast XML response.
    * @private
    * @returns {void}
    * @instance
    * @memberof Ima
    */
-  _requestAds(vastUrl: ?string): void {
-    if (vastUrl || this._playAdByConfig()) {
+  _requestAds(vastUrl: ?string, vastResponse: ?string): void {
+    if (vastUrl || vastResponse || this._playAdByConfig()) {
       this.logger.debug('Request ads');
       // Request video ads
       let adsRequest = new this._sdk.AdsRequest();
@@ -863,7 +865,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       if (adTagUrl) {
         adsRequest.adTagUrl = adTagUrl;
       } else {
-        adsRequest.adsResponse = this.config.adsResponse;
+        adsRequest.adsResponse = vastResponse || this.config.adsResponse;
       }
       if (typeof this.config.vastLoadTimeout === 'number') {
         adsRequest.vastLoadTimeout = this.config.vastLoadTimeout;
