@@ -250,6 +250,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   _adPosition: number;
   _firstOfAdPod: boolean;
   _waterfalled: boolean;
+  _isBumper: boolean;
   _adVideoTagAlreadyPlayed: boolean = false;
 
   /**
@@ -391,6 +392,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
           }
         }
       });
+      this._isBumper = !!ad.bumper;
       this._requestAds(ad.url && ad.url[0], ad.response && ad.response[0]);
     }
   }
@@ -684,6 +686,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._adPosition = 0;
     this._firstOfAdPod = false;
     this._waterfalled = false;
+    this._isBumper = false;
   }
 
   /**

@@ -544,7 +544,7 @@ function getAdOptions(adEvent: any): Object {
   adOptions.width = ad.isLinear() ? ad.getVastMediaWidth() : ad.getWidth();
   adOptions.height = ad.isLinear() ? ad.getVastMediaHeight() : ad.getHeight();
   adOptions.bitrate = ad.getVastMediaBitrate();
-  adOptions.bumper = podInfo.getIsBumper();
+  adOptions.bumper = podInfo.getIsBumper() || this._isBumper;
   return adOptions;
 }
 
