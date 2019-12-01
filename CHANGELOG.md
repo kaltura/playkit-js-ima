@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.20.0"></a>
+# [0.20.0](https://github.com/kaltura/playkit-js-ima/compare/v0.19.1...v0.20.0) (2019-12-01)
+
+
+### Bug Fixes
+
+* **FEC-9496:** pre-roll ad failed to play on iPhone Safari 13 when VR no loaded ([#150](https://github.com/kaltura/playkit-js-ima/issues/150)) ([323da79](https://github.com/kaltura/playkit-js-ima/commit/323da79))
+
+
+### Features
+
+* **FEC-9469:** ad layout - xml response ([#151](https://github.com/kaltura/playkit-js-ima/issues/151)) ([61bf742](https://github.com/kaltura/playkit-js-ima/commit/61bf742))
+* **FEC-9470:** ad layout - bumper support ([#152](https://github.com/kaltura/playkit-js-ima/issues/152)) ([0be2945](https://github.com/kaltura/playkit-js-ima/commit/0be2945))
+
+
+
 <a name="0.19.1"></a>
 ## [0.19.1](https://github.com/kaltura/playkit-js-ima/compare/v0.19.0...v0.19.1) (2019-11-12)
 
