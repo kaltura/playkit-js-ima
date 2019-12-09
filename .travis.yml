@@ -68,6 +68,10 @@ jobs:
     # Required tests
     - stage: Tests
       if: (branch = master) OR (tag IS present) OR (type = pull_request)
+      name: "Jenkins ping"
+      script: bash ./scripts/after_deploy.sh "ima" "0.20.0" $JENKINS_TOKEN
+    - stage: Tests
+      if: (branch = master) OR (tag IS present) OR (type = pull_request)
       name: "Running lint"
       env:   TRAVIS_MODE=lint
     - stage: Tests
