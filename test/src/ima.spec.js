@@ -662,7 +662,7 @@ describe('Ima Plugin', function() {
       });
       setTimeout(() => {
         ima.playAdNow([{url: [vasts[0]]}]);
-      }, 1000);
+      }, 1500);
     });
 
     it('should play given single postroll', function(done) {
