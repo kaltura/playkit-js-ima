@@ -548,8 +548,12 @@ describe('Ima Plugin', function() {
     );
     ima = player._pluginManager.get('ima');
     player.addEventListener(player.Event.AD_MANIFEST_LOADED, () => {
-      ima._adsManager.h.playAdsAfterTime.should.equal(15);
-      done();
+      try {
+        ima._adsManager.w && typeof ima._adsManager.w.playAdsAfterTime === 'number' && ima._adsManager.w.playAdsAfterTime.should.equal(15);
+        done();
+      } catch (e) {
+        done(e);
+      }
     });
     player.play();
   });
@@ -570,8 +574,12 @@ describe('Ima Plugin', function() {
     );
     ima = player._pluginManager.get('ima');
     player.addEventListener(player.Event.AD_MANIFEST_LOADED, () => {
-      ima._adsManager.h.playAdsAfterTime.should.equal(-1);
-      done();
+      try {
+        ima._adsManager.w && typeof ima._adsManager.w.playAdsAfterTime === 'number' && ima._adsManager.w.playAdsAfterTime.should.equal(-1);
+        done();
+      } catch (e) {
+        done(e);
+      }
     });
     player.play();
   });
