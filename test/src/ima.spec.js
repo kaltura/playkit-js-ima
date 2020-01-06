@@ -626,6 +626,72 @@ describe('Ima Plugin', function() {
     ima._playAdByConfig().should.be.false;
   });
 
+  it('Should load the content while the pre-roll playing', done => {
+    player = loadPlayerWithAds(targetId, {
+      adTagUrl:
+        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=[timestamp]'
+    });
+    ima = player._pluginManager.get('ima');
+    player.addEventListener(player.Event.LOAD_START, () => {
+      player.addEventListener(player.Event.AD_BREAK_END, () => {
+        done();
+      });
+    });
+    player.play();
+  });
+
+  it('Should load and play the content only once the pre-roll finished since disableMediaPreload is true', done => {
+    player = loadPlayerWithAds(targetId, {
+      adTagUrl:
+        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=[timestamp]',
+      disableMediaPreload: true
+    });
+    ima = player._pluginManager.get('ima');
+    player.addEventListener(player.Event.AD_COMPLETED, () => {
+      player.addEventListener(player.Event.LOAD_START, () => {
+        player.addEventListener(player.Event.FIRST_PLAYING, () => {
+          done();
+        });
+      });
+    });
+    player.play();
+  });
+
+  it('Should load the content if the pre-roll load failed', done => {
+    player = loadPlayerWithAds(targetId, {
+      adTagUrl: 'some/invalid/url'
+    });
+    ima = player._pluginManager.get('ima');
+    player.addEventListener(player.Event.AD_ERROR, () => {
+      player.addEventListener(player.Event.LOAD_START, () => {
+        done();
+      });
+    });
+    player.load();
+  });
+
+  it('Should play the content if the pre-roll load failed', done => {
+    player = loadPlayerWithAds(targetId, {
+      adTagUrl: 'some/invalid/url'
+    });
+    ima = player._pluginManager.get('ima');
+    player.addEventListener(player.Event.AD_ERROR, () => {
+      player.addEventListener(player.Event.FIRST_PLAYING, () => {
+        done();
+      });
+    });
+    player.play();
+  });
+
+  it('Should load the content if no adTagUrl or adsResponse given', done => {
+    player = loadPlayerWithAds(targetId, {});
+    ima = player._pluginManager.get('ima');
+    player.addEventListener(player.Event.LOAD_START, () => {
+      done();
+    });
+    player.load();
+  });
+
   describe('playAdNow', function() {
     let sandbox;
     const vasts = [

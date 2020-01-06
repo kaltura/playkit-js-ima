@@ -56,7 +56,8 @@ class ImaMiddleware extends BaseMiddleware {
    */
   load(next: Function): void {
     this._nextLoad = next;
-    if (this._context.config.adTagUrl || this._context.config.adsResponse) {
+    const sm = this._context.getStateMachine();
+    if (sm.state !== State.IDLE && (this._context.config.adTagUrl || this._context.config.adsResponse)) {
       this._context.player.addEventListener(this._context.player.Event.AD_ERROR, () => {
         this._callNextLoad();
       });
@@ -79,7 +80,14 @@ class ImaMiddleware extends BaseMiddleware {
   play(next: Function): void {
     if (this._isFirstPlay) {
       this._isFirstPlay = false;
-      this._context.config.disableMediaPreload ? this._context.player.getVideoElement().load() : this._callNextLoad();
+      if (this._context.config.disableMediaPreload || this._context.playOnMainVideoTag()) {
+        this._context.player.addEventListener(this._context.player.Event.AD_BREAK_END, () => this._callNextLoad());
+        if (!(this._context.playOnMainVideoTag() || this._context.player.getVideoElement().src)) {
+          this._context.player.getVideoElement().load();
+        }
+      } else {
+        this._callNextLoad();
+      }
     }
     this._context.loadPromise
       .then(() => {
@@ -145,7 +153,7 @@ class ImaMiddleware extends BaseMiddleware {
   }
 
   _callNextLoad(): void {
-    if (this._nextLoad && !(this._context.playOnMainVideoTag() || this._context.config.disableMediaPreload)) {
+    if (this._nextLoad) {
       this.callNext(this._nextLoad);
     }
     this._nextLoad = null;
