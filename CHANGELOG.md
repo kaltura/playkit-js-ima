@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.20.3"></a>
+## [0.20.3](https://github.com/kaltura/playkit-js-ima/compare/v0.20.2...v0.20.3) (2020-01-30)
+
+
+### Bug Fixes
+
+* **FEC-9629:** Player is not inline when rendered after the DOM loads ([#158](https://github.com/kaltura/playkit-js-ima/issues/158)) ([0cada33](https://github.com/kaltura/playkit-js-ima/commit/0cada33))
+
+
+
+<a name="0.20.2"></a>
+## [0.20.2](https://github.com/kaltura/playkit-js-ima/compare/v0.20.1...v0.20.2) (2020-01-06)
+
+
+### Bug Fixes
+
+* **FEC-9594:** the playback failed after the pre-roll finished when "disableMediaPreload: true" ([#157](https://github.com/kaltura/playkit-js-ima/issues/157)) ([e3033bb](https://github.com/kaltura/playkit-js-ima/commit/e3033bb))
+
+
+
+<a name="0.20.1"></a>
+## [0.20.1](https://github.com/kaltura/playkit-js-ima/compare/v0.20.0...v0.20.1) (2019-12-29)
+
+
+
 <a name="0.20.0"></a>
 # [0.20.0](https://github.com/kaltura/playkit-js-ima/compare/v0.19.1...v0.20.0) (2019-12-01)
 
