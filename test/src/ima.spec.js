@@ -48,8 +48,8 @@ describe('Ima Plugin', function() {
       player.Event.AD_FIRST_QUARTILE,
       player.Event.AD_MIDPOINT,
       player.Event.AD_THIRD_QUARTILE,
-      player.Event.AD_VOLUME_CHANGED,
-      player.Event.AD_MUTED,
+      // player.Event.AD_VOLUME_CHANGED,
+      // player.Event.AD_MUTED,
       player.Event.AD_PROGRESS
     ];
     player.addEventListener(player.Event.AD_LOADED, () => {
