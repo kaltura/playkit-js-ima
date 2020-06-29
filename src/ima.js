@@ -932,7 +932,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
         const adTotalHeight = this._currentAd.getHeight() + OVERLAY_AD_MARGIN;
         if (adTotalWidth <= this.player.dimensions.width && adTotalHeight <= this.player.dimensions.height) {
           this._alignAdsContainerSizeForOverlayAd();
-          this._adsManager.resize(this._currentAd.getWidth() + OVERLAY_AD_MARGIN, this._currentAd.getHeight() + OVERLAY_AD_MARGIN, viewMode);
+          this._adsManager.resize(adTotalWidth, adTotalHeight, viewMode);
           this._showAdsContainer();
         } else {
           this._hideAdsContainer();
