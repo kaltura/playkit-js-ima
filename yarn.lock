@@ -33,10 +33,9 @@
   resolved "https://registry.yarnpkg.com/@playkit-js/playkit-js-hls/-/playkit-js-hls-1.19.1.tgz#ddede5681cb9520fbd8e9d0954f89e3ee1e1dad0"
   integrity sha512-AJnxCBzIJaW0nVH50vkDbdduE0m3pk7vbCFUf/PcLWpdzcWh4G+IsNQ/75VtyaiERP+L/HoYVeB140iB/Khhdw==
 
-"@playkit-js/playkit-js-ui@^0.57.0":
+"@playkit-js/playkit-js-ui@https://github.com/kaltura/playkit-js-ui.git#FEC-10057":
   version "0.57.0"
-  resolved "https://registry.yarnpkg.com/@playkit-js/playkit-js-ui/-/playkit-js-ui-0.57.0.tgz#164c044f280887f277c7ecdff032a78a4d7bd7cb"
-  integrity sha512-0NRxfHzNu29AITVRbQ5DwGSbsWLlHRe6frcyq3zOnvoPMHAd3R8m80RbqNuXxBFVjdeAeK/kV3TN2CFIzGCeBA==
+  resolved "https://github.com/kaltura/playkit-js-ui.git#4380e6da2c473aab1f53f2538d5f386dbddc1a35"
   dependencies:
     empty "^0.10.1"
     js-logger "^1.6.0"
@@ -5115,12 +5114,12 @@ jstransform@^11.0.3:
 
 "kaltura-player-js@https://github.com/kaltura/kaltura-player-js.git#FEC-10057":
   version "0.55.0"
-  resolved "https://github.com/kaltura/kaltura-player-js.git#edf3f3656abec91faad94f24e97ae9e8e86286da"
+  resolved "https://github.com/kaltura/kaltura-player-js.git#c632f7a7d99edbc97222f93428c3c56d9630e971"
   dependencies:
     "@playkit-js/playkit-js" "https://github.com/kaltura/playkit-js.git#FEC-10057"
     "@playkit-js/playkit-js-dash" "^1.18.3"
     "@playkit-js/playkit-js-hls" "^1.19.1"
-    "@playkit-js/playkit-js-ui" "^0.57.0"
+    "@playkit-js/playkit-js-ui" "https://github.com/kaltura/playkit-js-ui.git#FEC-10057"
     babel-polyfill "^6.23.0"
     hls.js "^0.13.1"
     js-logger "^1.3.0"
