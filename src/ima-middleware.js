@@ -1,8 +1,9 @@
 // @flow
-import {BaseMiddleware} from '@playkit-js/playkit-js';
+import {core} from 'kaltura-player-js';
 import {Ima} from './ima';
 import {State} from './state';
 
+const {BaseMiddleware} = core;
 /**
  * Middleware implementation for ima plugin.
  * @class ImaMiddleware

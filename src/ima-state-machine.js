@@ -2,7 +2,8 @@
 import StateMachine from 'javascript-state-machine';
 import StateMachineHistory from 'javascript-state-machine/lib/history';
 import {State} from './state';
-import {Ad, AdBreak, AdBreakType, Error, Utils} from '@playkit-js/playkit-js';
+import {core, Ad, AdBreak} from 'kaltura-player-js';
+const {AdBreakType, Error, Utils} = core;
 
 /**
  * Finite state machine for ima plugin.

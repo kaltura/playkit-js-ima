@@ -1,6 +1,8 @@
 // @flow
-import {FakeEvent} from '@playkit-js/playkit-js';
+import {core} from 'kaltura-player-js';
 import {Ima} from './ima';
+
+const {FakeEvent} = core;
 
 /**
  * Engine decorator for ima plugin.
