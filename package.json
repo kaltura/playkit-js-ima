@@ -28,7 +28,6 @@
     "javascript-state-machine": "https://github.com/kaltura/javascript-state-machine.git#v3.1.0-k-1"
   },
   "devDependencies": {
-    "kaltura-player-js": "https://github.com/kaltura/kaltura-player-js.git#FEC-10057",
     "babel-cli": "^6.18.0",
     "babel-core": "^6.18.2",
     "babel-eslint": "^7.1.1",
@@ -52,6 +51,7 @@
     "flow-bin": "latest",
     "husky": "0.14.3",
     "istanbul": "^0.4.5",
+    "kaltura-player-js": "https://github.com/kaltura/kaltura-player-js.git#FEC-10057",
     "karma": "^1.5.0",
     "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^2.0.0",
