@@ -1,4 +1,5 @@
-import loadPlayer from '@playkit-js/playkit-js';
+import {core} from 'kaltura-player-js';
+const loadPlayer = core.default;
 
 /**
  * @param {string} targetId _
