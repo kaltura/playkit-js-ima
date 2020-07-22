@@ -1364,33 +1364,39 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   }
 
   /**
-   * When playing on same video tag need to keep the text track
-   * audio track and playback rate
+   * When playing on same video tag need to save state snapshot
    * @private
    * @returns {void}
    * @instance
    * @memberof Ima
    */
-  _maybeSaveTracksAndRate(): void {
+  _maybeSavePlayerSnapshot(): void {
     if (this.playOnMainVideoTag()) {
       this._selectedAudioTrack = this.player.getActiveTracks().audio;
       this._selectedTextTrack = this.player.getActiveTracks().text;
       this._selectedPlaybackRate = this.player.playbackRate;
+      // When we are using the same video element on iOS, native captions still
+      // appearing on the video element, so need to hide them before ad start.
+      this._hideActiveTextTracksOnAVPlayer();
+      this.player.hideTextTrack();
     }
   }
 
   /**
-   * When we are using the same video element on iOS, native captions still
-   * appearing on the video element, so need to hide them before ad start.
+   * When playing on same video tag need to restore to previous state
    * @private
    * @returns {void}
    * @instance
    * @memberof Ima
    */
-  _maybeHideTextTracks(): void {
+  _maybeRestorePlayerSnapshot(): void {
     if (this.playOnMainVideoTag()) {
-      this._hideActiveTextTracksOnAVPlayer();
-      this.player.hideTextTrack();
+      this.eventManager.listenOnce(this.player, this.player.Event.CAN_PLAY, () => {
+        this.player.selectTrack(this._selectedAudioTrack);
+        this.player.selectTrack(this._selectedTextTrack);
+        this.player.playbackRate = this._selectedPlaybackRate;
+        this._setActiveTextTracksOnAVPlayer();
+      });
     }
   }
 

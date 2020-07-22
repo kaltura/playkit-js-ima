@@ -286,8 +286,7 @@ function onAdBreakStart(options: Object, adEvent: any): void {
   this.player.pause();
   const adBreakOptions = getAdBreakOptions.call(this, adEvent);
   const adBreak = new AdBreak(adBreakOptions);
-  this._maybeSaveTracksAndRate();
-  this._maybeHideTextTracks();
+  this._maybeSavePlayerSnapshot();
   this._maybeForceExitFullScreen();
   this._maybeSaveVideoCurrentTime();
   this.dispatchEvent(options.transition, {adBreak: adBreak});
@@ -320,14 +319,7 @@ function onAdBreakEnd(options: Object, adEvent: any): void {
       this.player.play();
     }
   }
-  if (this.playOnMainVideoTag()) {
-    this.eventManager.listenOnce(this.player, this.player.Event.CAN_PLAY, () => {
-      this.player.selectTrack(this._selectedAudioTrack);
-      this.player.selectTrack(this._selectedTextTrack);
-      this.player.playbackRate = this._selectedPlaybackRate;
-      this._setActiveTextTracksOnAVPlayer();
-    });
-  }
+  this._maybeRestorePlayerSnapshot();
   this.dispatchEvent(options.transition);
 }
 
