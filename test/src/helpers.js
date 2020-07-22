@@ -1,5 +1,4 @@
-import {core} from 'kaltura-player-js';
-const loadPlayer = core.default;
+import {setup} from 'kaltura-player-js';
 
 /**
  * @param {string} targetId _
@@ -9,6 +8,8 @@ const loadPlayer = core.default;
  */
 function loadPlayerWithAds(targetId, imaConfig, playbackConfig) {
   let config = {
+    targetId,
+    provider: {},
     sources: {
       progressive: [
         {
@@ -25,9 +26,7 @@ function loadPlayerWithAds(targetId, imaConfig, playbackConfig) {
   if (playbackConfig) {
     config.playback = playbackConfig;
   }
-  let player = loadPlayer(config);
-  document.getElementById(targetId).appendChild(player.getView());
-  return player;
+  return setup(config);
 }
 
 /**
