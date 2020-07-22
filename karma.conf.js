@@ -27,9 +27,9 @@ module.exports = function (config) {
     browserDisconnectTimeout: 30000,
     browserNoActivityTimeout: 60000,
     customLaunchers: launchers,
-    browsers: ['Chrome_browser'],
+    browsers: ['Chrome_browser', 'Firefox'],
     concurrency: 1,
-    singleRun: false,
+    singleRun: true,
     colors: true,
     frameworks: ['mocha'],
     files: ['test/setup/karma.js'],
@@ -52,7 +52,7 @@ module.exports = function (config) {
 
   if (process.env.TRAVIS) {
     karmaConf.customLaunchers = customLaunchers;
-    karmaConf.browsers = ['Chrome_travis_ci', 'Firefox'];
+    karmaConf.browsers = ['Chrome_travis_ci'];
   } else {
     if (isWindows) {
       karmaConf.browsers.push('IE');

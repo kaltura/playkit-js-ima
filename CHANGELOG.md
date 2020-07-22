@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.20.4"></a>
+## [0.20.4](https://github.com/kaltura/playkit-js-ima/compare/v0.20.3...v0.20.4) (2020-07-07)
+
+
+### Bug Fixes
+
+* **FEC-10251:** floating player - no linear Ad isn't resized when moved to floating player ([#163](https://github.com/kaltura/playkit-js-ima/issues/163)) ([74e9279](https://github.com/kaltura/playkit-js-ima/commit/74e9279))
+
+
+
 <a name="0.20.3"></a>
 ## [0.20.3](https://github.com/kaltura/playkit-js-ima/compare/v0.20.2...v0.20.3) (2020-01-30)
 
