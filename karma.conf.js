@@ -52,12 +52,12 @@ module.exports = function (config) {
 
   if (process.env.TRAVIS) {
     karmaConf.customLaunchers = customLaunchers;
-    karmaConf.browsers = ['Chrome_travis_ci'];
+    karmaConf.browsers = ['Chrome_travis_ci', 'Firefox'];
   } else {
     if (isWindows) {
       karmaConf.browsers.push('IE');
     } else if (isMacOS) {
-      // karmaConf.browsers.push('Safari');
+      karmaConf.browsers.push('Safari');
     }
   }
 
