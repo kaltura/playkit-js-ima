@@ -1362,6 +1362,38 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     }
     this._textTracksHidden = [];
   }
+
+  /**
+   * When playing on same video tag need to keep the text track
+   * audio track and playback rate
+   * @private
+   * @returns {void}
+   * @instance
+   * @memberof Ima
+   */
+  _maybeSaveTracksAndRate(): void {
+    if (this.playOnMainVideoTag()) {
+      this._selectedAudioTrack = this.player.getActiveTracks().audio;
+      this._selectedTextTrack = this.player.getActiveTracks().text;
+      this._selectedPlaybackRate = this.player.playbackRate;
+    }
+  }
+
+  /**
+   * When we are using the same video element on iOS, native captions still
+   * appearing on the video element, so need to hide them before ad start.
+   * @private
+   * @returns {void}
+   * @instance
+   * @memberof Ima
+   */
+  _maybeHideTextTracks(): void {
+    if (this.playOnMainVideoTag()) {
+      this._hideActiveTextTracksOnAVPlayer();
+      this.player.hideTextTrack();
+    }
+  }
+
   /**
    * When playing with different video tags on iOS ads are not
    * supported in native full screen, so need to exist full screen before ads started.

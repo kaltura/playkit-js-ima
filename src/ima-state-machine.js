@@ -286,15 +286,8 @@ function onAdBreakStart(options: Object, adEvent: any): void {
   this.player.pause();
   const adBreakOptions = getAdBreakOptions.call(this, adEvent);
   const adBreak = new AdBreak(adBreakOptions);
-  // When we are using the same video element on iOS, native captions still
-  // appearing on the video element, so need to hide them before ad start.
-  if (this.playOnMainVideoTag()) {
-    this._selectedAudioTrack = this.player.getActiveTracks().audio;
-    this._selectedTextTrack = this.player.getActiveTracks().text;
-    this._selectedPlaybackRate = this.player.playbackRate;
-    this._hideActiveTextTracksOnAVPlayer();
-    this.player.hideTextTrack();
-  }
+  this._maybeSaveTracksAndRate();
+  this._maybeHideTextTracks();
   this._maybeForceExitFullScreen();
   this._maybeSaveVideoCurrentTime();
   this.dispatchEvent(options.transition, {adBreak: adBreak});
