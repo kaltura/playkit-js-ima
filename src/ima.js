@@ -1351,7 +1351,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     if (this._textTracksHidden && isIOS && this.playOnMainVideoTag()) {
       let tracks = this.player.getVideoElement().textTracks;
       Array.from(tracks).forEach(track => {
-        if (track === 'showing') {
+        if (track.mode === 'showing') {
           Array.from(track.activeCues).forEach(cue => {
             if (this._textTracksHidden.length > 0) {
               cue.text = this._textTracksHidden.shift();
