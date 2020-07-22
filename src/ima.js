@@ -775,7 +775,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._sdk.settings.setPlayerVersion(this.config.playerVersion);
     this._sdk.settings.setVpaidAllowed(true);
     this._sdk.settings.setVpaidMode(this._getVpaidMode());
-    if (this.config.hasOwnProperty('locale')) {
+    if (Object.prototype.hasOwnProperty.call(this.config, 'locale')) {
       this._sdk.settings.setLocale(this.config.locale);
     }
     if (typeof this.config.setDisableCustomPlaybackForIOS10Plus === 'boolean') {
@@ -1369,7 +1369,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     if (
       isIOS &&
       !this.playOnMainVideoTag() &&
-      (this.player.isFullscreen() && !this.player.config.playback.inBrowserFullscreen) &&
+      this.player.isFullscreen() &&
+      !this.player.config.playback.inBrowserFullscreen &&
       this.player.config.playback.playsinline
     ) {
       this.player.exitFullscreen();

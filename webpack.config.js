@@ -12,10 +12,6 @@ let plugins = [
   })
 ];
 
-if (PROD) {
-  plugins.push(new webpack.optimize.UglifyJsPlugin({sourceMap: true}));
-}
-
 module.exports = {
   context: __dirname + '/src',
   entry: {'playkit-ima': 'index.js'},
@@ -30,12 +26,6 @@ module.exports = {
   devtool: 'source-map',
   plugins: plugins,
   module: {
-    loaders: [
-      {
-        test: /\.css$/,
-        loader: 'style-loader!css-loader'
-      }
-    ],
     rules: [
       {
         test: /\.js$/,
@@ -87,5 +77,8 @@ module.exports = {
       amd: 'playkit-js',
       root: ['KalturaPlayer', 'core']
     }
+  },
+  optimization: {
+    minimize: PROD
   }
 };

@@ -21,15 +21,15 @@ const launchers = {
   }
 };
 
-module.exports = function(config) {
+module.exports = function (config) {
   let karmaConf = {
     logLevel: config.LOG_INFO,
     browserDisconnectTimeout: 30000,
     browserNoActivityTimeout: 60000,
     customLaunchers: launchers,
-    browsers: ['Chrome_browser', 'Firefox'],
+    browsers: ['Chrome_browser'],
     concurrency: 1,
-    singleRun: true,
+    singleRun: false,
     colors: true,
     frameworks: ['mocha'],
     files: ['test/setup/karma.js'],
@@ -57,7 +57,7 @@ module.exports = function(config) {
     if (isWindows) {
       karmaConf.browsers.push('IE');
     } else if (isMacOS) {
-      karmaConf.browsers.push('Safari');
+      // karmaConf.browsers.push('Safari');
     }
   }
 

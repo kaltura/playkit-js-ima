@@ -1,3 +1,3 @@
 # Guides
 
-* [Handling VPAID Ads](./vpaid.md)
+- [Handling VPAID Ads](./vpaid.md)
