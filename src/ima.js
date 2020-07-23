@@ -1351,7 +1351,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     if (this._textTracksHidden && isIOS && this.playOnMainVideoTag()) {
       let tracks = this.player.getVideoElement().textTracks;
       Array.from(tracks).forEach(track => {
-        if (track === 'showing') {
+        if (track.mode === 'showing') {
           Array.from(track.activeCues).forEach(cue => {
             if (this._textTracksHidden.length > 0) {
               cue.text = this._textTracksHidden.shift();
@@ -1362,6 +1362,44 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     }
     this._textTracksHidden = [];
   }
+
+  /**
+   * When playing on same video tag need to save state snapshot
+   * @private
+   * @returns {void}
+   * @instance
+   * @memberof Ima
+   */
+  _maybeSavePlayerSnapshot(): void {
+    if (this.playOnMainVideoTag()) {
+      this._selectedAudioTrack = this.player.getActiveTracks().audio;
+      this._selectedTextTrack = this.player.getActiveTracks().text;
+      this._selectedPlaybackRate = this.player.playbackRate;
+      // When we are using the same video element on iOS, native captions still
+      // appearing on the video element, so need to hide them before ad start.
+      this._hideActiveTextTracksOnAVPlayer();
+      this.player.hideTextTrack();
+    }
+  }
+
+  /**
+   * When playing on same video tag need to restore to previous state
+   * @private
+   * @returns {void}
+   * @instance
+   * @memberof Ima
+   */
+  _maybeRestorePlayerSnapshot(): void {
+    if (this.playOnMainVideoTag()) {
+      this.eventManager.listenOnce(this.player, this.player.Event.CAN_PLAY, () => {
+        this.player.selectTrack(this._selectedAudioTrack);
+        this.player.selectTrack(this._selectedTextTrack);
+        this.player.playbackRate = this._selectedPlaybackRate;
+        this._setActiveTextTracksOnAVPlayer();
+      });
+    }
+  }
+
   /**
    * When playing with different video tags on iOS ads are not
    * supported in native full screen, so need to exist full screen before ads started.
