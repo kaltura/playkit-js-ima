@@ -78,9 +78,6 @@ module.exports = {
     contentBase: __dirname + '/src'
   },
   resolve: {
-    alias: {
-      'kaltura-player-js': path.resolve('./node_modules/kaltura-player-js/dist/kaltura-ovp-player')
-    },
     modules: [path.resolve(__dirname, 'src'), 'node_modules']
   },
   externals: {
