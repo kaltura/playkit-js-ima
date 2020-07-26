@@ -26,9 +26,9 @@
   "main": "dist/playkit-ima.js",
   "scripts": {
     "prebuild": "npm run clean",
-    "build": "NODE_ENV=production webpack",
+    "build": "webpack --mode production",
     "clean": "rm -rf ./dist",
-    "dev": "webpack-dev-server",
+    "dev": "webpack-dev-server --mode development",
     "docs:generate": "documentation build flow-typed/** src/** -f md -o docs/api.md",
     "docs:serve": "documentation serve flow-typed/** src/** --watch",
     "eslint": "eslint . --color",
@@ -37,8 +37,8 @@
     "prettier:fix": "prettier --write .",
     "pushTaggedRelease": "git push --follow-tags --no-verify origin master",
     "release": "standard-version",
-    "test": "NODE_ENV=test karma start --color",
-    "watch": "webpack --progress --colors --watch"
+    "test": "NODE_ENV=test karma start --color --mode development",
+    "watch": "webpack --progress --colors --watch --mode development"
   },
   "lint-staged": {
     "*.{js,jsx}": [
