@@ -542,12 +542,7 @@ function getAdOptions(adEvent: any): Object {
  */
 function getAdBreakOptions(adEvent: any): Object {
   const adBreakOptions = {};
-  adBreakOptions.numAds =
-    this._podLength ||
-    adEvent
-      .getAd()
-      .getAdPodInfo()
-      .getTotalAds();
+  adBreakOptions.numAds = this._podLength || adEvent.getAd().getAdPodInfo().getTotalAds();
   adBreakOptions.position = this.player.ended ? -1 : this.player.currentTime;
   adBreakOptions.type = getAdBreakType.call(this, adEvent);
   return adBreakOptions;

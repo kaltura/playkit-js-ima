@@ -4,20 +4,20 @@ import {AdBreakType, FakeEvent} from '@playkit-js/playkit-js';
 
 const targetId = 'player-placeholder_ima.spec';
 
-describe('Ima Plugin', function() {
+describe('Ima Plugin', function () {
   let ima;
   let player;
   let adPodIndex;
   let cuePoints;
 
-  before(function() {
+  before(function () {
     TestUtils.createElement('DIV', targetId);
     let el = document.getElementById(targetId);
     el.style.height = '360px';
     el.style.width = '640px';
   });
 
-  afterEach(function() {
+  afterEach(function () {
     ima.destroy();
     ima = null;
     player.destroy();
@@ -26,7 +26,7 @@ describe('Ima Plugin', function() {
     TestUtils.removeVideoElementsFromTestPage();
   });
 
-  after(function() {
+  after(function () {
     TestUtils.removeElement(targetId);
   });
 
@@ -290,7 +290,7 @@ describe('Ima Plugin', function() {
     });
     player.addEventListener(player.Event.AD_STARTED, () => {
       maybeDoneTest(cuePoints, adPodIndex);
-      setTimeout(function() {
+      setTimeout(function () {
         ima.skipAd();
       }, 6000);
     });
@@ -479,63 +479,63 @@ describe('Ima Plugin', function() {
     player.dispatchEvent(new FakeEvent(player.Event.ERROR, {severity: 2}));
   });
 
-  it('should return the correct vpaid for INSECURE', function(done) {
+  it('should return the correct vpaid for INSECURE', function (done) {
     player = loadPlayerWithAds(targetId, {
       vpaidMode: 'INSECURE',
       adTagUrl:
         'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=[timestamp]'
     });
     ima = player._pluginManager.get('ima');
-    ima.loadPromise.then(function() {
+    ima.loadPromise.then(function () {
       const value = ima._getVpaidMode();
       value.should.equals(2);
       done();
     });
   });
 
-  it('should return the correct vpaid for ENABLED', function(done) {
+  it('should return the correct vpaid for ENABLED', function (done) {
     player = loadPlayerWithAds(targetId, {
       vpaidMode: 'ENABLED',
       adTagUrl:
         'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=[timestamp]'
     });
     ima = player._pluginManager.get('ima');
-    ima.loadPromise.then(function() {
+    ima.loadPromise.then(function () {
       const value = ima._getVpaidMode();
       value.should.equals(1);
       done();
     });
   });
 
-  it('should return the correct vpaid for DISABLED', function(done) {
+  it('should return the correct vpaid for DISABLED', function (done) {
     player = loadPlayerWithAds(targetId, {
       vpaidMode: 'DISABLED',
       adTagUrl:
         'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=[timestamp]'
     });
     ima = player._pluginManager.get('ima');
-    ima.loadPromise.then(function() {
+    ima.loadPromise.then(function () {
       const value = ima._getVpaidMode();
       value.should.equals(0);
       done();
     });
   });
 
-  it('should return the correct vpaid for ENABLED', function(done) {
+  it('should return the correct vpaid for ENABLED', function (done) {
     player = loadPlayerWithAds(targetId, {
       vpaidMode: '',
       adTagUrl:
         'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=[timestamp]'
     });
     ima = player._pluginManager.get('ima');
-    ima.loadPromise.then(function() {
+    ima.loadPromise.then(function () {
       const value = ima._getVpaidMode();
       value.should.equals(1);
       done();
     });
   });
 
-  it('should set playAdsAfterTime according the playback.startTime config', function(done) {
+  it('should set playAdsAfterTime according the playback.startTime config', function (done) {
     player = loadPlayerWithAds(
       targetId,
       {
@@ -558,7 +558,7 @@ describe('Ima Plugin', function() {
     player.play();
   });
 
-  it('should override playAdsAfterTime according the plugin config', function(done) {
+  it('should override playAdsAfterTime according the plugin config', function (done) {
     player = loadPlayerWithAds(
       targetId,
       {
@@ -584,7 +584,7 @@ describe('Ima Plugin', function() {
     player.play();
   });
 
-  it('should return _playAdByConfig true for adTagUrl configured', function() {
+  it('should return _playAdByConfig true for adTagUrl configured', function () {
     player = loadPlayerWithAds(
       targetId,
       {
@@ -599,7 +599,7 @@ describe('Ima Plugin', function() {
     ima._playAdByConfig().should.be.true;
   });
 
-  it('should return _playAdByConfig true for adsResponse configured', function() {
+  it('should return _playAdByConfig true for adsResponse configured', function () {
     player = loadPlayerWithAds(
       targetId,
       {
@@ -614,7 +614,7 @@ describe('Ima Plugin', function() {
     ima._playAdByConfig().should.be.true;
   });
 
-  it('should return _playAdByConfig false for neither adTagUrl or adsResponse configured', function() {
+  it('should return _playAdByConfig false for neither adTagUrl or adsResponse configured', function () {
     player = loadPlayerWithAds(
       targetId,
       {},
@@ -692,7 +692,7 @@ describe('Ima Plugin', function() {
     player.load();
   });
 
-  describe('playAdNow', function() {
+  describe('playAdNow', function () {
     let sandbox;
     const vasts = [
       'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=[timestamp]',
@@ -702,14 +702,14 @@ describe('Ima Plugin', function() {
     beforeEach(() => {
       player = loadPlayerWithAds(targetId, {}, {autoplay: true});
       ima = player._pluginManager.get('ima');
-      sandbox = sinon.sandbox.create();
+      sandbox = sinon.createSandbox();
     });
 
     afterEach(() => {
       sandbox.restore();
     });
 
-    it('should play given single preroll', function(done) {
+    it('should play given single preroll', function (done) {
       player.addEventListener(player.Event.AD_BREAK_START, event => {
         try {
           event.payload.adBreak.position.should.equal(0);
@@ -723,7 +723,7 @@ describe('Ima Plugin', function() {
       ima.playAdNow([{url: [vasts[0]]}]);
     });
 
-    it('should play given single midroll', function(done) {
+    it('should play given single midroll', function (done) {
       player.addEventListener(player.Event.AD_BREAK_START, event => {
         try {
           event.payload.adBreak.position.should.gt(1);
@@ -739,7 +739,7 @@ describe('Ima Plugin', function() {
       }, 1500);
     });
 
-    it('should play given single postroll', function(done) {
+    it('should play given single postroll', function (done) {
       player.addEventListener(player.Event.AD_BREAK_START, event => {
         try {
           event.payload.adBreak.position.should.equal(-1);
@@ -758,7 +758,7 @@ describe('Ima Plugin', function() {
       });
     });
 
-    it('should not play while ad is playing', function(done) {
+    it('should not play while ad is playing', function (done) {
       player.addEventListener(player.Event.AD_BREAK_START, () => {
         player.addEventListener(player.Event.AD_ERROR, () => {
           done(new Error('should not play while ad playing'));
@@ -771,8 +771,8 @@ describe('Ima Plugin', function() {
       ima.playAdNow([{url: [vasts[0]]}]);
     });
 
-    it('should not play when adTagUrl or adsResponse configured', function(done) {
-      sandbox.stub(ima, '_playAdByConfig').callsFake(function() {
+    it('should not play when adTagUrl or adsResponse configured', function (done) {
+      sandbox.stub(ima, '_playAdByConfig').callsFake(function () {
         return true;
       });
       player.addEventListener(player.Event.AD_BREAK_START, () => {
@@ -783,7 +783,7 @@ describe('Ima Plugin', function() {
       setTimeout(done, 2000);
     });
 
-    it('should play ad pod - next once first complete', function(done) {
+    it('should play ad pod - next once first complete', function (done) {
       player.addEventListener(player.Event.AD_COMPLETED, () => {
         player.addEventListener(player.Event.AD_STARTED, () => {
           done();
@@ -792,7 +792,7 @@ describe('Ima Plugin', function() {
       ima.playAdNow([{url: [vasts[0]]}, {url: [vasts[1]]}]);
     });
 
-    it('should play ad pod - next once first skipped', function(done) {
+    it('should play ad pod - next once first skipped', function (done) {
       player.addEventListener(player.Event.AD_CAN_SKIP, () => {
         player.addEventListener(player.Event.AD_SKIPPED, () => {
           player.addEventListener(player.Event.AD_STARTED, () => {
@@ -804,7 +804,7 @@ describe('Ima Plugin', function() {
       ima.playAdNow([{url: [vasts[0]]}, {url: [vasts[1]]}]);
     });
 
-    it('should play ad pod - next once first failed', function(done) {
+    it('should play ad pod - next once first failed', function (done) {
       player.addEventListener(player.Event.AD_ERROR, () => {
         player.addEventListener(player.Event.AD_STARTED, () => {
           done();
@@ -813,7 +813,7 @@ describe('Ima Plugin', function() {
       ima.playAdNow([{url: ['bad/url']}, {url: [vasts[1]]}]);
     });
 
-    it('should fire AD_BREAK_START, AD_BREAK_END and ADS_COMPLETED once for ad pod', function(done) {
+    it('should fire AD_BREAK_START, AD_BREAK_END and ADS_COMPLETED once for ad pod', function (done) {
       player.addEventListener(player.Event.AD_BREAK_START, event => {
         try {
           event.payload.adBreak.position.should.equal(0);
@@ -843,7 +843,7 @@ describe('Ima Plugin', function() {
       ima.playAdNow([{url: [vasts[0]]}, {url: [vasts[1]]}]);
     });
 
-    it('should fire AD_BREAK_END and ADS_COMPLETED once the second ad failed', function(done) {
+    it('should fire AD_BREAK_END and ADS_COMPLETED once the second ad failed', function (done) {
       player.addEventListener(player.Event.AD_ERROR, () => {
         player.addEventListener(player.Event.AD_BREAK_END, () => {
           player.addEventListener(player.Event.ADS_COMPLETED, () => {
@@ -854,7 +854,7 @@ describe('Ima Plugin', function() {
       ima.playAdNow([{url: [vasts[1]]}, {url: ['bad/url']}]);
     });
 
-    it('should fire only ADS_COMPLETED once the whole ad pod failed', function(done) {
+    it('should fire only ADS_COMPLETED once the whole ad pod failed', function (done) {
       player.addEventListener(player.Event.AD_BREAK_END, () => {
         done(new Error('AD_BREAK_END should not be triggered when the whole ad pod failed'));
       });
@@ -864,7 +864,7 @@ describe('Ima Plugin', function() {
       ima.playAdNow([{url: ['bad/url']}, {url: ['bad/url']}]);
     });
 
-    it('should fire AD_LOADED with correct params', function(done) {
+    it('should fire AD_LOADED with correct params', function (done) {
       const onFirstLoaded = event => {
         player.removeEventListener(player.Event.AD_LOADED, onFirstLoaded);
         try {
@@ -890,7 +890,7 @@ describe('Ima Plugin', function() {
       ima.playAdNow([{url: [vasts[0]]}, {bumper: true, url: [vasts[1]]}]);
     });
 
-    it('should fire AD_WATERFALLING instead of AD_ERROR once the first url failed and waterfall and play next', function(done) {
+    it('should fire AD_WATERFALLING instead of AD_ERROR once the first url failed and waterfall and play next', function (done) {
       player.addEventListener(player.Event.AD_ERROR, () => {
         done(new Error('AD_ERROR should not be triggered when waterfall exists'));
       });
@@ -912,7 +912,7 @@ describe('Ima Plugin', function() {
       ima.playAdNow([{url: ['bad/url', vasts[0]]}, {url: [vasts[1]]}]);
     });
 
-    it('should fire AD_WATERFALLING_FAILED and AD_ERROR once the all urls failed and play next', function(done) {
+    it('should fire AD_WATERFALLING_FAILED and AD_ERROR once the all urls failed and play next', function (done) {
       player.addEventListener(player.Event.AD_WATERFALLING, () => {
         player.addEventListener(player.Event.AD_WATERFALLING_FAILED, () => {
           player.addEventListener(player.Event.AD_ERROR, () => {
