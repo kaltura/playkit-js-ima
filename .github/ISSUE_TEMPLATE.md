@@ -2,12 +2,12 @@
 
 ##### Prerequisites
 
-* [ ] Have you checked for duplicate [issues](https://github.com/kaltura/playkit-js-ima/issues): **\_\_**
-* [ ] Which Plugin [version](https://github.com/kaltura/playkit-js-ima/releases) are you using: **\_\_**
-* [ ] Can you reproduce the issue with our latest release version: **\_\_**
-* [ ] Can you reproduce the issue with the latest code from master: **\_\_**
-* [ ] What browser and OS names and versions are you using: **\_\_**
-* [ ] If applicable, add test code or test page to reproduce:
+- [ ] Have you checked for duplicate [issues](https://github.com/kaltura/playkit-js-ima/issues): **\_\_**
+- [ ] Which Plugin [version](https://github.com/kaltura/playkit-js-ima/releases) are you using: **\_\_**
+- [ ] Can you reproduce the issue with our latest release version: **\_\_**
+- [ ] Can you reproduce the issue with the latest code from master: **\_\_**
+- [ ] What browser and OS names and versions are you using: **\_\_**
+- [ ] If applicable, add test code or test page to reproduce:
 
 ```
 Paste test code here

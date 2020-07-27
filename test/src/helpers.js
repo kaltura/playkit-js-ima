@@ -51,7 +51,7 @@ function maybeDoneTest(array, value, done) {
 function loadGPT() {
   window.googletag = window.googletag || {};
   window.googletag.cmd = window.googletag.cmd || [];
-  (function() {
+  (function () {
     var gads = document.createElement('script');
     gads.async = true;
     gads.type = 'text/javascript';
@@ -65,7 +65,7 @@ function loadGPT() {
  * @returns {void}
  */
 function registerCompanionSlots() {
-  window.googletag.cmd.push(function() {
+  window.googletag.cmd.push(function () {
     // Supply YOUR_NETWORK and YOUR_UNIT_PATH.
     window.googletag
       .defineSlot('/YOUR_NETWORK/YOUR_UNIT_PATH', [728, 90], 'testCompanionLong')
@@ -80,11 +80,11 @@ function registerCompanionSlots() {
     window.googletag.enableServices();
   });
 
-  window.googletag.cmd.push(function() {
+  window.googletag.cmd.push(function () {
     window.googletag.display('testCompanionLong');
   });
 
-  window.googletag.cmd.push(function() {
+  window.googletag.cmd.push(function () {
     window.googletag.display('testCompanionSquare');
   });
 }

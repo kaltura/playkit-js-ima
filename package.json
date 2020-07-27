@@ -1,7 +1,19 @@
 {
   "name": "@playkit-js/playkit-js-ima",
   "version": "0.20.4",
-  "keywords": ["ad", "vast", "vmap", "ima", "ads", "monetization", "kaltura", "player", "playkit-js", "playkit-js-ima", "html5 player"],
+  "keywords": [
+    "ad",
+    "vast",
+    "vmap",
+    "ima",
+    "ads",
+    "monetization",
+    "kaltura",
+    "player",
+    "playkit-js",
+    "playkit-js-ima",
+    "html5 player"
+  ],
   "homepage": "https://github.com/kaltura/playkit-js-ima",
   "bugs": {
     "url": "https://github.com/kaltura/playkit-js-ima/issues"
@@ -29,8 +41,14 @@
     "watch": "webpack --progress --colors --watch --mode development"
   },
   "lint-staged": {
-    "*.{js,jsx}": ["eslint --fix", "git add"],
-    "*.{json,md,scss}": ["prettier --write", "git add"]
+    "*.{js,jsx}": [
+      "eslint --fix",
+      "git add"
+    ],
+    "*.{json,md,scss}": [
+      "prettier --write",
+      "git add"
+    ]
   },
   "dependencies": {
     "javascript-state-machine": "https://github.com/kaltura/javascript-state-machine.git#v3.1.0-k-1"

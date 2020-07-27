@@ -3,6 +3,7 @@ import StateMachine from 'javascript-state-machine';
 import StateMachineHistory from 'javascript-state-machine/lib/history';
 import {State} from './state';
 import {core, Ad, AdBreak} from 'kaltura-player-js';
+
 const {AdBreakType, Error, Utils} = core;
 
 /**
@@ -345,6 +346,7 @@ function onAdLog(options: Object, adEvent: any): void {
     this.dispatchEvent(this.player.Event.AD_ERROR, getAdError.call(this, adError, false));
   }
 }
+
 /**
  * ERROR event handler.
  * @param {Object} options - fsm event data.
@@ -543,12 +545,7 @@ function getAdOptions(adEvent: any): Object {
  */
 function getAdBreakOptions(adEvent: any): Object {
   const adBreakOptions = {};
-  adBreakOptions.numAds =
-    this._podLength ||
-    adEvent
-      .getAd()
-      .getAdPodInfo()
-      .getTotalAds();
+  adBreakOptions.numAds = this._podLength || adEvent.getAd().getAdPodInfo().getTotalAds();
   adBreakOptions.position = this.player.ended ? -1 : this.player.currentTime;
   adBreakOptions.type = getAdBreakType.call(this, adEvent);
   return adBreakOptions;
