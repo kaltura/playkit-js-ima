@@ -1,99 +1,99 @@
 import {ImaMiddleware} from '../../src/ima-middleware';
 import {State} from '../../src/state';
 
-describe('Ima Middleware', function() {
+describe('Ima Middleware', function () {
   let sandbox;
   let imaMiddleware;
   let fakeContext = {
     config: {},
     loadPromise: Promise.resolve(),
     player: {
-      addEventListener: function() {},
-      load: function() {},
+      addEventListener: function () {},
+      load: function () {},
       Event: {
         CHANGE_SOURCE_STARTED: 'changesourcestarted'
       }
     },
-    setCurrentState: function(state) {
+    setCurrentState: function (state) {
       this.currentState = state;
     },
-    getStateMachine: function() {
+    getStateMachine: function () {
       return {
         state: this.currentState
       };
     },
-    initialUserAction: function() {
+    initialUserAction: function () {
       return Promise.resolve();
     },
-    resumeAd: function() {
+    resumeAd: function () {
       return Promise.resolve();
     },
-    pauseAd: function() {
+    pauseAd: function () {
       return Promise.resolve();
     },
-    reset: function() {},
+    reset: function () {},
     logger: {
-      error: function() {},
-      debug: function() {}
+      error: function () {},
+      debug: function () {}
     }
   };
 
-  describe('play', function() {
-    beforeEach(function() {
+  describe('play', function () {
+    beforeEach(function () {
       sandbox = sinon.createSandbox();
       imaMiddleware = null;
       fakeContext.setCurrentState('');
     });
 
-    afterEach(function() {
+    afterEach(function () {
       sandbox.restore();
     });
 
-    it('should initialUserAction', function(done) {
+    it('should initialUserAction', function (done) {
       let spy = sandbox.spy(fakeContext, 'initialUserAction');
       fakeContext.setCurrentState(State.LOADED);
       imaMiddleware = new ImaMiddleware(fakeContext);
-      imaMiddleware.play(function() {
+      imaMiddleware.play(function () {
         spy.should.have.been.calledOnce;
         done();
       });
     });
 
-    it('should destory adsManager and resume playback in case of error', function(done) {
+    it('should destory adsManager and resume playback in case of error', function (done) {
       let spy = sandbox.spy(fakeContext, 'reset');
       fakeContext.setCurrentState(State.LOADED);
       fakeContext.initialUserAction = Promise.reject();
       imaMiddleware = new ImaMiddleware(fakeContext);
-      imaMiddleware.play(function() {
+      imaMiddleware.play(function () {
         spy.should.have.been.calledOnce;
         fakeContext.initialUserAction = Promise.resolve();
         done();
       });
     });
 
-    it('should resumeAd', function(done) {
+    it('should resumeAd', function (done) {
       let spy = sandbox.spy(fakeContext, 'resumeAd');
       fakeContext.setCurrentState(State.PAUSED);
       imaMiddleware = new ImaMiddleware(fakeContext);
-      imaMiddleware.play(function() {
+      imaMiddleware.play(function () {
         spy.should.have.been.calledOnce;
         done();
       });
     });
 
-    it('should call next', function(done) {
+    it('should call next', function (done) {
       imaMiddleware = new ImaMiddleware(fakeContext);
-      imaMiddleware.play(function() {
+      imaMiddleware.play(function () {
         done();
       });
     });
 
-    it('should reset', function(done) {
+    it('should reset', function (done) {
       let spy1 = sandbox.spy(fakeContext, 'reset');
       let spy2 = sandbox.spy(fakeContext.logger, 'error');
       fakeContext.loadPromise = Promise.reject();
       imaMiddleware = new ImaMiddleware(fakeContext);
-      imaMiddleware.play(function() {
+      imaMiddleware.play(function () {
         spy1.should.have.been.calledOnce;
         spy2.should.have.been.calledOnce;
         done();
@@ -101,18 +101,18 @@ describe('Ima Middleware', function() {
     });
   });
 
-  describe('pause', function() {
-    beforeEach(function() {
+  describe('pause', function () {
+    beforeEach(function () {
       sandbox = sinon.createSandbox();
       imaMiddleware = null;
       fakeContext.setCurrentState('');
     });
 
-    afterEach(function() {
+    afterEach(function () {
       sandbox.restore();
     });
 
-    it('should pauseAd', function() {
+    it('should pauseAd', function () {
       let spy = sandbox.spy(fakeContext, 'pauseAd');
       fakeContext.setCurrentState(State.PLAYING);
       imaMiddleware = new ImaMiddleware(fakeContext);
@@ -120,9 +120,9 @@ describe('Ima Middleware', function() {
       spy.should.have.been.calledOnce;
     });
 
-    it('should call next', function(done) {
+    it('should call next', function (done) {
       imaMiddleware = new ImaMiddleware(fakeContext);
-      imaMiddleware.pause(function() {
+      imaMiddleware.pause(function () {
         done();
       });
     });
