@@ -40,13 +40,13 @@ describe('Ima Middleware', function() {
 
   describe('play', function() {
     beforeEach(function() {
-      sandbox = sinon.sandbox.create();
+      sandbox = sinon.createSandbox();
       imaMiddleware = null;
       fakeContext.setCurrentState('');
     });
 
     afterEach(function() {
-      sandbox = sandbox.restore();
+      sandbox.restore();
     });
 
     it('should initialUserAction', function(done) {
@@ -103,13 +103,13 @@ describe('Ima Middleware', function() {
 
   describe('pause', function() {
     beforeEach(function() {
-      sandbox = sinon.sandbox.create();
+      sandbox = sinon.createSandbox();
       imaMiddleware = null;
       fakeContext.setCurrentState('');
     });
 
     afterEach(function() {
-      sandbox = sandbox.restore();
+      sandbox.restore();
     });
 
     it('should pauseAd', function() {

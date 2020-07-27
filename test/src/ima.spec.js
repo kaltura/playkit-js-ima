@@ -703,7 +703,7 @@ describe('Ima Plugin', function() {
     beforeEach(() => {
       player = loadPlayerWithAds(targetId, {}, {autoplay: true});
       ima = player._pluginManager.get('ima');
-      sandbox = sinon.sandbox.create();
+      sandbox = sinon.createSandbox();
     });
 
     afterEach(() => {
