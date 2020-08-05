@@ -1,4 +1,4 @@
-import loadPlayer from '@playkit-js/playkit-js';
+import {setup} from 'kaltura-player-js';
 
 /**
  * @param {string} targetId _
@@ -8,6 +8,8 @@ import loadPlayer from '@playkit-js/playkit-js';
  */
 function loadPlayerWithAds(targetId, imaConfig, playbackConfig) {
   let config = {
+    targetId,
+    provider: {},
     sources: {
       progressive: [
         {
@@ -24,9 +26,7 @@ function loadPlayerWithAds(targetId, imaConfig, playbackConfig) {
   if (playbackConfig) {
     config.playback = playbackConfig;
   }
-  let player = loadPlayer(config);
-  document.getElementById(targetId).appendChild(player.getView());
-  return player;
+  return setup(config);
 }
 
 /**

@@ -1,5 +1,5 @@
 // @flow
-import {registerPlugin} from '@playkit-js/playkit-js';
+import {registerPlugin} from 'kaltura-player-js';
 import {Ima} from './ima';
 
 declare var __VERSION__: string;

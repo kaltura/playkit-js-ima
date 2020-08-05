@@ -1,23 +1,13 @@
 // @flow
+import {core, BasePlugin} from 'kaltura-player-js';
 import {ImaMiddleware} from './ima-middleware';
 import {ImaAdsController} from './ima-ads-controller';
 import {ImaStateMachine} from './ima-state-machine';
 import {State} from './state';
-import {
-  BaseMiddleware,
-  BasePlugin,
-  EngineType,
-  Error,
-  getCapabilities,
-  Utils,
-  Env,
-  AudioTrack,
-  TextTrack,
-  EventManager,
-  AdBreakType
-} from '@playkit-js/playkit-js';
 import './assets/style.css';
 import {ImaEngineDecorator} from './ima-engine-decorator';
+
+const {BaseMiddleware, EngineType, Error, getCapabilities, Utils, Env, AudioTrack, TextTrack, EventManager, AdBreakType} = core;
 
 /**
  * The full screen events..
@@ -264,7 +254,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     return true;
   }
 
-  constructor(name: string, player: Player, config: Object) {
+  constructor(name: string, player: KalturaPlayer, config: Object) {
     super(name, player, config);
     this._stateMachine = new ImaStateMachine(this);
     this._initMembers();
@@ -307,19 +297,19 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
 
   /**
    * Plays ad on demand
-   * @param {PKAdPod} adPod - The ad pod to play.
+   * @param {KPAdPod} adPod - The ad pod to play.
    * @returns {void}
    * @public
    * @instance
    * @memberof Ima
    */
-  playAdNow(adPod: PKAdPod): void {
+  playAdNow(adPod: KPAdPod): void {
     if (Array.isArray(adPod) && !(this.isAdPlaying() || this._playAdByConfig())) {
       this._playAdBreak(adPod);
     }
   }
 
-  _playAdBreak(adPod: PKAdPod): void {
+  _playAdBreak(adPod: KPAdPod): void {
     this._podLength = adPod.length;
     this._adPosition = 1;
     this._firstOfAdPod = true;
@@ -334,7 +324,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       .catch(() => {});
   }
 
-  _playAd(adPod: PKAdPod): void {
+  _playAd(adPod: KPAdPod): void {
     const ad = adPod[0];
     const playNext = () => {
       adPod.shift();

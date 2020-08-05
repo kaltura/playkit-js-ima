@@ -1,6 +1,7 @@
 import {loadGPT, loadPlayerWithAds, maybeDoneTest, registerCompanionSlots} from './helpers';
 import * as TestUtils from './utils/test-utils';
-import {AdBreakType, FakeEvent} from '@playkit-js/playkit-js';
+import {core} from 'kaltura-player-js';
+const {AdBreakType, FakeEvent} = core;
 
 const targetId = 'player-placeholder_ima.spec';
 
