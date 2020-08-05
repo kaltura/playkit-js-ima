@@ -83,7 +83,7 @@
     "flow-bin": "^0.129.0",
     "husky": "^4.2.5",
     "istanbul": "^0.4.5",
-    "kaltura-player-js": "https://github.com/kaltura/kaltura-player-js.git#FEC-10057",
+    "kaltura-player-js": "https://github.com/kaltura/kaltura-player-js.git#master",
     "karma": "^5.1.0",
     "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^3.1.0",
@@ -111,7 +111,7 @@
   },
   "peerDependencies": {
     "@playkit-js/playkit-js": "0.62.1-canary.724715e",
-    "kaltura-player-js": "https://github.com/kaltura/kaltura-player-js.git#FEC-10057"
+    "kaltura-player-js": "https://github.com/kaltura/kaltura-player-js.git#master"
   },
   "publishConfig": {
     "access": "public"
