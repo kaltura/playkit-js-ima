@@ -1,13 +1,8 @@
-const path = require('path');
 let webpackConfig = require('./webpack.config.js');
 //Need to remove externals otherwise they won't be included in test
 delete webpackConfig.externals;
 // Need to define inline source maps when using karma
 webpackConfig.devtool = 'inline-source-map';
-// Need to add alias for a specific kaltura-player-js export lib
-webpackConfig.resolve = webpackConfig.resolve || {};
-webpackConfig.resolve.alias = webpackConfig.resolve.alias || {};
-webpackConfig.resolve.alias['kaltura-player-js'] = path.resolve('./node_modules/kaltura-player-js/dist/kaltura-ovp-player');
 
 const isWindows = /^win/.test(process.platform);
 const isMacOS = /^darwin/.test(process.platform);
