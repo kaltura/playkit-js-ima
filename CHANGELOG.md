@@ -1,6 +1,21 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [0.21.0](https://github.com/kaltura/playkit-js-ima/compare/v0.20.4...v0.21.0) (2020-08-05)
+
+
+### Bug Fixes
+
+* **FEC-10335:** text tracks doesn't show correctly on IOS same video tag ([#168](https://github.com/kaltura/playkit-js-ima/issues/168)) ([34ca7a0](https://github.com/kaltura/playkit-js-ima/commit/34ca7a0))
+
+
+### Features
+
+* **FEC-10057:** move the plugin manager to kaltura player ([#166](https://github.com/kaltura/playkit-js-ima/issues/166)) ([a70ee87](https://github.com/kaltura/playkit-js-ima/commit/a70ee87))
+* **FEC-10290:** upgrade NPM packages ([#167](https://github.com/kaltura/playkit-js-ima/issues/167)) ([10505e5](https://github.com/kaltura/playkit-js-ima/commit/10505e5))
+
+
 
 <a name="0.20.4"></a>
 ## [0.20.4](https://github.com/kaltura/playkit-js-ima/compare/v0.20.3...v0.20.4) (2020-07-07)
