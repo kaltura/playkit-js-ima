@@ -1,6 +1,21 @@
-# Changelog
+# Change Log
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+<a name="1.0.0"></a>
+# [1.0.0](https://github.com/kaltura/playkit-js-ima/compare/v0.21.0...v1.0.0) (2020-09-08)
+
+
+### Features
+
+* **FEC-10347:** expose kaltura player as a global variable instead of UMD ([#169](https://github.com/kaltura/playkit-js-ima/issues/169)) ([f9e1abb](https://github.com/kaltura/playkit-js-ima/commit/f9e1abb))
+
+
+### BREAKING CHANGES
+
+* **FEC-10347:** This package is not UMD anymore
+
+
 
 ## [0.21.0](https://github.com/kaltura/playkit-js-ima/compare/v0.20.4...v0.21.0) (2020-08-05)
 
