@@ -1,6 +1,15 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### [1.0.1](https://github.com/kaltura/playkit-js-ima/compare/v1.0.0...v1.0.1) (2020-11-03)
+
+
+### Build System
+
+* remove plugins that already exist on preset-env ([#173](https://github.com/kaltura/playkit-js-ima/issues/173)) ([149dd3c](https://github.com/kaltura/playkit-js-ima/commit/149dd3c))
+
+
 
 <a name="1.0.0"></a>
 # [1.0.0](https://github.com/kaltura/playkit-js-ima/compare/v0.21.0...v1.0.0) (2020-09-08)
