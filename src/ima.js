@@ -504,6 +504,12 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   loadMedia(): void {
     this._addBindings();
+    this.loadPromise.then(() => {
+      if (!this._adsLoader || !this._adDisplayContainer) {
+        this._adDisplayContainer = new this._sdk.AdDisplayContainer(this._adsContainerDiv, this.player.getVideoElement());
+        this._initAdsLoader();
+      }
+    });
     if (this._playAdByConfig()) {
       this.loadPromise.then(() => this._requestAds()).catch(() => {});
     }
@@ -521,16 +527,10 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this.logger.debug('reset');
     this.eventManager.removeAll();
     this._adBreaksEventManager.removeAll();
-    this._hideAdsContainer();
     if (!this._isImaSDKLibLoaded()) {
       return;
     }
-    if (this._adsManager) {
-      this._adsManager.destroy();
-    }
-    if (this._adsLoader && !this._contentComplete) {
-      this._adsLoader.contentComplete();
-    }
+    this._destroyIMAManagers();
     this._stateMachine.goto(State.DONE);
     this._initMembers();
   }
@@ -546,17 +546,22 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   destroy(): void {
     this.logger.debug('destroy');
     this.eventManager.destroy();
+    this._destroyIMAManagers();
+  }
+
+  _destroyIMAManagers(): void {
     this._hideAdsContainer();
     if (this._adsManager) {
       this._adsManager.destroy();
     }
-    if (this._adsLoader && !this._contentComplete) {
-      this._adsLoader.contentComplete();
+    if (this._adsLoader) {
+      this._adsLoader.destroy();
+      this._adsLoader = null;
     }
     if (this._adDisplayContainer) {
       this._adDisplayContainer.destroy();
+      this._adsLoader = null;
     }
-    this._adsLoader = null;
   }
 
   /**
