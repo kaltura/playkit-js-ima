@@ -330,7 +330,7 @@ describe('Ima Plugin', function () {
     player.play();
   });
 
-  it('should play single-redirect-broken(fallback)', done => {
+  it.skip('should play single-redirect-broken(fallback)', done => {
     cuePoints = [0];
     player = loadPlayerWithAds(targetId, {
       adTagUrl:
