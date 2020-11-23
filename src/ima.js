@@ -505,8 +505,10 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   loadMedia(): void {
     this._addBindings();
     this.loadPromise.then(() => {
-      if (!this._adsLoader || !this._adDisplayContainer) {
+      if (!this._adDisplayContainer) {
         this._adDisplayContainer = new this._sdk.AdDisplayContainer(this._adsContainerDiv, this.player.getVideoElement());
+      }
+      if (!this._adsLoader) {
         this._initAdsLoader();
       }
     });
