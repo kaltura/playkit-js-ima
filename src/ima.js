@@ -527,6 +527,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this.logger.debug('reset');
     this.eventManager.removeAll();
     this._adBreaksEventManager.removeAll();
+    this._hideAdsContainer();
     if (!this._isImaSDKLibLoaded()) {
       return;
     }
@@ -546,11 +547,11 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   destroy(): void {
     this.logger.debug('destroy');
     this.eventManager.destroy();
+    this._hideAdsContainer();
     this._destroyIMAManagers();
   }
 
   _destroyIMAManagers(): void {
-    this._hideAdsContainer();
     if (this._adsManager) {
       this._adsManager.destroy();
     }
@@ -560,7 +561,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     }
     if (this._adDisplayContainer) {
       this._adDisplayContainer.destroy();
-      this._adsLoader = null;
+      this._adDisplayContainer = null;
     }
   }
 
