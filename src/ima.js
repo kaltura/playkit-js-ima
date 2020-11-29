@@ -1033,6 +1033,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._contentComplete = true;
     if (this._currentAd && !this._currentAd.isLinear()) {
       this.reset();
+    } else if (!(this._adsManager && this._adsManager.getCuePoints().includes(-1))) {
+      this._stateMachine.goto(State.DONE);
     }
   }
 
