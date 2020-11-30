@@ -872,6 +872,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       adsRequest.linearAdSlotHeight = this.player.dimensions.height;
       adsRequest.nonLinearAdSlotWidth = this.player.dimensions.width;
       adsRequest.nonLinearAdSlotHeight = this.player.dimensions.height / 3;
+      if (typeof this.player.config.sources.duration === 'number') {
+        adsRequest.contentDuration = this.getContentDuration();
+      }
 
       const muted = this.player.muted || this.player.volume === 0;
       adsRequest.setAdWillPlayMuted(muted);
