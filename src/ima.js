@@ -62,6 +62,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     delayInitUntilSourceSelected: Env.os.name === 'iOS',
     disableMediaPreload: false,
     forceReloadMediaAfterAds: false,
+    showAdBreakCuePoint: false,
+    adBreakCuePointStyle: null,
     adsRenderingSettings: {
       restoreCustomPlaybackStateOnAdBreakComplete: false,
       enablePreloading: false,
@@ -1109,6 +1111,14 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     }
     if (this._playAdByConfig()) {
       this.dispatchEvent(this.player.Event.AD_MANIFEST_LOADED, {adBreaksPosition: cuePoints});
+      if (this.player.ui.hasManager('timeline') && this.config.showAdBreakCuePoint) {
+        cuePoints.forEach(cuePoint => {
+          this.player.ui.getManager('timeline').addCuePoint({
+            time: cuePoint !== -1 ? cuePoint : Infinity,
+            ...this.config.adBreakCuePointStyle
+          });
+        });
+      }
     }
     this._isAdsManagerLoaded = true;
     this._attachAdsManagerListeners();
