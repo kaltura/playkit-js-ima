@@ -127,7 +127,7 @@ Type: [Object][52]
 -   `companions` **[CompanionsConfigObject][64]?** Defines the companion ads.
 -   `locale` **[string][58]?** Sets the publisher provided locale. The locale specifies the language in which to display UI elements and can be any two-letter [ISO 639-1][65] code.
 -   `showAdBreakCuePoint` **[boolean][59]?** Whether to show the ad breaks cue points.
--   `adBreakCuePointStyle` **[Object][52]?** Style options for the ad breaks cue points - See the options in [https://github.com/kaltura/playkit-js-timeline/blob/main/docs/types.md#cuepointoptionsobject][66].
+-   `adBreakCuePointStyle` **[Object][52]?** Style options for the ad breaks cue points - See the options [Here][66].
 
 ## ImaAdsController
 

@@ -32,7 +32,7 @@
  * @param {CompanionsConfigObject} [companions] - Defines the companion ads.
  * @param {string} [locale] - Sets the publisher provided locale. The locale specifies the language in which to display UI elements and can be any two-letter {@link https://www.loc.gov/standards/iso639-2/php/English_list.php|ISO 639-1} code.
  * @param {boolean} [showAdBreakCuePoint] - Whether to show the ad breaks cue points.
- * @param {Object} [adBreakCuePointStyle] - Style options for the ad breaks cue points - See the options in https://github.com/kaltura/playkit-js-timeline/blob/main/docs/types.md#cuepointoptionsobject.
+ * @param {Object} [adBreakCuePointStyle] - Style options for the ad breaks cue points - See the options {@link https://github.com/kaltura/playkit-js-timeline/blob/main/docs/types.md#cuepointoptionsobject|Here}.
  * @example
  */
 type _ImaConfigObject = {
