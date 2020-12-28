@@ -127,6 +127,7 @@ class ImaMiddleware extends BaseMiddleware {
       .catch(e => {
         this._context.reset();
         this._context.logger.error(e);
+        this._callNextLoad();
         this.callNext(next);
       });
   }
