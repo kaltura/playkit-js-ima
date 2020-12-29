@@ -57,6 +57,7 @@ class ImaMiddleware extends BaseMiddleware {
    */
   load(next: Function): void {
     this._nextLoad = next;
+    this._context.loadPromise.catch(() => this._callNextLoad());
     const sm = this._context.getStateMachine();
     if (sm.state !== State.IDLE && (this._context.config.adTagUrl || this._context.config.adsResponse)) {
       this._context.player.addEventListener(this._context.player.Event.AD_ERROR, () => {
