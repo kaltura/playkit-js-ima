@@ -1058,7 +1058,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   onPlaybackEnded(): Promise<void> {
     this.logger.debug('Playback ended');
-    this._adsLoader.contentComplete();
+    if (this._adsLoader) {
+      this._adsLoader.contentComplete();
+    }
     if (this._adsManager && this._adsManager.getCuePoints().includes(-1)) {
       return new Promise(resolve => {
         this.eventManager.listenOnce(this._adsManager, this._sdk.AdEvent.Type.ALL_ADS_COMPLETED, () => {
