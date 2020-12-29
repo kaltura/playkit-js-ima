@@ -62,6 +62,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     delayInitUntilSourceSelected: Env.os.name === 'iOS',
     disableMediaPreload: false,
     forceReloadMediaAfterAds: false,
+    showAdBreakCuePoint: false,
+    adBreakCuePointStyle: null,
     adsRenderingSettings: {
       restoreCustomPlaybackStateOnAdBreakComplete: false,
       enablePreloading: false,
@@ -872,6 +874,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       adsRequest.linearAdSlotHeight = this.player.dimensions.height;
       adsRequest.nonLinearAdSlotWidth = this.player.dimensions.width;
       adsRequest.nonLinearAdSlotHeight = this.player.dimensions.height / 3;
+      if (this.getContentDuration() && !this.player.isLive()) {
+        adsRequest.contentDuration = this.getContentDuration();
+      }
 
       const muted = this.player.muted || this.player.volume === 0;
       adsRequest.setAdWillPlayMuted(muted);
@@ -1115,6 +1120,14 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     }
     if (this._playAdByConfig()) {
       this.dispatchEvent(this.player.Event.AD_MANIFEST_LOADED, {adBreaksPosition: cuePoints});
+      if (this.player.ui.hasManager('timeline') && this.config.showAdBreakCuePoint) {
+        cuePoints.forEach(cuePoint => {
+          this.player.ui.getManager('timeline').addCuePoint({
+            time: cuePoint !== -1 ? cuePoint : Infinity,
+            ...this.config.adBreakCuePointStyle
+          });
+        });
+      }
     }
     this._isAdsManagerLoaded = true;
     this._attachAdsManagerListeners();
