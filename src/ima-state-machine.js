@@ -337,7 +337,6 @@ function onAdBreakEnd(options: Object, adEvent: any): void {
  */
 function onAdLog(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
-  this._adError = true;
   let adError;
   if (typeof adEvent.getAdData === 'function') {
     adError = adEvent.getAdData().adError;
@@ -347,6 +346,7 @@ function onAdLog(options: Object, adEvent: any): void {
   if (adError) {
     this.logger.error('Non-fatal error occurred: ' + adError.getMessage());
     this.dispatchEvent(this.player.Event.AD_ERROR, getAdError.call(this, adError, false));
+    this._adError = true;
   }
 }
 
@@ -360,7 +360,6 @@ function onAdLog(options: Object, adEvent: any): void {
  */
 function onAdError(options: Object, adEvent: any): void {
   if (this._playAdByConfig()) {
-    this._adError = true;
     this.logger.debug(adEvent.type.toUpperCase());
     let adError = adEvent.getError();
     // if this is autoplay or user already requested play then next promise will handle reset
@@ -379,8 +378,11 @@ function onAdError(options: Object, adEvent: any): void {
       }
     } else {
       this.reset();
+      // the transition to State.DONE by reset failed because the onAderror transition is still in progress
+      setTimeout(() => this._stateMachine.goto(State.DONE));
     }
     this.dispatchEvent(options.transition, getAdError.call(this, adError, true));
+    this._adError = true;
   }
 }
 
