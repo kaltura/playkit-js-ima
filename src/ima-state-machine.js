@@ -168,6 +168,7 @@ class ImaStateMachine {
  */
 function onAdLoaded(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
+  this._adError = false;
   const adBreakType = getAdBreakType.call(this, adEvent);
   const adOptions = getAdOptions.call(this, adEvent);
   const ad = new Ad(adEvent.getAd().getAdId(), adOptions);
@@ -190,6 +191,7 @@ function onAdLoaded(options: Object, adEvent: any): void {
  */
 function onAdStarted(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
+  this._adError = false;
   this._currentAd = adEvent.getAd();
   this._adVideoTagAlreadyPlayed = true;
   this._resizeAd();
@@ -335,6 +337,7 @@ function onAdBreakEnd(options: Object, adEvent: any): void {
  */
 function onAdLog(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
+  this._adError = true;
   let adError;
   if (typeof adEvent.getAdData === 'function') {
     adError = adEvent.getAdData().adError;
@@ -357,6 +360,7 @@ function onAdLog(options: Object, adEvent: any): void {
  */
 function onAdError(options: Object, adEvent: any): void {
   if (this._playAdByConfig()) {
+    this._adError = true;
     this.logger.debug(adEvent.type.toUpperCase());
     let adError = adEvent.getError();
     // if this is autoplay or user already requested play then next promise will handle reset

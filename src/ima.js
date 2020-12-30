@@ -243,6 +243,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   _firstOfAdPod: boolean;
   _waterfalled: boolean;
   _isBumper: boolean;
+  _adError: boolean;
   _adVideoTagAlreadyPlayed: boolean = false;
 
   /**
@@ -687,6 +688,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._firstOfAdPod = false;
     this._waterfalled = false;
     this._isBumper = false;
+    this._adError = false;
   }
 
   /**
@@ -1050,7 +1052,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._contentComplete = true;
     if (this._currentAd && !this._currentAd.isLinear()) {
       this.reset();
-    } else if (!this._hasPostRoll()) {
+    } else if (!this._hasPostRoll() || this._adError) {
       this._stateMachine.goto(State.DONE);
     }
   }
