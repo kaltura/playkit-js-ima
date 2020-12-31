@@ -536,7 +536,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       return;
     }
     this._destroyIMAManagers();
-    this._stateMachine.can('goto') ? this._stateMachine.goto(State.DONE) : setTimeout(() => this._stateMachine.goto(State.DONE));
+    this._stateMachine.goto(State.DONE);
     this._initMembers();
   }
 
