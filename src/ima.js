@@ -1034,6 +1034,10 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     }
   }
 
+  _hasPostRoll(): boolean {
+    return this._adsManager && this._adsManager.getCuePoints().includes(-1);
+  }
+
   /**
    * Ended event handler.
    * @private
@@ -1046,6 +1050,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._contentComplete = true;
     if (this._currentAd && !this._currentAd.isLinear()) {
       this.reset();
+    } else if (!this._hasPostRoll()) {
+      this._stateMachine.goto(State.DONE);
     }
   }
 
@@ -1061,7 +1067,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     if (this._adsLoader) {
       this._adsLoader.contentComplete();
     }
-    if (this._adsManager && this._adsManager.getCuePoints().includes(-1)) {
+    if (this._hasPostRoll()) {
       return new Promise(resolve => {
         this.eventManager.listenOnce(this._adsManager, this._sdk.AdEvent.Type.ALL_ADS_COMPLETED, () => {
           resolve();

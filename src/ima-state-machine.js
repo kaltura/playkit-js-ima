@@ -71,7 +71,7 @@ class ImaStateMachine {
         {
           name: context.player.Event.AD_ERROR,
           from: [State.IDLE, State.LOADED, State.PLAYING, State.PAUSED, State.LOADING, State.PENDING],
-          to: State.IDLE
+          to: onAdError.bind(context)
         },
         {
           name: context.player.Event.AD_LOADED,
@@ -144,7 +144,6 @@ class ImaStateMachine {
         onAdmidpoint: onAdEvent.bind(context),
         onAdthirdquartile: onAdEvent.bind(context),
         onAdlog: onAdLog.bind(context),
-        onAderror: onAdError.bind(context),
         onUserclosedad: onAdEvent.bind(context),
         onAdvolumechanged: onAdEvent.bind(context),
         onAdmuted: onAdEvent.bind(context),
@@ -349,13 +348,13 @@ function onAdLog(options: Object, adEvent: any): void {
 
 /**
  * ERROR event handler.
- * @param {Object} options - fsm event data.
  * @param {any} adEvent - ima event data.
- * @returns {void}
+ * @returns {string} - the state to move
  * @private
  * @memberof ImaStateMachine
  */
-function onAdError(options: Object, adEvent: any): void {
+function onAdError(adEvent: any): string {
+  let state = State.IDLE;
   if (this._playAdByConfig()) {
     this.logger.debug(adEvent.type.toUpperCase());
     let adError = adEvent.getError();
@@ -375,9 +374,11 @@ function onAdError(options: Object, adEvent: any): void {
       }
     } else {
       this.reset();
+      state = State.DONE;
     }
-    this.dispatchEvent(options.transition, getAdError.call(this, adError, true));
+    this.dispatchEvent('aderror', getAdError.call(this, adError, true));
   }
+  return state;
 }
 
 /**
