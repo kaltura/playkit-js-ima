@@ -243,7 +243,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   _firstOfAdPod: boolean;
   _waterfalled: boolean;
   _isBumper: boolean;
-  _adError: boolean;
   _adVideoTagAlreadyPlayed: boolean = false;
 
   /**
@@ -537,7 +536,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       return;
     }
     this._destroyIMAManagers();
-    this._stateMachine.goto(State.DONE);
+    this._stateMachine.can('goto') ? this._stateMachine.goto(State.DONE) : setTimeout(() => this._stateMachine.goto(State.DONE));
     this._initMembers();
   }
 
@@ -688,7 +687,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._firstOfAdPod = false;
     this._waterfalled = false;
     this._isBumper = false;
-    this._adError = false;
   }
 
   /**
@@ -1052,7 +1050,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._contentComplete = true;
     if (this._currentAd && !this._currentAd.isLinear()) {
       this.reset();
-    } else if (!this._hasPostRoll() || this._adError) {
+    } else if (!this._hasPostRoll()) {
       this._stateMachine.goto(State.DONE);
     }
   }

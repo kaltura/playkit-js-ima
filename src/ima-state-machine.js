@@ -75,7 +75,7 @@ class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_LOADED,
-          from: [State.IDLE, State.LOADED, State.PLAYING, State.DONE]
+          from: [State.IDLE, State.LOADED, State.PLAYING]
         },
         {
           name: context.player.Event.AD_FIRST_QUARTILE,
@@ -83,7 +83,7 @@ class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_BREAK_START,
-          from: [State.IDLE, State.LOADED, State.DONE],
+          from: [State.IDLE, State.LOADED],
           to: State.PENDING
         },
         {
@@ -168,7 +168,6 @@ class ImaStateMachine {
  */
 function onAdLoaded(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
-  this._adError = false;
   const adBreakType = getAdBreakType.call(this, adEvent);
   const adOptions = getAdOptions.call(this, adEvent);
   const ad = new Ad(adEvent.getAd().getAdId(), adOptions);
@@ -191,7 +190,6 @@ function onAdLoaded(options: Object, adEvent: any): void {
  */
 function onAdStarted(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
-  this._adError = false;
   this._currentAd = adEvent.getAd();
   this._adVideoTagAlreadyPlayed = true;
   this._resizeAd();
@@ -346,7 +344,6 @@ function onAdLog(options: Object, adEvent: any): void {
   if (adError) {
     this.logger.error('Non-fatal error occurred: ' + adError.getMessage());
     this.dispatchEvent(this.player.Event.AD_ERROR, getAdError.call(this, adError, false));
-    this._adError = true;
   }
 }
 
@@ -378,11 +375,8 @@ function onAdError(options: Object, adEvent: any): void {
       }
     } else {
       this.reset();
-      // the transition to State.DONE by reset failed because the onAderror transition is still in progress
-      setTimeout(() => this._stateMachine.goto(State.DONE));
     }
     this.dispatchEvent(options.transition, getAdError.call(this, adError, true));
-    this._adError = true;
   }
 }
 
