@@ -377,8 +377,8 @@ function onAdError(adEvent: any): string {
       state = State.DONE;
     }
     this.dispatchEvent('aderror', getAdError.call(this, adError, true));
-    return state;
   }
+  return state;
 }
 
 /**
