@@ -75,7 +75,7 @@ class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_LOADED,
-          from: [State.IDLE, State.LOADED, State.PLAYING]
+          from: [State.IDLE, State.LOADED, State.PLAYING, State.DONE]
         },
         {
           name: context.player.Event.AD_FIRST_QUARTILE,
@@ -83,7 +83,7 @@ class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_BREAK_START,
-          from: [State.IDLE, State.LOADED],
+          from: [State.IDLE, State.LOADED, State.DONE],
           to: State.PENDING
         },
         {
