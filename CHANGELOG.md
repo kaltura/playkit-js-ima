@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/kaltura/playkit-js-ima/compare/v1.0.3...v1.1.0) (2021-01-07)
+
+
+### Bug Fixes
+
+* **FEC-10691:** no replay button once bumper finished ([#176](https://github.com/kaltura/playkit-js-ima/issues/176)) ([aebef62](https://github.com/kaltura/playkit-js-ima/commit/aebef62))
+* **FEC-10730:** High number of postrolls - add brackets ([#181](https://github.com/kaltura/playkit-js-ima/issues/181)) ([996d557](https://github.com/kaltura/playkit-js-ima/commit/996d557))
+* **FEC-10730:** High number of postrolls ([#177](https://github.com/kaltura/playkit-js-ima/issues/177)) ([dbcfb3c](https://github.com/kaltura/playkit-js-ima/commit/dbcfb3c))
+* **FEC-10837:** unhandled error thrown by ima on playback ended after ad error ([#182](https://github.com/kaltura/playkit-js-ima/issues/182)) ([16fcea7](https://github.com/kaltura/playkit-js-ima/commit/16fcea7))
+* **FEC-10838:** disableMediaPreload with ad blocker stuck the player ([#180](https://github.com/kaltura/playkit-js-ima/issues/180)) ([056417b](https://github.com/kaltura/playkit-js-ima/commit/056417b))
+* **FEC-10865:** postroll is not playing when try to play pre-mid-post ([#183](https://github.com/kaltura/playkit-js-ima/issues/183)) ([47ff6dc](https://github.com/kaltura/playkit-js-ima/commit/47ff6dc))
+
+
+### Features
+
+* **FEC-10015:** support smart scrubber preview and timeline marker ([#178](https://github.com/kaltura/playkit-js-ima/issues/178)) ([801cbcc](https://github.com/kaltura/playkit-js-ima/commit/801cbcc))
+
+
+
 ### [1.0.3](https://github.com/kaltura/playkit-js-ima/compare/v1.0.2...v1.0.3) (2020-12-07)
 
 
