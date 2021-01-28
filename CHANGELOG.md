@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/kaltura/playkit-js-ima/compare/v1.1.0...v1.2.0) (2021-01-28)
+
+
+### Features
+
+* **FEC-10686:** move startTime config from playback to sources ([#184](https://github.com/kaltura/playkit-js-ima/issues/184)) ([ef65ab7](https://github.com/kaltura/playkit-js-ima/commit/ef65ab7))
+
+
+
 ## [1.1.0](https://github.com/kaltura/playkit-js-ima/compare/v1.0.3...v1.1.0) (2021-01-07)
 
 
