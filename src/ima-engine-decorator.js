@@ -2,7 +2,7 @@
 import {core} from 'kaltura-player-js';
 import {Ima} from './ima';
 
-const {FakeEvent} = core;
+const {FakeEvent, EngineDecoratorPriority} = core;
 
 /**
  * Engine decorator for ima plugin.
@@ -13,18 +13,25 @@ const {FakeEvent} = core;
  */
 class ImaEngineDecorator implements IEngineDecorator {
   _plugin: Ima;
+  _engine: IEngine;
 
   constructor(engine: IEngine, plugin: Ima) {
     this._plugin = plugin;
+    this._engine = engine;
   }
 
   get active(): boolean {
     return this._plugin.playOnMainVideoTag() && this._plugin.isAdPlaying();
   }
 
+  get priority(): number {
+    return EngineDecoratorPriority.PREFERRED;
+  }
+
   dispatchEvent(event: FakeEvent): boolean {
     return event.defaultPrevented;
   }
+
   /**
    * Get paused state.
    * @returns {boolean} - The paused value of the engine.
