@@ -116,7 +116,7 @@ class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_PROGRESS,
-          from: [State.PLAYING, State.PAUSED]
+          from: [State.PLAYING, State.PAUSED, State.PENDING]
         },
         {
           name: context.player.Event.AD_BUFFERING,
@@ -521,6 +521,10 @@ function getAdOptions(adEvent: any): Object {
   const ad = adEvent.getAd();
   const adData = adEvent.getAdData();
   const podInfo = ad.getAdPodInfo();
+  if (adData) {
+    // vpaid field exists on AD_LOADED but not on AD_STARTED
+    this._isVpaid = adData.vpaid;
+  }
   adOptions.system = ad.getAdSystem();
   adOptions.url = ad.getMediaUrl();
   adOptions.clickThroughUrl = adData && adData.clickThroughUrl;
@@ -534,6 +538,7 @@ function getAdOptions(adEvent: any): Object {
   adOptions.height = ad.isLinear() ? ad.getVastMediaHeight() : ad.getHeight();
   adOptions.bitrate = ad.getVastMediaBitrate();
   adOptions.bumper = podInfo.getIsBumper() || this._isBumper;
+  adOptions.vpaid = this._isVpaid;
   return adOptions;
 }
 
