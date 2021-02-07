@@ -109,10 +109,15 @@ describe('Ima Plugin', function () {
     });
     ima = player._pluginManager.get('ima');
     player.addEventListener(player.Event.AD_STARTED, e => {
-      e.payload.ad.width.should.gt(0);
-      e.payload.ad.height.should.gt(0);
-      e.payload.ad.bitrate.should.gt(0);
-      done();
+      try {
+        e.payload.ad.width.should.gt(0);
+        e.payload.ad.height.should.gt(0);
+        e.payload.ad.bitrate.should.gt(0);
+        e.payload.ad.vpaid.should.be.false;
+        done();
+      } catch (e) {
+        done(e);
+      }
     });
     player.play();
   });
@@ -124,9 +129,14 @@ describe('Ima Plugin', function () {
     });
     ima = player._pluginManager.get('ima');
     player.addEventListener(player.Event.AD_STARTED, e => {
-      e.payload.ad.width.should.gt(0);
-      e.payload.ad.height.should.gt(0);
-      done();
+      try {
+        e.payload.ad.width.should.gt(0);
+        e.payload.ad.height.should.gt(0);
+        e.payload.ad.vpaid.should.be.false;
+        done();
+      } catch (e) {
+        done(e);
+      }
     });
     player.play();
   });
@@ -401,9 +411,13 @@ describe('Ima Plugin', function () {
     });
     ima = player._pluginManager.get('ima');
     player.addEventListener(player.Event.AD_STARTED, () => {
-      testCompanionSquare.innerHTML.should.not.be.empty;
-      testCompanionSquare.parentNode.removeChild(testCompanionSquare);
-      done();
+      try {
+        testCompanionSquare.innerHTML.should.not.be.empty;
+        testCompanionSquare.parentNode.removeChild(testCompanionSquare);
+        done();
+      } catch (e) {
+        done(e);
+      }
     });
     player.play();
   });
@@ -425,11 +439,15 @@ describe('Ima Plugin', function () {
     registerCompanionSlots();
     ima = player._pluginManager.get('ima');
     player.addEventListener(player.Event.AD_STARTED, () => {
-      testCompanionSquare.innerHTML.should.not.be.empty;
-      testCompanionSquare.innerHTML.should.not.be.empty;
-      testCompanionSquare.parentNode.removeChild(testCompanionSquare);
-      testCompanionLong.parentNode.removeChild(testCompanionLong);
-      done();
+      try {
+        testCompanionSquare.innerHTML.should.not.be.empty;
+        testCompanionSquare.innerHTML.should.not.be.empty;
+        testCompanionSquare.parentNode.removeChild(testCompanionSquare);
+        testCompanionLong.parentNode.removeChild(testCompanionLong);
+        done();
+      } catch (e) {
+        done(e);
+      }
     });
     player.play();
   });
@@ -474,8 +492,12 @@ describe('Ima Plugin', function () {
     ima = player._pluginManager.get('ima');
     const spy = sinon.spy(ima, 'reset');
     player.addEventListener(player.Event.ERROR, () => {
-      spy.should.calledOnce;
-      done();
+      try {
+        spy.should.calledOnce;
+        done();
+      } catch (e) {
+        done(e);
+      }
     });
     player.dispatchEvent(new FakeEvent(player.Event.ERROR, {severity: 2}));
   });
@@ -488,9 +510,13 @@ describe('Ima Plugin', function () {
     });
     ima = player._pluginManager.get('ima');
     ima.loadPromise.then(function () {
-      const value = ima._getVpaidMode();
-      value.should.equals(2);
-      done();
+      try {
+        const value = ima._getVpaidMode();
+        value.should.equals(2);
+        done();
+      } catch (e) {
+        done(e);
+      }
     });
   });
 
@@ -502,9 +528,13 @@ describe('Ima Plugin', function () {
     });
     ima = player._pluginManager.get('ima');
     ima.loadPromise.then(function () {
-      const value = ima._getVpaidMode();
-      value.should.equals(1);
-      done();
+      try {
+        const value = ima._getVpaidMode();
+        value.should.equals(1);
+        done();
+      } catch (e) {
+        done(e);
+      }
     });
   });
 
@@ -516,9 +546,13 @@ describe('Ima Plugin', function () {
     });
     ima = player._pluginManager.get('ima');
     ima.loadPromise.then(function () {
-      const value = ima._getVpaidMode();
-      value.should.equals(0);
-      done();
+      try {
+        const value = ima._getVpaidMode();
+        value.should.equals(0);
+        done();
+      } catch (e) {
+        done(e);
+      }
     });
   });
 
@@ -530,9 +564,13 @@ describe('Ima Plugin', function () {
     });
     ima = player._pluginManager.get('ima');
     ima.loadPromise.then(function () {
-      const value = ima._getVpaidMode();
-      value.should.equals(1);
-      done();
+      try {
+        const value = ima._getVpaidMode();
+        value.should.equals(1);
+        done();
+      } catch (e) {
+        done(e);
+      }
     });
   });
 
@@ -691,6 +729,40 @@ describe('Ima Plugin', function () {
       done();
     });
     player.load();
+  });
+
+  it('should sent vpaid true - linear', done => {
+    player = loadPlayerWithAds(targetId, {
+      adTagUrl:
+        '//pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinearvpaid2js&correlator='
+    });
+    ima = player._pluginManager.get('ima');
+    player.addEventListener(player.Event.AD_STARTED, e => {
+      try {
+        e.payload.ad.vpaid.should.be.true;
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    player.play();
+  });
+
+  it('should sent vpaid true - non-linear', done => {
+    player = loadPlayerWithAds(targetId, {
+      adTagUrl:
+        '//pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dnonlinearvpaid2js&correlator='
+    });
+    ima = player._pluginManager.get('ima');
+    player.addEventListener(player.Event.AD_STARTED, e => {
+      try {
+        e.payload.ad.vpaid.should.be.true;
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    player.play();
   });
 
   describe('playAdNow', function () {

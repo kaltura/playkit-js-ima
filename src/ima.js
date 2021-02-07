@@ -243,6 +243,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   _firstOfAdPod: boolean;
   _waterfalled: boolean;
   _isBumper: boolean;
+  _isVpaid: boolean;
   _adVideoTagAlreadyPlayed: boolean = false;
 
   /**
@@ -687,6 +688,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._firstOfAdPod = false;
     this._waterfalled = false;
     this._isBumper = false;
+    this._isVpaid = false;
   }
 
   /**
