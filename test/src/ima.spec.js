@@ -391,7 +391,7 @@ describe('Ima Plugin', function () {
     player.play();
   });
 
-  it.skip('should display companion-ads-manual', done => {
+  it('should display companion-ads-manual', done => {
     TestUtils.createElement('DIV', 'testCompanionSquare');
     let testCompanionSquare = document.getElementById('testCompanionSquare');
     testCompanionSquare.style.height = '250px';
