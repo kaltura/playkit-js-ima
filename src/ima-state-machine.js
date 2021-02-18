@@ -421,7 +421,8 @@ function onAdProgress(options: Object, adEvent: any): void {
   this.logger.debug(adEvent.type.toUpperCase());
   const remainingTime = this._adsManager.getRemainingTime();
   const duration = adEvent.getAdData() && adEvent.getAdData().duration;
-  const currentTime = duration - remainingTime;
+  let currentTime = duration - remainingTime;
+  currentTime = currentTime < 0 ? 0 : currentTime;
   if (Utils.Number.isNumber(duration) && Utils.Number.isNumber(currentTime)) {
     this.dispatchEvent(options.transition, {
       adProgress: {
