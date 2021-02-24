@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/kaltura/playkit-js-ima/compare/v1.2.0...v1.3.0) (2021-02-24)
+
+
+### Bug Fixes
+
+* **FEC-10905:** when move from ad to other ad there is a second when wrong time is shows ([#189](https://github.com/kaltura/playkit-js-ima/issues/189)) ([48fd6e1](https://github.com/kaltura/playkit-js-ima/commit/48fd6e1))
+* manual companions doesn't work ([#188](https://github.com/kaltura/playkit-js-ima/issues/188)) ([74c0636](https://github.com/kaltura/playkit-js-ima/commit/74c0636))
+
+
+### Features
+
+* **FEC-10970:** expose vpaid field on ad object ([#187](https://github.com/kaltura/playkit-js-ima/issues/187)) ([502264d](https://github.com/kaltura/playkit-js-ima/commit/502264d))
+
+
+
 ## [1.2.0](https://github.com/kaltura/playkit-js-ima/compare/v1.1.0...v1.2.0) (2021-01-28)
 
 
