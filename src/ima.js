@@ -38,6 +38,13 @@ const ADS_CONTAINER_CLASS: string = 'playkit-ads-container';
  * @private
  */
 const ADS_COVER_CLASS: string = 'playkit-ads-cover';
+/**
+ * Flag for ima to not preload the postroll See https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/history (3.442.0 version)
+ * @type {number}
+ * @const
+ * @private
+ */
+const POSTROLL_PRELOAD_NONE: number = -3;
 
 /**
  * The ima plugin.
@@ -876,9 +883,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       adsRequest.linearAdSlotHeight = this.player.dimensions.height;
       adsRequest.nonLinearAdSlotWidth = this.player.dimensions.width;
       adsRequest.nonLinearAdSlotHeight = this.player.dimensions.height / 3;
-      if (this.getContentDuration() && !this.player.isLive()) {
-        adsRequest.contentDuration = this.getContentDuration();
-      }
+      adsRequest.contentDuration = POSTROLL_PRELOAD_NONE;
 
       const muted = this.player.muted || this.player.volume === 0;
       adsRequest.setAdWillPlayMuted(muted);
