@@ -3,11 +3,13 @@
 #### Configuration Structure
 
 The configuration uses the following structure:
-****
+
+---
+
 ```js
 {
   showAdBreakCuePoint?: boolean,
-  adBreakCuePointStyle?: CuePointOptionsObject  
+  adBreakCuePointStyle?: CuePointOptionsObject
 }
 ```
 
@@ -19,7 +21,7 @@ The configuration uses the following structure:
 >
 > ##### Default: `false` - No cue points displayed for the ad breaks.
 >
-> ##### Description: Whether to show the ad breaks cue points.  
+> ##### Description: Whether to show the ad breaks cue points.
 >
 > ##
 >
@@ -29,31 +31,36 @@ The configuration uses the following structure:
 >
 > ##### Default: `null` - Use the default cue point style.
 >
-> ##### Description: Style options for the ad breaks cue points.  
-> 
+> ##### Description: Style options for the ad breaks cue points.
+>
 > ##### Examples:
 >
-> Don't show The cue point for the ad breaks:  
+> Don't show The cue point for the ad breaks:
+>
 > ```js
 > {
->   showAdBreakCuePoint: false
+>   showAdBreakCuePoint: false;
 > }
 > ```
-> Show The default cue point for the ad breaks:  
+>
+> Show The default cue point for the ad breaks:
+>
 > ```js
 > {
->   showAdBreakCuePoint: true
+>   showAdBreakCuePoint: true;
 > }
 > ```
-> Show a custom cue point for the ad breaks:  
+>
+> Show a custom cue point for the ad breaks:
+>
 > ```js
 > {
 >   showAdBreakCuePoint: true,
 >   adBreakCuePointStyle: {
 >     marker: {
 >       width: 10,
->       color: 'rgb(255, 0, 0)' 
->     }   
+>       color: 'rgb(255, 0, 0)'
+>     }
 >   }
 > }
 > ```

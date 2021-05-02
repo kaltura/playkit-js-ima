@@ -3,7 +3,8 @@ import {core} from 'kaltura-player-js';
 import {Ima} from './ima';
 import {State} from './state';
 
-const {BaseMiddleware} = core;
+const {BaseMiddleware, AdBreak, Ad} = core;
+
 /**
  * Middleware implementation for ima plugin.
  * @class ImaMiddleware
@@ -39,6 +40,20 @@ class ImaMiddleware extends BaseMiddleware {
    * @memberof ImaMiddleware
    */
   _nextLoad: ?Function;
+  /**
+   * Current ad break.
+   * @member
+   * @private
+   * @memberof ImaMiddleware
+   */
+  _adBreak: AdBreak;
+  /**
+   * Current ad.
+   * @member
+   * @private
+   * @memberof ImaMiddleware
+   */
+  _ad: Ad;
 
   constructor(context: Ima) {
     super();
@@ -60,8 +75,22 @@ class ImaMiddleware extends BaseMiddleware {
     this._context.loadPromise.catch(() => this._callNextLoad());
     const sm = this._context.getStateMachine();
     if (sm.state !== State.IDLE && (this._context.config.adTagUrl || this._context.config.adsResponse)) {
+      this._context.player.addEventListener(this._context.player.Event.AD_BREAK_START, (event: FakeEvent) => (this._adBreak = event.payload.adBreak));
+      this._context.player.addEventListener(this._context.player.Event.AD_BREAK_END, () => {
+        this._adBreak = null;
+        this._ad = null;
+      });
+      this._context.player.addEventListener(this._context.player.Event.AD_LOADED, (event: FakeEvent) => (this._ad = event.payload.ad));
       this._context.player.addEventListener(this._context.player.Event.AD_ERROR, () => {
-        this._callNextLoad();
+        this._context.logger.debug('Ad error listener on middleware', this._adBreak, this._ad);
+        // checking if the error raised for the last ad before playback:
+        // ad error raised before ad break start
+        // or there's only one ad in the pod
+        // or it's the last ad in the pod
+        if (!(this._ad && this._adBreak) || this._ad.position === this._adBreak.numAds) {
+          this._context.logger.debug('Call next load after ad error on middleware');
+          this._callNextLoad();
+        }
       });
       this._context.player.addEventListener(this._context.player.Event.AD_MANIFEST_LOADED, event => {
         if (!event.payload.adBreaksPosition.includes(0)) {
