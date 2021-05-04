@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.3](https://github.com/kaltura/playkit-js-ima/compare/v1.3.2...v1.3.3) (2021-05-04)
+
+
+### Bug Fixes
+
+* **FEC-11198:** Player showing "NaN" values for duration ([#194](https://github.com/kaltura/playkit-js-ima/issues/194)) ([ab152dd](https://github.com/kaltura/playkit-js-ima/commit/ab152dd))
+
+
+
 ### [1.3.2](https://github.com/kaltura/playkit-js-ima/compare/v1.3.1...v1.3.2) (2021-04-06)
 
 
