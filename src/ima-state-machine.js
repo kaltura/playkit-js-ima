@@ -314,6 +314,11 @@ function onAdBreakEnd(options: Object, adEvent: any): void {
     }
     this._hideAdsContainer();
     this._maybeSetVideoCurrentTime();
+    const shouldPlayerSeekToLiveEdge =
+      this.player.isLive() && !this.config.disableMediaPreload && getAdBreakType.call(this, adEvent) === AdBreakType.PRE;
+    if (shouldPlayerSeekToLiveEdge) {
+      this.player.seekToLiveEdge();
+    }
     if (this._nextPromise) {
       this._resolveNextPromise();
     } else if (!this.config.forceReloadMediaAfterAds) {
