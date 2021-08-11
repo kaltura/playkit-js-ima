@@ -1129,9 +1129,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     }
     if (this._playAdByConfig()) {
       this.dispatchEvent(this.player.Event.AD_MANIFEST_LOADED, {adBreaksPosition: cuePoints});
-      if (this.player.ui.hasManager('timeline') && this.config.showAdBreakCuePoint) {
+      if (this.player.hasService('timeline') && this.config.showAdBreakCuePoint) {
         cuePoints.forEach(cuePoint => {
-          this.player.ui.getManager('timeline').addCuePoint({
+          this.player.getService('timeline').addCuePoint({
             time: cuePoint !== -1 ? cuePoint : Infinity,
             ...this.config.adBreakCuePointStyle
           });
