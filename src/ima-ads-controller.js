@@ -39,7 +39,7 @@ class ImaAdsController implements IAdsPluginController {
    */
   playAdNow = (adPod: KPAdPod) => {
     this._context.playAdNow(adPod);
-  }
+  };
 
   /**
    * On playback ended handler.
