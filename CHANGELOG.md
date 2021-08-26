@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/kaltura/playkit-js-ima/compare/v1.3.3...v1.4.0) (2021-08-26)
+
+
+### Build System
+
+* **FEC-10700:** Improvement for CI/CD ([#201](https://github.com/kaltura/playkit-js-ima/issues/201)) ([b84546c](https://github.com/kaltura/playkit-js-ima/commit/b84546c))
+* **FEC-11389:** reduce builds from travis ([85bf771](https://github.com/kaltura/playkit-js-ima/commit/85bf771))
+
+
+### Features
+
+* **FEC-11475:** create service manager that allows registration and accessing of services ([#205](https://github.com/kaltura/playkit-js-ima/issues/205)) ([ddf122a](https://github.com/kaltura/playkit-js-ima/commit/ddf122a)), closes [kaltura/kaltura-player-js#477](https://github.com/kaltura/playkit-js-ima/issues/477) [kaltura/playkit-js-ui#630](https://github.com/kaltura/playkit-js-ima/issues/630)
+
+
+
 ### [1.3.3](https://github.com/kaltura/playkit-js-ima/compare/v1.3.2...v1.3.3) (2021-05-04)
 
 
