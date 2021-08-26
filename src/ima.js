@@ -252,6 +252,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   _isBumper: boolean;
   _isVpaid: boolean;
   _adVideoTagAlreadyPlayed: boolean = false;
+  _adBreakStarted: boolean = false;
+  _adStartedEvent: any = null;
 
   /**
    * Whether the ima plugin is valid.
@@ -1181,7 +1183,13 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_PAUSE_REQUESTED, adEvent => {
       if (this._playAdByConfig() || this._firstOfAdPod) {
         this._firstOfAdPod = false;
+        this._adBreakStarted = true;
         this._stateMachine.adbreakstart(adEvent);
+
+        if (this._adStartedEvent) {
+          this._stateMachine.adstarted(this._adStartedEvent);
+          this._adStartedEvent = null;
+        }
       }
     });
 
@@ -1196,7 +1204,13 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       }
     });
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOADED, adEvent => this._stateMachine.adloaded(adEvent));
-    this._adsManager.addEventListener(this._sdk.AdEvent.Type.STARTED, adEvent => this._stateMachine.adstarted(adEvent));
+    this._adsManager.addEventListener(this._sdk.AdEvent.Type.STARTED, adEvent => {
+      if (adEvent.getAd().isLinear() && !this._adBreakStarted) {
+        this._adStartedEvent = adEvent;
+      } else {
+        this._stateMachine.adstarted(adEvent);
+      }
+    });
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.PAUSED, adEvent => this._stateMachine.adpaused(adEvent));
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.RESUMED, adEvent => this._stateMachine.adresumed(adEvent));
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.FIRST_QUARTILE, adEvent => this._stateMachine.adfirstquartile(adEvent));
