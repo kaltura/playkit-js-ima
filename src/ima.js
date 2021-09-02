@@ -1183,7 +1183,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.CONTENT_PAUSE_REQUESTED, adEvent => {
       if (this._playAdByConfig() || this._firstOfAdPod) {
         this._firstOfAdPod = false;
-        this._adBreakStarted = true;
         this._stateMachine.adbreakstart(adEvent);
 
         if (this._adStartedEvent) {
@@ -1205,7 +1204,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     });
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.LOADED, adEvent => this._stateMachine.adloaded(adEvent));
     this._adsManager.addEventListener(this._sdk.AdEvent.Type.STARTED, adEvent => {
-      if (adEvent.getAd().isLinear() && !this._adBreakStarted) {
+      if (adEvent.getAd().isLinear() && !this.player.ads.isAdBreak()) {
         this._adStartedEvent = adEvent;
       } else {
         this._stateMachine.adstarted(adEvent);
