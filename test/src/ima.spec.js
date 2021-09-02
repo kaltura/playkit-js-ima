@@ -102,6 +102,36 @@ describe('Ima Plugin', function () {
     player.play();
   });
 
+  describe('ad events order', () => {
+    it('should fire AD_BREAK_STARTED before AD_STARTED - video ad', done => {
+      player = loadPlayerWithAds(targetId, {
+        adTagUrl:
+          'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=[timestamp]'
+      });
+      ima = player._pluginManager.get('ima');
+      player.addEventListener(player.Event.AD_BREAK_START, () => {
+        player.addEventListener(player.Event.AD_STARTED, () => {
+          done();
+        });
+      });
+      player.play();
+    });
+
+    it('should fire AD_BREAK_STARTED before AD_STARTED - linear image ad', done => {
+      const vastXML = require('../setup/linear-image.vast.xml').default;
+      player = loadPlayerWithAds(targetId, {
+        adsResponse: vastXML
+      });
+      ima = player._pluginManager.get('ima');
+      player.addEventListener(player.Event.AD_BREAK_START, () => {
+        player.addEventListener(player.Event.AD_STARTED, () => {
+          done();
+        });
+      });
+      player.play();
+    });
+  });
+
   it('should sent the ad data - linear', done => {
     player = loadPlayerWithAds(targetId, {
       adTagUrl:
