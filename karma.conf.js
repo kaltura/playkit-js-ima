@@ -15,6 +15,12 @@ const launchers = {
   }
 };
 
+const webpackConfig = require('./webpack.config.js');
+webpackConfig.module.rules.push({
+  test: /\.xml$/i,
+  use: 'raw-loader'
+});
+
 module.exports = function (config) {
   let karmaConf = {
     logLevel: config.LOG_INFO,
@@ -26,14 +32,21 @@ module.exports = function (config) {
     singleRun: true,
     colors: true,
     frameworks: ['mocha'],
-    files: ['test/setup/karma.js'],
+    files: [
+      'test/setup/karma.js',
+      {
+        pattern: 'test/setup/*.xml',
+        included: false,
+        served: true
+      }
+    ],
     preprocessors: {
       'src/**/*.js': ['webpack', 'sourcemap'],
       'test/setup/karma.js': ['webpack', 'sourcemap']
     },
     reporters: ['mocha', 'coverage'],
     webpack: {
-      ...require('./webpack.config.js'),
+      ...webpackConfig,
       externals: {}, //Need to remove externals otherwise they won't be included in test
       devtool: 'inline-source-map', // Need to define inline source maps when using karma
       mode: config.mode || 'development' // run in development mode by default to avoid minifying -> faster

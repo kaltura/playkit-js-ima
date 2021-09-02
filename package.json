@@ -51,7 +51,8 @@
     ]
   },
   "dependencies": {
-    "javascript-state-machine": "https://github.com/kaltura/javascript-state-machine.git#v3.1.0-k-1"
+    "javascript-state-machine": "https://github.com/kaltura/javascript-state-machine.git#v3.1.0-k-1",
+    "raw-loader": "^4.0.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.10.5",

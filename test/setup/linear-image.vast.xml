@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VAST xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="vast.xsd" version="4.0">
+  <Ad>
+    <InLine>
+      <AdSystem>AdSense</AdSystem>
+      <AdTitle>image</AdTitle>
+      <Description>
+        <![CDATA[image ad]]>
+      </Description>
+      <Creatives>
+        <Creative>
+          <UniversalAdId idRegistry="unknown" />
+          <NonLinearAds>
+            <TrackingEvents>
+            </TrackingEvents>
+            <NonLinear width="100" height="100" minSuggestedDuration="00:00:00" scalable="false" maintainAspectRatio="false">
+            </NonLinear>
+          </NonLinearAds>
+        </Creative>
+      </Creatives>
+      <Extensions>
+        <Extension type="AdSense">
+          <AttributionText>Ads by Google</AttributionText>
+          <UI>
+            <config>
+              <context data="default" />
+              <params>
+                <attribution_text data="Ads by Google" />
+                <enable_companion_banner bool="true" />
+                <signals int="25" />
+              </params>
+            </config>
+          </UI>
+        </Extension>
+      </Extensions>
+    </InLine>
+  </Ad>
+</VAST>
