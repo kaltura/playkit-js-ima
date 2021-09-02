@@ -252,7 +252,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   _isBumper: boolean;
   _isVpaid: boolean;
   _adVideoTagAlreadyPlayed: boolean = false;
-  _adBreakStarted: boolean = false;
   _adStartedEvent: any = null;
 
   /**
