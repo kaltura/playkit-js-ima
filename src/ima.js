@@ -796,6 +796,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     if (typeof this.config.numRedirects === 'number') {
       this._sdk.settings.setNumRedirects(this.config.numRedirects);
     }
+    if (typeof this.config.sessionId === 'string') {
+      this._sdk.settings.setSessionId(this.config.sessionId);
+    }
   }
 
   /**
