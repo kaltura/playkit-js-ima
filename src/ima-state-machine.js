@@ -540,6 +540,9 @@ function getAdOptions(adEvent: any): Object {
   adOptions.bitrate = ad.getVastMediaBitrate();
   adOptions.bumper = podInfo.getIsBumper() || this._isBumper;
   adOptions.vpaid = this._isVpaid;
+  adOptions.wrapperAdIds = ad.getWrapperAdIds();
+  adOptions.wrapperCreativeIds = ad.getWrapperCreativeIds();
+  adOptions.wrapperAdSystems = ad.getWrapperAdSystems();
   return adOptions;
 }
 
