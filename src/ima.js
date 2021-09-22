@@ -1466,6 +1466,10 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   _playAdByConfig(): boolean {
     return !!(this.config.adTagUrl || this.config.adsResponse);
   }
+
+  _isVideoAd(): boolean {
+    return this._currentAd && this._currentAd.getContentType().startsWith('video');
+  }
 }
 
 export {Ima};
