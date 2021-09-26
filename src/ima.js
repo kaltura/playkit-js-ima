@@ -6,6 +6,7 @@ import {ImaStateMachine} from './ima-state-machine';
 import {State} from './state';
 import './assets/style.css';
 import {ImaEngineDecorator} from './ima-engine-decorator';
+import {Object} from '../../playkit-js/src/utils';
 
 const {BaseMiddleware, EngineType, Error, getCapabilities, Utils, Env, AudioTrack, TextTrack, EventManager, AdBreakType} = core;
 
@@ -785,7 +786,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     this._sdk.settings.setPlayerVersion(this.config.playerVersion);
     this._sdk.settings.setVpaidAllowed(true);
     this._sdk.settings.setVpaidMode(this._getVpaidMode());
-    this._sdk.settings.setFeatureFlags({enableOmidBeta: true});
     if (Object.prototype.hasOwnProperty.call(this.config, 'locale')) {
       this._sdk.settings.setLocale(this.config.locale);
     }
@@ -799,6 +799,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     }
     if (typeof this.config.sessionId === 'string') {
       this._sdk.settings.setSessionId(this.config.sessionId);
+    }
+    if (typeof this.config.enableOmidBeta === 'boolean') {
+      this._sdk.settings.setFeatureFlags({enableOmidBeta: this.config.enableOmidBeta});
     }
   }
 
@@ -883,6 +886,11 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       }
       if (typeof this.config.vastLoadTimeout === 'number') {
         adsRequest.vastLoadTimeout = this.config.vastLoadTimeout;
+      }
+      if (typeof this.config.omSdkAccessModes === 'object') {
+        Object.keys(this.config.omSdkAccessModes).forEach(accessMode => {
+          adsRequest.omidAccessModeRules[accessMode] = this.config.omSdkAccessModes[accessMode];
+        });
       }
       adsRequest.linearAdSlotWidth = this.player.dimensions.width;
       adsRequest.linearAdSlotHeight = this.player.dimensions.height;
