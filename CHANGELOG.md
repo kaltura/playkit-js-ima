@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.1](https://github.com/kaltura/playkit-js-ima/compare/v1.4.0...v1.4.1) (2021-09-30)
+
+
+### Bug Fixes
+
+* **FEC-10583:** fix linear image ads ([#209](https://github.com/kaltura/playkit-js-ima/issues/209)) ([79703dd](https://github.com/kaltura/playkit-js-ima/commit/79703dd)), closes [kaltura/playkit-js-ui#634](https://github.com/kaltura/playkit-js-ima/issues/634)
+
+
+
 ## [1.4.0](https://github.com/kaltura/playkit-js-ima/compare/v1.3.3...v1.4.0) (2021-08-26)
 
 
