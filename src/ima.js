@@ -6,7 +6,6 @@ import {ImaStateMachine} from './ima-state-machine';
 import {State} from './state';
 import './assets/style.css';
 import {ImaEngineDecorator} from './ima-engine-decorator';
-import {Object} from '../../playkit-js/src/utils';
 
 const {BaseMiddleware, EngineType, Error, getCapabilities, Utils, Env, AudioTrack, TextTrack, EventManager, AdBreakType} = core;
 
