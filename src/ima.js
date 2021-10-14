@@ -799,6 +799,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     if (typeof this.config.sessionId === 'string') {
       this._sdk.settings.setSessionId(this.config.sessionId);
     }
+    if (typeof this.config.enableOmidBeta === 'boolean') {
+      this._sdk.settings.setFeatureFlags({enableOmidBeta: this.config.enableOmidBeta});
+    }
   }
 
   /**
@@ -882,6 +885,11 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       }
       if (typeof this.config.vastLoadTimeout === 'number') {
         adsRequest.vastLoadTimeout = this.config.vastLoadTimeout;
+      }
+      if (typeof this.config.omSdkAccessModes === 'object') {
+        Object.keys(this.config.omSdkAccessModes).forEach(accessMode => {
+          adsRequest.omidAccessModeRules[accessMode] = this.config.omSdkAccessModes[accessMode];
+        });
       }
       adsRequest.linearAdSlotWidth = this.player.dimensions.width;
       adsRequest.linearAdSlotHeight = this.player.dimensions.height;

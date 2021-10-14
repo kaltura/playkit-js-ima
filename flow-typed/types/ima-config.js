@@ -33,6 +33,10 @@
  * @param {string} [locale] - Sets the publisher provided locale. The locale specifies the language in which to display UI elements and can be any two-letter {@link https://www.loc.gov/standards/iso639-2/php/English_list.php|ISO 639-1} code.
  * @param {boolean} [showAdBreakCuePoint] - Whether to show the ad breaks cue points.
  * @param {Object} [adBreakCuePointStyle] - Style options for the ad breaks cue points - See the options {@link https://github.com/kaltura/playkit-js-timeline/blob/main/docs/types.md#cuepointoptionsobject|Here}.
+ * @param {string} [sessionId] - a temporary random ID. It is used exclusively for frequency capping. A session ID must be a UUID.
+ * @param {boolean} [enableOmidBeta] - enable the Open Measurement (OM) SDK, (optional, default `false`).
+ * @param {OmSdkAccessModesConfig} [omSdkAccessModes] - The OM SDK verification scripts access modes.
+
  * @example
  */
 type _ImaConfigObject = {
@@ -49,7 +53,10 @@ type _ImaConfigObject = {
   companions: Object,
   locale: string,
   showAdBreakCuePoint: boolean,
-  adBreakCuePointStyle: Object
+  adBreakCuePointStyle: Object,
+  sessionId: string,
+  enableOmidBeta: boolean,
+  omSdkAccessModes: OmSdkAccessModesConfig
 };
 
 declare type ImaConfigObject = _ImaConfigObject;
