@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/kaltura/playkit-js-ima/compare/v1.4.1...v1.5.0) (2021-10-27)
+
+
+### Features
+
+* **FEC-11173:** [Web] Support new IMA SDK OMID API ([#212](https://github.com/kaltura/playkit-js-ima/issues/212)) ([055982e](https://github.com/kaltura/playkit-js-ima/commit/055982e))
+
+
+
 ### [1.4.1](https://github.com/kaltura/playkit-js-ima/compare/v1.4.0...v1.4.1) (2021-09-30)
 
 
