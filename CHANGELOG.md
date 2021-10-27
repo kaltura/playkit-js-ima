@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.1](https://github.com/kaltura/playkit-js-ima/compare/v1.5.0...v1.5.1) (2021-10-27)
+
+
+### Build System
+
+* fix node 17 issue ([2399ef9](https://github.com/kaltura/playkit-js-ima/commit/2399ef9))
+
+
+
 ## [1.5.0](https://github.com/kaltura/playkit-js-ima/compare/v1.4.1...v1.5.0) (2021-10-27)
 
 
