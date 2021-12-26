@@ -446,7 +446,6 @@ function onAdProgress(options: Object, adEvent: any): void {
  * @memberof ImaStateMachine
  */
 function onAdEvent(options: Object, adEvent: any): void {
-  console.error('444 onAdEvent', adEvent.type);
   this.logger.debug(adEvent.type.toUpperCase());
   this.dispatchEvent(options.transition);
 }
