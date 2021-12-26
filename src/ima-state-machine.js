@@ -220,8 +220,10 @@ function onAdClicked(options: Object, adEvent: any): void {
   if (this._currentAd.isLinear()) {
     if (this._isVideoAd()) {
       this._maybeIgnoreClickOnAd();
-      if (this._stateMachine.is(State.PLAYING)) {
+      if (this._stateMachine.is(State.PLAYING) && !this.player.isLive()) {
         this._adsManager.pause();
+      } else if (this.player.isLive()) {
+        this.resumeAd();
       }
       this._setToggleAdsCover(true);
     }
