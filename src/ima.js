@@ -884,8 +884,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
         adsRequest.vastLoadTimeout = this.config.vastLoadTimeout;
       }
       if (typeof this.config.omidAccessModes === 'object') {
-        adsRequest.omidAccessModeRules = {};
-        for (const [vendor, accessMode] of Object.entries(this.config.omidAccessModes)) {
+        for (const [vendor: OmidVendor, accessMode: AccessMode] of Object.entries(this.config.omidAccessModes)) {
           adsRequest.omidAccessModeRules[this._sdk.OmidVerificationVendor[vendor]] = this._sdk.OmidAccessMode[accessMode];
         }
       }
