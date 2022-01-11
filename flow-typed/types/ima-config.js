@@ -34,7 +34,7 @@
  * @param {boolean} [showAdBreakCuePoint] - Whether to show the ad breaks cue points.
  * @param {Object} [adBreakCuePointStyle] - Style options for the ad breaks cue points - See the options {@link https://github.com/kaltura/playkit-js-timeline/blob/main/docs/types.md#cuepointoptionsobject|Here}.
  * @param {string} [sessionId] - a temporary random ID. It is used exclusively for frequency capping. A session ID must be a UUID.
- * @param {OmidAccessModesConfig} [omidAccessModes] - A dictionary that maps each [OmidVerificationVendor]{@link https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/reference/js/google.ima#.OmidVerificationVendor} to one of the [access modes]{@link https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/omsdk#access_modes}
+ * @param {OmSdkAccessModesConfig} [omSdkAccessModes] - The OM SDK verification scripts access modes.
 
  * @example
  */
