@@ -129,8 +129,7 @@ Type: [Object][52]
 -   `showAdBreakCuePoint` **[boolean][59]?** Whether to show the ad breaks cue points.
 -   `adBreakCuePointStyle` **[Object][52]?** Style options for the ad breaks cue points - See the options [Here][66].
 -   `sessionId` **[string][58]?** a temporary random ID. It is used exclusively for frequency capping. A session ID must be a UUID.
--   `enableOmidBeta` **[boolean][59]?** enable the Open Measurement (OM) SDK, (optional, default `false`).
--   `omSdkAccessModes` **OmSdkAccessModesConfig?** The OM SDK verification scripts access modes.
+-   `omidAccessModes` **OmidAccessModesConfig?** A dictionary that maps each [OmidVerificationVendor][https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/reference/js/google.ima#.OmidVerificationVendor][67] to one of the [access modes][https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/omsdk#access_modes][68]
 
 ## ImaAdsController
 
@@ -138,7 +137,7 @@ Controller for ima plugin.
 
 ### Parameters
 
--   `context` **[Ima][67]** The ima plugin context.
+-   `context` **[Ima][69]** The ima plugin context.
 
 ### skipAd
 
@@ -160,7 +159,7 @@ Returns **void**
 
 On playback ended handler.
 
-Returns **[Promise][68]&lt;void>** complete promise
+Returns **[Promise][70]&lt;void>** complete promise
 
 ### active
 
@@ -193,7 +192,7 @@ Engine decorator for ima plugin.
 ### Parameters
 
 -   `engine` **IEngine** The HTML5 engine.
--   `plugin` **[Ima][67]** The ima plugin.
+-   `plugin` **[Ima][69]** The ima plugin.
 
 ### paused
 
@@ -249,7 +248,7 @@ The ima plugin.
 
 -   `name` **[string][58]** The plugin name.
 -   `player` **Player** The player instance.
--   `config` **[ImaConfigObject][69]** The plugin config.
+-   `config` **[ImaConfigObject][71]** The plugin config.
 
 ### getEngineDecorator
 
@@ -347,7 +346,7 @@ Returns **DeferredPromise?** The promise which when resolved starts the next han
 
 Ended event handler.
 
-Returns **[Promise][68]&lt;void>** complete promise
+Returns **[Promise][70]&lt;void>** complete promise
 
 ### defaultConfig
 
@@ -362,7 +361,7 @@ Will be resolved after:
 1) Ima script has been loaded in the page.
 2) The ads manager has been loaded and ready to start.
 
-Type: [Promise][68]&lt;any>
+Type: [Promise][70]&lt;any>
 
 ### isValid
 
@@ -506,8 +505,12 @@ Type: [Object][52]
 
 [66]: https://github.com/kaltura/playkit-js-timeline/blob/main/docs/types.md#cuepointoptionsobject
 
-[67]: #ima
+[67]: https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/reference/js/google.ima#.OmidVerificationVendor
 
-[68]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[68]: https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/omsdk#access_modes
 
-[69]: #imaconfigobject
+[69]: #ima
+
+[70]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+
+[71]: #imaconfigobject
