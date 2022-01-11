@@ -142,6 +142,8 @@ Type: (`"FULL"` \| `"CREATIVE"` \| `"DOMAIN"` \| `"LIMITED"`)
 
 ## OmidAccessModesConfig
 
+[different verification script providers][71]
+
 ### Examples
 
 ```javascript

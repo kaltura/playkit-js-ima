@@ -2,11 +2,13 @@
 
 /**
 *  {@link https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/omsdk#access_modes different access modes for verification scripts}
- * @typedef {( 'FULL' | 'CREATIVE' | 'DOMAIN' | 'LIMITED')} AccessMode
+ * @typedef AccessMode
+ * @type { 'FULL' | 'CREATIVE' | 'DOMAIN' | 'LIMITED'}
  */
 declare type AccessMode = 'FULL' | 'CREATIVE' | 'DOMAIN' | 'LIMITED';
 
 /**
+ * {@link https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/reference/js/google.ima#.OmidVerificationVendor different verification script providers}
  * @typedef OmidAccessModesConfig
  * @example
  * {
