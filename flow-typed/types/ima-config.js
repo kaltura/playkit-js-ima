@@ -54,7 +54,6 @@ type _ImaConfigObject = {
   showAdBreakCuePoint: boolean,
   adBreakCuePointStyle: Object,
   sessionId: string,
-  enableOmidBeta: boolean,
   omidAccessModes: OmidAccessModesConfig
 };
 
