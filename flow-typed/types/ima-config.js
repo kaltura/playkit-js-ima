@@ -34,8 +34,7 @@
  * @param {boolean} [showAdBreakCuePoint] - Whether to show the ad breaks cue points.
  * @param {Object} [adBreakCuePointStyle] - Style options for the ad breaks cue points - See the options {@link https://github.com/kaltura/playkit-js-timeline/blob/main/docs/types.md#cuepointoptionsobject|Here}.
  * @param {string} [sessionId] - a temporary random ID. It is used exclusively for frequency capping. A session ID must be a UUID.
- * @param {boolean} [enableOmidBeta] - enable the Open Measurement (OM) SDK, (optional, default `false`).
- * @param {OmSdkAccessModesConfig} [omSdkAccessModes] - The OM SDK verification scripts access modes.
+ * @param {OmidAccessModesConfig} [omidAccessModes] - A dictionary that maps each {@link https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/reference/js/google.ima#.OmidVerificationVendor OmidVerificationVendor} to one of the {@link https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/omsdk#access_modes access modes}
 
  * @example
  */
@@ -55,8 +54,7 @@ type _ImaConfigObject = {
   showAdBreakCuePoint: boolean,
   adBreakCuePointStyle: Object,
   sessionId: string,
-  enableOmidBeta: boolean,
-  omSdkAccessModes: OmSdkAccessModesConfig
+  omidAccessModes: OmidAccessModesConfig
 };
 
 declare type ImaConfigObject = _ImaConfigObject;
