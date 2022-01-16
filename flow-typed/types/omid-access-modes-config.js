@@ -8,13 +8,6 @@
 declare type AccessMode = 'FULL' | 'CREATIVE' | 'DOMAIN' | 'LIMITED';
 
 /**
- * {@link https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/reference/js/google.ima#.OmidVerificationVendor different verification script providers}
- * @typedef OmidVendor
- * @type { 'OTHER' | 'MOAT' | 'DOUBLEVERIFY' | 'INTEGRAL_AD_SCIENCE'  | 'PIXELATE'  | 'NIELSEN'  | 'COMSCORE' | 'MEETRICS' | 'GOOGLE'}
- */
-declare type OmidVendor = 'OTHER' | 'MOAT' | 'DOUBLEVERIFY' | 'INTEGRAL_AD_SCIENCE'  | 'PIXELATE'  | 'NIELSEN'  | 'COMSCORE' | 'MEETRICS' | 'GOOGLE';
-
-/**
  * A dictionary that maps each {@link https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/reference/js/google.ima#.OmidVerificationVendor OmidVerificationVendor} to one of the {@link https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/omsdk#access_modes available access modes}
  * @typedef OmidAccessModesConfig
  * @example
@@ -25,5 +18,5 @@ declare type OmidVendor = 'OTHER' | 'MOAT' | 'DOUBLEVERIFY' | 'INTEGRAL_AD_SCIEN
  * }
  */
 declare type OmidAccessModesConfig = {
-  [OmidVendor]: AccessMode
+  [string]: AccessMode
 }
