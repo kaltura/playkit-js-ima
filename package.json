@@ -109,7 +109,7 @@
   },
   "peerDependencies": {
     "@playkit-js/playkit-js": "0.63.0",
-    "kaltura-player-js": "https://github.com/kaltura/kaltura-player-js.git#v1.0.0"
+    "kaltura-player-js": "https://github.com/kaltura/kaltura-player-js.git#master"
   },
   "publishConfig": {
     "access": "public"
