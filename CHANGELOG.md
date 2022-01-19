@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/kaltura/playkit-js-ima/compare/v1.5.2...v1.6.0) (2022-01-19)
+
+
+### Bug Fixes
+
+* **FEC-11757:** V3: live with Ad: UI wrong state (Video is paused) after closing the new opened Ad tab ([#214](https://github.com/kaltura/playkit-js-ima/issues/214)) ([bf2ecc4](https://github.com/kaltura/playkit-js-ima/commit/bf2ecc4))
+
+
+### Features
+
+* **FEC-11789:** Update to the latest IMA SDK OMID API ([#215](https://github.com/kaltura/playkit-js-ima/issues/215)) ([ccd1331](https://github.com/kaltura/playkit-js-ima/commit/ccd1331))
+
+
+
 ### [1.5.2](https://github.com/kaltura/playkit-js-ima/compare/v1.5.1...v1.5.2) (2021-11-10)
 
 
