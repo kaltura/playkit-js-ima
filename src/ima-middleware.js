@@ -97,6 +97,11 @@ class ImaMiddleware extends BaseMiddleware {
           this._callNextLoad();
         }
       });
+      this._context.player.addEventListener(this._context.player.Event.AD_LOADED, event => {
+        if (!event.payload.ad.linear) {
+          this._callNextLoad();
+        }
+      });
     } else {
       this._callNextLoad();
     }
