@@ -795,6 +795,19 @@ describe('Ima Plugin', function () {
     player.play();
   });
 
+  it('should call to player load when non-linear and disableMediaPreload', done => {
+    player = loadPlayerWithAds(targetId, {
+      disableMediaPreload: true,
+      adTagUrl:
+        '//pubads.g.doubleclick.net/gampad/ads?sz=480x70&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dnonlinear&correlator='
+    });
+    ima = player._pluginManager.get('ima');
+    player.addEventListener(player.Event.MEDIA_LOADED, () => {
+      done();
+    });
+    player.play();
+  });
+
   describe('playAdNow', function () {
     let sandbox;
     const vasts = [

@@ -80,7 +80,12 @@ class ImaMiddleware extends BaseMiddleware {
         this._adBreak = null;
         this._ad = null;
       });
-      this._context.player.addEventListener(this._context.player.Event.AD_LOADED, (event: FakeEvent) => (this._ad = event.payload.ad));
+      this._context.player.addEventListener(this._context.player.Event.AD_LOADED, (event: FakeEvent) => {
+        this._ad = event.payload.ad;
+        if (!this._ad.linear) {
+          this._callNextLoad();
+        }
+      });
       this._context.player.addEventListener(this._context.player.Event.AD_ERROR, () => {
         this._context.logger.debug('Ad error listener on middleware', this._adBreak, this._ad);
         // checking if the error raised for the last ad before playback:
@@ -94,11 +99,6 @@ class ImaMiddleware extends BaseMiddleware {
       });
       this._context.player.addEventListener(this._context.player.Event.AD_MANIFEST_LOADED, event => {
         if (!event.payload.adBreaksPosition.includes(0)) {
-          this._callNextLoad();
-        }
-      });
-      this._context.player.addEventListener(this._context.player.Event.AD_LOADED, event => {
-        if (!event.payload.ad.linear) {
           this._callNextLoad();
         }
       });
