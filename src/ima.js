@@ -1324,7 +1324,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _maybeDisplayCompanionAds(): void {
-    if (this.config.companions && this.config.companions.ads) {
+    if (this.config.companions?.ads) {
       if (Utils.Object.isObject(window?.googletag?.cmd)) {
         this.logger.warn('googletag exists. Do not display the companions manually');
       }
