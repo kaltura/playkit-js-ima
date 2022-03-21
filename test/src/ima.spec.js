@@ -761,10 +761,10 @@ describe('Ima Plugin', function () {
     player.load();
   });
 
-  it.skip('should sent vpaid true - linear', done => {
+  it('should sent vpaid true - linear', done => {
     player = loadPlayerWithAds(targetId, {
       adTagUrl:
-        '//pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinearvpaid2js&correlator='
+        '//pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dlinearvpaid2js&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator='
     });
     ima = player._pluginManager.get('ima');
     player.addEventListener(player.Event.AD_STARTED, e => {
