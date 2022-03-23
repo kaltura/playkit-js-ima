@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.1](https://github.com/kaltura/playkit-js-ima/compare/v1.6.0...v1.6.1) (2022-03-23)
+
+
+### Bug Fixes
+
+* **FEC-10983:** Manual companions do not work ([#225](https://github.com/kaltura/playkit-js-ima/issues/225)) ([7092ffe](https://github.com/kaltura/playkit-js-ima/commit/7092ffe))
+* **FEC-12019:** samsung - non linear ad - video does not start after clicking Play ([#224](https://github.com/kaltura/playkit-js-ima/issues/224)) ([f8dc8bb](https://github.com/kaltura/playkit-js-ima/commit/f8dc8bb))
+
+
+### Tests
+
+* return skipped unit test ([#226](https://github.com/kaltura/playkit-js-ima/issues/226)) ([0edb2e9](https://github.com/kaltura/playkit-js-ima/commit/0edb2e9))
+
+
+
 ## [1.6.0](https://github.com/kaltura/playkit-js-ima/compare/v1.5.2...v1.6.0) (2022-01-19)
 
 
