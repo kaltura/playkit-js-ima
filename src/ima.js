@@ -1114,9 +1114,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _hideAdsContainer(): void {
-    if (this._adsContainerDiv) {
-      this._adsContainerDiv.style.visibility = 'hidden';
-    }
+    // if (this._adsContainerDiv) {
+    //   this._adsContainerDiv.style.visibility = 'hidden';
+    // }
   }
 
   /**
