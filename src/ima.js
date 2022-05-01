@@ -870,7 +870,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _requestAds(vastUrl: ?string, vastResponse: ?string): void {
-    this._showAdsContainer();
     if (vastUrl || vastResponse || this._playAdByConfig()) {
       this.logger.debug('Request ads');
       // Request video ads
@@ -1103,7 +1102,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   _showAdsContainer(): void {
     if (this._adsContainerDiv) {
-      this._adsContainerDiv.style.visibility = 'visible';
+      this._adsContainerDiv.style.opacity = 1;
+      this._adsContainerDiv.style.pointerEvents = 'auto';
     }
   }
 
@@ -1116,7 +1116,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    */
   _hideAdsContainer(): void {
     if (this._adsContainerDiv) {
-      this._adsContainerDiv.style.visibility = 'hidden';
+      this._adsContainerDiv.style.opacity = 0;
+      this._adsContainerDiv.style.pointerEvents = 'none';
     }
   }
 
