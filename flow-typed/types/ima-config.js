@@ -43,6 +43,7 @@ type _ImaConfigObject = {
   adTagUrl: string,
   adsResponse: string,
   vpaidMode: string,
+  vastLoadTimeout: number,
   disableMediaPreload: boolean,
   forceReloadMediaAfterAds: boolean,
   delayInitUntilSourceSelected: boolean,
