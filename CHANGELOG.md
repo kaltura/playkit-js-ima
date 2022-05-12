@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.2](https://github.com/kaltura/playkit-js-ima/compare/v1.6.1...v1.6.2) (2022-05-12)
+
+
+### Bug Fixes
+
+* **FEC-12219:** Macros not being populated in VAST tag ([#228](https://github.com/kaltura/playkit-js-ima/issues/228)) ([e4e7652](https://github.com/kaltura/playkit-js-ima/commit/e4e7652))
+
+
+
 ### [1.6.1](https://github.com/kaltura/playkit-js-ima/compare/v1.6.0...v1.6.1) (2022-03-23)
 
 
