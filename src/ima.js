@@ -944,7 +944,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   _resizeAd() {
     if (this._sdk && this._adsManager && this._currentAd) {
       let viewMode = this.player.isFullscreen() ? this._sdk.ViewMode.FULLSCREEN : this._sdk.ViewMode.NORMAL;
-      if (this._currentAd.isLinear()) {
+      if (this._currentAd.isLinear() || this._isVpaid) {
         this._adsManager.resize(this.player.dimensions.width, this.player.dimensions.height, viewMode);
       } else {
         const adTotalWidth = this._currentAd.getWidth() + OVERLAY_AD_MARGIN;
