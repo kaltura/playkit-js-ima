@@ -60,7 +60,7 @@ class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_BREAK_END,
-          from: [State.IDLE, State.PLAYING, State.LOADED, State.PAUSED],
+          from: [State.IDLE, State.PLAYING, State.LOADED, State.PAUSED, State.PENDING],
           to: State.IDLE
         },
         {
@@ -116,7 +116,7 @@ class ImaStateMachine {
         },
         {
           name: context.player.Event.AD_PROGRESS,
-          from: [State.PLAYING, State.PAUSED, State.PENDING]
+          from: [State.PLAYING, State.PAUSED, State.PENDING, State.IDLE]
         },
         {
           name: context.player.Event.AD_BUFFERING,
