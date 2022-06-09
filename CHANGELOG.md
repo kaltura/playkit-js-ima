@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.3](https://github.com/kaltura/playkit-js-ima/compare/v1.6.2...v1.6.3) (2022-06-09)
+
+
+### Bug Fixes
+
+* **FEC-12236,FEC-FEC-12237:** VPAID ads part of the AD is cut ([#229](https://github.com/kaltura/playkit-js-ima/issues/229)) ([173baea](https://github.com/kaltura/playkit-js-ima/commit/173baea))
+
+
+### Build System
+
+* set prerelease false ([31c40c2](https://github.com/kaltura/playkit-js-ima/commit/31c40c2))
+
+
+
 ### [1.6.2](https://github.com/kaltura/playkit-js-ima/compare/v1.6.1...v1.6.2) (2022-05-12)
 
 
