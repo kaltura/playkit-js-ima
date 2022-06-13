@@ -253,6 +253,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   _isVpaid: boolean;
   _adVideoTagAlreadyPlayed: boolean = false;
   _adStartedEvent: any = null;
+  _engine: any = null;
 
   /**
    * Whether the ima plugin is valid.
@@ -281,6 +282,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   getEngineDecorator(engine: IEngine): IEngineDecorator {
+    this._engine = engine;
     return new ImaEngineDecorator(engine, this);
   }
 
@@ -1029,10 +1031,9 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
    * @memberof Ima
    */
   _maybeSaveVideoCurrentTime(): void {
-    const currentTime = this.player.getVideoElement().currentTime;
-    if ((this.playOnMainVideoTag() || this.config.forceReloadMediaAfterAds) && currentTime > 0) {
-      this.logger.debug('Custom playback used: save current time before ads', currentTime);
-      this._videoLastCurrentTime = currentTime;
+    if ((this.playOnMainVideoTag() || this.config.forceReloadMediaAfterAds) && this._engine.currentTime > 0) {
+      this.logger.debug('Custom playback used: save current time before ads', this._engine.currentTime);
+      this._videoLastCurrentTime = this._engine.currentTime;
     }
   }
 
