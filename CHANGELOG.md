@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.4](https://github.com/kaltura/playkit-js-ima/compare/v1.6.3...v1.6.4) (2022-07-06)
+
+
+### Bug Fixes
+
+* **FEC-12067:** [TV Samsung] - Video restart from beginning after Mid-Roll ([0fbf6c1](https://github.com/kaltura/playkit-js-ima/commit/0fbf6c1))
+
+
+
 ### [1.6.3](https://github.com/kaltura/playkit-js-ima/compare/v1.6.2...v1.6.3) (2022-06-09)
 
 
