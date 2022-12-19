@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.5](https://github.com/kaltura/playkit-js-ima/compare/v1.6.4...v1.6.5) (2022-12-19)
+
+
+### Bug Fixes
+
+* **FEC-12717:** add timeline dependency to ima plugin ([5b3acf5](https://github.com/kaltura/playkit-js-ima/commit/5b3acf5))
+
+
+
 ### [1.6.4](https://github.com/kaltura/playkit-js-ima/compare/v1.6.3...v1.6.4) (2022-07-06)
 
 
