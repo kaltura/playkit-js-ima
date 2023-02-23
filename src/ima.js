@@ -422,11 +422,8 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   skipAd(): void {
     this.logger.debug('Skip ad');
     if (this._adsManager) {
-      if (this._adsManager.getAdSkippableState()) {
-        this._adsManager.skip();
-      } else if (this.config.skipSupport) {
-        this._adsManager.stop();
-      }
+      // remove SkippableState check
+      this._adsManager.skip();
     }
   }
 
