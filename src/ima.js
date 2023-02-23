@@ -370,7 +370,10 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
           this.dispatchEvent(this.player.Event.AD_WATERFALLING_FAILED);
         }
         this._stateMachine.adlog(error);
-        playNext();
+        // Go to next ad if param stopOnError not setted
+        if (!ad.stopOnError) {
+          playNext();
+        }
       }
     };
     if (ad) {
