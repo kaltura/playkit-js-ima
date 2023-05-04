@@ -1,6 +1,6 @@
 # PlayKit JS IMA - IMA Plugin for the [Kaltura Player JS]
 
-[![Build Status](https://travis-ci.org/kaltura/playkit-js-ima.svg?branch=master)](https://travis-ci.org/kaltura/playkit-js-ima)
+[![Build Status](https://github.com/kaltura/playkit-js-ima/actions/workflows/run_canary_full_flow.yaml/badge.svg)](https://github.com/kaltura/playkit-js-ima/actions/workflows/run_canary_full_flow.yaml)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![](https://img.shields.io/npm/v/@playkit-js/playkit-js-ima/latest.svg)](https://www.npmjs.com/package/@playkit-js/playkit-js-ima)
 [![](https://img.shields.io/npm/v/@playkit-js/playkit-js-ima/canary.svg)](https://www.npmjs.com/package/@playkit-js/playkit-js-ima/v/canary)
