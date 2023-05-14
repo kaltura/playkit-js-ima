@@ -1,5 +1,5 @@
 // @flow
-import {core} from 'kaltura-player-js';
+import {core} from '@playkit-js/kaltura-player-js';
 import {Ima} from './ima';
 import {State} from './state';
 

@@ -1,4 +1,4 @@
-import {setup} from 'kaltura-player-js';
+import {setup} from '@playkit-js/kaltura-player-js';
 
 /**
  * @param {string} targetId _
