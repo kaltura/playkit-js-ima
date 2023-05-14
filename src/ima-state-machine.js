@@ -2,7 +2,7 @@
 import StateMachine from 'javascript-state-machine';
 import StateMachineHistory from 'javascript-state-machine/lib/history';
 import {State} from './state';
-import {core, Ad, AdBreak} from 'kaltura-player-js';
+import {core, Ad, AdBreak} from '@playkit-js/kaltura-player-js';
 
 const {AdBreakType, Error, Utils} = core;
 
