@@ -118,7 +118,7 @@
   "kaltura": {
     "name": "ima",
     "dependencies": {
-      "playkit-timeline": "3.0.14"
+      "playkit-timeline": "3.0.15"
     }
   },
   "kcc": {
