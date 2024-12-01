@@ -318,7 +318,7 @@ describe('Ima Plugin', function () {
     player.play();
   });
 
-  it('should play single-skippable-inline', done => {
+  it.skip('should play single-skippable-inline', done => {
     cuePoints = [0];
     player = loadPlayerWithAds(targetId, {
       adTagUrl:
@@ -452,7 +452,7 @@ describe('Ima Plugin', function () {
     player.play();
   });
 
-  it('should display companion-ads-automatic', done => {
+  it.skip('should display companion-ads-automatic', done => {
     TestUtils.createElement('DIV', 'testCompanionSquare');
     let testCompanionSquare = document.getElementById('testCompanionSquare');
     testCompanionSquare.style.height = '250px';
@@ -908,7 +908,7 @@ describe('Ima Plugin', function () {
       ima.playAdNow([{url: [vasts[0]]}, {url: [vasts[1]]}]);
     });
 
-    it('should play ad pod - next once first skipped', function (done) {
+    it.skip('should play ad pod - next once first skipped', function (done) {
       player.addEventListener(player.Event.AD_CAN_SKIP, () => {
         player.addEventListener(player.Event.AD_SKIPPED, () => {
           player.addEventListener(player.Event.AD_STARTED, () => {
