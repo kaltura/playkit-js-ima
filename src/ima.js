@@ -652,7 +652,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       }
     });
     this.eventManager.listen(this.player, this.player.Event.MEDIA_LOADED, () => {
-      this._adsManager.updateAdsRenderingSettings({
+      this._adsManager?.updateAdsRenderingSettings({
         restoreCustomPlaybackStateOnAdBreakComplete: !this.player.config.playback.playAdsWithMSE
       });
     });
