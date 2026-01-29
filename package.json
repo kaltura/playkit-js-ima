@@ -1,6 +1,6 @@
 {
   "name": "@playkit-js/playkit-js-ima",
-  "version": "1.6.14",
+  "version": "1.7.0",
   "keywords": [
     "ad",
     "vast",
@@ -25,7 +25,7 @@
   "license": "AGPL-3.0",
   "main": "dist/playkit-ima.js",
   "scripts": {
-    "preinstall": "npx --yes --prefer-online --registry=https://npm.pkg.github.com --package @kaltura/kaltura-tools@latest kaltura-tools check --root=.",
+    "disabled-preinstall": "npx --yes --prefer-online --registry=https://npm.pkg.github.com --package @kaltura/kaltura-tools@latest kaltura-tools check --root=.",
     "prebuild": "npm run clean",
     "build": "webpack --mode production",
     "clean": "rm -rf ./dist",
