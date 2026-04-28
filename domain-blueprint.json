@@ -1,0 +1,142 @@
+{
+  "repository": "kaltura/playkit-js-ima",
+  "core_responsibility": {
+    "type": "Plugin",
+    "description": "Advertisement integration plugin that bridges Google's Interactive Media Ads (IMA) SDK with the Kaltura Player, providing comprehensive client-side ad serving, rendering, and lifecycle management for video monetization"
+  },
+  "domain_and_logic_ownership": {
+    "feature_ownership": [
+      "Client-side ad request and VAST/VMAP response parsing via IMA SDK",
+      "Linear ad playback orchestration (pre-roll, mid-roll, post-roll)",
+      "Non-linear (overlay) ad rendering and display management",
+      "VPAID (Video Player-Ad Interface Definition) ad support",
+      "Ad pod management (sequential ad playback within breaks)",
+      "Ad skipping functionality and skip button timing",
+      "Companion ad selection and display coordination",
+      "Ad click-through handling and pause/resume behavior",
+      "Ad break cue points on seekbar/timeline",
+      "Ad state machine (loading, playing, paused, idle, done)",
+      "Middleware chain integration for player lifecycle (load, play, seek)",
+      "Engine decorator for video element state override during ads",
+      "OMID (Open Measurement Interface Definition) viewability tracking",
+      "Ad error handling and recovery (fatal vs. non-fatal errors)"
+    ],
+    "data_handling": [
+      "Ad break metadata (position, type, number of ads)",
+      "Ad metadata (duration, title, system, click-through URL, dimensions, bitrate)",
+      "Ad state transitions (loading → loaded → playing → completed/skipped)",
+      "Content playhead position tracking during ad playback",
+      "Player state snapshot (audio track, text track, playback rate) preservation across ad breaks",
+      "Ad container DOM element lifecycle and visibility",
+      "IMA SDK settings and rendering configurations",
+      "Ad tag URL or VAST/VMAP response payload"
+    ]
+  },
+  "integration_points": {
+    "upstream": {
+      "services": [
+        "Ad server (via adTagUrl configuration) - provides VAST/VMAP responses",
+        "Google IMA SDK (imasdk.googleapis.com) - dynamically loaded if not present"
+      ],
+      "repositories": [
+        "@playkit-js/kaltura-player-js - main player framework (peer dependency)",
+        "@playkit-js/playkit-js - core player engine (peer dependency)"
+      ]
+    },
+    "downstream": {
+      "consumers": [
+        "Kaltura Player (kaltura-player-js) - consumes this plugin via plugin registration",
+        "Player UI components - receive ad events (AD_STARTED, AD_PAUSED, AD_PROGRESS, etc.) for UI updates",
+        "Analytics plugins - track ad impressions, quartiles, and completion events",
+        "Timeline/seekbar plugins (playkit-timeline) - display ad cue points"
+      ]
+    },
+    "external_apis": {
+      "third_party_sdks": [
+        "Google IMA SDK for HTML5 (ima3.js) - core ad serving and rendering",
+        "OMID API (via IMA SDK) - ad viewability measurement"
+      ],
+      "kaltura_apis": [
+        "PlayKit JS Plugin API - BasePlugin, registerPlugin",
+        "PlayKit JS Middleware API - IMiddlewareProvider, BaseMiddleware",
+        "PlayKit JS Engine Decorator API - IEngineDecoratorProvider, IEngineDecorator",
+        "PlayKit JS Ads Controller API - IAdsControllerProvider, IAdsPluginController",
+        "PlayKit JS Event System - player events, ad events, FakeEvent"
+      ]
+    }
+  },
+  "technical_stack": {
+    "primary_language": "JavaScript (ECMAScript 6)",
+    "type_system": "Flow (static type checking)",
+    "build_tools": [
+      "Webpack 4 (bundling)",
+      "Babel 7 (ES6 → ES5 transpilation)",
+      "ESLint (linting)",
+      "Karma + Mocha + Chai (testing)"
+    ],
+    "runtime_dependencies": [
+      "javascript-state-machine (FSM for ad states)",
+      "Google IMA SDK (dynamically loaded at runtime)"
+    ],
+    "entry_points": {
+      "main_entry": "src/index.js - plugin registration with Kaltura Player",
+      "core_logic": "src/ima.js - primary plugin class extending BasePlugin (1300+ lines)",
+      "state_management": "src/ima-state-machine.js - finite state machine for ad lifecycle transitions",
+      "middleware": "src/ima-middleware.js - intercepts player load/play operations for ad insertion",
+      "engine_decorator": "src/ima-engine-decorator.js - overrides video element properties during ad playback",
+      "ads_controller": "src/ima-ads-controller.js - public API for ad control (skip, playAdNow, etc.)"
+    },
+    "distribution": {
+      "package_name": "@playkit-js/playkit-js-ima",
+      "bundle_output": "dist/playkit-ima.js",
+      "npm_registry": "https://www.npmjs.com/package/@playkit-js/playkit-js-ima"
+    }
+  },
+  "triage_keywords": [
+    "IMA",
+    "ad break",
+    "VAST",
+    "VMAP",
+    "VPAID",
+    "pre-roll",
+    "mid-roll",
+    "post-roll",
+    "companion ad",
+    "overlay ad",
+    "ad skipping",
+    "ad error",
+    "adTagUrl",
+    "adsResponse",
+    "AdsLoader",
+    "AdsManager",
+    "AD_STARTED",
+    "AD_PAUSED",
+    "AD_COMPLETED",
+    "AD_ERROR",
+    "AD_BREAK_START",
+    "AD_BREAK_END",
+    "ad click",
+    "ad container",
+    "ad cue point",
+    "getVastErrorCode",
+    "ima3.js",
+    "imasdk.googleapis.com",
+    "google.ima",
+    "content playhead",
+    "forceReloadMediaAfterAds",
+    "playOnMainVideoTag",
+    "delayInitUntilSourceSelected"
+  ],
+  "common_error_patterns": [
+    "VAST error code [0-9]+ - ad server or VAST parsing errors",
+    "AdsManager null/undefined - IMA SDK initialization failures",
+    "Ad tag URL request timed out - network issues with ad server",
+    "Unable to play ad - playback errors (often mobile autoplay restrictions)",
+    "VPAID ad rendering issues - complex interactive ad failures",
+    "Content video not resuming after ad break - state machine transition errors",
+    "Ad clicks opening multiple tabs - click handling race conditions",
+    "Companion ads not displaying - size mismatch or DOM timing issues",
+    "Ads not playing on iOS - autoplay policy or video tag configuration",
+    "Postroll not playing - content completion detection failures"
+  ]
+}
