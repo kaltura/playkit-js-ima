@@ -254,6 +254,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
   _adVideoTagAlreadyPlayed: boolean = false;
   _adStartedEvent: any = null;
   _engine: any = null;
+  _adsContainerObserver: ?MutationObserver = null;
 
   /**
    * Whether the ima plugin is valid.
@@ -578,6 +579,10 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
       this._adDisplayContainer.destroy();
       this._adDisplayContainer = null;
     }
+    if (this._adsContainerObserver) {
+      this._adsContainerObserver.disconnect();
+      this._adsContainerObserver = null;
+    }
   }
 
   /**
@@ -844,6 +849,39 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     // Append the ads container to the dom
     Utils.Dom.appendChild(playerView, this._adsContainerDiv);
     this._adDisplayContainer = new this._sdk.AdDisplayContainer(this._adsContainerDiv, this.player.getVideoElement());
+    
+    // Set up MutationObserver to handle dynamically created iframes
+    this._setupIframeObserver();
+  }
+
+  /**
+   * Sets up a MutationObserver to apply accessibility attributes to IMA SDK iframes.
+   * @private
+   * @returns {void}
+   * @instance
+   * @memberof Ima
+   */
+  _setupIframeObserver(): void {
+    if (this._adsContainerObserver) {
+      return;
+    }
+    
+    const applyAccessibility = () => {
+      const iframes = this._adsContainerDiv.querySelectorAll('iframe');
+      iframes.forEach(iframe => {
+        iframe.setAttribute('aria-hidden', 'true');
+        iframe.setAttribute('tabindex', '-1');
+      });
+    };
+    
+    // Apply to any existing iframes
+    applyAccessibility();
+    
+    this._adsContainerObserver = new MutationObserver(applyAccessibility);
+    this._adsContainerObserver.observe(this._adsContainerDiv, {
+      childList: true,
+      subtree: true
+    });
   }
 
   /**
