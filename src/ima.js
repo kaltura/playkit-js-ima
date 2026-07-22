@@ -849,7 +849,6 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     // Append the ads container to the dom
     Utils.Dom.appendChild(playerView, this._adsContainerDiv);
     this._adDisplayContainer = new this._sdk.AdDisplayContainer(this._adsContainerDiv, this.player.getVideoElement());
-    
     // Set up MutationObserver to handle dynamically created iframes
     this._setupIframeObserver();
   }
@@ -865,7 +864,7 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
     if (this._adsContainerObserver) {
       return;
     }
-    
+
     const applyAccessibility = () => {
       const iframes = this._adsContainerDiv.querySelectorAll('iframe');
       iframes.forEach(iframe => {
@@ -873,10 +872,10 @@ class Ima extends BasePlugin implements IMiddlewareProvider, IAdsControllerProvi
         iframe.setAttribute('tabindex', '-1');
       });
     };
-    
+
     // Apply to any existing iframes
     applyAccessibility();
-    
+
     this._adsContainerObserver = new MutationObserver(applyAccessibility);
     this._adsContainerObserver.observe(this._adsContainerDiv, {
       childList: true,
