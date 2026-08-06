@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 1.7.4 (2026-08-06)
+
+
+### Bug Fixes
+
+* **ADA-3472:** Remove SDK iframes from accessibility tree ([#269](https://github.com/kaltura/playkit-js-ima/issues/269)) ([ff0bdb3](https://github.com/kaltura/playkit-js-ima/commit/ff0bdb3))
+
+
+
 ### 1.7.3 (2026-07-30)
 
 
